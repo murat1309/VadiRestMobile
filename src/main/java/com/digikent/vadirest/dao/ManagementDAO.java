@@ -35,6 +35,7 @@ import com.digikent.vadirest.dto.YbsGununOzeti;
 import com.digikent.vadirest.dto.YbsLicenseList;
 import com.digikent.vadirest.dto.YbsMenu;
 import com.digikent.vadirest.dto.YbsWeddingList;
+import com.documentum.thirdparty.javassist.bytecode.annotation.StringMemberValue;
 
 import java.util.List;
 
@@ -48,14 +49,15 @@ public interface ManagementDAO {
 	public List<PersonelGrup> getStaffGroup();
 	public List<KurumBorc> getDebtStatus(long id, long year);
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate);
-	public List<Basvuru> getApplyCount(String timePeriod);
-	public List<BasvuruOzet> getApplySummary(long birimId, String timePeriod);
+	public List<Basvuru> getApplyCount(String startDate, String endDate);
+	public List<BasvuruOzet> getApplySummary(long birimId, String startDate, String endDate);
 	public BasvuruOzetDetay getApplySummaryDetail(long basvuruNo);
 	public List<FirmaBorc> getFirmDebtStatus(long persid, long year);
 	public List<Talep> getRequestCount(String timePeriod);
 	public List<GelirGrubu> getIncomeGroup(String timePeriod);
 	public List<GelirGrubuDetay> getIncomeGroupDetail(long id, String startDate, String endDate);
 	public List<GelirTuru> getIncomeType(String timePeriod);
+	public List<GelirTuru> getIncomeType(String startDate, String endDate);
 	public List<GelirTuruDetay> getIncomeTypeDetail(long id, String startDate, String endDate);
 	public List<YbsMenu> getYbsParents(String userName, Long parentID);
 	public List<GraphGeneral> getTodayIncomeGroup();

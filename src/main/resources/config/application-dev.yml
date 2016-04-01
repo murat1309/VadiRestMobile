@@ -20,10 +20,10 @@ spring:
             enabled: false # we use Grunt + BrowserSync for livereload
     datasource:
         driver-class-name: oracle.jdbc.pool.OracleDataSource
-        url:  jdbc:oracle:thin:@//192.168.1.13:1521/dbg
+        url:  jdbc:oracle:thin:@//10.16.16.213:1521/dbg
         name:
         username: DIGIKENT
-        password: digikent
+        password: dgknt2071
     jpa:
         database-platform: org.hibernate.dialect.Oracle10gDialect
         database: ORACLE

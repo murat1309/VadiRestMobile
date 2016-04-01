@@ -32,7 +32,8 @@ public class DocumentManagementController {
 	private DocumentManagementService documentManagementService;
 	
 	//belge yonetim rol listesi
-	@RequestMapping(value = "EBYSRol/{persid}",method = RequestMethod.GET)
+	@RequestMapping(value = "" +
+			"/{persid}",method = RequestMethod.GET)
 	public List<Rol> getEBYSRollList(@PathVariable("persid") long persid){
 		System.out.println("--------get roll list---------");
 		System.out.println(persid);

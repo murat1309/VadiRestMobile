@@ -4,6 +4,7 @@ public class PersonelBilgileri {
 	
 	private long bsm2ServisGorev;
 	private String birimAdi;
+	private int toplamPersonel;
 	private int memurSayisi;
 	private int isciSayisi;
 	private int stajyerSayisi;
@@ -18,6 +19,13 @@ public class PersonelBilgileri {
 	}
 	public void setBirimAdi(String birimAdi) {
 		this.birimAdi = birimAdi;
+	}
+	public int getToplamPersonel() {
+		return toplamPersonel;
+	}
+
+	public void setToplamPersonel(int toplamPersonel) {
+		this.toplamPersonel = toplamPersonel;
 	}
 	public int getMemurSayisi() {
 		return memurSayisi;

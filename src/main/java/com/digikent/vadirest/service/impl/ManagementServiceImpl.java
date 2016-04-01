@@ -87,12 +87,12 @@ public class ManagementServiceImpl implements ManagementService {
 		return managementDAO.getPayments(startDate,endDate);
 	}
 	
-	public List<Basvuru> getApplyCount(String timePeriod) throws Throwable{
-		return managementDAO.getApplyCount(findTimePeriod(timePeriod));
+	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable{
+		return managementDAO.getApplyCount(startDate, endDate);
 	}
 	
-	public List<BasvuruOzet> getApplySummary(long birimId, String timePeriod) throws Throwable{
-		return managementDAO.getApplySummary(birimId,findTimePeriod(timePeriod));
+	public List<BasvuruOzet> getApplySummary(long birimId, String startDate, String endDate) throws Throwable{
+		return managementDAO.getApplySummary(birimId,startDate, endDate);
 	}
 	
 	public BasvuruOzetDetay getApplySummaryDetail(long basvuruNo){
@@ -149,6 +149,10 @@ public class ManagementServiceImpl implements ManagementService {
 	
 	public List<GelirTuru> getIncomeType(String timePeriod) throws Throwable{
 		return managementDAO.getIncomeType(findTimePeriod(timePeriod));
+	}
+
+	public List<GelirTuru> getIncomeType(String startDate, String endDate) throws Throwable{
+		return managementDAO.getIncomeType(startDate, endDate);
 	}
 	
 	public List<GelirTuruDetay> getIncomeTypeDetail(long id, String startDate, String endDate){

@@ -117,17 +117,17 @@ public class ManagementController {
 	}
 	
 	//birim bazinda basvuru sayisi
-	@RequestMapping(value = "birimBasvuru/{timePeriod}", method = RequestMethod.GET)
-	public List<Basvuru> getApplyCount(@PathVariable("timePeriod") String timePeriod) throws Throwable{
+	@RequestMapping(value = "birimBasvuru/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<Basvuru> getApplyCount(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate) throws Throwable{
 		System.out.println("--------basvuru sayisi----------");
-		return managementService.getApplyCount(timePeriod);
+		return managementService.getApplyCount(startDate, endDate);
 	}
 	
 	//birim bazinda basvuru sayisi ozeti
-	@RequestMapping(value = "birimBasvuruOzet/{birimId}/{timePeriod}", method = RequestMethod.GET)
-	public List<BasvuruOzet> getApplySummary(@PathVariable("birimId") long birimId, @PathVariable("timePeriod") String timePeriod)throws Throwable{
+	@RequestMapping(value = "birimBasvuruOzet/{birimId}/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<BasvuruOzet> getApplySummary(@PathVariable("birimId") long birimId, @PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate)throws Throwable{
 		System.out.println("--------basvuru sayisi----------");
-		return managementService.getApplySummary(birimId, timePeriod);
+		return managementService.getApplySummary(birimId, startDate, endDate);
 	}
 	
 	//birim bazinda basvuru sayisi
@@ -174,6 +174,13 @@ public class ManagementController {
 		System.out.println("-----------gelir turu----------");
 		System.out.println(timePeriod);
 		return managementService.getIncomeType(timePeriod);
+	}
+
+	//Gelir Turu bazinda
+	@RequestMapping(value = "gelirTuru/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<GelirTuru> getIncomeType(@PathVariable("startDate") String startDate,@PathVariable("endDate") String endDate) throws Throwable{
+		System.out.println("-----------gelir turu----------");
+		return managementService.getIncomeType(startDate, endDate);
 	}
 	
 	//Gelir Turu bazinda tahsilat

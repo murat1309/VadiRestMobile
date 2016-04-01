@@ -162,6 +162,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 	
 	public List<PersonelBilgileri> getStaffInfomation() {
 		String sql ="select a.BSM2SERVIS_GOREV,b.TANIM BirimAdi,"
+				   +"Count(*) ToplamPersonel,"
 		           +"Sum( Case a.TURU When 'M' Then 1 Else 0 End ) MemurSayisi,"
 		           +"Sum( Case a.TURU When 'I' Then 1 Else 0 End ) IsciSayisi,"		       
 				   +"Sum( Case a.TURU When 'O' Then 1 Else 0 End ) StajyerSayisi,"				
@@ -185,6 +186,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 			
 			BigDecimal bsm2ServisGorev = (BigDecimal)map.get("BSM2SERVIS_GOREV");
 			String birimAdi = (String)map.get("BIRIMADI");
+			BigDecimal toplamPersonel = (BigDecimal)map.get("TOPLAMPERSONEL");
 			BigDecimal memurSayisi = (BigDecimal)map.get("MEMURSAYISI");
 			BigDecimal isciSayisi = (BigDecimal)map.get("ISCISAYISI");
 			BigDecimal stajyerSayisi = (BigDecimal)map.get("STAJYERSAYISI");
@@ -197,6 +199,8 @@ public class ManagementDAOImpl implements ManagementDAO {
 				personelBilgileri.setBsm2ServisGorev(bsm2ServisGorev.longValue());
 			if(birimAdi != null)
 				personelBilgileri.setBirimAdi(birimAdi);
+			if(toplamPersonel != null)
+				personelBilgileri.setToplamPersonel(toplamPersonel.intValue());
 			if(memurSayisi != null)
 				personelBilgileri.setMemurSayisi(memurSayisi.intValue());
 			if(isciSayisi != null)
@@ -479,16 +483,13 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return yapilanOdemelerList;
 	}
 	
-	public List<Basvuru> getApplyCount(String timePeriod){
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
-		String today = dateFormat.format(date);
-		
+	public List<Basvuru> getApplyCount(String startDate, String endDate){
+
 		String sql= "select b.ALC_BSM2SERVIS_ID,c.TANIM BIRIMADI,Count( Distinct a.ID ) BASVURUSAYISI "
 				+"from DDM1ISAKISI a, EDM1ISAKISIADIM b,BSM2SERVIS c "
 				+"Where a.ID = b.DDM1ISAKISI_ID "
-				+"And c.ID = b.ALC_BSM2SERVIS_ID And b.TARIH BETWEEN TO_DATE('"+timePeriod+"', 'dd/MM/yyyy') "
- 				+"AND TO_DATE ('"+today+"', 'dd/MM/yyyy') "
+				+"And c.ID = b.ALC_BSM2SERVIS_ID And b.TARIH BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') "
+ 				+"AND TO_DATE ('"+endDate+"', 'dd-MM-yyyy') "
 				+"and b.ALC_MSM2ORGANIZASYON_ID <> b.GON_MSM2ORGANIZASYON_ID And a.turu = 'S' "
 				+"Group By b.ALC_BSM2SERVIS_ID,c.TANIM "
 				+"Order By 3 Desc";
@@ -521,17 +522,14 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return basvuruList;
 	}
 
-	public List<BasvuruOzet> getApplySummary(long birimId, String timePeriod){
-		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		Date date = new Date();
-		String today = dateFormat.format(date);
-		
+	public List<BasvuruOzet> getApplySummary(long birimId, String startDate, String endDate){
+
 		String sql ="select a.ID BASVURUNO, (SELECT x.TANIM FROM ADM1BILDIRIMTURU X WHERE X.ID = a.ADM1BILDIRIMTURU_ID ) BildirimTuru, "
 				+"a.ADI, a.SOYADI, a.ISAKISIKONUOZETI, a.KONUSU, a.RRE1ILCE_ADI, a.DRE1MAHALLE_ADI, a.SRE1SOKAK_ADI, a.YEVTELEFONU, "
 				+"a.YISTELEFONU, a.YCEPTELEFONU, a.TARIH, a.SONUCDURUMU, a.SONUCU From DDM1ISAKISI a Where a.ID IN ( "
 				+"Select Distinct aa.ID from DDM1ISAKISI aa, EDM1ISAKISIADIM bb,BSM2SERVIS cc Where aa.ID = bb.DDM1ISAKISI_ID "
-				+"And cc.ID = bb.ALC_BSM2SERVIS_ID And bb.TARIH BETWEEN TO_DATE('"+timePeriod+"', 'dd/MM/yyyy') "
- 				+"AND TO_DATE ('"+today+"', 'dd/MM/yyyy') "
+				+"And cc.ID = bb.ALC_BSM2SERVIS_ID And bb.TARIH BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') "
+ 				+"AND TO_DATE ('"+endDate+"', 'dd-MM-yyyy') "
 				+"and bb.ALC_MSM2ORGANIZASYON_ID <> bb.GON_MSM2ORGANIZASYON_ID and bb.ALC_BSM2SERVIS_ID ="+birimId 
 				+" And aa.turu = 'S')";
 	
@@ -950,6 +948,48 @@ public class ManagementDAOImpl implements ManagementDAO {
 			if(tutar != null)
 				gelirTuru.setTutar(tutar.doubleValue());
 			
+			gelirTuruList.add(gelirTuru);
+		}
+		return gelirTuruList;
+	}
+
+	public List<GelirTuru> getIncomeType(String startDate, String endDate){
+
+
+		String sql = "SELECT A.GIN1GELIRTURU_ID, C.TANIM GELIR_ADI, SUM (A.TUTAR) TUTAR,"
+				+" COUNT (DISTINCT (B.MPI1PAYDAS_ID)) PAYDASSAYISI "
+				+"FROM LIN2TAHSILAT A, NIN2TAHSILATGENEL B, GIN1GELIRTURU C "
+				+"WHERE A.NIN2TAHSILATGENEL_ID = B.ID "
+				+"AND A.GIN1GELIRTURU_ID = C.ID "
+				+"AND B.TIP = 'K' "
+				+"And B.ISLEMTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') "
+				+"AND TO_DATE ('"+endDate+"', 'dd-MM-yyyy') "
+				+"AND B.TURU != 'M' "
+				+"GROUP BY A.GIN1GELIRTURU_ID, C.TANIM "
+				+"ORDER BY TUTAR DESC,A.GIN1GELIRTURU_ID, C.TANIM";
+
+		List<Object> list = new ArrayList<Object>();
+		List<GelirTuru> gelirTuruList = new ArrayList<GelirTuru>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map)o;
+			GelirTuru gelirTuru = new GelirTuru();
+
+			BigDecimal gelirTuruId = (BigDecimal) map.get("GIN1GELIRTURU_ID");
+			String gelirTuruAdi    = (String) map.get("GELIR_ADI");
+			BigDecimal tutar       = (BigDecimal) map.get("TUTAR");
+
+			if(gelirTuruId != null)
+				gelirTuru.setId(gelirTuruId.longValue());
+			if(gelirTuruAdi != null)
+				gelirTuru.setGelirTuruAdi(gelirTuruAdi);
+			if(tutar != null)
+				gelirTuru.setTutar(tutar.doubleValue());
+
 			gelirTuruList.add(gelirTuru);
 		}
 		return gelirTuruList;

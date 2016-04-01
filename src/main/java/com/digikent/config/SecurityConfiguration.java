@@ -5,10 +5,12 @@ import com.digikent.security.Http401UnauthorizedEntryPoint;
 import com.digikent.security.xauth.TokenProvider;
 import com.digikent.security.xauth.XAuthTokenConfigurer;
 
+import com.vadi.digikent.base.util.FileUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -22,97 +24,82 @@ import org.springframework.security.data.repository.query.SecurityEvaluationCont
 
 
 import javax.inject.Inject;
+import java.util.Enumeration;
+import java.util.Properties;
 
 @Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true,proxyTargetClass = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Inject
-    private Http401UnauthorizedEntryPoint authenticationEntryPoint;
-
-    @Inject
-    private UserDetailsService userDetailsService;
-
-    @Inject
-    private TokenProvider tokenProvider;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Inject
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder());
-    }
-
+    /**
+     * This section defines the user accounts which can be used for
+     * authentication as well as the roles each user has.
+     *
+     * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)
+     */
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-            .antMatchers("/scripts/**/*.{js,html}")
-            .antMatchers("/bower_components/**")
-            .antMatchers("/i18n/**")
-            .antMatchers("/assets/**")
-            .antMatchers("/swagger-ui/index.html")
-            .antMatchers("/test/**");
+    protected void configure(AuthenticationManagerBuilder auth)
+            throws Exception {
+        String digikentPath = System.getenv("DIGIKENT_PATH");
+        Properties userProp = FileUtil.getPropsFromFile(digikentPath
+                + "\\services\\users.properties");
+        Enumeration<Object> keys = userProp.keys();
+        while (keys.hasMoreElements()) {
+            String userName = (String) keys.nextElement();
+
+            String sifreRollerVeEnabledDisabled = (String) userProp
+                    .get(userName);
+            String[] bolunmusSifreRollerVeEnabledDisabled = sifreRollerVeEnabledDisabled
+                    .split(",");
+            if (bolunmusSifreRollerVeEnabledDisabled.length < 3) {
+                throw new Exception(
+                        "users.propertiesde gecersiz satir, kullanici adi: "
+                                + userName);
+            }
+            if (!"enabled".trim()
+                    .equals(bolunmusSifreRollerVeEnabledDisabled[bolunmusSifreRollerVeEnabledDisabled.length - 1].trim())
+                    && !"disabled"
+                    .equals(bolunmusSifreRollerVeEnabledDisabled[bolunmusSifreRollerVeEnabledDisabled.length - 1].trim())) {
+                System.out.println(bolunmusSifreRollerVeEnabledDisabled[bolunmusSifreRollerVeEnabledDisabled.length - 1]);
+                throw new Exception(
+                        "users.properties satirinda enabled disabled eksik kullanici: "
+                                + userName);
+            }
+            String sifre = bolunmusSifreRollerVeEnabledDisabled[0];
+            String enabledDisabled = bolunmusSifreRollerVeEnabledDisabled[bolunmusSifreRollerVeEnabledDisabled.length - 1];
+            UserDetailsManagerConfigurer.UserDetailsBuilder udb = auth.inMemoryAuthentication().withUser(
+                    userName);
+            udb.password(sifre);
+            udb.disabled("disabled".equals(enabledDisabled));
+            String[] roller = new String[bolunmusSifreRollerVeEnabledDisabled.length - 2];
+
+            for (int i = 1; i < bolunmusSifreRollerVeEnabledDisabled.length - 1; i++) {
+                String rol=bolunmusSifreRollerVeEnabledDisabled[i];
+                if(!rol.startsWith("ROLE_")){
+                    throw new Exception("Roller ROLE_ ile baslamali, kullanici: "+userName);
+                }
+                rol=rol.substring(rol.indexOf('_')+1);
+                roller[i - 1] = rol;
+            }
+            udb.roles(roller);
+        }
+// auth.inMemoryAuthentication().//
+// withUser("greg").password("turnquist").roles("USER").and().//
+// withUser("ollie").password("gierke").roles("USER", "ADMIN");
+
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-            .exceptionHandling()
-            .authenticationEntryPoint(authenticationEntryPoint)
-            .and()
-            .csrf()
-            .disable()
-            .headers()
-            .frameOptions()
-            .disable()
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/api/register").permitAll()
-            .antMatchers("/api/activate").permitAll()
-            .antMatchers("/api/authenticate").permitAll()
-            .antMatchers("/api/account/reset_password/init").permitAll()
-            .antMatchers("/api/account/reset_password/finish").permitAll()
-            .antMatchers("/api/logs/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/api/audits/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/api/**").authenticated()
-            .antMatchers("/metrics/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/health/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/trace/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/dump/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/shutdown/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/beans/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/configprops/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/info/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/autoconfig/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/env/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/trace/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/mappings/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/liquibase/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/v2/api-docs/**").permitAll()
-            .antMatchers("/configuration/security").permitAll()
-            .antMatchers("/configuration/ui").permitAll()
-            .antMatchers("/swagger-ui/index.html").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/protected/**").authenticated()
-            .and()
-            .apply(securityConfigurerAdapter());
 
-    }
-
-    private XAuthTokenConfigurer securityConfigurerAdapter() {
-        return new XAuthTokenConfigurer(userDetailsService, tokenProvider);
-    }
-
-    @Bean
-    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-        return new SecurityEvaluationContextExtension();
+        http.httpBasic().and().authorizeRequests()
+                .//
+                antMatchers(HttpMethod.POST, "/employees").hasRole("ADMIN")
+                .//
+                antMatchers(HttpMethod.PUT, "/employees/**").hasRole("ADMIN")
+                .//
+                antMatchers(HttpMethod.PATCH, "/employees/**").hasRole("ADMIN")
+                .and().//
+                csrf().disable().rememberMe().disable();
     }
 }

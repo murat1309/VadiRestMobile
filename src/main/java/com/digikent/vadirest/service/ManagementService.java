@@ -55,9 +55,9 @@ public interface ManagementService {
 	//Yapilan odemeler
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate) throws Throwable;
 	//mudurluk bazinda basvuru
-	public List<Basvuru> getApplyCount(String timePeriod) throws Throwable;
+	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable;
 	//Basvuru sayisi ozet
-	public List<BasvuruOzet> getApplySummary(long birimId, String timePeriod)throws Throwable;
+	public List<BasvuruOzet> getApplySummary(long birimId, String startDate, String endDate)throws Throwable;
 	//Basvuru Ozet detay
 	public BasvuruOzetDetay getApplySummaryDetail(long basvuruNo);
 	//Firma borc durumu
@@ -70,6 +70,8 @@ public interface ManagementService {
 	public List<GelirGrubuDetay> getIncomeGroupDetail(long id, String startDate, String endDate);
 	//gelir turu
 	public List<GelirTuru> getIncomeType(String timePeriod) throws Throwable;
+	//gelir turu
+	public List<GelirTuru> getIncomeType(String startDate, String endDate) throws Throwable;
 	//gelir turu tahsilat bazinda
 	public List<GelirTuruDetay> getIncomeTypeDetail(long id, String startDate, String endDate);
 	//YBS menu Ng tree
