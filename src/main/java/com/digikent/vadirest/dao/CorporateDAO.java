@@ -4,8 +4,8 @@ import com.digikent.vadirest.dto.Person;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;
 import com.vadi.digikent.personel.per.model.HR1PersonelIslem;
-import com.vadi.digikent.portal.pr1.model.PR1Haber;
-import com.vadi.digikent.portal.pr1.model.PR1KurumIndirim;
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1Haber;
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1KurumIndirim;
 
 import java.util.List;
 

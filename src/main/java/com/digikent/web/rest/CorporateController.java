@@ -9,8 +9,6 @@ import com.digikent.vadirest.service.CorporateService;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;
 import com.vadi.digikent.personel.per.model.HR1PersonelIslem;
-import com.vadi.digikent.portal.pr1.model.PR1Haber;
-import com.vadi.digikent.portal.pr1.model.PR1KurumIndirim;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +16,8 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1Haber;
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1KurumIndirim;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -94,6 +94,7 @@ public class CorporateController {
 			person.setGorevi(retval.get(i).getGorevi());
 			person.setKadro(retval.get(i).getKadro());
 			person.setDahili(retval.get(i).getDahiliTelefonNo());
+			person.setCepTelefonu(retval.get(i).getCepTelefonu());
 			personList.add(person);
 		}
 		return personList;
@@ -114,6 +115,7 @@ public class CorporateController {
 			person.setGorevi(retval.get(i).getGorevi());
 			person.setKadro(retval.get(i).getKadro());
 			person.setDahili(retval.get(i).getDahiliTelefonNo());
+			person.setCepTelefonu(retval.get(i).getCepTelefonu());
 			person.setTanim(retval.get(i).getHr1GorevTuru().getTanim());
 			personList.add(person);
 		}

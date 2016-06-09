@@ -1,15 +1,7 @@
 package com.digikent.vadirest.dao.impl;
 
 import com.digikent.vadirest.dao.DocumentManagementDAO;
-import com.digikent.vadirest.dto.BelgeBasvuru;
-import com.digikent.vadirest.dto.BelgeBasvuruDetay;
-import com.digikent.vadirest.dto.BelgeYonetimKullanici;
-import com.digikent.vadirest.dto.CozumOrtagi;
-import com.digikent.vadirest.dto.EBYSBekleyen;
-import com.digikent.vadirest.dto.EBYSBirimMenu;
-import com.digikent.vadirest.dto.EBYSKlasorMenu;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.Rol;
+import com.digikent.vadirest.dto.*;
 import com.vadi.digikent.icerikyonetimi.bpm.model.BPMWorkitem;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
@@ -70,8 +62,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return rollList;
 	}
 
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid) {
-		String sql="SELECT id,action,creationdate,creationdatetime, "
+	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
+		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, "
 				+"DECODE ((SELECT NVL (ABYOKONU_ID, 0)FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), "
 				+"0, CASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL) > 0 "
 				+"THEN(SELECT KONUOZETI FROM EBYSBELGE WHERE ID =(SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (A.ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL)) "
@@ -88,7 +80,10 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				+"(SELECT BEKLENENBITISTARIHI FROM EBYSBELGE WHERE ID = A.EBYSBELGE_ID AND A.EBYSBELGE_ID > 0) BEKLENENBITISTARIHI,(SELECT COMPLETEDDATETIME "
 				+"FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_ID) COMPLETEDDATETIME, NVL (READFLAG, 'H') READFLAG, TOPLUIMZALAMAYAPILACAK, (SELECT (SELECT B.TANIM "
 				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK    FROM ABPMWORKITEM A "
-				+"WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND ( (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.FSM1USERS_PERFORMER = " +persid+" ) "
+				+"WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE ONAYBEKLEYENMI = 'EVET')"
+				+" AND A.CREATIONDATETIME BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
+				+" TO_DATE ('"+ endDate +"', 'dd-MM-yyyy')"
+				+" AND ( (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.FSM1USERS_PERFORMER = " +persid+" ) "
 				+"OR (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.Fsm1Users_PERFORMER = 0)) ORDER BY NVL (BEKLENENBITISTARIHI, "
 				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATETIME DESC, A.id DESC ";
 		
@@ -104,12 +99,18 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			EBYSBekleyen ebysBekleyen = new EBYSBekleyen();
 			BPMWorkitem bpmWorkItem = new BPMWorkitem();
 
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal ebysDocumentId = (BigDecimal)map.get("EBYSDOCUMENTID");
 			Date creationDate = (Date)map.get("CREATIONDATE");
 			String name = (String)map.get("NAME");
 			String konu = (String)map.get("KONU");
 			String message = (String) map.get("MESSAGE");
 			BigDecimal docId = (BigDecimal) map.get("DOCID");
-			
+
+			if(id != null)
+				ebysBekleyen.setId(id.longValue());
+			if(ebysDocumentId != null)
+				ebysBekleyen.setEbysDocumentId(ebysDocumentId.longValue());
 			if(creationDate != null)
 				ebysBekleyen.setCreationDate(dateFormat.format(creationDate));
 			if(name != null)
@@ -218,9 +219,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 
 	public BelgeBasvuruDetay getApplyDocDetail(long docId) {
 		String sql ="select * from ddm1isakisi where ID=" + docId;
-		
 		List<Object> list = new ArrayList();
-		
+
 		SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
@@ -237,7 +237,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			Timestamp tarihSaat = (Timestamp) map.get("TARIHSAAT");
 			Date belgeTarih = (Date)map.get("BELGETARIHI");
 			String uretimTipi = (String)map.get("URETIMTIPI");
-		
+
+			BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
 			String merciKurum = (String) map.get("MERCIKURUM");
 			String adi = (String) map.get("ADI");
 			String soyadi = (String) map.get("SOYADI");
@@ -298,6 +299,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				belgeBasvuruDetay.setTarihSaat(dateFormat.format(new Date(tarihSaat.getTime())));
 			if(uretimTipi != null)
 				belgeBasvuruDetay.setUretimTipi(uretimTipi);
+			if(edm1IsAkisiAdimId != null)
+				belgeBasvuruDetay.setEdm1IsAkisiAdimId(edm1IsAkisiAdimId.longValue());
 			if(merciKurum != null)
 				belgeBasvuruDetay.setMerciKurum(merciKurum);
 			if(adi != null)
@@ -861,5 +864,160 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			graphGeneralList.add(graphGeneral);
 		}
 		return graphGeneralList;
+	}
+
+	public List<BasvuruOzet> getGelenBasvuruList(long organizationId, String startDate, String endDate){
+		String sql = "SELECT DB.ID,\n" +
+				"       DBI.ID as DM1ISAKISIADIMID,\n" +
+				"       DB.ADI,\n" +
+				"       DB.TARIH,\n" +
+				"       DB.SOYADI\n" +
+				"FROM EDM1ISAKISIADIM DBI, DDM1ISAKISI DB\n" +
+				"WHERE  (DB.ID = DBI.DDM1ISAKISI_ID)\n" +
+				"AND DB.TURU IN('S','K') \n" +
+				"AND NVL (DBI.ALC_MSM2ORGANIZASYON_ID, 0) > 0\n" +
+				"AND DBI.ALC_MSM2ORGANIZASYON_ID = " + organizationId + "\n" +
+				"AND DBI.ALC_MSM2ORGANIZASYON_ID <> DBI.GON_MSM2ORGANIZASYON_ID\n" +
+				"AND DBI.DURUMU = 'S'\n" +
+				"AND DBI.SONUCDURUMU NOT IN ('T')\n" +
+				"AND DB.ID IN (SELECT DDM1ISAKISI_ID\n" +
+				"FROM EDM1ISAKISIADIM\n" +
+				"WHERE TARIH BETWEEN TO_DATE ('" + startDate +"',     'dd-MM-yyyy')   AND TO_DATE('"+ endDate +"','dd-MM-yyyy')    ) \n" +
+				"ORDER BY DB.TARIHSAAT DESC,DB.ID";
+
+		List<Object> list = new ArrayList<Object>();
+		List<BasvuruOzet> basvuruOzetList = new ArrayList<BasvuruOzet>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			BasvuruOzet basvuruOzet = new BasvuruOzet();
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal adimId = (BigDecimal)map.get("DM1ISAKISIADIMID");
+			String adi = (String) map.get("ADI");
+			String soyAdi = (String) map.get("SOYADI");
+			Date tarih = (Date) map.get("TARIH");
+
+			if(id != null)
+				basvuruOzet.setBasvuruNo(id.longValue());
+			if(adimId != null)
+				basvuruOzet.setAdimId(adimId.longValue());
+			if(adi != null)
+				basvuruOzet.setAdi(adi);
+			if(soyAdi != null)
+				basvuruOzet.setSoyAdi(soyAdi);
+			if(tarih != null)
+				basvuruOzet.setTarih(dateFormat.format(tarih));
+
+
+			basvuruOzetList.add(basvuruOzet);
+		}
+		return basvuruOzetList;
+	}
+
+	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate){
+		String sql = "SELECT DB.ID,\n" +
+				"       DBI.ID as DM1ISAKISIADIMID,\n" +
+				"       DB.ADI,\n" +
+				"       DB.TARIH,\n" +
+				"       DB.SOYADI\n" +
+				"FROM EDM1ISAKISIADIM DBI, DDM1ISAKISI DB\n" +
+				"WHERE     (DB.ID = DBI.DDM1ISAKISI_ID)\n" +
+				"         AND DB.TURU IN ('S', 'K')\n" +
+				"         AND NVL (DBI.GON_MSM2ORGANIZASYON_ID, 0) > 0\n" +
+				"         AND DBI.GON_MSM2ORGANIZASYON_ID = " + organizationId  +"\n" +
+				"         AND DBI.ALC_MSM2ORGANIZASYON_ID <> DBI.GON_MSM2ORGANIZASYON_ID\n" +
+				"         AND DB.TARIH BETWEEN TO_DATE ('" + startDate +"',     'dd-MM-yyyy')   AND TO_DATE('"+ endDate +"','dd-MM-yyyy')  \n" +
+				"ORDER BY DB.TARIH DESC, DB.ID DESC";
+
+
+
+		List<Object> list = new ArrayList<Object>();
+		List<BasvuruOzet> basvuruOzetList = new ArrayList<BasvuruOzet>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			BasvuruOzet basvuruOzet = new BasvuruOzet();
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal adimId = (BigDecimal)map.get("DM1ISAKISIADIMID");
+			String adi = (String) map.get("ADI");
+			String soyAdi = (String) map.get("SOYADI");
+			Date tarih = (Date) map.get("TARIH");
+
+			if(id != null)
+				basvuruOzet.setBasvuruNo(id.longValue());
+			if(adimId != null)
+				basvuruOzet.setAdimId(adimId.longValue());
+			if(adi != null)
+				basvuruOzet.setAdi(adi);
+			if(soyAdi != null)
+				basvuruOzet.setSoyAdi(soyAdi);
+			if(tarih != null)
+				basvuruOzet.setTarih(dateFormat.format(tarih));
+
+
+			basvuruOzetList.add(basvuruOzet);
+		}
+		return basvuruOzetList;
+	}
+
+	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate){
+		String sql = "SELECT DB.ID,\n" +
+				"       DBI.ID as DM1ISAKISIADIMID,\n" +
+				"       DB.ADI,\n" +
+				"       DB.TARIH,\n" +
+				"       DB.SOYADI\n" +
+				"FROM EDM1ISAKISIADIM DBI, DDM1ISAKISI DB\n" +
+				"WHERE     (DB.ID = DBI.DDM1ISAKISI_ID)\n" +
+				"       AND NVL (DBI.ALC_MSM2ORGANIZASYON_ID, 0) > 0\n" +
+				"       AND NVL (DBI.ALC_MSM2ORGANIZASYON_ID, 0) = " + organizationId  +"\n" +
+				"       AND NVL (DBI.ALC_MSM2ORGANIZASYON_ID, 0) =   NVL (DBI.GON_MSM2ORGANIZASYON_ID, 0)\n" +
+				"       AND NVL (DBI.ILETIMYERI, '-') = '-'\n" +
+				"       AND NVL (DB.TURU, '-') IN ('S','K')\n" +
+				"         AND NVL (DB.TARIH, SYSDATE) >= TO_DATE ('" + startDate +"',   'dd/MM/yyyy')  AND NVL(DB.TARIH,SYSDATE) <= TO_DATE('"+ endDate +"','dd/MM/yyyy') \n"+
+				"       ORDER BY NVL(DB.TARIH,SYSDATE) DESC,DB.ID DESC";
+
+
+
+
+
+		List<Object> list = new ArrayList<Object>();
+		List<BasvuruOzet> basvuruOzetList = new ArrayList<BasvuruOzet>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			BasvuruOzet basvuruOzet = new BasvuruOzet();
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal adimId = (BigDecimal)map.get("DM1ISAKISIADIMID");
+			String adi = (String) map.get("ADI");
+			String soyAdi = (String) map.get("SOYADI");
+			Date tarih = (Date) map.get("TARIH");
+
+			if(id != null)
+				basvuruOzet.setBasvuruNo(id.longValue());
+			if(adimId != null)
+				basvuruOzet.setAdimId(adimId.longValue());
+			if(adi != null)
+				basvuruOzet.setAdi(adi);
+			if(soyAdi != null)
+				basvuruOzet.setSoyAdi(soyAdi);
+			if(tarih != null)
+				basvuruOzet.setTarih(dateFormat.format(tarih));
+
+
+			basvuruOzetList.add(basvuruOzet);
+		}
+		return basvuruOzetList;
 	}
 }

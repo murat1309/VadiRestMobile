@@ -1,41 +1,7 @@
 package com.digikent.vadirest.service.impl;
 
 import com.digikent.vadirest.dao.ManagementDAO;
-import com.digikent.vadirest.dto.BankaDurumu;
-import com.digikent.vadirest.dto.BankaDurumuDetay;
-import com.digikent.vadirest.dto.Basvuru;
-import com.digikent.vadirest.dto.BasvuruOzet;
-import com.digikent.vadirest.dto.BasvuruOzetDetay;
-import com.digikent.vadirest.dto.BelgeYonetim;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGider;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGiderAylik;
-import com.digikent.vadirest.dto.FinansmanYonetimiTahakkuk;
-import com.digikent.vadirest.dto.FirmaBorc;
-import com.digikent.vadirest.dto.GelirGrubu;
-import com.digikent.vadirest.dto.GelirGrubuDetay;
-import com.digikent.vadirest.dto.GelirTuru;
-import com.digikent.vadirest.dto.GelirTuruDetay;
-import com.digikent.vadirest.dto.GelirlerYonetimiCevreBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiEmlakBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiMahalle;
-import com.digikent.vadirest.dto.GelirlerYonetimiReklamBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiTahakkuk;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.GununOzeti;
-import com.digikent.vadirest.dto.InsanKaynaklari;
-import com.digikent.vadirest.dto.KurumBorc;
-import com.digikent.vadirest.dto.PersonelBilgileri;
-import com.digikent.vadirest.dto.PersonelBilgileriDetay;
-import com.digikent.vadirest.dto.PersonelGrup;
-import com.digikent.vadirest.dto.Talep;
-import com.digikent.vadirest.dto.ToplantiYonetimi;
-import com.digikent.vadirest.dto.VezneTahsilat;
-import com.digikent.vadirest.dto.VezneTahsilatDetay;
-import com.digikent.vadirest.dto.YapilanOdemeler;
-import com.digikent.vadirest.dto.YbsGununOzeti;
-import com.digikent.vadirest.dto.YbsLicenseList;
-import com.digikent.vadirest.dto.YbsMenu;
-import com.digikent.vadirest.dto.YbsWeddingList;
+import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.ManagementService;
 
 import java.text.DateFormat;
@@ -86,6 +52,10 @@ public class ManagementServiceImpl implements ManagementService {
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate) throws Throwable {
 		return managementDAO.getPayments(startDate,endDate);
 	}
+
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate){
+		return managementDAO.getAllPayments(year, startDate, endDate);
+	}
 	
 	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable{
 		return managementDAO.getApplyCount(startDate, endDate);
@@ -101,6 +71,18 @@ public class ManagementServiceImpl implements ManagementService {
 	
 	public List<FirmaBorc> getFirmDebtStatus(long persid, long year){
 		return managementDAO.getFirmDebtStatus(persid,year);
+	}
+
+	public List<FirmaAlacak> getFirmaAlacak(long year){
+		String paymentType = managementDAO.getFirmaAlacakType();
+		if(paymentType.equalsIgnoreCase("E"))
+			return managementDAO.getFirmaAlacakTypeE(year);
+		else
+			return  managementDAO.getFirmaAlacakTypeH(year);
+	}
+
+	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate){
+		return managementDAO.getFirmaOdeme(year, startDate, endDate);
 	}
 	
 	public List<Talep> getRequestCount(String timePeriod) throws Throwable{

@@ -50,12 +50,17 @@ public class PersonalDAOImpl implements PersonalDAO {
 
 	
 	public Person findPersonelInformationById(long persid) {
-		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI "
+		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI,IP.DOGUMYERI "
 				+ ",(SELECT TANIM FROM   LHR1GOREVTURU  WHERE ID=LHR1GOREVTURU_ID) GOREVI "
 				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_GOREV) GOREVMUDURLUGU "
 				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_KADRO) KADROMUDURLUGU "
 				+ ",(SELECT TANIM FROM AHR1KADROSINIFI WHERE ID =AHR1KADROSINIFI_ID) KADROSINIFI "
-				+ ",(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI "
+				+ ",(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI, "
+				+ "(SELECT TELEFONNUMARASI    FROM   AEILTELEFON" +
+				"          WHERE IHR1PERSONEL_ID =IP.ID" +
+				"              AND  AEILTELEFONTURU_ID =(SELECT ID FROM AEILTELEFONTURU WHERE KAYITOZELISMI='CEP')" +
+				"              AND NVL(ISACTIVE,'E')='E'  AND LENGTH(TELEFONNUMARASI)=10" +
+				"              AND ROWNUM=1              )  CEPTELEFONU"
 				+ ",(SELECT TANIM FROM LHR1GOREVTURU WHERE ID=(SELECT LHR1GOREVTURU_ID FROM ZHR1KADRO  WHERE ID=ZHR1KADRO_ID))  KADRO "
 				+ ",TURU,KANGRUBU, "
 				+ "(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYAADI, "   
@@ -78,6 +83,8 @@ public class PersonalDAOImpl implements PersonalDAO {
 			String adsoyad = (String) map.get("ADSOYAD");
 			BigDecimal tcno = (BigDecimal) map.get("TCKIMLIKNO");
 			Date dTarihi = (Date) map.get("DOGUMTARIHI");
+			BigDecimal cepTelefonu = (BigDecimal)map.get("CEPTELEFONU");
+			String dogumYeri = (String)map.get("DOGUMYERI");
 			String gorevi = (String) map.get("GOREVI");
 			String gorevmudurlugu = (String) map.get("GOREVMUDURLUGU");
 			String kadromudurlugu = (String) map.get("KADROMUDURLUGU");
@@ -100,6 +107,10 @@ public class PersonalDAOImpl implements PersonalDAO {
 				person.setId(id.longValue());
 			if(dTarihi != null)
 				person.setDogumTarihi(dateFormat.format(dTarihi));
+			if(cepTelefonu != null)
+				person.setCepTelefonu(String.valueOf(cepTelefonu.longValue()));
+			if(dogumYeri != null)
+				person.setDogumYeri(dogumYeri);
 			if(kadromudurlugu != null)
 				person.setKadro(kadromudurlugu);
 			if(kadroderecesi != null)
@@ -551,10 +562,10 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+ "hakedilen,hakedilengun,hakedilensaat,hakedilendakika,ihr1personel_id,yili,baslangictarihi,bitistarihi,crdate,cruser,"
 				+ "deleteflag,isactive,upddate,updseq,upduser,ACIKLAMA,(SELECT TANIM FROM YHR1IZINTURU WHERE ID=UHR1IZINHAKEDIS.YHR1IZINTURU_ID) as izin_turu,"
 				+ "NVL(HESAPLAMATURU,'GUN'),HR1V1.F_KULLANILAN_IZIN(UHR1IZINHAKEDIS.ID),HR1V1.F_IPTAL_IZIN(UHR1IZINHAKEDIS.ID)"
-				+ " ,case when(HESAPLAMATURU='GUN') then to_char(hakedilenGun) || ' g�n '"
-                +" when(HESAPLAMATURU='SAAT' ) then (case when ((floor(hakedilensaat/8))>0) then to_char(floor(hakedilensaat/8)) || ' g�n ' else '' end) "
+				+ " ,case when(HESAPLAMATURU='GUN') then to_char(hakedilenGun) || ' gün '"
+                +" when(HESAPLAMATURU='SAAT' ) then (case when ((floor(hakedilensaat/8))>0) then to_char(floor(hakedilensaat/8)) || ' gün ' else '' end) "
                 +"     ||  (case when (mod(hakedilensaat,8)>0) then to_char(mod(hakedilensaat,8)) || ' saat ' else ' ' end ) "
-                +" when (HESAPLAMATURU='DAKIKA') then ( case when (floor( hakedilendakika/(8*60)) >0) then to_char( floor( hakedilendakika/(8*60)) || ' g�n ' ) else '' end)"
+                +" when (HESAPLAMATURU='DAKIKA') then ( case when (floor( hakedilendakika/(8*60)) >0) then to_char( floor( hakedilendakika/(8*60)) || ' gün ' ) else '' end)"
                 +"     ||  (case when (mod( floor (hakedilendakika/60),8)>0) then to_char(mod( floor (hakedilendakika/60),8)) || ' saat ' else ' ' end ) "
                 +"     ||  (case when (mod (hakedilendakika, 60)>0) then  to_char (mod (hakedilendakika, 60)) || ' dakika' else '' end)"
                 +" else to_char(hakedilen) end as hk"
@@ -601,7 +612,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+" onaytarihi,onaysayisi,ihr1personel_yerinebakacak,yerinebakacakpersonel,izinadresi,izahat,crdate,cruser,"
 				+" deleteflag,isactive,upddate,updseq,upduser, (SELECT TANIM FROM YHR1IZINTURU WHERE ID=YHR1IZINTURU_ID),NVL(HESAPLAMATURU,'GUN'),"
 				+" (SELECT NVL(SUM(IPTALEDILENGUN),0) FROM UHR1IZINIPTAL WHERE UHR1IZINKULLANIM_ID = UHR1IZINKULLANIM.ID )"
-				+" ,(case when(kullanilangun>0) then kullanilangun || ' g�n '  else '' end) "
+				+" ,(case when(kullanilangun>0) then kullanilangun || ' gün '  else '' end) "
 				+" || (case when(kullanilansaat>0) then kullanilansaat || ' saat '  else '' end)"
 				+" || (case when(kullanilandakika>0) then kullanilandakika || ' dakika'  else '' end) as kl"				
 				+" from UHR1IZINKULLANIM WHERE IHR1PERSONEL_ID = " + persid + "  order by ayrilistarihi desc";
@@ -648,31 +659,31 @@ public class PersonalDAOImpl implements PersonalDAO {
 	
 	public List<Izin> getRemainingHolidays(long persid){
 		String sql =" select  YHR1IZINTURU_ID,(SELECT TANIM FROM YHR1IZINTURU WHERE ID=YHR1IZINTURU_ID) as izinTuru,yili,baslangictarihi,bitistarihi, aciklama,tanim,HESAPLAMATURU,"
-				+ " case when(HESAPLAMATURU='GUN') then (case when(hakedilen>0) then to_char(hakedilen) || ' g�n ' else '' end)"
-				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(hakedilen/8))>0) then to_char(floor(hakedilen/8)) || ' g�n ' else '' end) "
+				+ " case when(HESAPLAMATURU='GUN') then (case when(hakedilen>0) then to_char(hakedilen) || ' gün ' else '' end)"
+				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(hakedilen/8))>0) then to_char(floor(hakedilen/8)) || ' gün ' else '' end) "
 				+ "     ||  (case when (mod(hakedilen,8)>0) then to_char(mod(hakedilen,8)) || ' saat ' else ' ' end ) "
-				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( hakedilen/(8*60)) >0) then to_char( floor( hakedilen/(8*60)) || ' g�n ' ) else '' end)"
+				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( hakedilen/(8*60)) >0) then to_char( floor( hakedilen/(8*60)) || ' gün ' ) else '' end)"
 				+ "     ||  (case when (mod( floor (hakedilen/60),8)>0) then to_char(mod( floor (hakedilen/60),8)) || ' saat ' else ' ' end ) "
 				+ "     ||  (case when (mod (hakedilen, 60)>0) then  to_char (mod (hakedilen, 60)) || ' dakika' else '' end)"
 				+ " else to_char(hakedilen) end as hakedilen,"
-				+ " case when(HESAPLAMATURU='GUN') then (case when(kullanilan>0) then to_char(kullanilan) || ' g�n ' else '' end)"
-				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(kullanilan/8))>0) then to_char(floor(kullanilan/8)) || ' g�n ' else '' end) "
+				+ " case when(HESAPLAMATURU='GUN') then (case when(kullanilan>0) then to_char(kullanilan) || ' gün ' else '' end)"
+				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(kullanilan/8))>0) then to_char(floor(kullanilan/8)) || ' gün ' else '' end) "
 				+ "     ||  (case when (mod(kullanilan,8)>0) then to_char(mod(kullanilan,8)) || ' saat ' else ' ' end ) "
-				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( kullanilan/(8*60)) >0) then to_char( floor( kullanilan/(8*60)) || ' g�n ' ) else '' end)"
+				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( kullanilan/(8*60)) >0) then to_char( floor( kullanilan/(8*60)) || ' gün ' ) else '' end)"
 				+ "     ||  (case when (mod( floor (kullanilan/60),8)>0) then to_char(mod( floor (kullanilan/60),8)) || ' saat ' else ' ' end ) "
 				+ "     ||  (case when (mod (kullanilan, 60)>0) then  to_char (mod (kullanilan, 60)) || ' dakika' else '' end)"
 				+ " else to_char(kullanilan) end as kullanilan,"
-				+ " case when(HESAPLAMATURU='GUN') then (case when(iptaledilen>0) then to_char(iptaledilen) || ' g�n ' else '' end)"
-				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(iptaledilen/8))>0) then to_char(floor(iptaledilen/8)) || ' g�n ' else '' end) "
+				+ " case when(HESAPLAMATURU='GUN') then (case when(iptaledilen>0) then to_char(iptaledilen) || ' gün ' else '' end)"
+				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(iptaledilen/8))>0) then to_char(floor(iptaledilen/8)) || ' gün ' else '' end) "
 				+ "     ||  (case when (mod(iptaledilen,8)>0) then to_char(mod(iptaledilen,8)) || ' saat ' else ' ' end ) "
-				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( iptaledilen/(8*60)) >0) then to_char( floor( iptaledilen/(8*60)) || ' g�n ' ) else '' end)"
+				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( iptaledilen/(8*60)) >0) then to_char( floor( iptaledilen/(8*60)) || ' gün ' ) else '' end)"
 				+ "     ||  (case when (mod( floor (iptaledilen/60),8)>0) then to_char(mod( floor (iptaledilen/60),8)) || ' saat ' else ' ' end ) "
 				+ "     ||  (case when (mod (iptaledilen, 60)>0) then  to_char (mod (iptaledilen, 60)) || ' dakika' else '' end)"
 				+ " else to_char(iptaledilen) end as iptaledilen,"
-				+ " case when(HESAPLAMATURU='GUN') then to_char(kalan) || ' g�n'"
-				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(kalan/8))>0) then to_char(floor(kalan/8)) || ' g�n ' else '' end) "
+				+ " case when(HESAPLAMATURU='GUN') then to_char(kalan) || ' gün'"
+				+ " when(HESAPLAMATURU='SAAT' ) then (case when ((floor(kalan/8))>0) then to_char(floor(kalan/8)) || ' gün ' else '' end) "
 				+ "     ||  (case when (mod(kalan,8)>0) then to_char(mod(kalan,8)) || ' saat ' else ' ' end ) "
-				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( kalan/(8*60)) >0) then to_char( floor( kalan/(8*60)) || ' g�n ' ) else '' end)"
+				+ " when (HESAPLAMATURU='DAKIKA') then ( case when (floor( kalan/(8*60)) >0) then to_char( floor( kalan/(8*60)) || ' gün ' ) else '' end)"
 				+ "     ||  (case when (mod( floor (kalan/60),8)>0) then to_char(mod( floor (kalan/60),8)) || ' saat ' else ' ' end ) "
 				+ "     ||  (case when (mod (kalan, 60)>0) then  to_char (mod (kalan, 60)) || ' dakika' else '' end)"
 				+ " else to_char(kalan) end as kalanizin"

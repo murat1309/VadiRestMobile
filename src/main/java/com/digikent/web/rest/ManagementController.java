@@ -1,44 +1,12 @@
 package com.digikent.web.rest;
 
-import com.digikent.vadirest.dto.BankaDurumu;
-import com.digikent.vadirest.dto.BankaDurumuDetay;
-import com.digikent.vadirest.dto.Basvuru;
-import com.digikent.vadirest.dto.BasvuruOzet;
-import com.digikent.vadirest.dto.BasvuruOzetDetay;
-import com.digikent.vadirest.dto.BelgeYonetim;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGider;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGiderAylik;
-import com.digikent.vadirest.dto.FinansmanYonetimiTahakkuk;
-import com.digikent.vadirest.dto.FirmaBorc;
-import com.digikent.vadirest.dto.GelirGrubu;
-import com.digikent.vadirest.dto.GelirGrubuDetay;
-import com.digikent.vadirest.dto.GelirTuru;
-import com.digikent.vadirest.dto.GelirTuruDetay;
-import com.digikent.vadirest.dto.GelirlerYonetimiCevreBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiEmlakBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiMahalle;
-import com.digikent.vadirest.dto.GelirlerYonetimiReklamBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiTahakkuk;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.GununOzeti;
-import com.digikent.vadirest.dto.InsanKaynaklari;
-import com.digikent.vadirest.dto.KurumBorc;
-import com.digikent.vadirest.dto.PersonelBilgileri;
-import com.digikent.vadirest.dto.PersonelBilgileriDetay;
-import com.digikent.vadirest.dto.PersonelGrup;
-import com.digikent.vadirest.dto.Talep;
-import com.digikent.vadirest.dto.ToplantiYonetimi;
-import com.digikent.vadirest.dto.VezneTahsilat;
-import com.digikent.vadirest.dto.VezneTahsilatDetay;
-import com.digikent.vadirest.dto.YapilanOdemeler;
-import com.digikent.vadirest.dto.YbsGununOzeti;
-import com.digikent.vadirest.dto.YbsLicenseList;
-import com.digikent.vadirest.dto.YbsMenu;
-import com.digikent.vadirest.dto.YbsWeddingList;
+import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.ManagementService;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/yonetim")
 public class ManagementController {
+
+	private final Logger LOG = LoggerFactory.getLogger(ManagementController.class);
 	
 	@Autowired(required=true)
 	private ManagementService managementService;
@@ -80,8 +50,6 @@ public class ManagementController {
 	@RequestMapping(value = "personelGrubuDetay/{servisGorevId}/{turu}", method = RequestMethod.GET)
 	public List<PersonelBilgileriDetay> getStaffDetail(@PathVariable("servisGorevId")long servisGorevId, @PathVariable("turu") char turu){
 		System.out.println("--------------personel detay-----------------");
-		System.out.println(servisGorevId);
-		System.out.println(turu);
 		return managementService.getStaffDetail(servisGorevId, turu);
 	}
 	
@@ -115,6 +83,15 @@ public class ManagementController {
 		System.out.println("--------yapilan odemeler----------");
 		return managementService.getPayments(startDate,endDate);
 	}
+
+	//tum odemeler
+	@RequestMapping(value ="tumOdemeler/{year}/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<FirmaOdeme> getAllPayments(@PathVariable("year") long year,
+										   @PathVariable("startDate") String startDate,
+										   @PathVariable("endDate") String endDate ){
+		LOG.debug("Rest Request to get all payments year, startDate, endDate: {}", year, startDate, endDate);
+		return managementService.getAllPayments(year, startDate, endDate);
+	}
 	
 	//birim bazinda basvuru sayisi
 	@RequestMapping(value = "birimBasvuru/{startDate}/{endDate}", method = RequestMethod.GET)
@@ -143,6 +120,22 @@ public class ManagementController {
 		System.out.println("--------firma borc durumu----------");
 		System.out.println(persid);
 		return managementService.getFirmDebtStatus(persid,year);
+	}
+
+	//Firma Alacak durumu
+	@RequestMapping(value ="firmaAlacak/{year}", method = RequestMethod.GET)
+	public List<FirmaAlacak> getFirmaAlacak(@PathVariable("year") long year){
+		LOG.debug("Rest Request to get firma alacak year: {}", year);
+		return managementService.getFirmaAlacak(year);
+	}
+
+	//Firma Alacak durumu
+	@RequestMapping(value ="firmaOdeme/{year}/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<FirmaOdeme> getFirmaOdeme(@PathVariable("year") long year,
+										  @PathVariable("startDate") String startDate,
+										  @PathVariable("endDate") String endDate ){
+		LOG.debug("Rest Request to get firma odeme year: {}", year);
+		return managementService.getFirmaOdeme(year, startDate, endDate);
 	}
 	
 	//Konu bazinda talep sayisi

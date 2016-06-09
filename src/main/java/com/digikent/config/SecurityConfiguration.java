@@ -42,7 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             throws Exception {
         String digikentPath = System.getenv("DIGIKENT_PATH");
         Properties userProp = FileUtil.getPropsFromFile(digikentPath
-                + "\\services\\users.properties");
+                + "/services/users.properties");
         Enumeration<Object> keys = userProp.keys();
         while (keys.hasMoreElements()) {
             String userName = (String) keys.nextElement();

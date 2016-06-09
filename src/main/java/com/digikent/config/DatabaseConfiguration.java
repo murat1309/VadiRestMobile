@@ -18,17 +18,21 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Properties;
 
 @Configuration
 @EnableJpaRepositories("com.digikent.repository")
 @EnableTransactionManagement
+@PropertySource(value = { "file:${DIGIKENT_PATH}/services/hibernate.properties" })
 public class DatabaseConfiguration {
 
     private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
@@ -39,41 +43,19 @@ public class DatabaseConfiguration {
     @Autowired(required = false)
     private MetricRegistry metricRegistry;
 
-    @Bean(destroyMethod = "close")
+    @Bean
     @ConditionalOnExpression("#{!environment.acceptsProfiles('cloud') && !environment.acceptsProfiles('heroku')}")
-    public DataSource dataSourceVadiRestMobile(DataSourceProperties dataSourceProperties, JHipsterProperties jHipsterProperties, CacheManager cacheManager) {
-        log.debug("Configuring Datasource");
-        if (dataSourceProperties.getUrl() == null) {
-            log.error("Your database connection pool configuration is incorrect! The application" +
-                            " cannot start. Please check your Spring profile, current profiles are: {}",
-                    Arrays.toString(env.getActiveProfiles()));
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(env.getRequiredProperty("hibernate.connection.driver_class"));
+        dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
+        dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
+        dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
 
-            throw new ApplicationContextException("Database connection pool is not configured correctly");
-        }
-        HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName(dataSourceProperties.getDriverClassName());
-        config.addDataSourceProperty("url", dataSourceProperties.getUrl());
-        if (dataSourceProperties.getUsername() != null) {
-            config.addDataSourceProperty("user", dataSourceProperties.getUsername());
-        } else {
-            config.addDataSourceProperty("user", ""); // HikariCP doesn't allow null user
-        }
-        if (dataSourceProperties.getPassword() != null) {
-            config.addDataSourceProperty("password", dataSourceProperties.getPassword());
-        } else {
-            config.addDataSourceProperty("password", ""); // HikariCP doesn't allow null password
-        }
-
-        //MySQL optimizations, see https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration
-        if ("com.mysql.jdbc.jdbc2.optional.MysqlDataSource".equals(dataSourceProperties.getDriverClassName())) {
-            config.addDataSourceProperty("cachePrepStmts", jHipsterProperties.getDatasource().isCachePrepStmts());
-            config.addDataSourceProperty("prepStmtCacheSize", jHipsterProperties.getDatasource().getPrepStmtCacheSize());
-            config.addDataSourceProperty("prepStmtCacheSqlLimit", jHipsterProperties.getDatasource().getPrepStmtCacheSqlLimit());
-        }
-        if (metricRegistry != null) {
-            config.setMetricRegistry(metricRegistry);
-        }
-        return new HikariDataSource(config);
+        Properties properties=new Properties();
+        properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        dataSource.setConnectionProperties(properties);
+        return dataSource;
     }
     @Bean
     public SpringLiquibase liquibase(DataSource dataSource, DataSourceProperties dataSourceProperties,

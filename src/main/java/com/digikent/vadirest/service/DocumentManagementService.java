@@ -1,14 +1,6 @@
 package com.digikent.vadirest.service;
 
-import com.digikent.vadirest.dto.BelgeBasvuru;
-import com.digikent.vadirest.dto.BelgeBasvuruDetay;
-import com.digikent.vadirest.dto.BelgeYonetimKullanici;
-import com.digikent.vadirest.dto.CozumOrtagi;
-import com.digikent.vadirest.dto.EBYSBekleyen;
-import com.digikent.vadirest.dto.EBYSBirimMenu;
-import com.digikent.vadirest.dto.EBYSKlasorMenu;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.Rol;
+import com.digikent.vadirest.dto.*;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.List;
@@ -18,7 +10,7 @@ import java.util.List;
 public interface DocumentManagementService {
 
 	public List<SM1Roles> getEBYSRollList(long persid);
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid);
+	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
 	public List<Rol> getDocRollList(long persid, long mastid);
 	public List<BelgeBasvuru> getApplyDoc(long rolid);
 	public BelgeBasvuruDetay getApplyDocDetail(long docId);
@@ -32,4 +24,7 @@ public interface DocumentManagementService {
 	public List<GraphGeneral> getDocManagementGraphOutgoingDoc(long year, long servisId, String result);
 	public List<GraphGeneral> getEbysBusinessGraph(long rolid, long servisMudurluk, String action);
 	public List<GraphGeneral> getEbysBusinessGraphDetail(long rolid, long servisMudurluk, String action, long rolPerformerId);
+	public List<BasvuruOzet> getGelenBasvuruList(long organizationId, String startDate, String endDate);
+	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate);
+	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate);
 }

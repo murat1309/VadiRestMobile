@@ -1,20 +1,14 @@
 package com.digikent.web.rest;
 
-import com.digikent.vadirest.dto.BelgeBasvuru;
-import com.digikent.vadirest.dto.BelgeBasvuruDetay;
-import com.digikent.vadirest.dto.BelgeYonetimKullanici;
-import com.digikent.vadirest.dto.CozumOrtagi;
-import com.digikent.vadirest.dto.EBYSBekleyen;
-import com.digikent.vadirest.dto.EBYSBirimMenu;
-import com.digikent.vadirest.dto.EBYSKlasorMenu;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.Rol;
+import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
 public class DocumentManagementController {
+
+	private final Logger LOG = LoggerFactory.getLogger(DocumentManagementController.class);
 
 	@Autowired(required=true)
 	private DocumentManagementService documentManagementService;
@@ -50,20 +46,22 @@ public class DocumentManagementController {
 	}
 	
 	//EBYS bekleyen belge
-	@RequestMapping(value="EBYSBekleyen/{persid}/{rolid}",method = RequestMethod.GET)
-	public List<EBYSBekleyen> getWaitingEBYS(@PathVariable("persid") long persid, @PathVariable("rolid") long rolid){
-		System.out.println("--------ebysBekleyen--------");
-		System.out.println(persid);
-		System.out.println(rolid);
-		return documentManagementService.getWaitingEBYS(persid, rolid);
+	@RequestMapping(value="EBYSBekleyen/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<EBYSBekleyen> getWaitingEBYS(@PathVariable("persid") long persid,
+											 @PathVariable("rolid") long rolid,
+											 @PathVariable("startDate") String startDate,
+											 @PathVariable("endDate") String endDate){
+
+		LOG.debug("Rest Request to get ebys onay bekleyen persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getWaitingEBYS(persid, rolid, startDate, endDate);
 	}
 	
 	//Belge Basvuru rollList
 	@RequestMapping(value = "belgeBasvuruRol/{persid}/{mastid}",method = RequestMethod.GET)
-	public List<Rol> getDocRollList(@PathVariable("persid") long persid,@PathVariable("mastid") long mastid){
-		System.out.println("---------Belge basvuru rollList---------");
-		System.out.println(persid);
-		System.out.println(mastid);
+	public List<Rol> getDocRollList(@PathVariable("persid") long persid,
+									@PathVariable("mastid") long mastid){
+
+		LOG.debug("Rest Request to get belge basvuru roll list persid, mastid: {}", persid, mastid);
 		return documentManagementService.getDocRollList(persid, mastid);
 		
 	}
@@ -71,8 +69,8 @@ public class DocumentManagementController {
 	//Belge Basuvuru
 	@RequestMapping(value = "belgeBasvuru/{rolid}",method = RequestMethod.GET)
 	public List<BelgeBasvuru> getApplyDoc(@PathVariable("rolid")long rolid){
-		System.out.println("-----------BelgeBasvuru--------------");
-		System.out.println(rolid);
+
+		LOG.debug("Rest Request to get belge basvuru roll list rolid: {}", rolid);
 		return documentManagementService.getApplyDoc(rolid);
 	}
 	
@@ -130,30 +128,59 @@ public class DocumentManagementController {
 	}
 	
 	@RequestMapping(value = "belgeYonetimGrafikGelenBelge/{year}/{servisId}/{result}",method = RequestMethod.GET)
-	public List<GraphGeneral> getDocManagementGraphIncomingDoc(@PathVariable("year") long year, @PathVariable("servisId") long servisId, @PathVariable("result") String result){
+	public List<GraphGeneral> getDocManagementGraphIncomingDoc(@PathVariable("year") long year,
+															   @PathVariable("servisId") long servisId,
+															   @PathVariable("result") String result){
 		System.out.println("------belge yonetim gelen belge grafik---------");
 		System.out.println(result);
 		return documentManagementService.getDocManagementGraphIncomingDoc(year, servisId, result);
 	}
 	
 	@RequestMapping(value = "belgeYonetimGrafikGidenBelge/{year}/{servisId}/{result}",method = RequestMethod.GET)
-	public List<GraphGeneral> getDocManagementGraphOutgoingDoc(@PathVariable("year") long year,@PathVariable("servisId") long servisId,@PathVariable("result") String result){
+	public List<GraphGeneral> getDocManagementGraphOutgoingDoc(@PathVariable("year") long year,
+															   @PathVariable("servisId") long servisId,
+															   @PathVariable("result") String result){
 		System.out.println("------belge yonetim giden belge grafik---------");
 		System.out.println(result);
 		return documentManagementService.getDocManagementGraphOutgoingDoc(year, servisId, result);
 	}
 	
 	@RequestMapping(value = "ebysIsGrafikleri/{rolid}/{servisMudurluk}/{action}",method = RequestMethod.GET)
-	public List<GraphGeneral> getEbysBusinessGraph(@PathVariable("rolid")long rolid,@PathVariable("servisMudurluk") long servisMudurluk, @PathVariable("action")String action){
+	public List<GraphGeneral> getEbysBusinessGraph(@PathVariable("rolid")long rolid,
+												   @PathVariable("servisMudurluk") long servisMudurluk,
+												   @PathVariable("action")String action){
 		System.out.println("------ebys is grafikleri---------");
 		System.out.println(servisMudurluk);
 		return documentManagementService.getEbysBusinessGraph(rolid,servisMudurluk,action);
 	}
 	
 	@RequestMapping(value = "ebysIsGrafikleriDetay/{rolid}/{servisMudurluk}/{action}/{rolPerformerId}",method = RequestMethod.GET)
-	public List<GraphGeneral> getEbysBusinessGraphDetail(@PathVariable("rolid") long rolid,@PathVariable("servisMudurluk") long servisMudurluk, @PathVariable("action")String action,@PathVariable("rolPerformerId") long rolPerformerId){
+	public List<GraphGeneral> getEbysBusinessGraphDetail(@PathVariable("rolid") long rolid,
+														 @PathVariable("servisMudurluk") long servisMudurluk,
+														 @PathVariable("action")String action,@PathVariable("rolPerformerId") long rolPerformerId){
 		System.out.println("------ebys is grafikleri---------");
 		System.out.println(servisMudurluk);
 		return documentManagementService.getEbysBusinessGraphDetail(rolid,servisMudurluk,action,rolPerformerId);
+	}
+
+	@RequestMapping(value = "gelenBasvuru/{organizationId}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<BasvuruOzet> getGelenBasvuruList(@PathVariable("organizationId") long organizationId,
+												 @PathVariable("startDate")String startDate,
+												 @PathVariable("endDate")String endDate){
+		return documentManagementService.getGelenBasvuruList(organizationId,startDate,endDate);
+	}
+
+	@RequestMapping(value = "gidenBasvuru/{organizationId}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<BasvuruOzet> getGidenBasvuruList(@PathVariable("organizationId") long organizationId,
+												 @PathVariable("startDate")String startDate,
+												 @PathVariable("endDate")String endDate){
+		return documentManagementService.getGidenBasvuruList(organizationId,startDate,endDate);
+	}
+
+	@RequestMapping(value = "urettiklerim/{organizationId}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<BasvuruOzet> getUrettiklerimList(@PathVariable("organizationId") long organizationId,
+												 @PathVariable("startDate")String startDate,
+												 @PathVariable("endDate")String endDate){
+		return documentManagementService.getUrettiklerimList(organizationId,startDate,endDate);
 	}
 }

@@ -7,6 +7,8 @@ public class Person {
 	private String adSoyad;
 	private Long tcKimlikNo;
 	private String dogumTarihi;
+	private String cepTelefonu;
+	private String dogumYeri;
 	private String gorevi;
 	private String gorevMudurlugu;
 	private String kadroMudurlugu;
@@ -136,6 +138,21 @@ public class Person {
 	}
 	public void setDogumTarihi(String dogumTarihi) {
 		this.dogumTarihi = dogumTarihi;
+	}
+	public String getCepTelefonu() {
+		return cepTelefonu;
+	}
+
+	public void setCepTelefonu(String cepTelefonu) {
+		this.cepTelefonu = cepTelefonu;
+	}
+
+	public String getDogumYeri() {
+		return dogumYeri;
+	}
+
+	public void setDogumYeri(String dogumYeri) {
+		this.dogumYeri = dogumYeri;
 	}
 	
 }

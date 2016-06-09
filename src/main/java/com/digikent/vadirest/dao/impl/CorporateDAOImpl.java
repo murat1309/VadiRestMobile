@@ -6,8 +6,6 @@ import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1GorevTuru;
 import com.vadi.digikent.personel.per.model.HR1Personel;
 import com.vadi.digikent.personel.per.model.HR1PersonelIslem;
-import com.vadi.digikent.portal.pr1.model.PR1Haber;
-import com.vadi.digikent.portal.pr1.model.PR1KurumIndirim;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -18,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1Haber;
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1KurumIndirim;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -78,7 +78,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 
 			
 			if(id != null)
-				haber.setId(id.longValue());
+				haber.setID(id.longValue());
 			if(baslik != null)
 				haber.setBaslik(baslik);
 			if(tarih != null)
@@ -168,7 +168,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 			// byte[] denemeicerik = (byte[]) map.get("DENEMEICERIK");
 
 			if(id != null)
-				haber.setId(id.longValue());
+				haber.setID(id.longValue());
 			if(baslik != null)
 				haber.setBaslik(baslik);
 			if(tarih != null)
@@ -217,7 +217,12 @@ public class CorporateDAOImpl implements CorporateDAO {
 	}
 	
 	public List<HR1Personel> getSpecialCelebration(String columnName){
-		String sql = "SELECT IP.ID,IP.ADI,IP.SOYADI,IP.BSM2SERVIS_GOREV,IP.LHR1GOREVTURU_ID, GT.TANIM, HR1EK.F_DAHILITELEFON(IP.ID) DAHILI"
+		String sql = "SELECT IP.ID,IP.ADI,IP.SOYADI,IP.BSM2SERVIS_GOREV,IP.LHR1GOREVTURU_ID, GT.TANIM, HR1EK.F_DAHILITELEFON(IP.ID) DAHILI,"
+				+ "(SELECT TELEFONNUMARASI    FROM   AEILTELEFON"
+				+ "          WHERE IHR1PERSONEL_ID =IP.ID"
+				+ "              AND  AEILTELEFONTURU_ID =(SELECT ID FROM AEILTELEFONTURU WHERE KAYITOZELISMI='CEP')"
+				+ "              AND NVL(ISACTIVE,'E')='E'  AND LENGTH(TELEFONNUMARASI)=10"
+				+ "              AND ROWNUM=1              )  CEPTELEFONU"
 				+ ", (SELECT TANIM FROM   BSM2SERVIS  WHERE ID=IP.BSM2SERVIS_GOREV) GOREVMUDURLUGU"
 				+ " FROM IHR1PERSONEL IP, LHR1GOREVTURU GT"
 				+ " where IP.id>0  AND IP.PERSONELDURUMU='CALISAN' AND  F_AY(IP."
@@ -248,6 +253,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 					.get("LHR1GOREVTURU_ID");
 			String tanim = (String) map.get("TANIM");
 			String dahili = (String) map.get("DAHILI");
+			BigDecimal cepTelefonu = (BigDecimal)map.get("CEPTELEFONU");
 			String gorevmudurlugu = (String) map.get("GOREVMUDURLUGU");
 
 			if (id != null)
@@ -266,6 +272,8 @@ public class CorporateDAOImpl implements CorporateDAO {
 			}
 			if (dahili != null)
 				personel.setDahiliTelefonNo(dahili);
+			if (cepTelefonu != null)
+				personel.setCepTelefonu(String.valueOf(cepTelefonu.longValue()));
 			if (gorevmudurlugu != null)
 				personel.setGorevMudurlugu(gorevmudurlugu);
 			personelList.add(personel);
@@ -353,8 +361,8 @@ public class CorporateDAOImpl implements CorporateDAO {
 	             "from ihr1personel IP where "+
 	             "IP.ID>0 AND IP.BSM2SERVIS_GOREV IN ( SELECT DISTINCT BSM2SERVIS_GOREV GOREVMUDURLUK FROM "+
 	             "ihr1personel IP where IP.ID>0 AND IP.PERSONELDURUMU='CALISAN' AND HR1EK.F_DAHILITELEFON(IP.ID) is not null ) "+
-	             "AND IP.PERSONELDURUMU='CALISAN' and HR1EK.F_DAHILITELEFON(IP.ID) is not null ORDER BY IP.BSM2SERVIS_GOREV, "+
-	             "IP.ADI,IP.SOYADI";
+	             "AND IP.PERSONELDURUMU='CALISAN' and HR1EK.F_DAHILITELEFON(IP.ID) is not null ORDER BY " +
+				 "NLSSORT(IP.ADI,'nls_sort=xturkish'),NLSSORT(IP.SOYADI,'nls_sort=xturkish') ";
 
 
 		List list = new ArrayList<Object>();
@@ -470,7 +478,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 			String izahat = (String) map.get("IZAHAT");
 
 			if(id != null)
-				indirim.setId(id.longValue());
+				indirim.setID(id.longValue());
 			if(tanim != null)
 				indirim.setTanim(tanim);
 			if(oraniYuzde != null)

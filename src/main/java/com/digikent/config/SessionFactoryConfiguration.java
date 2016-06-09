@@ -20,7 +20,6 @@ import javax.persistence.PersistenceContext;
 @Configuration
 @AutoConfigureAfter(DatabaseConfiguration.class)
 @EnableTransactionManagement
-@ComponentScan(basePackages={"com.digikent.vadirest.controller.impl","com.digikent.vadirest.service.impl","com.digikent.vadirest.dao.impl"})
 public class SessionFactoryConfiguration {
 
 	@PersistenceContext

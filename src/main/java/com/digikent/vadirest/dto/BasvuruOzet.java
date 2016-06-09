@@ -5,6 +5,7 @@ import java.util.Date;
 public class BasvuruOzet {
 	
 	private long basvuruNo;
+	private long adimId;
 	private String bildirimTuru;
 	private String adi;
 	private String soyAdi;
@@ -25,6 +26,13 @@ public class BasvuruOzet {
 	}
 	public void setBasvuruNo(long basvuruNo) {
 		this.basvuruNo = basvuruNo;
+	}
+	public long getAdimId() {
+		return adimId;
+	}
+
+	public void setAdimId(long adimId) {
+		this.adimId = adimId;
 	}
 	public String getBildirimTuru() {
 		return bildirimTuru;

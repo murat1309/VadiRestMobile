@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.env.Environment;
@@ -29,6 +30,7 @@ import java.util.Collection;
 @ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*"}, excludeFilters={
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
+@EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*"})
 @EnableAutoConfiguration(exclude = {LiquibaseAutoConfiguration.class,MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 @EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class })
 public class Application {

@@ -6,11 +6,12 @@ import com.digikent.vadirest.service.CorporateService;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;
 import com.vadi.digikent.personel.per.model.HR1PersonelIslem;
-import com.vadi.digikent.portal.pr1.model.PR1Haber;
-import com.vadi.digikent.portal.pr1.model.PR1KurumIndirim;
+
 
 import java.util.List;
 
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1Haber;
+import com.vadi.smartkent.datamodel.domains.portal.pr1.PR1KurumIndirim;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

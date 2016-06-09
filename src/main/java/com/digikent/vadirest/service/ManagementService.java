@@ -1,40 +1,6 @@
 package com.digikent.vadirest.service;
 
-import com.digikent.vadirest.dto.BankaDurumu;
-import com.digikent.vadirest.dto.BankaDurumuDetay;
-import com.digikent.vadirest.dto.Basvuru;
-import com.digikent.vadirest.dto.BasvuruOzet;
-import com.digikent.vadirest.dto.BasvuruOzetDetay;
-import com.digikent.vadirest.dto.BelgeYonetim;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGider;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGiderAylik;
-import com.digikent.vadirest.dto.FinansmanYonetimiTahakkuk;
-import com.digikent.vadirest.dto.FirmaBorc;
-import com.digikent.vadirest.dto.GelirGrubu;
-import com.digikent.vadirest.dto.GelirGrubuDetay;
-import com.digikent.vadirest.dto.GelirTuru;
-import com.digikent.vadirest.dto.GelirTuruDetay;
-import com.digikent.vadirest.dto.GelirlerYonetimiCevreBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiEmlakBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiMahalle;
-import com.digikent.vadirest.dto.GelirlerYonetimiReklamBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiTahakkuk;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.GununOzeti;
-import com.digikent.vadirest.dto.InsanKaynaklari;
-import com.digikent.vadirest.dto.KurumBorc;
-import com.digikent.vadirest.dto.PersonelBilgileri;
-import com.digikent.vadirest.dto.PersonelBilgileriDetay;
-import com.digikent.vadirest.dto.PersonelGrup;
-import com.digikent.vadirest.dto.Talep;
-import com.digikent.vadirest.dto.ToplantiYonetimi;
-import com.digikent.vadirest.dto.VezneTahsilat;
-import com.digikent.vadirest.dto.VezneTahsilatDetay;
-import com.digikent.vadirest.dto.YapilanOdemeler;
-import com.digikent.vadirest.dto.YbsGununOzeti;
-import com.digikent.vadirest.dto.YbsLicenseList;
-import com.digikent.vadirest.dto.YbsMenu;
-import com.digikent.vadirest.dto.YbsWeddingList;
+import com.digikent.vadirest.dto.*;
 
 import java.util.List;
 
@@ -54,6 +20,8 @@ public interface ManagementService {
 	public List<KurumBorc> getDebtStatus(long id, long year);
 	//Yapilan odemeler
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate) throws Throwable;
+	//tum odemeler
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate);
 	//mudurluk bazinda basvuru
 	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable;
 	//Basvuru sayisi ozet
@@ -62,6 +30,10 @@ public interface ManagementService {
 	public BasvuruOzetDetay getApplySummaryDetail(long basvuruNo);
 	//Firma borc durumu
 	public List<FirmaBorc> getFirmDebtStatus(long persid, long year);
+	//Firma Alacak durumu
+	public List<FirmaAlacak> getFirmaAlacak(long year);
+	//Firma Odeme durumu
+	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate);
 	//Konu bazinda talep sayisi
 	public List<Talep> getRequestCount(String timePeriod) throws Throwable;
 	//gelir grubu

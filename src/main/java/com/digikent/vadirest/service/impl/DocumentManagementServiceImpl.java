@@ -1,15 +1,7 @@
 package com.digikent.vadirest.service.impl;
 
 import com.digikent.vadirest.dao.DocumentManagementDAO;
-import com.digikent.vadirest.dto.BelgeBasvuru;
-import com.digikent.vadirest.dto.BelgeBasvuruDetay;
-import com.digikent.vadirest.dto.BelgeYonetimKullanici;
-import com.digikent.vadirest.dto.CozumOrtagi;
-import com.digikent.vadirest.dto.EBYSBekleyen;
-import com.digikent.vadirest.dto.EBYSBirimMenu;
-import com.digikent.vadirest.dto.EBYSKlasorMenu;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.Rol;
+import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
@@ -31,9 +23,9 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		return documentManagementDAO.getEBYSRollList(persid);
 	}
 
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid) {
+	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
 		// TODO Auto-generated method stub
-		return documentManagementDAO.getWaitingEBYS(persid, rolid);
+		return documentManagementDAO.getWaitingEBYS(persid, rolid, startDate, endDate);
 	}
 	
 	public List<Rol> getDocRollList(long persid, long mastid){
@@ -101,6 +93,18 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 	
 	public List<GraphGeneral> getEbysBusinessGraphDetail(long rolid,long servisMudurluk, String action,long rolPerformerId){
 		return documentManagementDAO.getEbysBusinessGraphDetail(rolid,servisMudurluk,action,rolPerformerId);
+	}
+
+	public List<BasvuruOzet> getGelenBasvuruList(long organizationId, String startDate, String endDate){
+		return documentManagementDAO.getGelenBasvuruList(organizationId,startDate,endDate);
+	}
+
+	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate){
+		return documentManagementDAO.getGidenBasvuruList(organizationId,startDate,endDate);
+	}
+
+	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate){
+		return documentManagementDAO.getUrettiklerimList(organizationId,startDate,endDate);
 	}
 
 }

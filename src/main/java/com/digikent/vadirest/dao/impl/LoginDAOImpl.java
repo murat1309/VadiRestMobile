@@ -34,9 +34,6 @@ public class LoginDAOImpl implements LoginDAO {
 	public UserAuthenticationInfo loginWithPassword(String userName, String password) {
 		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
 				   +"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
-				   +"(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) DOSYAADI, "
-                   +"(select FILETYPE from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) DOSYATURU , "
-                   +"(select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) ICERIK , "
                    +"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
                    +"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
                    +"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
@@ -61,9 +58,6 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
 			BigDecimal bsm2ServisMudurluk = (BigDecimal) map.get("BSM2SERVIS_MUDURLUK");
-			String dosyaAdi = (String) map.get("DOSYAADI");
-			String dosyaTuru = (String) map.get("DOSYATURU");
-			Blob icerik = (Blob) map.get("ICERIK");
 			
 			if(id != null)
 				userAuthenticationInfo.setId(id.longValue());
@@ -83,21 +77,7 @@ public class LoginDAOImpl implements LoginDAO {
 				userAuthenticationInfo.setBsm2ServisMudurluk(bsm2ServisMudurluk.longValue());
 			if(userName != null)
 				userAuthenticationInfo.setUserName(userName);
-			if(dosyaAdi != null)
-				userAuthenticationInfo.setDosyaAdi(dosyaAdi);
-			if(dosyaTuru != null)
-				userAuthenticationInfo.setDosyaTuru(dosyaTuru);
-			
-			try {
-				if (icerik!=null){
-					imageLength = (int) icerik.length();
-					userAuthenticationInfo.setIcerik(icerik.getBytes(1, imageLength));
-					icerik.free();
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+
 		}
 		return userAuthenticationInfo;
 		
@@ -172,6 +152,13 @@ public class LoginDAOImpl implements LoginDAO {
 		}
 		return userAuthenticationInfo;
 		
+	}
+
+	public String getUserIdFromActiveDirectoryName(String adUserName){
+		String sql = "SELECT USERID FROM FSM1USERS WHERE LOWER(ACTIVEDIRECTORYUSERNAME)=LOWER('" + adUserName + "')";
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		String userId = (String)query.uniqueResult();
+		return userId;
 	}
 
 	@Override

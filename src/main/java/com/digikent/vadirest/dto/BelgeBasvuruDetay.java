@@ -14,6 +14,7 @@ public class BelgeBasvuruDetay {
 	private String belgeTarih;
 	private String uretimTipi;
 
+	private long edm1IsAkisiAdimId;
 	private String merciKurum;
 	private String adi;
 	private String soyadi;
@@ -200,6 +201,13 @@ public class BelgeBasvuruDetay {
 	}
 	public void setUretimTipi(String uretimTipi) {
 		this.uretimTipi = uretimTipi;
+	}
+	public long getEdm1IsAkisiAdimId() {
+		return edm1IsAkisiAdimId;
+	}
+
+	public void setEdm1IsAkisiAdimId(long edm1IsAkisiAdimId) {
+		this.edm1IsAkisiAdimId = edm1IsAkisiAdimId;
 	}
 	public String getMerciKurum() {
 		return merciKurum;

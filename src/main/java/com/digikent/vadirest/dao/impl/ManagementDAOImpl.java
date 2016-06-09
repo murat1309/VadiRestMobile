@@ -1,41 +1,7 @@
 package com.digikent.vadirest.dao.impl;
 
 import com.digikent.vadirest.dao.ManagementDAO;
-import com.digikent.vadirest.dto.BankaDurumu;
-import com.digikent.vadirest.dto.BankaDurumuDetay;
-import com.digikent.vadirest.dto.Basvuru;
-import com.digikent.vadirest.dto.BasvuruOzet;
-import com.digikent.vadirest.dto.BasvuruOzetDetay;
-import com.digikent.vadirest.dto.BelgeYonetim;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGider;
-import com.digikent.vadirest.dto.FinansmanYonetimiGelirGiderAylik;
-import com.digikent.vadirest.dto.FinansmanYonetimiTahakkuk;
-import com.digikent.vadirest.dto.FirmaBorc;
-import com.digikent.vadirest.dto.GelirGrubu;
-import com.digikent.vadirest.dto.GelirGrubuDetay;
-import com.digikent.vadirest.dto.GelirTuru;
-import com.digikent.vadirest.dto.GelirTuruDetay;
-import com.digikent.vadirest.dto.GelirlerYonetimiCevreBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiEmlakBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiMahalle;
-import com.digikent.vadirest.dto.GelirlerYonetimiReklamBeyani;
-import com.digikent.vadirest.dto.GelirlerYonetimiTahakkuk;
-import com.digikent.vadirest.dto.GraphGeneral;
-import com.digikent.vadirest.dto.GununOzeti;
-import com.digikent.vadirest.dto.InsanKaynaklari;
-import com.digikent.vadirest.dto.KurumBorc;
-import com.digikent.vadirest.dto.PersonelBilgileri;
-import com.digikent.vadirest.dto.PersonelBilgileriDetay;
-import com.digikent.vadirest.dto.PersonelGrup;
-import com.digikent.vadirest.dto.Talep;
-import com.digikent.vadirest.dto.ToplantiYonetimi;
-import com.digikent.vadirest.dto.VezneTahsilat;
-import com.digikent.vadirest.dto.VezneTahsilatDetay;
-import com.digikent.vadirest.dto.YapilanOdemeler;
-import com.digikent.vadirest.dto.YbsGununOzeti;
-import com.digikent.vadirest.dto.YbsLicenseList;
-import com.digikent.vadirest.dto.YbsMenu;
-import com.digikent.vadirest.dto.YbsWeddingList;
+import com.digikent.vadirest.dto.*;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -170,8 +136,9 @@ public class ManagementDAOImpl implements ManagementDAO {
 		           +"Sum( Case a.TURU When 'S' Then 1 Else 0 End ) SozlesmeliSayisi,"
 		           +"Sum( Case a.TURU When 'G' Then 1 Else 0 End ) GeciciIsciSayisi,"
 		           +"Sum( Case a.TURU When 'L' Then 1 Else 0 End ) MeclisUyesiSayisi from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID "
-		           +"And a.CIKISTARIHI IS NULL "
-		           +"group by a.BSM2SERVIS_GOREV,b.TANIM";
+		           +"And a.CIKISTARIHI IS NULL AND A.PERSONELDURUMU='CALISAN'"
+		           +"group by a.BSM2SERVIS_GOREV,b.TANIM"
+				   +" order by BirimAdi";
 				
 		List<Object> list = new ArrayList<Object>();
 		List<PersonelBilgileri> personelBilgileriList = new ArrayList<PersonelBilgileri>();
@@ -300,22 +267,18 @@ public class ManagementDAOImpl implements ManagementDAO {
 	public List<PersonelBilgileriDetay> getStaffDetail(long servisGorevId, char turu){
 		String sql;
 		if(Character.toString(turu).equalsIgnoreCase(Character.toString(' '))){
-			sql ="select a.BSM2SERVIS_GOREV,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
-					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES, "
-					   +"(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id AND ROWNUM <= 1) DOSYAADI," 
-			           +"(select FILETYPE from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id AND ROWNUM <= 1) DOSYATURU ,"
-			           +"(select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id AND ROWNUM <= 1) ICERIK "
+			sql ="select a.ID, a.BSM2SERVIS_GOREV,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
+					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
-					   +" And a.CIKISTARIHI IS NULL";	
+					   +" And a.CIKISTARIHI IS NULL"
+					   +" order by a.ADISOYADI";
 		}
 		else{
-			sql ="select a.BSM2SERVIS_GOREV,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
-					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES, "
-					   +"(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id AND ROWNUM <= 1) DOSYAADI," 
-			           +"(select FILETYPE from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id AND ROWNUM <= 1) DOSYATURU ,"
-			           +"(select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = a.id   AND ROWNUM <= 1) ICERIK "
+			sql ="select a.ID, a.BSM2SERVIS_GOREV,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
+					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
-					   +" And a.CIKISTARIHI IS NULL and a.TURU = '"+turu+"'";	
+					   +" And a.CIKISTARIHI IS NULL and a.TURU = '"+turu+"'"
+					   +" order by a.ADISOYADI";
 		}
 		
 		List<Object> list = new ArrayList<Object>();
@@ -329,7 +292,8 @@ public class ManagementDAOImpl implements ManagementDAO {
 			Map map = (Map) o;
 			PersonelBilgileriDetay personelBilgileriDetay = new PersonelBilgileriDetay();
 			int imageLength;
-			
+
+			BigDecimal id = (BigDecimal)map.get("ID");
 			BigDecimal  bsm2ServisGorev = (BigDecimal) map.get("BSM2SERVIS_GOREV");
 			String birimAdi = (String) map.get("BIRIMADI");
 			String adiSoyadi = (String) map.get("ADISOYADI");
@@ -339,10 +303,9 @@ public class ManagementDAOImpl implements ManagementDAO {
 			String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
 			String dogumYeri = (String) map.get("DOGUMYERI");
 			String adres = (String) map.get("ADRES");
-			String dosyaAdi = (String) map.get("DOSYAADI");
-			String dosyaTuru = (String) map.get("DOSYATURU");
-			Blob icerik = (Blob) map.get("ICERIK");
-			
+
+			if(id != null)
+				personelBilgileriDetay.setId(id.longValue());
 			if(bsm2ServisGorev != null)
 				personelBilgileriDetay.setBsm2ServisGorev(bsm2ServisGorev.longValue());
 			if(birimAdi != null)
@@ -361,21 +324,6 @@ public class ManagementDAOImpl implements ManagementDAO {
 				personelBilgileriDetay.setDogumYeri(dogumYeri);
 			if(adres != null)
 				personelBilgileriDetay.setAdres(adres);
-			if(dosyaAdi != null)
-				personelBilgileriDetay.setDosyaAdi(dosyaAdi);
-			if(dosyaTuru != null)
-				personelBilgileriDetay.setDosyaTuru(dosyaTuru);
-			
-			try {
-				if (icerik!=null){
-					imageLength = (int) icerik.length();
-					personelBilgileriDetay.setIcerik(icerik.getBytes(1, imageLength));
-					icerik.free();
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 			
 			personelBilgileriDetayList.add(personelBilgileriDetay);
 		}
@@ -481,6 +429,47 @@ public class ManagementDAOImpl implements ManagementDAO {
 			yapilanOdemelerList.add(yapilanOdemeler);			
 		}
 		return yapilanOdemelerList;
+	}
+
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate){
+		String sql = "SELECT A.YEVMIYENUMARASI, A.YEVMIYETARIHI, A.IZAHAT, \n" +
+				" B.TUTAR FROM OFI2MUHASEBEFISI A, KFI2CEK B, RFI2MUHASEBEFISILINE FL \n" +
+				" WHERE FL.OFI2MUHASEBEFISI_ID = A.ID AND FL.KFI2CEK_ID = B.ID \n" +
+				" AND A.ID != 0 AND A.YEVMIYETARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and  \n" +
+				" TO_DATE ('"+endDate+"', 'dd-MM-yyyy') \n" +
+				" AND FL.LFI2HESAPPLANI_ID IN (SELECT ID FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID=" + year +" AND KODU LIKE '103%') \n" +
+				" AND A.BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI=" + year +" ) \n" +
+				" AND A.FISTIPI not like 'U' \n" +
+				" AND NOT EXISTS (SELECT 1 FROM ASM1PAYDASYETKI AA, ASM1PAYDASYETKILINE BB WHERE AA.ID = BB.ASM1PAYDASYETKI_ID " +
+				" AND AA.MPI1PAYDAS_ID = A.MPI1PAYDAS_ID AND BB.FSM1USERS_ID = 0) ORDER BY A.ID";
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		List<Object> list = new ArrayList<Object>();
+		List<FirmaOdeme> firmaOdemelist = new ArrayList<FirmaOdeme>();
+
+		list = query.list();
+		for(Object o : list){
+			Map map = (Map)o;
+			FirmaOdeme firmaOdeme = new FirmaOdeme();
+
+			BigDecimal yevmiyeNumarasi = (BigDecimal)map.get("YEVMIYENUMARASI");
+			Date yevmiyeTarihi = (Date)map.get("YEVMIYETARIHI");
+			String izahat = (String)map.get("IZAHAT");
+			BigDecimal tutar = (BigDecimal) map.get("TUTAR");
+
+			if(yevmiyeNumarasi != null)
+				firmaOdeme.setYevmiyeNumarasi(yevmiyeNumarasi.longValue());
+			if(yevmiyeTarihi != null)
+				firmaOdeme.setYevmiyeTarihi(yevmiyeTarihi);
+			if(izahat != null)
+				firmaOdeme.setIzahat(izahat);
+			if(tutar != null)
+				firmaOdeme.setTutar(tutar.doubleValue());
+			firmaOdemelist.add(firmaOdeme);
+		}
+		return firmaOdemelist;
 	}
 	
 	public List<Basvuru> getApplyCount(String startDate, String endDate){
@@ -761,6 +750,155 @@ public class ManagementDAOImpl implements ManagementDAO {
 		}
 		return firmaBorclist;
 				
+	}
+
+	public String getFirmaAlacakType(){
+		String sql = "SELECT NVL(SM2.F_PARAMETRE('MUHASEBE','MUHASEBEOZETI_FIRMAYI_DEFTERDEN_ALSIN'),'H') FROM DUAL";
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		String firmPaymentType = (String)query.uniqueResult();
+
+		return firmPaymentType;
+
+	}
+
+	public List<FirmaAlacak> getFirmaAlacakTypeE(long year){
+		String sql = "SELECT  ADISOYADI AS TANIM ,SUM(TUTARI) BORC,SUM(ODENEN) ALACAK\n" +
+				",SUM(KALAN) BAKIYE  ,  NVL(MPI1PAYDAS_ID,0) AS PAYDAS\n" +
+				"FROM AFI2BUTCEEMANETALACAKVIEW  WHERE BFI1BUTCEDONEMI_ID=" + year + "\n" +
+				"AND NVL(KALAN,0) >= 0\n" +
+				"GROUP BY ADISOYADI,NVL(MPI1PAYDAS_ID,0)\n" +
+				"ORDER BY ADISOYADI";
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		List<Object> list = new ArrayList<Object>();
+		List<FirmaAlacak> firmaAlacaklist = new ArrayList<FirmaAlacak>();
+
+		list = query.list();
+		for(Object o : list){
+			Map map = (Map)o;
+			FirmaAlacak firmaAlacak = new FirmaAlacak();
+
+			String tanim = (String)map.get("TANIM");
+			BigDecimal borc = (BigDecimal)map.get("BORC");
+			BigDecimal alacak = (BigDecimal) map.get("ALACAK");
+			BigDecimal bakiye = (BigDecimal) map.get("BAKIYE");
+			BigDecimal paydas = (BigDecimal) map.get("PAYDAS");
+
+
+			if(tanim != null)
+				firmaAlacak.setTanim(tanim);
+			if(borc != null)
+				firmaAlacak.setBorc(borc.doubleValue());
+			if(alacak != null)
+				firmaAlacak.setAlacak(alacak.doubleValue());
+			if(bakiye != null)
+				firmaAlacak.setBakiye(bakiye.doubleValue());
+			if(paydas != null)
+				firmaAlacak.setPaydas(paydas.longValue());
+
+
+			firmaAlacaklist.add(firmaAlacak);
+		}
+		return firmaAlacaklist;
+	}
+
+	public List<FirmaAlacak> getFirmaAlacakTypeH(long year){
+		String sql = "SELECT   TANIM , SUM(TOPLAMBORC) AS BORC\n" +
+				", SUM(TOPLAMALACAK) AS ALACAK \n" +
+				",  CASE WHEN SUM(TOPLAMALACAK-TOPLAMBORC) >0 THEN  SUM(TOPLAMALACAK-TOPLAMBORC)\n" +
+				"            WHEN SUM(TOPLAMBORC-TOPLAMALACAK) >0 THEN  SUM(TOPLAMBORC-TOPLAMALACAK)\n" +
+				"   END BAKIYE\n" +
+				", MPI1PAYDAS_ID AS PAYDAS \n" +
+				"  FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID=" + year +"\n" +
+				"  AND ENALTDUZEY='E'  AND ( (KODU LIKE '320%'   ) )  AND MPI1PAYDAS_ID>0\n" +
+				" GROUP BY TANIM,MPI1PAYDAS_ID  ORDER BY MPI1PAYDAS_ID";
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		List<Object> list = new ArrayList<Object>();
+		List<FirmaAlacak> firmaAlacaklist = new ArrayList<FirmaAlacak>();
+
+		list = query.list();
+		for(Object o : list){
+			Map map = (Map)o;
+			FirmaAlacak firmaAlacak = new FirmaAlacak();
+
+			String tanim = (String)map.get("TANIM");
+			BigDecimal borc = (BigDecimal)map.get("BORC");
+			BigDecimal alacak = (BigDecimal) map.get("ALACAK");
+			BigDecimal bakiye = (BigDecimal) map.get("BAKIYE");
+			BigDecimal paydas = (BigDecimal) map.get("PAYDAS");
+
+
+			if(tanim != null)
+				firmaAlacak.setTanim(tanim);
+			if(borc != null)
+				firmaAlacak.setBorc(borc.doubleValue());
+			if(alacak != null)
+				firmaAlacak.setAlacak(alacak.doubleValue());
+			if(bakiye != null)
+				firmaAlacak.setBakiye(bakiye.doubleValue());
+			if(paydas != null)
+				firmaAlacak.setPaydas(paydas.longValue());
+
+
+			firmaAlacaklist.add(firmaAlacak);
+		}
+		return firmaAlacaklist;
+	}
+
+	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate){
+
+		String sql = "SELECT A.YEVMIYENUMARASI,\n" +
+				"         A.YEVMIYETARIHI,\n" +
+				"         A.IZAHAT,\n" +
+				"         (RFI2MUHASEBEFISILINE.BORCTUTARI) TUTAR\n" +
+				"    FROM OFI2MUHASEBEFISI A,\n" +
+				"         RFI2MUHASEBEFISILINE,\n" +
+				"         LFI2HESAPPLANI        \n" +
+				"   WHERE     (A.ID = RFI2MUHASEBEFISILINE.OFI2MUHASEBEFISI_ID)\n" +
+				"         AND (RFI2MUHASEBEFISILINE.LFI2HESAPPLANI_ID = LFI2HESAPPLANI.ID)\n" +
+				"                  AND LFI2HESAPPLANI.KODU LIKE '320%'\n" +
+				"         AND A.BFI1BUTCEDONEMI_ID IN (SELECT ID\n" +
+				"                                        FROM BFI1BUTCEDONEMI\n" +
+				"                                       WHERE YILI = " + year + ")\n" +
+				"         AND A.FISTIPI NOT LIKE 'U'\n" +
+				"         AND A.YEVMIYETARIHI BETWEEN TO_DATE('" + startDate + "', 'dd-MM-yyyy')\n" +
+				"                                 AND TO_DATE ('" + endDate + "', 'dd-MM-yyyy')\n" +
+				"         AND RFI2MUHASEBEFISILINE.BORCTUTARI > 0\n" +
+				"ORDER BY A.YEVMIYETARIHI, A.YEVMIYENUMARASI";
+
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		List<Object> list = new ArrayList<Object>();
+		List<FirmaOdeme> firmaOdemelist = new ArrayList<FirmaOdeme>();
+
+		list = query.list();
+		for(Object o : list){
+			Map map = (Map)o;
+			FirmaOdeme firmaOdeme = new FirmaOdeme();
+
+			BigDecimal yevmiyeNumarasi = (BigDecimal)map.get("YEVMIYENUMARASI");
+			Date yevmiyeTarihi = (Date)map.get("YEVMIYETARIHI");
+			String izahat = (String)map.get("IZAHAT");
+			BigDecimal tutar = (BigDecimal) map.get("TUTAR");
+
+			if(yevmiyeNumarasi != null)
+				firmaOdeme.setYevmiyeNumarasi(yevmiyeNumarasi.longValue());
+			if(yevmiyeTarihi != null)
+				firmaOdeme.setYevmiyeTarihi(yevmiyeTarihi);
+			if(izahat != null)
+				firmaOdeme.setIzahat(izahat);
+			if(tutar != null)
+				firmaOdeme.setTutar(tutar.doubleValue());
+			firmaOdemelist.add(firmaOdeme);
+		}
+		return firmaOdemelist;
 	}
 	
 	public List<Talep> getRequestCount(String timePeriod){

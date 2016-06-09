@@ -4,12 +4,28 @@ import java.util.Date;
 
 public class EBYSBekleyen {
 
+	private long id;
+	private long ebysDocumentId;
 	private String konu;
 	private String message;
 	private String name;
 	private long docId;
 	private String creationDate;
-	
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+	public long getEbysDocumentId() {
+		return ebysDocumentId;
+	}
+
+	public void setEbysDocumentId(long ebysDocumentId) {
+		this.ebysDocumentId = ebysDocumentId;
+	}
 	public String getKonu() {
 		return konu;
 	}

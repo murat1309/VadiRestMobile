@@ -2,6 +2,7 @@ package com.digikent.vadirest.dto;
 
 public class PersonelBilgileriDetay {
 
+	private long id;
 	private long bsm2ServisGorev;
 	private String birimAdi;
 	private String turu;
@@ -15,7 +16,14 @@ public class PersonelBilgileriDetay {
 	private String dosyaAdi;
 	private String dosyaTuru;
 	private byte[] icerik;
-	
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getDosyaAdi() {
 		return dosyaAdi;
 	}

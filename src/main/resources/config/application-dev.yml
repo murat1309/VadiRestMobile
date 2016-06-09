@@ -20,21 +20,25 @@ spring:
             enabled: false # we use Grunt + BrowserSync for livereload
     datasource:
         driver-class-name: oracle.jdbc.pool.OracleDataSource
-        url:  jdbc:oracle:thin:@//10.16.16.213:1521/dbg
+        url:  jdbc:oracle:thin:@//10.100.5.92:1521/dbg
         name:
-        username: DIGIKENT
-        password: dgknt2071
+        username: KEYOP
+        password: VADI_2050
     jpa:
         database-platform: org.hibernate.dialect.Oracle10gDialect
         database: ORACLE
         show_sql: true
         generate-ddl: false
         openInView: false
+        hibernate:
+            ddl-auto: none
+            naming-strategy: com.vadi.smartkent.datamodel.config.UpperCaseNamingStrategy
         properties:
             hibernate.cache.use_second_level_cache: false
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: true
             hibernate.current_session_context_class: org.springframework.orm.hibernate4.SpringSessionContext
+            hibernate.ejb.interceptor: com.vadi.smartkent.datamodel.config.AuditInterceptor
     mail:
         host: localhost
     messages:

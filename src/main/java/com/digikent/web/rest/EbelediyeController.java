@@ -8,10 +8,7 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import tr.com.vadi.vadibo.*;
 
@@ -71,24 +68,27 @@ public class EbelediyeController extends EBelediyeService {
 
 
 
-	@Override
+	@RequestMapping(value = "/applyBilgiEdinme", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_DEV')")
 	public BilgiEdinmeResponseType applyBilgiEdinme(
-			ApplyBilgiEdinmeRequestType applyBilgiEdinmeRequest) {
+			@RequestBody ApplyBilgiEdinmeRequestType applyBilgiEdinmeRequest) {
 		// TODO Auto-generated method stub
 		return super.applyBilgiEdinme(applyBilgiEdinmeRequest);
 	}
 
 
-	@Override
+	@RequestMapping(value = "/applyBasvuru", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_DEV')")
 	public ApplyBasvuruResponseType applyBasvuru(
-			ApplyBasvuruRequestType applyBasvuruRequest) {
+			@RequestBody ApplyBasvuruRequestType applyBasvuruRequest) {
 		// TODO Auto-generated method stub
 		return super.applyBasvuru(applyBasvuruRequest);
 	}
 
-	@Override
+	@RequestMapping(value = "/applyBasvuruEk", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_DEV')")
 	public ApplyBasvuruResponseType applyBasvuruEk(
-			ApplyBasvuruEkRequestType applyBasvuruEkRequest) {
+			@RequestBody ApplyBasvuruEkRequestType applyBasvuruEkRequest) {
 		// TODO Auto-generated method stub
 		return super.applyBasvuruEk(applyBasvuruEkRequest);
 	}

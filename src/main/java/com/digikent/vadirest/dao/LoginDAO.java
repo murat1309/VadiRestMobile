@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface LoginDAO {
 	public UserAuthenticationInfo loginWithPassword(String userName, String password);
 	public UserAuthenticationInfo loginWithoutPassword(String userName);
+	public String getUserIdFromActiveDirectoryName(String adUserName);
 	public List<UserAuthorizationInfo> getAuthorizationInfo(String userName);
 	public List<BYSMenu> getWholeBYSMenu(String userName);
 	public List<BYSMenu> getPartialBYSMenu(String userName, long parentId);
