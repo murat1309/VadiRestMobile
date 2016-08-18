@@ -28,10 +28,10 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 
-@ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*"}, excludeFilters={
+@ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*", "tr.com.vadi.*"}, excludeFilters={
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
-@EnableJpaRepositories
+@EnableJpaRepositories("tr.com.vadi.repository")
 @EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*"})
 @EnableAutoConfiguration(exclude = {LiquibaseAutoConfiguration.class,MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 @EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class })
