@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface DocumentManagementDAO {
 	public List<SM1Roles> getEBYSRollList(long persid);
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
+	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
+	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate);
 	public List<Rol> getDocRollList(long persid, long mastid);
 	public List<BelgeBasvuru> getApplyDoc(long rolid);
 	public BelgeBasvuruDetay getApplyDocDetail(long docId);

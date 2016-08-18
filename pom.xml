@@ -114,11 +114,6 @@
         </dependency>
         <dependency>
             <groupId>com.mysema.querydsl</groupId>
-            <artifactId>querydsl-apt</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mysema.querydsl</groupId>
             <artifactId>querydsl-core</artifactId>
             <version>3.7.0</version>
         </dependency>
@@ -483,6 +478,11 @@
                     <artifactId>vadi.common.converter</artifactId>
                     <groupId>vadi</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>guava-osgi</artifactId>
+                    <groupId>com.googlecode.guava-osgi</groupId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -498,7 +498,7 @@
             </snapshots>
             <id>vadi-nexus</id>
             <name>vadi-nexus</name>
-            <url>http://192.168.1.90:8081/nexus/content/repositories/releases/</url>
+            <url>http://destek.vadi.com.tr:808/nexus/content/repositories/releases/</url>
         </repository>
         <repository>
             <releases>
@@ -509,7 +509,7 @@
             </snapshots>
             <id>vadi-nexus-snapshots</id>
             <name>vadi-nexus</name>
-            <url>http://192.168.1.90:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://destek.vadi.com.tr:8081/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>spring-milestones</id>
@@ -530,7 +530,7 @@
             </snapshots>
             <id>vadi-nexus</id>
             <name>vadi-nexus</name>
-            <url>http://192.168.1.90:8081/nexus/content/repositories/releases/</url>
+            <url>http://destek.vadi.com.tr:8081/nexus/content/repositories/releases/</url>
         </pluginRepository>
     </pluginRepositories>
     <build>
@@ -607,29 +607,6 @@
                     <keepBlankLines>true</keepBlankLines>
                     <expandEmptyElements>false</expandEmptyElements>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>apt-maven-plugin</artifactId>
-                <version>1.1.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/generated-sources/apt</outputDirectory>
-                            <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.mysema.querydsl</groupId>
-                        <artifactId>querydsl-apt</artifactId>
-                        <version>3.7.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>io.gatling</groupId>

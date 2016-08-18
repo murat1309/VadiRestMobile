@@ -16,7 +16,6 @@ import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +61,85 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return rollList;
 	}
 
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
+	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate) {
+		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, "
+				+"DECODE ((SELECT NVL (ABYOKONU_ID, 0)FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), "
+				+"0, CASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL) > 0 "
+				+"THEN(SELECT KONUOZETI FROM EBYSBELGE WHERE ID =(SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (A.ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL)) "
+				+"ELSE '' END,TASKSUBJECT)KONU, MESSAGE,((SELECT FIRSTNAME || ' ' || LASTNAME FROM FSM1USERS WHERE ID = fsm1users_sentby)|| '(' || (SELECT TANIM "
+				+"FROM FSM1ROLES WHERE ID = fsm1roles_sentby) || ')' ) NAME, BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID, 'EBYSBELGE_ID') EBYSBELGE_ID, "
+				+"(SELECT (SELECT processname FROM ABPMPROCESS WHERE id = ABPMWORKFLOW.ABPMPROCESS_ID) FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_id) TURU, "
+				+"TASKCOMMENT, (SELECT BSM2SERVIS_MUDURLUK FROM EBYSBELGE WHERE ID = (SELECT EBYSBELGE_ID FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_ID)) BSM2SERVISID, "
+				+"BPM.F_DocumentIdForWorkItem (A.ID) DOCID, EBYSGIDENKAYITNUMARASI, EBYSGELENKAYITNUMARASI, BPM.F_WorkItemPaydasAdres (ID) ADRES, (SELECT TANIM "
+				+"FROM EBYSDOCUMENT  WHERE ID = EBYSDOCUMENT_ID) YAZIADI, (SELECT ABYOBASVURU_ID FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID)  ABYOBASVURU_ID, "
+				+"(SELECT (SELECT DRE1MAHALLE_ADI  FROM ABYOBASVURU  WHERE ID = ABYOBASVURU_ID) FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID) DRE1MAHALLEADI_BASVURU, "
+				+"(SELECT (SELECT SRE1SOKAK_ADI FROM ABYOBASVURU WHERE ID = ABYOBASVURU_ID) FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID) SRE1SOKAKADI_BASVURU, "
+				+"(SELECT (SELECT (SELECT TANIM FROM ABYOBASVURUDURUMU WHERE ID = ABYOBASVURU.ABYOBASVURUDURUMU_ID) FROM ABYOBASVURU WHERE ID = ABYOBASVURU_ID) "
+				+"FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID) BASVURUDURUMU_ADI, SUBSTR (TASKCOMMENT, 1, 20) AS COZUM, ebysiletimnedeni, "
+				+"(SELECT BEKLENENBITISTARIHI FROM EBYSBELGE WHERE ID = A.EBYSBELGE_ID AND A.EBYSBELGE_ID > 0) BEKLENENBITISTARIHI,(SELECT COMPLETEDDATETIME "
+				+"FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_ID) COMPLETEDDATETIME, NVL (READFLAG, 'H') READFLAG, TOPLUIMZALAMAYAPILACAK, (SELECT (SELECT B.TANIM "
+				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK    FROM ABPMWORKITEM A ";
+
+		if(type.equalsIgnoreCase("ONAYBEKLEYEN"))
+			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE ONAYBEKLEYENMI = 'EVET')";
+		else if(type.equalsIgnoreCase("GONDERIMBEKLEYEN"))
+			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS'  AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE GONDERIMBEKLEYENMI = 'EVET')";
+		else if(type.equalsIgnoreCase("TAMAMLANAN"))
+			sql += "WHERE A.id > 0 AND  A.ACTION IN ('SEND','CANCEL','REJECT','DELEGATE') " +
+					" AND NVL(A.ACTIONDETAIL,'-') NOT IN ('GERICEKILDI') " +
+					"AND EXISTS (SELECT 1 FROM ABPMTASK WHERE ID=A.ABPMTASK_ID AND VISIBLEFORCOMPLETEDLIST='EVET')";
+		else if(type.equalsIgnoreCase("IADEEDILEN"))
+			sql += "WHERE A.id > 0  AND A.ACTION = 'PROGRESS'  AND (A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE IADEEDILENMI = 'EVET') OR A.ACTIONDETAIL='REDDEDILDI')";
+		else
+			sql += "WHERE A.id > 0  AND A.ACTION = 'PROGRESS'  AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE KISIYEATANANMI = 'EVET')";
+
+		sql +=   " AND A.CREATIONDATETIME BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
+				+" TO_DATE ('"+ endDate +"', 'dd-MM-yyyy')"
+				+" AND ( (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.FSM1USERS_PERFORMER = " +persid+" ) "
+				+"OR (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.Fsm1Users_PERFORMER = 0)) ORDER BY NVL (BEKLENENBITISTARIHI, "
+				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATETIME DESC, A.id DESC ";
+
+		List<Object> list = new ArrayList();
+		List<EBYS> ebysList = new ArrayList();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map)o;
+			EBYS ebys = new EBYS();
+			BPMWorkitem bpmWorkItem = new BPMWorkitem();
+
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal ebysDocumentId = (BigDecimal)map.get("EBYSDOCUMENTID");
+			Date creationDate = (Date)map.get("CREATIONDATE");
+			String name = (String)map.get("NAME");
+			String konu = (String)map.get("KONU");
+			String message = (String) map.get("MESSAGE");
+			BigDecimal docId = (BigDecimal) map.get("DOCID");
+
+			if(id != null)
+				ebys.setId(id.longValue());
+			if(ebysDocumentId != null)
+				ebys.setEbysDocumentId(ebysDocumentId.longValue());
+			if(creationDate != null)
+				ebys.setCreationDate(dateFormat.format(creationDate));
+			if(name != null)
+				ebys.setName(name);
+			if(konu != null)
+				ebys.setKonu(konu);
+			if(message != null)
+				ebys.setMessage(message);
+			if(docId != null)
+				ebys.setDocId(docId.longValue());
+
+			ebysList.add(ebys);
+		}
+		return ebysList;
+	}
+
+	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
 		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, "
 				+"DECODE ((SELECT NVL (ABYOKONU_ID, 0)FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), "
 				+"0, CASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL) > 0 "
@@ -88,7 +165,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATETIME DESC, A.id DESC ";
 		
 		List<Object> list = new ArrayList();
-		List<EBYSBekleyen> ebysBekleyenList = new ArrayList();
+		List<EBYS> ebysList = new ArrayList();
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -96,7 +173,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		
 		for(Object o : list){
 			Map map = (Map)o;
-			EBYSBekleyen ebysBekleyen = new EBYSBekleyen();
+			EBYS ebys = new EBYS();
 			BPMWorkitem bpmWorkItem = new BPMWorkitem();
 
 			BigDecimal id = (BigDecimal)map.get("ID");
@@ -108,23 +185,23 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			BigDecimal docId = (BigDecimal) map.get("DOCID");
 
 			if(id != null)
-				ebysBekleyen.setId(id.longValue());
+				ebys.setId(id.longValue());
 			if(ebysDocumentId != null)
-				ebysBekleyen.setEbysDocumentId(ebysDocumentId.longValue());
+				ebys.setEbysDocumentId(ebysDocumentId.longValue());
 			if(creationDate != null)
-				ebysBekleyen.setCreationDate(dateFormat.format(creationDate));
+				ebys.setCreationDate(dateFormat.format(creationDate));
 			if(name != null)
-				ebysBekleyen.setName(name);
+				ebys.setName(name);
 			if(konu != null)
-				ebysBekleyen.setKonu(konu);
+				ebys.setKonu(konu);
 			if(message != null)
-				ebysBekleyen.setMessage(message);
+				ebys.setMessage(message);
 			if(docId != null)
-				ebysBekleyen.setDocId(docId.longValue());
+				ebys.setDocId(docId.longValue());
 			
-			ebysBekleyenList.add(ebysBekleyen);
+			ebysList.add(ebys);
 		}
-		return ebysBekleyenList;
+		return ebysList;
 	}
 
 	public List<Rol> getDocRollList(long persid, long mastid) {

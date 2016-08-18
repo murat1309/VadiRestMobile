@@ -23,7 +23,11 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		return documentManagementDAO.getEBYSRollList(persid);
 	}
 
-	public List<EBYSBekleyen> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
+	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate){
+		return documentManagementDAO.getEBYS(type,persid, rolid, startDate, endDate);
+	}
+
+	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
 		// TODO Auto-generated method stub
 		return documentManagementDAO.getWaitingEBYS(persid, rolid, startDate, endDate);
 	}

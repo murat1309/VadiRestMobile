@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,6 +31,7 @@ import java.util.Collection;
 @ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*"}, excludeFilters={
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
+@EnableJpaRepositories
 @EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*"})
 @EnableAutoConfiguration(exclude = {LiquibaseAutoConfiguration.class,MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 @EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class })

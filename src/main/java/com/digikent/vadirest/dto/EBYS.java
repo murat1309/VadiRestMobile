@@ -2,7 +2,7 @@ package com.digikent.vadirest.dto;
 
 import java.util.Date;
 
-public class EBYSBekleyen {
+public class EBYS {
 
 	private long id;
 	private long ebysDocumentId;

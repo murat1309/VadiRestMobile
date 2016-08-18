@@ -47,13 +47,57 @@ public class DocumentManagementController {
 	
 	//EBYS bekleyen belge
 	@RequestMapping(value="EBYSBekleyen/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
-	public List<EBYSBekleyen> getWaitingEBYS(@PathVariable("persid") long persid,
-											 @PathVariable("rolid") long rolid,
-											 @PathVariable("startDate") String startDate,
-											 @PathVariable("endDate") String endDate){
+	public List<EBYS> getWaitingEBYS(@PathVariable("persid") long persid,
+									 @PathVariable("rolid") long rolid,
+									 @PathVariable("startDate") String startDate,
+									 @PathVariable("endDate") String endDate){
 
 		LOG.debug("Rest Request to get ebys onay bekleyen persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
-		return documentManagementService.getWaitingEBYS(persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYS("ONAYBEKLEYEN", persid, rolid, startDate, endDate);
+	}
+
+	//EBYS tamamlanan belge
+	@RequestMapping(value="EBYSTamamlanan/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<EBYS> getCompletedEBYS(@PathVariable("persid") long persid,
+									   @PathVariable("rolid") long rolid,
+									   @PathVariable("startDate") String startDate,
+									   @PathVariable("endDate") String endDate){
+
+		LOG.debug("Rest Request to get ebys tamamlanan persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYS("TAMAMLANAN", persid, rolid, startDate, endDate);
+	}
+
+	//EBYS Gonderim bekleyen belge
+	@RequestMapping(value="EBYSGonderimBekleyen/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<EBYS> getWaitingToSendEBYS(@PathVariable("persid") long persid,
+										   @PathVariable("rolid") long rolid,
+										   @PathVariable("startDate") String startDate,
+										   @PathVariable("endDate") String endDate){
+
+		LOG.debug("Rest Request to get ebys gonderim bekleyen persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYS("GONDERIMBEKLEYEN", persid, rolid, startDate, endDate);
+	}
+
+	//EBYS iade edilen belge
+	@RequestMapping(value="EBYSIadeEdilen/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<EBYS> getReturnedEBYS(@PathVariable("persid") long persid,
+									  @PathVariable("rolid") long rolid,
+									  @PathVariable("startDate") String startDate,
+									  @PathVariable("endDate") String endDate){
+
+		LOG.debug("Rest Request to get ebys iade edilen persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYS("IADEEDILEN", persid, rolid, startDate, endDate);
+	}
+
+	//EBYS kisiye atanan belge
+	@RequestMapping(value="EBYSKisiyeAtanan/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
+	public List<EBYS> getAssignedEBYS(@PathVariable("persid") long persid,
+									  @PathVariable("rolid") long rolid,
+									  @PathVariable("startDate") String startDate,
+									  @PathVariable("endDate") String endDate){
+
+		LOG.debug("Rest Request to get ebys kisiye atanan persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYS("KISIYEATANAN", persid, rolid, startDate, endDate);
 	}
 	
 	//Belge Basvuru rollList
