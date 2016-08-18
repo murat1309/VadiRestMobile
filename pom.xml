@@ -57,6 +57,8 @@
         <sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
         <spring-security.version>4.0.2.RELEASE</spring-security.version>
+
+        <vadi-proivders.version>1.0.0-SNAPSHOT</vadi-proivders.version>
     </properties>
 
     <dependencies>
@@ -112,16 +114,6 @@
             <artifactId>sqljdbc4</artifactId>
             <version>4.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.mysema.querydsl</groupId>
-            <artifactId>querydsl-core</artifactId>
-            <version>3.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mysema.querydsl</groupId>
-            <artifactId>querydsl-jpa</artifactId>
-            <version>3.7.0</version>
-        </dependency>
 
         <dependency>
             <groupId>com.oracle</groupId>
@@ -173,6 +165,11 @@
                     <groupId>com.sun</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>tr.com.vadi</groupId>
+            <artifactId>vadi-providers</artifactId>
+            <version>${vadi-proivders.version}</version>
         </dependency>
         <!-- The HikariCP Java Agent is disabled by default, as it is experimental
           <dependency>
@@ -498,7 +495,7 @@
             </snapshots>
             <id>vadi-nexus</id>
             <name>vadi-nexus</name>
-            <url>http://destek.vadi.com.tr:808/nexus/content/repositories/releases/</url>
+            <url>http://destek.vadi.com.tr:8081/nexus/content/repositories/releases/</url>
         </repository>
         <repository>
             <releases>
