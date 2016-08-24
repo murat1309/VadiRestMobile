@@ -58,7 +58,6 @@
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
         <spring-security.version>4.0.2.RELEASE</spring-security.version>
 
-        <vadi-proivders.version>1.0.0-SNAPSHOT</vadi-proivders.version>
     </properties>
 
     <dependencies>
@@ -166,13 +165,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- The HikariCP Java Agent is disabled by default, as it is experimental
-          <dependency>
-              <groupId>com.zaxxer</groupId>
-                  <artifactId>HikariCP-agent</artifactId>
-                      <version>${HikariCP.version}</version>
-                      </dependency>
-                  -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -429,11 +421,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-data</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tr.com.vadi</groupId>
-            <artifactId>vadi-providers</artifactId>
-            <version>${vadi-proivders.version}</version>
         </dependency>
 
         <dependency>
