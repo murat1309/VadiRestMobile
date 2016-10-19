@@ -9,6 +9,7 @@ public class UserAuthenticationInfo {
 	private long personelId;
 	private String firstName;
 	private String lastName;
+	private String activeDirectoryUserName;
 	private long msm2PersonelId;
 	private long servisId;
 	private long bsm2ServisMudurluk;
@@ -17,7 +18,15 @@ public class UserAuthenticationInfo {
 	private String dosyaAdi;
 	private String dosyaTuru;
 	private byte[] icerik;
-	
+
+	public String getActiveDirectoryUserName() {
+		return activeDirectoryUserName;
+	}
+
+	public void setActiveDirectoryUserName(String activeDirectoryUserName) {
+		this.activeDirectoryUserName = activeDirectoryUserName;
+	}
+
 	public String getDosyaAdi() {
 		return dosyaAdi;
 	}

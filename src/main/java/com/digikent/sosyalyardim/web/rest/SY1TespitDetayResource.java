@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -40,12 +41,26 @@ public class SY1TespitDetayResource {
         return new ResponseEntity<List<SY1TespitDetayDTO>>(results, OK);
     }
 
+    @RequestMapping(method = POST, value = "/new", produces = APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Integer> create(@RequestBody List<SY1TespitDetay> sy1TespitDetay) throws Exception {
+        Integer results = repository.create(sy1TespitDetay);
+        return new ResponseEntity<Integer>(results, OK);
+    }
 
     @RequestMapping(method = POST, value = "/search", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<SY1TespitDetayDTO>> search(@RequestBody SY1TespitDetay sy1TespitDetay) {
         List<SY1TespitDetayDTO> results = repository.search(sy1TespitDetay);
         return new ResponseEntity<List<SY1TespitDetayDTO>>(results, OK);
+    }
+
+    @RequestMapping(method = DELETE, value = "/delete", produces = APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<Integer> delete(@RequestBody SY1TespitDetay sy1TespitDetay) throws Exception {
+        int deletedRows = repository.delete(sy1TespitDetay);
+        Integer results = new Integer(deletedRows);
+        return new ResponseEntity<Integer>(results, OK);
     }
 
 }

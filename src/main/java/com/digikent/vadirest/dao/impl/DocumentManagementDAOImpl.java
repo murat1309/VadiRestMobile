@@ -93,11 +93,11 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		else
 			sql += "WHERE A.id > 0  AND A.ACTION = 'PROGRESS'  AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE KISIYEATANANMI = 'EVET')";
 
-		sql +=   " AND A.CREATIONDATETIME BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
+		sql +=   " AND A.CREATIONDATE BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
 				+" TO_DATE ('"+ endDate +"', 'dd-MM-yyyy')"
 				+" AND ( (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.FSM1USERS_PERFORMER = " +persid+" ) "
 				+"OR (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.Fsm1Users_PERFORMER = 0)) ORDER BY NVL (BEKLENENBITISTARIHI, "
-				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATETIME DESC, A.id DESC ";
+				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATE DESC, A.id DESC ";
 
 		List<Object> list = new ArrayList();
 		List<EBYS> ebysList = new ArrayList();
@@ -158,11 +158,11 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				+"FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_ID) COMPLETEDDATETIME, NVL (READFLAG, 'H') READFLAG, TOPLUIMZALAMAYAPILACAK, (SELECT (SELECT B.TANIM "
 				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK    FROM ABPMWORKITEM A "
 				+"WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE ONAYBEKLEYENMI = 'EVET')"
-				+" AND A.CREATIONDATETIME BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
+				+" AND A.CREATIONDATE BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
 				+" TO_DATE ('"+ endDate +"', 'dd-MM-yyyy')"
 				+" AND ( (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.FSM1USERS_PERFORMER = " +persid+" ) "
 				+"OR (A.FSM1ROLES_PERFORMER = " + rolid+" AND A.Fsm1Users_PERFORMER = 0)) ORDER BY NVL (BEKLENENBITISTARIHI, "
-				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATETIME DESC, A.id DESC ";
+				+"TO_DATE ('01/01/9999 00:00:00', 'dd/mm/yyyy Hh24:MI:ss')) ASC, A.CREATIONDATE DESC, A.id DESC ";
 		
 		List<Object> list = new ArrayList();
 		List<EBYS> ebysList = new ArrayList();

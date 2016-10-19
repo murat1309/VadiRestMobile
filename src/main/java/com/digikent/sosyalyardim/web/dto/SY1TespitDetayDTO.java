@@ -12,6 +12,15 @@ public class SY1TespitDetayDTO {
     private String cbrbdegeri;
     private String stnmdegeri;
     private Integer countcevap;
+    private String bilgi;
+
+    public String getBilgi() {
+        return bilgi;
+    }
+
+    public void setBilgi(String bilgi) {
+        this.bilgi = bilgi;
+    }
 
     public Long getKategoriid() {
         return kategoriid;

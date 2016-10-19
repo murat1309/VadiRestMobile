@@ -43,6 +43,22 @@ public class LoginServiceImpl implements LoginService {
 		
 	}
 
+	public UserAuthenticationInfo getUserInformationFromId(Long id){
+		return loginDAO.getUserInformationFromId(id);
+	}
+
+	public String getUserIdFromActiveDirectoryName(String adUserName){
+		return loginDAO.getUserIdFromActiveDirectoryName(adUserName);
+	}
+
+	public UserAuthenticationInfo getUserNameFromActiveDirectoryName(String adUserName){
+		return loginDAO.getUserNameFromActiveDirectoryName(adUserName);
+	}
+
+	public UserAuthenticationInfo getUserNameFromActiveDirectoryUserName(String activeDirectoryUserName){
+		return null;
+	}
+
 	public List<BaseUrlDTO> getBaseUrl(){
 		return readFromUrlFile();
 	}

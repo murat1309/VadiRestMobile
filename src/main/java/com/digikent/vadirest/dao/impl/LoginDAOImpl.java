@@ -15,12 +15,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
-import org.hibernate.SQLQuery;
-import org.hibernate.SessionFactory;
+import net.sf.ehcache.hibernate.HibernateUtil;
+import org.hibernate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.object.SqlQuery;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -30,7 +30,7 @@ public class LoginDAOImpl implements LoginDAO {
 	
 	@Autowired
 	protected SessionFactory sessionFactory;
-	
+
 	public UserAuthenticationInfo loginWithPassword(String userName, String password) {
 		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
 				   +"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
@@ -40,7 +40,8 @@ public class LoginDAOImpl implements LoginDAO {
 				   +"from fsm1users A WHERE A.USERID ='"+ userName +"' and A.PASSWORD = F_MD5HASH('"+password+"')";
 		
 		List<Object> list = new ArrayList<Object>();
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Session session = sessionFactory.withOptions().interceptor(null).openSession();
+		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		
 		list = query.list();
@@ -86,16 +87,14 @@ public class LoginDAOImpl implements LoginDAO {
 	public UserAuthenticationInfo loginWithoutPassword(String userName) {
 		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
 				   +"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
-				   +"(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) DOSYAADI, "
-	               +"(select FILETYPE from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) DOSYATURU , "
-	               +"(select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND ROWNUM <= 1) ICERIK , "
 	               +"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
 	               +"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
 	               +"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
 				   +"from fsm1users A WHERE A.USERID ='"+ userName +"'";
 		
 		List<Object> list = new ArrayList<Object>();
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Session session = sessionFactory.withOptions().interceptor(null).openSession();
+		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		
 		list = query.list();
@@ -112,9 +111,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
 			BigDecimal bsm2ServisMudurluk = (BigDecimal) map.get("BSM2SERVIS_MUDURLUK");
-			String dosyaAdi = (String) map.get("DOSYAADI");
-			String dosyaTuru = (String) map.get("DOSYATURU");
-			Blob icerik = (Blob) map.get("ICERIK");
+
 			
 			if(id != null)
 				userAuthenticationInfo.setId(id.longValue());
@@ -134,31 +131,79 @@ public class LoginDAOImpl implements LoginDAO {
 				userAuthenticationInfo.setBsm2ServisMudurluk(bsm2ServisMudurluk.longValue());
 			if(userName != null)
 				userAuthenticationInfo.setUserName(userName);
-			if(dosyaAdi != null)
-				userAuthenticationInfo.setDosyaAdi(dosyaAdi);
-			if(dosyaTuru != null)
-				userAuthenticationInfo.setDosyaTuru(dosyaTuru);
-			
-			try {
-				if (icerik!=null){
-					imageLength = (int) icerik.length();
-					userAuthenticationInfo.setIcerik(icerik.getBytes(1, imageLength));
-					icerik.free();
-				}
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+
 		}
 		return userAuthenticationInfo;
 		
 	}
+
+	public UserAuthenticationInfo getUserInformationFromId(Long id) {
+		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
+				+"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
+				+"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
+				+"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
+				+"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
+				+"from fsm1users A WHERE A.ID ='"+ id +"'";
+
+		List<Object> list = new ArrayList<Object>();
+		Session session = sessionFactory.withOptions().interceptor(null).openSession();
+		SQLQuery query = session.createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		list = query.list();
+		UserAuthenticationInfo userAuthenticationInfo = new UserAuthenticationInfo();
+
+		for(Object o : list){
+			int imageLength;
+			Map map = (Map) o;
+			BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+			String firstName = (String) map.get("FIRSTNAME");
+			String lastName = (String) map.get("LASTNAME");
+			String userId = (String) map.get("USERID");
+			BigDecimal msm2PersonelId = (BigDecimal)map.get("MSM2PERSONEL_ID");
+			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
+			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
+			BigDecimal bsm2ServisMudurluk = (BigDecimal) map.get("BSM2SERVIS_MUDURLUK");
+
+
+			if(id != null)
+				userAuthenticationInfo.setId(id);
+			if(personelId != null)
+				userAuthenticationInfo.setPersonelId(personelId.longValue());
+			if(firstName != null)
+				userAuthenticationInfo.setFirstName(firstName);
+			if(lastName != null)
+				userAuthenticationInfo.setLastName(lastName);
+			if(userId != null)
+				userAuthenticationInfo.setUserName(userId);
+			if(msm2PersonelId != null)
+				userAuthenticationInfo.setMsm2PersonelId(msm2PersonelId.longValue());
+			if(masterId != null)
+				userAuthenticationInfo.setMasterId(masterId.longValue());
+			if(servisId != null)
+				userAuthenticationInfo.setMasterId(servisId.longValue());
+			if(bsm2ServisMudurluk != null)
+				userAuthenticationInfo.setBsm2ServisMudurluk(bsm2ServisMudurluk.longValue());
+		}
+		return userAuthenticationInfo;
+
+	}
+
 
 	public String getUserIdFromActiveDirectoryName(String adUserName){
 		String sql = "SELECT USERID FROM FSM1USERS WHERE LOWER(ACTIVEDIRECTORYUSERNAME)=LOWER('" + adUserName + "')";
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		String userId = (String)query.uniqueResult();
 		return userId;
+	}
+
+	public UserAuthenticationInfo getUserNameFromActiveDirectoryName(String adUserName){
+		String sql = "SELECT USERID FROM FSM1USERS WHERE LOWER(ACTIVEDIRECTORYUSERNAME)=LOWER('" + adUserName + "')";
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		String userId = (String)query.uniqueResult();
+		UserAuthenticationInfo userAuthenticationInfo = new UserAuthenticationInfo();
+		userAuthenticationInfo.setUserName(userId);
+		return userAuthenticationInfo;
 	}
 
 	@Override

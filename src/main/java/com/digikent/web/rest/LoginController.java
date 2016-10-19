@@ -31,12 +31,25 @@ public class LoginController {
 			return loginService.loginWithPassword(userName, password);
 		else
 			return userAuthenticationInfo;
-	}	
-	
-	@RequestMapping(value ="/currentWithhoutPass/{userName}/" , method = RequestMethod.GET)
-	public UserAuthenticationInfo loginWithoutPassword(@PathVariable("userName") String userName){
+	}
+	@RequestMapping(value ="/currentWithhoutPass" , method = RequestMethod.PUT)
+	public UserAuthenticationInfo loginWithoutPassword(@RequestBody UserDTO user){
+		String userName = user.getUserName();
 		LOG.debug("REST request to login:{}", userName);
 		return loginService.loginWithoutPassword(userName);	
+	}
+
+	@RequestMapping(value ="/userInformation" , method = RequestMethod.PUT)
+	public UserAuthenticationInfo getUserInformationFromId(@RequestBody UserDTO user){
+		Long id = user.getId();
+		LOG.debug("REST request to login:{}", id);
+		return loginService.getUserInformationFromId(id);
+	}
+
+	@RequestMapping(value ="/userName" , method = RequestMethod.PUT)
+	public UserAuthenticationInfo getUserIdFromActiveDirectoryName(@RequestBody UserDTO user){
+		LOG.debug("REST request to get userId with ad:{}", user.getActiveDirectoryUserName());
+		return loginService.getUserNameFromActiveDirectoryName(user.getActiveDirectoryUserName());
 	}
 
 	@RequestMapping(value ="/baseUrl" , method = RequestMethod.GET)

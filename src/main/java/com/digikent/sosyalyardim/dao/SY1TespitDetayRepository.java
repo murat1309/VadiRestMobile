@@ -5,6 +5,7 @@ import com.digikent.sosyalyardim.web.dto.SY1TespitDetayDTO;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Tespit;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1TespitDetay;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,6 +35,43 @@ public class SY1TespitDetayRepository {
 
     public List<SY1TespitDetayDTO> list(){
         return null;
+    }
+
+    public Integer create(List <SY1TespitDetay> tespitDetayList) throws Exception {
+
+        for(SY1TespitDetay tespitDetay : tespitDetayList){
+            List<Object> list = new ArrayList();
+            String sql = "select VSY1TESPITLINE_ID.nextval from DUAL";
+            Long tespitLineId = null;
+            try {
+                SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
+                list = query.list();
+                tespitLineId = ((BigDecimal) list.get(0)).longValue();
+            }catch(Exception e){
+                LOG.debug("Id Alınırken Hata Olustu:{]", tespitDetay);
+                throw new Exception("ID alınırken hata olustu");
+            }
+
+            if(tespitLineId != null){
+                try {
+                    Query sqlQuery = sessionFactory.getCurrentSession().
+                            createSQLQuery("insert into VSY1TESPITLINE(ID,VSY1TESPIT_ID,VSY1DOSYA_ID, TSY1TESPITSORU_ID, BILGI, DEGER)" +
+                                    " values (:id, :tespitId, :dosyaId, :tespitSoruId, :bilgi, :deger)");
+                    sqlQuery.setParameter("id", tespitLineId);
+                    sqlQuery.setParameter("tespitId", tespitDetay.getVsy1tespit2().getID());
+                    sqlQuery.setParameter("dosyaId", tespitDetay.getVsy1dosyaId());
+                    sqlQuery.setParameter("tespitSoruId", tespitDetay.getTsy1tespitsoruId());
+                    sqlQuery.setParameter("bilgi", tespitDetay.getBilgi());
+                    sqlQuery.setParameter("deger", tespitDetay.getDeger());
+                    sqlQuery.executeUpdate();
+                }catch (Exception e){
+                    LOG.debug("Id Alınırken Hata Olustu:{]", tespitDetay);
+                    throw new Exception("Kayıt olusturuken hata olustu");
+                }
+
+            }
+        }
+        return new Integer(tespitDetayList.size());
     }
 
     public List<SY1TespitDetayDTO> search(SY1TespitDetay sy1TespitDetay) {
@@ -105,5 +144,21 @@ public class SY1TespitDetayRepository {
         }
 
         return sy1TespitDetayDTOList;
+    }
+
+    public int delete(SY1TespitDetay sy1TespitDetay) throws Exception {
+        Long tespitId = sy1TespitDetay.getVsy1tespit2().getID();
+        int result = 0;
+        try{
+            Query query = sessionFactory.getCurrentSession().createQuery("delete SY1TespitDetay v where v.vsy1tespit2.id = :tespitId");
+            query.setParameter("tespitId", tespitId);
+            result = query.executeUpdate();
+        }catch (Exception e){
+            LOG.debug("Kayıt Silerken Hata Olustu:{]", sy1TespitDetay.getID());
+            throw new Exception("Kayıt Silerken hata olustu");
+        }
+
+
+        return result;
     }
 }

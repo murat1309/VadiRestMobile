@@ -51,7 +51,6 @@ public class DatabaseConfiguration {
         dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
         dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
         dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
-
         Properties properties=new Properties();
         properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
         dataSource.setConnectionProperties(properties);
