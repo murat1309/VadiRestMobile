@@ -58,6 +58,9 @@ public interface EbelediyeService {
 	//get s�re� ba�vuru sorgula list
 	public List<SurecBasvuru> searchSurecBasvuru(long basvuruno, long paydasno);
 	
+	//get s�re� ba�vuru sorgula list surec no ile
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno);
+	
 	//get isyeri ruhsat list
 	public List<IsyeriRuhsat> searchIsyeriRuhsat();
 	

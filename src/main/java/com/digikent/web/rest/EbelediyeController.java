@@ -184,6 +184,13 @@ public class EbelediyeController extends EBelediyeService {
 		// TODO Auto-generated method stub
 		return ebelediyeService.searchSurecBasvuru(basvuruno, paydasno);
 	}
+	
+	@RequestMapping(value = "/searchSurecBasvuruBySurecno/{surecno}/{paydasno}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_DEV')")
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(@PathVariable("surecno") long surecno, @PathVariable("paydasno") long paydasno) {
+		// TODO Auto-generated method stub
+		return ebelediyeService.searchSurecBasvuruBySurecno(surecno, paydasno);
+	}
 
 
 	@Override

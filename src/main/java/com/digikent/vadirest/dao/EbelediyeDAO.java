@@ -34,6 +34,7 @@ public interface EbelediyeDAO {
 	public List<BilgiEdinme> searchBasvuru(long basvuruno, String eposta);
 	public List<BelgeSorgula> searchBelge(long referansno, String parola);
 	public List<SurecBasvuru> searchSurecBasvuru(long basvuruno, long paydasno);
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno);
 	public List<IsyeriRuhsat> searchIsyeriRuhsat();
 	public List<SosyalYardim> searchSosyalYardim();
 	public List<SokakRayic> searchSokakRayicGuncel();

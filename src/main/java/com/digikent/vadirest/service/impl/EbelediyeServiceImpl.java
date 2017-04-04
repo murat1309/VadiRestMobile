@@ -94,6 +94,11 @@ public class EbelediyeServiceImpl implements EbelediyeService {
 		return ebelediyeDAO.searchSurecBasvuru(basvuruno, paydasno);
 	}
 	
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno) {
+		
+		return ebelediyeDAO.searchSurecBasvuruBySurecno(surecno, paydasno);
+	}
+	
 	public List<IsyeriRuhsat> searchIsyeriRuhsat() {
 		
 		return ebelediyeDAO.searchIsyeriRuhsat();

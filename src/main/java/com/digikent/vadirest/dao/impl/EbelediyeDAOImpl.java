@@ -481,6 +481,39 @@ public class EbelediyeDAOImpl implements EbelediyeDAO {
 		}
 		return surecBasvuruList;
 	}
+	
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno){
+		String sql = "SELECT TO_CHAR(A.ACTIVITY_NAME) ACTIVITY_NAME, TO_CHAR(B.FULL_NAME) FULL_NAME, TO_CHAR(A.CLOSE_DATETIME,'DD/MM/RRRR') CLOSE_DATETIME FROM BPMPD.LSW_TASK A, BPMPD.LSW_USR_XREF B, BPMPD.LSW_BPD_INSTANCE C "+
+					"WHERE A.USER_ID = B.USER_ID AND A.USER_ID != 9 AND A.BPD_INSTANCE_ID = C.BPD_INSTANCE_ID "+
+					"AND (C.BPD_INSTANCE_ID = (SELECT vbpmprocessinstance_id FROM vimrbasvuru WHERE vbpmprocessinstance_id = :surecno AND MPI1PAYDAS_ID=:paydasno) OR C.BPD_INSTANCE_ID = (SELECT vbpmprocessinstance_id FROM vydebasvuru WHERE vbpmprocessinstance_id = :surecno AND MPI1PAYDAS_ID=:paydasno)) ORDER BY A.TASK_ID ASC";
+		List list = new ArrayList<Object>();
+		List<SurecBasvuru> surecBasvuruList = new ArrayList<SurecBasvuru>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setParameter("surecno", surecno);
+		query.setParameter("paydasno", paydasno);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for (Object o : list) {
+			Map map = (Map) o;
+			SurecBasvuru surecbasvuru = new SurecBasvuru();
+			String gorevadi = (String) map.get("ACTIVITY_NAME");
+			String sorumlusu = (String) map.get("FULL_NAME");
+			String tamamlanmatarihi = (String) map.get("CLOSE_DATETIME");
+			if (gorevadi != null)
+				surecbasvuru.setGorevadi(gorevadi);
+
+			if (sorumlusu != null)
+				surecbasvuru.setSorumlusu(sorumlusu);
+
+			if (tamamlanmatarihi != null)
+				surecbasvuru.setTamamlanmatarihi(tamamlanmatarihi);
+
+			surecBasvuruList.add(surecbasvuru);
+		}
+		return surecBasvuruList;
+	}
 
 	//Isyeri Ruhsat
 	public List<IsyeriRuhsat> searchIsyeriRuhsat(){
