@@ -78,10 +78,10 @@ public class SY1DosyaRepository {
 
         if(sy1Dosya.getDosyanumarasi() != null && !sy1Dosya.getDosyanumarasi().isEmpty())
             sqlQuery += " and d.dosyanumarasi = '" + sy1Dosya.getDosyanumarasi() + "'";
-        if(sy1Dosya.getMpi1paydas().getAdi() != null && !sy1Dosya.getMpi1paydas().getAdi().isEmpty())
-            sqlQuery += " and mp.id in  (select id  from mpi1paydas where adi = '" + sy1Dosya.getMpi1paydas().getAdi() + "')";
-        if(sy1Dosya.getMpi1paydas().getSoyadi() != null && !sy1Dosya.getMpi1paydas().getSoyadi().isEmpty())
-            sqlQuery += " and mp.id in (select id from mpi1paydas where soyadi = '" + sy1Dosya.getMpi1paydas().getSoyadi() + "')";
+        if(sy1Dosya.getMpi1paydas386().getAdi() != null && !sy1Dosya.getMpi1paydas386().getAdi().isEmpty())
+            sqlQuery += " and mp.id in  (select id  from mpi1paydas where adi = '" + sy1Dosya.getMpi1paydas386().getAdi() + "')";
+        if(sy1Dosya.getMpi1paydas386().getSoyadi() != null && !sy1Dosya.getMpi1paydas386().getSoyadi().isEmpty())
+            sqlQuery += " and mp.id in (select id from mpi1paydas where soyadi = '" + sy1Dosya.getMpi1paydas386().getSoyadi() + "')";
 
 
 
