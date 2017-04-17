@@ -15,6 +15,7 @@ import com.digikent.vadirest.dto.SokakRayic;
 import com.digikent.vadirest.dto.SokakRayicYillar;
 import com.digikent.vadirest.dto.SosyalYardim;
 import com.digikent.vadirest.dto.SurecBasvuru;
+import com.digikent.vadirest.dto.VergiBorcu;
 import com.digikent.vadirest.dto.ZabitaDenetim;
 import com.vadi.digikent.abs.gmk.model.RE1Mahalle;
 import com.vadi.digikent.sosyalhizmetler.nkh.model.SR7NikahSalonu;
@@ -514,6 +515,129 @@ public class EbelediyeDAOImpl implements EbelediyeDAO {
 		}
 		return surecBasvuruList;
 	}
+	
+	//Vergi Borcu Sorgula PaydasNo ile
+	public List<VergiBorcu> searchVergiBorcu(long paydasno){
+		String sql = "SELECT EIN1GELIRGRUBU.TANIM SERVISADI, GIN1GELIRTURU.TANIM GELIRADI, JIN2TAHAKKUK.AIN2BILDIRIM_BILDIRIM, JIN2TAHAKKUK.YILI||'/'||JIN2TAHAKKUK.DONEMI YILI_DONEMI, TO_CHAR(JIN2TAHAKKUK.TAHAKKUKTARIHI,'DD/MM/RRRR') TAHAKKUKTARIHI,"
+					+" TO_CHAR(JIN2TAHAKKUK.VADETARIHI,'DD/MM/RRRR') VADETARIHI, JIN2TAHAKKUK.BORCTUTARI BORC, IN2.F_GECIKMEZAMMI(JIN2TAHAKKUK.ID) GECIKMEZAMMI, (IN2.F_GECIKMEZAMMI(JIN2TAHAKKUK.ID)+JIN2TAHAKKUK.BORCTUTARI) TOPLAM"
+					+" FROM JIN2TAHAKKUK , AIN2BILDIRIM , GIN1GELIRTURU, EIN1GELIRGRUBU"
+					+" WHERE ( JIN2TAHAKKUK.AIN2BILDIRIM_ID = AIN2BILDIRIM.ID ) AND	( JIN2TAHAKKUK.GIN1GELIRTURU_ID = GIN1GELIRTURU.ID) AND	( JIN2TAHAKKUK.EIN1GELIRGRUBU_ID = EIN1GELIRGRUBU.ID) AND"	
+					+" (JIN2TAHAKKUK.KAYITDURUMU = 'A' ) 	AND	( JIN2TAHAKKUK.BORCTUTARI > 0 ) AND JIN2TAHAKKUK.ID>0 AND ( JIN2TAHAKKUK.MPI1PAYDAS_ID = :paydasno)" 
+					+" ORDER BY JIN2TAHAKKUK.YILI DESC,JIN2TAHAKKUK.DONEMI ASC,JIN2TAHAKKUK.TAHAKKUKTARIHI DESC,JIN2TAHAKKUK.VADETARIHI DESC";
+		List list = new ArrayList<Object>();
+		List<VergiBorcu> vergiBorcuList = new ArrayList<VergiBorcu>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setParameter("paydasno", paydasno);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for (Object o : list) {
+			Map map = (Map) o;
+			VergiBorcu vergiborcu = new VergiBorcu();
+			
+			String gelirturu = (String) map.get("SERVISADI");
+			String geliradi = (String) map.get("GELIRADI");
+			BigDecimal beyanayrinti = (BigDecimal) map.get("AIN2BILDIRIM_BILDIRIM");
+			String borcyilidonem = (String) map.get("YILI_DONEMI");
+			String tahakkuktarihi = (String) map.get("TAHAKKUKTARIHI");
+			String vadetarihi = (String) map.get("VADETARIHI");
+			BigDecimal borctutari = (BigDecimal) map.get("BORC");
+			BigDecimal gecikmezammi = (BigDecimal) map.get("GECIKMEZAMMI");
+			BigDecimal toplam = (BigDecimal) map.get("TOPLAM");
+			
+			if (gelirturu != null)
+				vergiborcu.setGelirturu(gelirturu);
+
+			if (geliradi != null)
+				vergiborcu.setGeliradi(geliradi);
+
+			if (beyanayrinti != null)
+				vergiborcu.setBeyanayrinti(beyanayrinti.longValue());
+			
+			if(borcyilidonem != null)
+				vergiborcu.setBorcyilidonem(borcyilidonem);
+			
+			if(tahakkuktarihi != null)
+				vergiborcu.setTahakkuktarihi(tahakkuktarihi);
+			
+			if(vadetarihi != null)
+				vergiborcu.setVadetarihi(vadetarihi);
+			
+			if(borctutari != null)
+				vergiborcu.setBorctutari(borctutari.doubleValue());
+			
+			if(gecikmezammi != null)
+				vergiborcu.setGecikmezammi(gecikmezammi.doubleValue());
+			
+			if(toplam != null)
+				vergiborcu.setToplam(toplam.doubleValue());
+
+			vergiBorcuList.add(vergiborcu);
+		}
+		return vergiBorcuList;
+	}
+	
+	//Vergi Borcu Sorgula tckimlikno ile
+		public List<VergiBorcu> searchVergiBorcuByTcKimlikNo(long tckimlikno){
+			String sql = "SELECT EIN1GELIRGRUBU.TANIM SERVISADI, GIN1GELIRTURU.TANIM GELIRADI, JIN2TAHAKKUK.AIN2BILDIRIM_BILDIRIM, JIN2TAHAKKUK.YILI||'/'||JIN2TAHAKKUK.DONEMI YILI_DONEMI, TO_CHAR(JIN2TAHAKKUK.TAHAKKUKTARIHI,'DD/MM/RRRR') TAHAKKUKTARIHI,"
+					+" TO_CHAR(JIN2TAHAKKUK.VADETARIHI,'DD/MM/RRRR') VADETARIHI, JIN2TAHAKKUK.BORCTUTARI BORC, IN2.F_GECIKMEZAMMI(JIN2TAHAKKUK.ID) GECIKMEZAMMI, (IN2.F_GECIKMEZAMMI(JIN2TAHAKKUK.ID)+JIN2TAHAKKUK.BORCTUTARI) TOPLAM"
+					+" FROM JIN2TAHAKKUK , AIN2BILDIRIM , GIN1GELIRTURU, EIN1GELIRGRUBU"
+					+" WHERE ( JIN2TAHAKKUK.AIN2BILDIRIM_ID = AIN2BILDIRIM.ID ) AND	( JIN2TAHAKKUK.GIN1GELIRTURU_ID = GIN1GELIRTURU.ID) AND	( JIN2TAHAKKUK.EIN1GELIRGRUBU_ID = EIN1GELIRGRUBU.ID) AND"	
+					+" (JIN2TAHAKKUK.KAYITDURUMU = 'A' ) 	AND	( JIN2TAHAKKUK.BORCTUTARI > 0 ) AND JIN2TAHAKKUK.ID>0 AND ( JIN2TAHAKKUK.MPI1PAYDAS_ID = (SELECT ID FROM MPI1PAYDAS WHERE TCKIMLIKNO = :tckimlikno))" 
+					+" ORDER BY JIN2TAHAKKUK.YILI DESC,JIN2TAHAKKUK.DONEMI ASC,JIN2TAHAKKUK.TAHAKKUKTARIHI DESC,JIN2TAHAKKUK.VADETARIHI DESC";
+			List list = new ArrayList<Object>();
+			List<VergiBorcu> vergiBorcuList = new ArrayList<VergiBorcu>();
+
+			SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+			query.setParameter("tckimlikno", tckimlikno);
+			query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+			list = query.list();
+
+			for (Object o : list) {
+				Map map = (Map) o;
+				VergiBorcu vergiborcu = new VergiBorcu();
+				String gelirturu = (String) map.get("SERVISADI");
+				String geliradi = (String) map.get("GELIRADI");
+				BigDecimal beyanayrinti = (BigDecimal) map.get("AIN2BILDIRIM_BILDIRIM");
+				String borcyilidonem = (String) map.get("YILI_DONEMI");
+				String tahakkuktarihi = (String) map.get("TAHAKKUKTARIHI");
+				String vadetarihi = (String) map.get("VADETARIHI");
+				BigDecimal borctutari = (BigDecimal) map.get("BORC");
+				BigDecimal gecikmezammi = (BigDecimal) map.get("GECIKMEZAMMI");
+				BigDecimal toplam = (BigDecimal) map.get("TOPLAM");
+				
+				if (gelirturu != null)
+					vergiborcu.setGelirturu(gelirturu);
+
+				if (geliradi != null)
+					vergiborcu.setGeliradi(geliradi);
+
+				if (beyanayrinti != null)
+					vergiborcu.setBeyanayrinti(beyanayrinti.longValue());
+				
+				if(borcyilidonem != null)
+					vergiborcu.setBorcyilidonem(borcyilidonem);
+				
+				if(tahakkuktarihi != null)
+					vergiborcu.setTahakkuktarihi(tahakkuktarihi);
+				
+				if(vadetarihi != null)
+					vergiborcu.setVadetarihi(vadetarihi);
+				
+				if(borctutari != null)
+					vergiborcu.setBorctutari(borctutari.doubleValue());
+				
+				if(gecikmezammi != null)
+					vergiborcu.setGecikmezammi(gecikmezammi.doubleValue());
+				
+				if(toplam != null)
+					vergiborcu.setToplam(toplam.doubleValue());
+
+				vergiBorcuList.add(vergiborcu);
+			}
+			return vergiBorcuList;
+		}
 
 	//Isyeri Ruhsat
 	public List<IsyeriRuhsat> searchIsyeriRuhsat(){

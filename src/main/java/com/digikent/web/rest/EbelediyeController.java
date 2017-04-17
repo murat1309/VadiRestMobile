@@ -26,6 +26,7 @@ import com.digikent.vadirest.dto.SokakRayic;
 import com.digikent.vadirest.dto.SokakRayicYillar;
 import com.digikent.vadirest.dto.SosyalYardim;
 import com.digikent.vadirest.dto.SurecBasvuru;
+import com.digikent.vadirest.dto.VergiBorcu;
 import com.digikent.vadirest.dto.ZabitaDenetim;
 import com.digikent.vadirest.service.EbelediyeService;
 import com.vadi.digikent.abs.gmk.model.RE1Mahalle;
@@ -191,6 +192,21 @@ public class EbelediyeController extends EBelediyeService {
 		// TODO Auto-generated method stub
 		return ebelediyeService.searchSurecBasvuruBySurecno(surecno, paydasno);
 	}
+	
+	@RequestMapping(value = "/searchVergiBorcu/{paydasno}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_DEV')")
+	public List<VergiBorcu> searchVergiBorcu(@PathVariable("paydasno") long paydasno) {
+		// TODO Auto-generated method stub
+		return ebelediyeService.searchVergiBorcu(paydasno);
+	}
+	
+	@RequestMapping(value = "/searchVergiBorcuByTcKimlikNo/{tckimlikno}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_DEV')")
+	public List<VergiBorcu> searchVergiBorcuByTcKimlikNo(@PathVariable("tckimlikno") long tckimlikno) {
+		// TODO Auto-generated method stub
+		return ebelediyeService.searchVergiBorcuByTcKimlikNo(tckimlikno);
+	}
+	
 
 
 	@Override
