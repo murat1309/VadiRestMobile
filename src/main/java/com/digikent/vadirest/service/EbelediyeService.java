@@ -14,6 +14,7 @@ import com.digikent.vadirest.dto.SokakRayic;
 import com.digikent.vadirest.dto.SokakRayicYillar;
 import com.digikent.vadirest.dto.SosyalYardim;
 import com.digikent.vadirest.dto.SurecBasvuru;
+import com.digikent.vadirest.dto.VergiBorcu;
 import com.digikent.vadirest.dto.ZabitaDenetim;
 import com.vadi.digikent.abs.gmk.model.RE1Mahalle;
 import com.vadi.digikent.sosyalhizmetler.nkh.model.SR7NikahSalonu;
@@ -57,6 +58,15 @@ public interface EbelediyeService {
 	
 	//get s�re� ba�vuru sorgula list
 	public List<SurecBasvuru> searchSurecBasvuru(long basvuruno, long paydasno);
+	
+	//get s�re� ba�vuru sorgula list surec no ile
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno);
+	
+	//get vergi borcu sorgula list paydas no ile
+	public List<VergiBorcu> searchVergiBorcu(long paydasno);
+	
+	//get vergi borcu sorgula list tckimlik no ile
+	public List<VergiBorcu> searchVergiBorcuByTcKimlikNo(long tckimlikno);
 	
 	//get isyeri ruhsat list
 	public List<IsyeriRuhsat> searchIsyeriRuhsat();

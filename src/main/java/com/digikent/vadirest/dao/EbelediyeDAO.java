@@ -14,6 +14,7 @@ import com.digikent.vadirest.dto.SokakRayic;
 import com.digikent.vadirest.dto.SokakRayicYillar;
 import com.digikent.vadirest.dto.SosyalYardim;
 import com.digikent.vadirest.dto.SurecBasvuru;
+import com.digikent.vadirest.dto.VergiBorcu;
 import com.digikent.vadirest.dto.ZabitaDenetim;
 import com.vadi.digikent.abs.gmk.model.RE1Mahalle;
 import com.vadi.digikent.sosyalhizmetler.nkh.model.SR7NikahSalonu;
@@ -34,6 +35,9 @@ public interface EbelediyeDAO {
 	public List<BilgiEdinme> searchBasvuru(long basvuruno, String eposta);
 	public List<BelgeSorgula> searchBelge(long referansno, String parola);
 	public List<SurecBasvuru> searchSurecBasvuru(long basvuruno, long paydasno);
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno);
+	public List<VergiBorcu> searchVergiBorcu(long paydasno);
+	public List<VergiBorcu> searchVergiBorcuByTcKimlikNo(long tckimlikno);
 	public List<IsyeriRuhsat> searchIsyeriRuhsat();
 	public List<SosyalYardim> searchSosyalYardim();
 	public List<SokakRayic> searchSokakRayicGuncel();

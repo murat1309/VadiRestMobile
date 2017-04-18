@@ -15,6 +15,7 @@ import com.digikent.vadirest.dto.SokakRayic;
 import com.digikent.vadirest.dto.SokakRayicYillar;
 import com.digikent.vadirest.dto.SosyalYardim;
 import com.digikent.vadirest.dto.SurecBasvuru;
+import com.digikent.vadirest.dto.VergiBorcu;
 import com.digikent.vadirest.dto.ZabitaDenetim;
 import com.digikent.vadirest.service.EbelediyeService;
 import com.vadi.digikent.abs.gmk.model.RE1Mahalle;
@@ -94,6 +95,21 @@ public class EbelediyeServiceImpl implements EbelediyeService {
 		return ebelediyeDAO.searchSurecBasvuru(basvuruno, paydasno);
 	}
 	
+	public List<SurecBasvuru> searchSurecBasvuruBySurecno(long surecno, long paydasno) {
+		
+		return ebelediyeDAO.searchSurecBasvuruBySurecno(surecno, paydasno);
+	}
+	
+	public List<VergiBorcu> searchVergiBorcu(long paydasno) {
+		
+		return ebelediyeDAO.searchVergiBorcu(paydasno);
+	}
+	
+	public List<VergiBorcu> searchVergiBorcuByTcKimlikNo(long tckimlikno) {
+		
+		return ebelediyeDAO.searchVergiBorcuByTcKimlikNo(tckimlikno);
+	}
+
 	public List<IsyeriRuhsat> searchIsyeriRuhsat() {
 		
 		return ebelediyeDAO.searchIsyeriRuhsat();
