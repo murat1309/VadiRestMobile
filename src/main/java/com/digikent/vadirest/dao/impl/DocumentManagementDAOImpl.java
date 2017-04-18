@@ -63,6 +63,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 
 	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate) {
 		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, "
+				+"(SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE A.ebysdocument_id = EBYSDOCUMENT_ID AND TURU='USTYAZI_BIRIM') as PAKETID,"
 				+"DECODE ((SELECT NVL (ABYOKONU_ID, 0)FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), "
 				+"0, CASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL) > 0 "
 				+"THEN(SELECT KONUOZETI FROM EBYSBELGE WHERE ID =(SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (A.ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL)) "
@@ -118,6 +119,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			String konu = (String)map.get("KONU");
 			String message = (String) map.get("MESSAGE");
 			BigDecimal docId = (BigDecimal) map.get("DOCID");
+			BigDecimal paketId = (BigDecimal)map.get("PAKETID");
 
 			if(id != null)
 				ebys.setId(id.longValue());
@@ -133,6 +135,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				ebys.setMessage(message);
 			if(docId != null)
 				ebys.setDocId(docId.longValue());
+			if(paketId != null)
+				ebys.setPaketId(paketId.longValue());
 
 			ebysList.add(ebys);
 		}
@@ -140,7 +144,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
-		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, "
+		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, " +
+				"(SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE A.ebysdocument_id = EBYSDOCUMENT_ID AND TURU='USTYAZI_BIRIM') as PAKETID,"
 				+"DECODE ((SELECT NVL (ABYOKONU_ID, 0)FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), "
 				+"0, CASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL) > 0 "
 				+"THEN(SELECT KONUOZETI FROM EBYSBELGE WHERE ID =(SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (A.ABPMWORKFLOW_ID,'EBYSBELGE_ID')FROM DUAL)) "
@@ -183,6 +188,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			String konu = (String)map.get("KONU");
 			String message = (String) map.get("MESSAGE");
 			BigDecimal docId = (BigDecimal) map.get("DOCID");
+			BigDecimal paketId = (BigDecimal)map.get("PAKETID");
+
 
 			if(id != null)
 				ebys.setId(id.longValue());
@@ -198,10 +205,130 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				ebys.setMessage(message);
 			if(docId != null)
 				ebys.setDocId(docId.longValue());
+			if(paketId != null)
+				ebys.setPaketId(paketId.longValue());
 			
 			ebysList.add(ebys);
 		}
 		return ebysList;
+	}
+
+	public List<EBYSDetail> getEbysDocumentDetail(long documentId){
+
+		String sql = "WITH TUMCE " +
+				"     AS (SELECT /*+ inline*/ " +
+				"               c.ID                    CID, " +
+				"                a.ID                   AID, " +
+				"                C.ONAYSIRASI, " +
+				"                a.TANIM, " +
+				"                (SELECT DURUMU " +
+				"                   FROM EBYSVERSION " +
+				"                  WHERE ID = c.EBYSVERSION_ID) " +
+				"                   DURUMU, " +
+				"                C.ONAYDURUMU, " +
+				"                C.ONAYTIPI, " +
+				"                (SELECT ADI || ' ' || SOYADI " +
+				"                   FROM IHR1PERSONEL " +
+				"                  WHERE ID = C.IHR1PERSONEL_ID) " +
+				"                   ADSOYAD, " +
+				"                C.IHR1PERSONEL_ID, " +
+				"                c.DOKUMANTURU, " +
+				"                c.hitapeki, " +
+				"                C.EBYSVERSION_ID, " +
+				"                NVL (C.ABPMTASK_ID, 0) BPMTASKID, " +
+				"                (SELECT NVL (EIMZASIZPARAFLAMA, 'H') " +
+				"                   FROM IHR1PERSONEL " +
+				"                  WHERE ID = C.IHR1PERSONEL_ID) " +
+				"                   EIMZASIZPARAFLAMA, " +
+				"                C.EBYSDOCUMENT_ID      EBYSDOCUMENT_ONAY, " +
+				"                a.MASTERID_DAGITIM, " +
+				"               (SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,  " +
+				"               (SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS, "+
+				"               (SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID" +
+				"           FROM EBYSDOCUMENT a, EBYSONAY c " +
+				"          WHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) " +
+				"SELECT * " +
+				"  FROM TUMCE " +
+				" WHERE (EBYSDOCUMENT_ONAY = "+documentId+") " +
+				"UNION " +
+				"SELECT * " +
+				"  FROM TUMCE " +
+				" WHERE (MASTERID_DAGITIM = "+ documentId +") " +
+				"ORDER BY 2, 3 ";
+
+		List<Object> list = new ArrayList();
+		List<EBYSDetail> ebysDetailList = new ArrayList();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map)o;
+			EBYSDetail ebysDetail = new EBYSDetail();
+
+			BigDecimal cid = (BigDecimal)map.get("CID");
+			BigDecimal aid =(BigDecimal)map.get("AID");
+			BigDecimal onaySirasi =(BigDecimal)map.get("ONAYSIRASI");
+			String tanim = (String)map.get("TANIM");
+			String durumu = (String)map.get("DURUMU");
+			String onayDurumu = (String)map.get("ONAYDURUMU");
+			String onayTipi = (String)map.get("ONAYTIPI");
+			String adSoyad = (String)map.get("ADSOYAD");
+			BigDecimal ihrPersonelId =(BigDecimal)map.get("IHR1PERSONEL_ID");
+			String dokumanTuru = (String)map.get("DOKUMANTURU");
+			String hitapEki = (String)map.get("HITAPEKI");
+			BigDecimal ebysVersionId=(BigDecimal)map.get("EBYSVERSION_ID");
+			BigDecimal bpmTaskId=(BigDecimal)map.get("BPMTASKID");
+			String eImzasizParaflama = (String)map.get("EIMZASIZPARAFLAMA");
+			BigDecimal ebysDocumentOnay = (BigDecimal)map.get("EBYSDOCUMENT_ONAY");
+			BigDecimal masterIdDagitim = (BigDecimal)map.get("MASTERID_DAGITIM");
+			BigDecimal paketId = (BigDecimal)map.get("PAKETID") ;
+			String onaySirasiTuru = (String)map.get("OS") ;
+			BigDecimal contentId = (BigDecimal)map.get("CONTENTID");
+
+			if(cid != null)
+				ebysDetail.setOnayId(cid.longValue());
+			if(aid != null)
+				ebysDetail.setDocumentId(aid.longValue());
+			if(onaySirasi != null)
+				ebysDetail.setOnaySirasi(onaySirasi.longValue());
+			if(tanim != null)
+				ebysDetail.setTanim(tanim);
+			if(durumu != null)
+				ebysDetail.setDurumu(durumu);
+			if(onayDurumu != null)
+				ebysDetail.setOnayDurumu(onayDurumu);
+			if(onayTipi != null)
+				ebysDetail.setOnayTipi(onayTipi);
+			if(adSoyad != null)
+				ebysDetail.setAdSoyad(adSoyad);
+			if(ihrPersonelId != null)
+				ebysDetail.setIhr1PersonelId(ihrPersonelId.longValue());
+			if(dokumanTuru != null)
+				ebysDetail.setDokumanTuru(dokumanTuru);
+			if(hitapEki != null)
+				ebysDetail.setHitapEki(hitapEki);
+			if(ebysVersionId != null)
+				ebysDetail.setEbysversiyonId(ebysVersionId.longValue());
+			if(bpmTaskId != null)
+				ebysDetail.setBpmTaskId(bpmTaskId.longValue());
+			if(eImzasizParaflama != null)
+				ebysDetail.seteImzasizParaflama(eImzasizParaflama);
+			if (ebysDocumentOnay != null)
+				ebysDetail.setEbysDocumentOnayId(ebysDocumentOnay.longValue());
+			if(masterIdDagitim != null)
+				ebysDetail.setMasterIdDagitim(masterIdDagitim.longValue());
+			if(paketId != null)
+				ebysDetail.setPaketId(paketId.longValue());
+			if(onaySirasiTuru != null)
+				ebysDetail.setOnaySirasiTuru(onaySirasiTuru);
+			if(contentId != null)
+				ebysDetail.setContentId(contentId.longValue());
+
+			ebysDetailList.add(ebysDetail);
+		}
+		return ebysDetailList;
 	}
 
 	public List<Rol> getDocRollList(long persid, long mastid) {

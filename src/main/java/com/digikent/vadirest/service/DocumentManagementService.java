@@ -12,6 +12,7 @@ public interface DocumentManagementService {
 	public List<SM1Roles> getEBYSRollList(long persid);
 	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate);
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
+	public List<EBYSDetail> getEbysDocumentDetail(long documentId);
 	public List<Rol> getDocRollList(long persid, long mastid);
 	public List<BelgeBasvuru> getApplyDoc(long rolid);
 	public BelgeBasvuruDetay getApplyDocDetail(long docId);

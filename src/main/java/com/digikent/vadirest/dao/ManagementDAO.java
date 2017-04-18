@@ -11,8 +11,12 @@ public interface ManagementDAO {
 	public List<BankaDurumu> getBankStatus(long id, long year);
 	public List<BankaDurumuDetay> getBankStatusDetail(long id, long accountId, long year, String startDate, String endDate);
 	public List<PersonelBilgileri> getStaffInfomation();
+	public List<PersonelBilgileri> getPersonelKadroInformation();
 	public List<PersonelBilgileriDetay> getStaffDetail(long servisGorevId, char turu);
+	public List<PersonelBilgileriDetay> getKadroDetay(long servisKadroId);
 	public List<PersonelGrup> getStaffGroup();
+	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate);;
+	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate);;
 	public List<KurumBorc> getDebtStatus(long id, long year);
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate);
 	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate);

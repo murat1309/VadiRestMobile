@@ -3,6 +3,7 @@ package com.digikent.vadirest.dto;
 public class PersonelBilgileri {
 	
 	private long bsm2ServisGorev;
+	private long bsm2ServisKadro;
 	private String birimAdi;
 	private int toplamPersonel;
 	private int memurSayisi;
@@ -12,7 +13,14 @@ public class PersonelBilgileri {
 	private int sozlemeliSayisi;
 	private int geciciIsciSayisi;
 	private int meclisUyesiSayisi;
-	
+
+	public long getBsm2ServisKadro() {
+		return bsm2ServisKadro;
+	}
+
+	public void setBsm2ServisKadro(long bsm2ServisKadro) {
+		this.bsm2ServisKadro = bsm2ServisKadro;
+	}
 	
 	public String getBirimAdi() {
 		return birimAdi;

@@ -45,6 +45,12 @@ public class ManagementController {
 		System.out.println("----------belediye personel bilgileri---------");
 		return managementService.getStaffInfomation();
 	}
+	//personel bilgisi
+	@RequestMapping(value = "personelKadroBilgileri", method = RequestMethod.GET)
+	public List<PersonelBilgileri> getPersonelKadroInformation(){
+		LOG.debug("Rest Request to get personel kadro bilgileri");
+		return managementService.getPersonelKadroInformation();
+	}
 	
 	//kurum personel detay
 	@RequestMapping(value = "personelGrubuDetay/{servisGorevId}/{turu}", method = RequestMethod.GET)
@@ -61,12 +67,33 @@ public class ManagementController {
 		char turu =' ';
 		return managementService.getStaffDetail(servisGorevId, turu);
 	}
+
+	//kurum personel Kadro detay butun
+	@RequestMapping(value = "personelGrubuKadroDetay/{servisKadroId}", method = RequestMethod.GET)
+	public List<PersonelBilgileriDetay> getKadroDetay(@PathVariable("servisKadroId")long servisKadroId){
+		LOG.debug("Rest Request to get job quiters, startDate, endDate: {}", servisKadroId);
+		return managementService.getKadroDetay(servisKadroId);
+	}
 	
 	//personel Grubu
 	@RequestMapping(value = "personelGrubu", method = RequestMethod.GET)
 	public List<PersonelGrup> getStaffGroup(){
 		System.out.println("--------personel grup-------------------------");
 		return managementService.getStaffGroup();
+	}
+
+	//ise baslayanlar
+	@RequestMapping(value = "iseBaslayanlar/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<PersonelBilgileriDetay> getJobStarters(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate){
+		LOG.debug("Rest Request to get job starters, startDate, endDate: {}", startDate, endDate);
+		return managementService.getJobStarters(startDate, endDate);
+	}
+
+	//ise baslayanlar
+	@RequestMapping(value = "istenAyrılanlar/{startDate}/{endDate}", method = RequestMethod.GET)
+	public List<PersonelBilgileriDetay> getJobQuitters(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate){
+		LOG.debug("Rest Request to get job quiters, startDate, endDate: {}", startDate, endDate);
+		return managementService.getJobQuitters(startDate, endDate);
 	}
 	
 	//kurum borc bilgisi

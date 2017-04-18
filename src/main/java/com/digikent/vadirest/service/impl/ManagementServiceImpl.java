@@ -36,13 +36,29 @@ public class ManagementServiceImpl implements ManagementService {
 	public List<PersonelBilgileri> getStaffInfomation() {
 		return managementDAO.getStaffInfomation();
 	}
+
+	public List<PersonelBilgileri> getPersonelKadroInformation() {
+		return managementDAO.getPersonelKadroInformation();
+	}
 	
 	public List<PersonelBilgileriDetay> getStaffDetail(long servisGorevId, char turu){
 		 return managementDAO.getStaffDetail(servisGorevId, turu);
 	}
+
+	public List<PersonelBilgileriDetay> getKadroDetay(long servisKadroId){
+		 return managementDAO.getKadroDetay(servisKadroId);
+	}
 	
 	public List<PersonelGrup> getStaffGroup(){
 		return managementDAO.getStaffGroup();
+	}
+
+	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate){
+		return managementDAO.getJobStarters(startDate, endDate);
+	}
+
+	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate){
+		return managementDAO.getJobQuitters(startDate, endDate);
 	}
 
 	public List<KurumBorc> getDebtStatus(long id, long year) {

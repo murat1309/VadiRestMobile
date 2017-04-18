@@ -5,27 +5,36 @@ import com.digikent.vadirest.service.DocumentManagementService;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 
 @RestController
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
+@PropertySources({ @PropertySource(value = { "file:${DIGIKENT_PATH}/services/baseUrl.properties" }) })
 public class DocumentManagementController {
 
 	private final Logger LOG = LoggerFactory.getLogger(DocumentManagementController.class);
 
 	@Autowired(required=true)
 	private DocumentManagementService documentManagementService;
+
+	@Autowired
+	private Environment environment;
 	
 	//belge yonetim rol listesi
 	@RequestMapping(value = "" +
@@ -98,6 +107,26 @@ public class DocumentManagementController {
 
 		LOG.debug("Rest Request to get ebys kisiye atanan persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
 		return documentManagementService.getEBYS("KISIYEATANAN", persid, rolid, startDate, endDate);
+	}
+
+	@RequestMapping(value="EBYSDokumanDetay/{documentId}",method = RequestMethod.GET)
+	public List<EBYSDetail> getEbysDocumentDetail(@PathVariable("documentId") long documentId){
+
+		LOG.debug("Rest Request to get dokuman detay documentId: {}", documentId);
+		return documentManagementService.getEbysDocumentDetail(documentId);
+	}
+
+	@RequestMapping(value="dokuman/{documentId}",method = RequestMethod.GET)
+	public EBYSContent getDocument(@PathVariable("documentId") long documentId){
+
+		LOG.debug("Rest Request to get dokuman documentId: {}", documentId);
+		RestTemplate restTemplate = new RestTemplate();
+		String url = environment.getProperty("eyazisma") + "paket/" + documentId + "/dokuman";
+		byte[] bytes = restTemplate.getForObject(url, byte[].class);
+		byte[] encoded = Base64.getEncoder().encode(bytes);
+		EBYSContent ebysContent = new EBYSContent();
+		ebysContent.setContent(new String(encoded));
+		return ebysContent;
 	}
 	
 	//Belge Basvuru rollList

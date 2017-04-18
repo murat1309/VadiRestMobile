@@ -188,6 +188,69 @@ public class ManagementDAOImpl implements ManagementDAO {
 		
 		return personelBilgileriList;
 	}
+
+	public List<PersonelBilgileri> getPersonelKadroInformation() {
+		String sql ="select a.BSM2SERVIS_KADRO,b.TANIM BirimAdi,"
+				   +"Count(*) ToplamPersonel,"
+		           +"Sum( Case a.TURU When 'M' Then 1 Else 0 End ) MemurSayisi,"
+		           +"Sum( Case a.TURU When 'I' Then 1 Else 0 End ) IsciSayisi,"
+				   +"Sum( Case a.TURU When 'O' Then 1 Else 0 End ) StajyerSayisi,"
+				   +"Sum( Case a.TURU When 'F' Then 1 Else 0 End ) TaseronSayisi,"
+		           +"Sum( Case a.TURU When 'S' Then 1 Else 0 End ) SozlesmeliSayisi,"
+		           +"Sum( Case a.TURU When 'G' Then 1 Else 0 End ) GeciciIsciSayisi,"
+		           +"Sum( Case a.TURU When 'L' Then 1 Else 0 End ) MeclisUyesiSayisi from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID "
+		           +"And a.CIKISTARIHI IS NULL AND A.PERSONELDURUMU='CALISAN'"
+		           +"group by a.BSM2SERVIS_KADRO,b.TANIM"
+				   +" order by BirimAdi";
+
+		List<Object> list = new ArrayList<Object>();
+		List<PersonelBilgileri> personelBilgileriList = new ArrayList<PersonelBilgileri>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			PersonelBilgileri personelBilgileri = new PersonelBilgileri();
+
+			BigDecimal bsm2ServisKadro = (BigDecimal)map.get("BSM2SERVIS_KADRO");
+			String birimAdi = (String)map.get("BIRIMADI");
+			BigDecimal toplamPersonel = (BigDecimal)map.get("TOPLAMPERSONEL");
+			BigDecimal memurSayisi = (BigDecimal)map.get("MEMURSAYISI");
+			BigDecimal isciSayisi = (BigDecimal)map.get("ISCISAYISI");
+			BigDecimal stajyerSayisi = (BigDecimal)map.get("STAJYERSAYISI");
+			BigDecimal taseronSayisi = (BigDecimal)map.get("TASERONSAYISI");
+			BigDecimal sozlesmeliSayisi = (BigDecimal)map.get("SOZLEMELISAYISI");
+			BigDecimal gecisiIsciSayisi = (BigDecimal)map.get("GECICIISCISAYISI");
+			BigDecimal meclisUyesiSayisi = (BigDecimal)map.get("MECLISUYESISAYISI");
+
+			if(bsm2ServisKadro != null)
+				personelBilgileri.setBsm2ServisKadro(bsm2ServisKadro.longValue());
+			if(birimAdi != null)
+				personelBilgileri.setBirimAdi(birimAdi);
+			if(toplamPersonel != null)
+				personelBilgileri.setToplamPersonel(toplamPersonel.intValue());
+			if(memurSayisi != null)
+				personelBilgileri.setMemurSayisi(memurSayisi.intValue());
+			if(isciSayisi != null)
+				personelBilgileri.setIsciSayisi(isciSayisi.intValue());
+			if(stajyerSayisi != null)
+				personelBilgileri.setStajyerSayisi(stajyerSayisi.intValue());
+			if(taseronSayisi != null)
+				personelBilgileri.setTaseronSayisi(taseronSayisi.intValue());
+			if(sozlesmeliSayisi != null)
+				personelBilgileri.setSozlemeliSayisi(sozlesmeliSayisi.intValue());
+			if(gecisiIsciSayisi != null)
+				personelBilgileri.setGeciciIsciSayisi(gecisiIsciSayisi.intValue());
+			if(meclisUyesiSayisi != null)
+				personelBilgileri.setMeclisUyesiSayisi(meclisUyesiSayisi.intValue());
+
+			personelBilgileriList.add(personelBilgileri);
+		}
+
+		return personelBilgileriList;
+	}
 	
 	public List<PersonelGrup> getStaffGroup(){
 		String sql="select "
@@ -263,6 +326,67 @@ public class ManagementDAOImpl implements ManagementDAO {
 		}
 		return personelGrubuList;
 	}
+
+
+	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate){
+		String sql = "Select A.ID, A.ADISOYADI from IHR1PERSONEL A " +
+				"Where A.GIRISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
+				"TO_DATE ('"+endDate+"', 'dd-MM-yyyy') ORDER BY A.GIRISTARIHI";
+
+		List<Object> list = new ArrayList<Object>();
+		List<PersonelBilgileriDetay> personelBilgileriDetayList = new ArrayList<PersonelBilgileriDetay>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			PersonelBilgileriDetay personelBilgileriDetay = new PersonelBilgileriDetay();
+			int imageLength;
+
+			BigDecimal id = (BigDecimal)map.get("ID");
+			String adiSoyadi = (String) map.get("ADISOYADI");
+
+			if(id != null)
+				personelBilgileriDetay.setId(id.longValue());
+			if(adiSoyadi != null)
+				personelBilgileriDetay.setAdiSoyadi(adiSoyadi);
+
+			personelBilgileriDetayList.add(personelBilgileriDetay);
+		}
+		return personelBilgileriDetayList;
+	}
+
+	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate){
+		String sql = "Select A.ID, A.ADISOYADI from IHR1PERSONEL A " +
+				"Where A.CIKISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
+				"TO_DATE ('"+endDate+"', 'dd-MM-yyyy') ORDER BY A.CIKISTARIHI";
+
+		List<Object> list = new ArrayList<Object>();
+		List<PersonelBilgileriDetay> personelBilgileriDetayList = new ArrayList<PersonelBilgileriDetay>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			PersonelBilgileriDetay personelBilgileriDetay = new PersonelBilgileriDetay();
+			int imageLength;
+
+			BigDecimal id = (BigDecimal)map.get("ID");
+			String adiSoyadi = (String) map.get("ADISOYADI");
+
+			if(id != null)
+				personelBilgileriDetay.setId(id.longValue());
+			if(adiSoyadi != null)
+				personelBilgileriDetay.setAdiSoyadi(adiSoyadi);
+
+			personelBilgileriDetayList.add(personelBilgileriDetay);
+		}
+		return personelBilgileriDetayList;
+	}
 	
 	public List<PersonelBilgileriDetay> getStaffDetail(long servisGorevId, char turu){
 		String sql;
@@ -328,8 +452,65 @@ public class ManagementDAOImpl implements ManagementDAO {
 			personelBilgileriDetayList.add(personelBilgileriDetay);
 		}
 		return personelBilgileriDetayList;
-	} 
-	
+	}
+
+	public List<PersonelBilgileriDetay> getKadroDetay(long servisKadroId){
+		String sql ="select a.ID, a.BSM2SERVIS_KADRO,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
+				+"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
+				+" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID and a.BSM2SERVIS_KADRO = "+servisKadroId
+				+" And a.CIKISTARIHI IS NULL"
+				+" order by a.ADISOYADI";
+
+		List<Object> list = new ArrayList<Object>();
+		List<PersonelBilgileriDetay> personelBilgileriDetayList = new ArrayList<PersonelBilgileriDetay>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map) o;
+			PersonelBilgileriDetay personelBilgileriDetay = new PersonelBilgileriDetay();
+			int imageLength;
+
+			BigDecimal id = (BigDecimal)map.get("ID");
+			BigDecimal  bsm2ServisKadro = (BigDecimal) map.get("BSM2SERVIS_KADRO");
+			String birimAdi = (String) map.get("BIRIMADI");
+			String adiSoyadi = (String) map.get("ADISOYADI");
+			BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
+			String cepTelefonu = (String) map.get("CEPTELEFONU");
+			String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
+			String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
+			String dogumYeri = (String) map.get("DOGUMYERI");
+			String adres = (String) map.get("ADRES");
+
+			if(id != null)
+				personelBilgileriDetay.setId(id.longValue());
+			if(bsm2ServisKadro != null)
+				personelBilgileriDetay.setBsm2ServisKadro(bsm2ServisKadro.longValue());
+			if(birimAdi != null)
+				personelBilgileriDetay.setBirimAdi(birimAdi);
+			if(adiSoyadi != null)
+				personelBilgileriDetay.setAdiSoyadi(adiSoyadi);
+			if(tcKimlikNo != null)
+				personelBilgileriDetay.setTcKimlikNo(tcKimlikNo.longValue());
+			if(cepTelefonu != null)
+				personelBilgileriDetay.setCepTelefonu(cepTelefonu);
+			if(telefonNumarasi != null)
+				personelBilgileriDetay.setTelefonNumarasi(telefonNumarasi);
+			if(elektronikPosta != null)
+				personelBilgileriDetay.setElektronikPosta(elektronikPosta);
+			if(dogumYeri != null)
+				personelBilgileriDetay.setDogumYeri(dogumYeri);
+			if(adres != null)
+				personelBilgileriDetay.setAdres(adres);
+
+			personelBilgileriDetayList.add(personelBilgileriDetay);
+		}
+		return personelBilgileriDetayList;
+	}
+
+
 	public List<KurumBorc> getDebtStatus(long id, long year){
 		String sql = " SELECT 'VergiVeFonlar' Turu, HPL.TANIM Konu, HPL.TOPLAMALACAK TahakkukEden, HPL.TOPLAMBORC Odenen, "
 				+" (HPL.TOPLAMALACAK - HPL.TOPLAMBORC) Borc, HPL.MPI1PAYDAS_ID FROM LFI2HESAPPLANI HPL "

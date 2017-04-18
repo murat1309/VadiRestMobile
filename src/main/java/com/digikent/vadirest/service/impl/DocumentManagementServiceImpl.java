@@ -31,6 +31,10 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		// TODO Auto-generated method stub
 		return documentManagementDAO.getWaitingEBYS(persid, rolid, startDate, endDate);
 	}
+
+	public List<EBYSDetail> getEbysDocumentDetail(long documentId){
+		return documentManagementDAO.getEbysDocumentDetail(documentId);
+	}
 	
 	public List<Rol> getDocRollList(long persid, long mastid){
 		return documentManagementDAO.getDocRollList(persid, mastid);

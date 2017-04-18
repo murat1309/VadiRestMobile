@@ -1,7 +1,7 @@
 package com.digikent.aop.logging;
 
 import com.digikent.aspect.CustomerRequired;
-import com.digikent.filter.FilterType;
+
 import com.digikent.security.SecurityUtils;
 
 import org.aspectj.lang.JoinPoint;
@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,64 +67,6 @@ public class FilterAspect {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    //@Before(value = "com.vadi.efatura.aop.logging.SystemArchitecture.inDataLayer())")
-    public void customerCheck(JoinPoint joinPoint) {
-
-        if (SecurityUtils.isSystemUserActivated()) {
-            setFilterForRequest(FilterType.CUSTOMER, false);
-            return;
-        }
-
-        if (log.isDebugEnabled()) {
-
-            String methodName = joinPoint.getSignature().getName();
-            String declaringType = joinPoint.getSignature().getDeclaringTypeName();
-            String args = Arrays.toString(joinPoint.getArgs());
-
-            Annotation annotated = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(CustomerRequired.class);
-
-            log.debug("Class : {} , MethodName : {}  , Arguments : {} ", joinPoint.getSignature().getDeclaringTypeName(), methodName, args);
-            if (joinPoint.getSignature().getDeclaringType().getAnnotation(CustomerRequired.class) != null) {
-                log.debug("Class has annotation ", declaringType);
-            }
-        }
-        Method methodSignature = ((MethodSignature) joinPoint.getSignature()).getMethod();
-
-        if (methodSignature.getAnnotation(CustomerRequired.class) != null) {
-            setFilterForRequest(FilterType.CUSTOMER, true);
-            return;
-        }
-
-        for (Class<?> superType : joinPoint.getTarget().getClass().getInterfaces()) {
-            log.debug("Class Interface: {} ", superType);
-            if (superType.getAnnotation(CustomerRequired.class) != null) {
-                setFilterForRequest(FilterType.CUSTOMER, true);
-                return;
-            }
-        }
-        setFilterForRequest(FilterType.CUSTOMER, false);
-    }
-
-    /**
-     * enable or disables given Filter for in session over entitymanager,
-     * if active is given as true, filter is enabled, otherwise disabled
-     *
-     * @param filterType
-     * @param active
-     */
-    private void setFilterForRequest(FilterType filterType, Boolean active) {
-
-        if (TransactionSynchronizationManager.isActualTransactionActive() && SecurityUtils.isAuthenticated()) {
-            Session session = entitymanager.unwrap(Session.class);
-            if (active) {
-                session.enableFilter(filterType.getFilterName())
-                    .setParameter(filterType.getParameter(), SecurityUtils.getCurrentCustomerId());
-            } else {
-                session.disableFilter(filterType.getFilterName());
-            }
-        }
-    }
 
     /**
      * creates new Pageable from given except page size. its fixed to max page size

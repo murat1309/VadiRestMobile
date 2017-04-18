@@ -4,6 +4,7 @@ public class PersonelBilgileriDetay {
 
 	private long id;
 	private long bsm2ServisGorev;
+	private long bsm2ServisKadro;
 	private String birimAdi;
 	private String turu;
 	private String adiSoyadi;
@@ -17,10 +18,16 @@ public class PersonelBilgileriDetay {
 	private String dosyaTuru;
 	private byte[] icerik;
 
+	public long getBsm2ServisKadro() {
+		return bsm2ServisKadro;
+	}
+
+	public void setBsm2ServisKadro(long bsm2ServisKadro) {
+		this.bsm2ServisKadro = bsm2ServisKadro;
+	}
 	public long getId() {
 		return id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}

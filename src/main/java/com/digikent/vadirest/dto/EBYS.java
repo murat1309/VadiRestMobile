@@ -11,6 +11,15 @@ public class EBYS {
 	private String name;
 	private long docId;
 	private String creationDate;
+	private long paketId;
+
+	public long getPaketId() {
+		return paketId;
+	}
+
+	public void setPaketId(long paketId) {
+		this.paketId = paketId;
+	}
 
 	public long getId() {
 		return id;

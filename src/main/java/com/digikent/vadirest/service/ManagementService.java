@@ -1,6 +1,7 @@
 package com.digikent.vadirest.service;
 
 import com.digikent.vadirest.dto.*;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -12,10 +13,18 @@ public interface ManagementService {
 	public List<BankaDurumuDetay> getBankStatusDetail(long id, long accountId, long year, String startDate, String endDate);
 	//personel bilgileri
 	public List<PersonelBilgileri> getStaffInfomation();
+	//personel kadro
+	public List<PersonelBilgileri> getPersonelKadroInformation();
 	//kurum personel detay
 	public List<PersonelBilgileriDetay> getStaffDetail(long servisGorevId, char turu);
+	//kurum personel kadro detay
+	public List<PersonelBilgileriDetay> getKadroDetay(long servisKadroId);
 	//personel grubu
 	public List<PersonelGrup> getStaffGroup();
+	//ise baslayanlar
+	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate);
+	//isten ayrilanlar
+	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate);
 	//Kurum borc durumu
 	public List<KurumBorc> getDebtStatus(long id, long year);
 	//Yapilan odemeler

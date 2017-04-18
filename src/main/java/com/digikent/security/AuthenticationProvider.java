@@ -2,6 +2,7 @@ package com.digikent.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 public class AuthenticationProvider implements org.springframework.security.authentication.AuthenticationProvider {
@@ -22,6 +25,8 @@ public class AuthenticationProvider implements org.springframework.security.auth
 
     private UserDetailsService userDetailsService;
 
+
+
     public AuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
@@ -31,6 +36,8 @@ public class AuthenticationProvider implements org.springframework.security.auth
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UsernamePasswordAuthenticationToken token =
                 (UsernamePasswordAuthenticationToken) authentication;
+
+
 
         String login = token.getName();
         UserDetails user = userDetailsService.loadUserByUsername(login);
