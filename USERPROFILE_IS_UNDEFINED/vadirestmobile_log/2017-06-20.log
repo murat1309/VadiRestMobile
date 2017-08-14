@@ -1,0 +1,58 @@
+2017-06-20 10:16:48,579 INFO  [restartedMain] Application: Starting Application on vadis-iMac.local with PID 21768 (/Users/Serkan/development/development/rest-mobile/target/classes started by Serkan in /Users/Serkan/development/development/rest-mobile)
+2017-06-20 10:16:48,581 DEBUG [restartedMain] Application: Running with Spring Boot v1.3.2.RELEASE, Spring v4.2.4.RELEASE
+2017-06-20 10:16:48,581 INFO  [restartedMain] Application: The following profiles are active: dev
+2017-06-20 10:16:49,338 DEBUG [background-preinit] logging: Logging Provider: org.jboss.logging.Slf4jLoggerProvider found via system property
+2017-06-20 10:16:55,713 DEBUG [restartedMain] AsyncConfiguration: Creating Async Task Executor
+2017-06-20 10:16:56,335 DEBUG [restartedMain] MetricsConfiguration: Registering JVM gauges
+2017-06-20 10:17:01,033 INFO  [restartedMain] Application: Starting Application on vadis-iMac.local with PID 21773 (/Users/Serkan/development/development/rest-mobile/target/classes started by Serkan in /Users/Serkan/development/development/rest-mobile)
+2017-06-20 10:17:01,036 DEBUG [restartedMain] Application: Running with Spring Boot v1.3.2.RELEASE, Spring v4.2.4.RELEASE
+2017-06-20 10:17:01,036 INFO  [restartedMain] Application: The following profiles are active: dev
+2017-06-20 10:17:05,628 DEBUG [restartedMain] AsyncConfiguration: Creating Async Task Executor
+2017-06-20 10:17:06,088 DEBUG [restartedMain] MetricsConfiguration: Registering JVM gauges
+2017-06-20 10:17:06,120 DEBUG [restartedMain] MetricsConfiguration: Initializing Metrics JMX reporting
+2017-06-20 10:17:11,713 INFO  [restartedMain] Application: Starting Application on vadis-iMac.local with PID 21779 (/Users/Serkan/development/development/rest-mobile/target/classes started by Serkan in /Users/Serkan/development/development/rest-mobile)
+2017-06-20 10:17:11,718 DEBUG [restartedMain] Application: Running with Spring Boot v1.3.2.RELEASE, Spring v4.2.4.RELEASE
+2017-06-20 10:17:11,718 INFO  [restartedMain] Application: The following profiles are active: dev
+2017-06-20 10:17:11,737 DEBUG [background-preinit] logging: Logging Provider: org.jboss.logging.Slf4jLoggerProvider found via system property
+2017-06-20 10:17:18,836 DEBUG [restartedMain] AsyncConfiguration: Creating Async Task Executor
+2017-06-20 10:17:19,073 DEBUG [restartedMain] MetricsConfiguration: Registering JVM gauges
+2017-06-20 10:17:19,081 DEBUG [restartedMain] MetricsConfiguration: Initializing Metrics JMX reporting
+2017-06-20 10:17:20,364 INFO  [localhost-startStop-1] WebConfigurer: Web application configuration, using profiles: [dev]
+2017-06-20 10:17:20,364 DEBUG [localhost-startStop-1] WebConfigurer: Initializing Metrics registries
+2017-06-20 10:17:20,389 DEBUG [localhost-startStop-1] WebConfigurer: Registering Metrics Filter
+2017-06-20 10:17:20,389 DEBUG [localhost-startStop-1] WebConfigurer: Registering Metrics Servlet
+2017-06-20 10:17:20,390 INFO  [localhost-startStop-1] WebConfigurer: Web application fully configured
+2017-06-20 10:17:20,789 INFO  [localhost-startStop-1] Application: Running with Spring profile(s) : [dev]
+2017-06-20 10:18:09,706 DEBUG [restartedMain] CacheConfiguration: No cache
+2017-06-20 10:18:17,349 INFO  [restartedMain] ThymeleafConfiguration: loading non-reloadable mail messages resources
+2017-06-20 10:18:18,996 INFO  [restartedMain] Application: Started Application in 68.11 seconds (JVM running for 68.636)
+2017-06-20 10:18:18,997 INFO  [restartedMain] Application: Access URLs:
+----------------------------------------------------------
+	Local: 		http://127.0.0.1:8080
+	External: 	http://192.168.1.183:8080
+----------------------------------------------------------
+2017-06-20 10:22:24,219 INFO  [Thread-7] CacheConfiguration: Closing Cache Manager
+2017-06-20 10:22:24,225 WARN  [Thread-7] DisposableBeanAdapter: Invocation of destroy method failed on bean with name 'entityManagerFactory': java.lang.IllegalStateException: EntityManagerFactory is closed
+2017-06-20 10:22:27,097 DEBUG [background-preinit] logging: Logging Provider: org.jboss.logging.Slf4jLoggerProvider found via system property
+2017-06-20 10:22:27,133 INFO  [restartedMain] Application: Starting Application on vadis-iMac.local with PID 21866 (/Users/Serkan/development/development/rest-mobile/target/classes started by Serkan in /Users/Serkan/development/development/rest-mobile)
+2017-06-20 10:22:27,134 DEBUG [restartedMain] Application: Running with Spring Boot v1.3.2.RELEASE, Spring v4.2.4.RELEASE
+2017-06-20 10:22:27,134 INFO  [restartedMain] Application: The following profiles are active: dev
+2017-06-20 10:22:31,413 DEBUG [restartedMain] AsyncConfiguration: Creating Async Task Executor
+2017-06-20 10:22:31,696 DEBUG [restartedMain] MetricsConfiguration: Registering JVM gauges
+2017-06-20 10:22:31,703 DEBUG [restartedMain] MetricsConfiguration: Initializing Metrics JMX reporting
+2017-06-20 10:22:32,859 INFO  [localhost-startStop-1] WebConfigurer: Web application configuration, using profiles: [dev]
+2017-06-20 10:22:32,859 DEBUG [localhost-startStop-1] WebConfigurer: Initializing Metrics registries
+2017-06-20 10:22:32,861 DEBUG [localhost-startStop-1] WebConfigurer: Registering Metrics Filter
+2017-06-20 10:22:32,861 DEBUG [localhost-startStop-1] WebConfigurer: Registering Metrics Servlet
+2017-06-20 10:22:32,862 INFO  [localhost-startStop-1] WebConfigurer: Web application fully configured
+2017-06-20 10:22:33,245 INFO  [localhost-startStop-1] Application: Running with Spring profile(s) : [dev]
+2017-06-20 10:23:16,503 DEBUG [restartedMain] CacheConfiguration: No cache
+2017-06-20 10:23:24,298 INFO  [restartedMain] ThymeleafConfiguration: loading non-reloadable mail messages resources
+2017-06-20 10:23:30,865 INFO  [restartedMain] Application: Started Application in 64.58 seconds (JVM running for 65.218)
+2017-06-20 10:23:30,866 INFO  [restartedMain] Application: Access URLs:
+----------------------------------------------------------
+	Local: 		http://127.0.0.1:8080
+	External: 	http://192.168.1.183:8080
+----------------------------------------------------------
+2017-06-20 10:27:43,524 INFO  [Thread-7] CacheConfiguration: Closing Cache Manager
+2017-06-20 10:27:43,529 WARN  [Thread-7] DisposableBeanAdapter: Invocation of destroy method failed on bean with name 'entityManagerFactory': java.lang.IllegalStateException: EntityManagerFactory is closed
