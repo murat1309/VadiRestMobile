@@ -18,13 +18,18 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 	
 	@Autowired(required=true)
 	private DocumentManagementDAO documentManagementDAO;
-	
+
+	@Transactional(readOnly = true)
 	public List<SM1Roles> getEBYSRollList(long persid){
 		return documentManagementDAO.getEBYSRollList(persid);
 	}
 
 	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate){
 		return documentManagementDAO.getEBYS(type,persid, rolid, startDate, endDate);
+	}
+
+	public List<EBYSDetail> getEBYSAddition(long documentId){
+		return documentManagementDAO.getEBYSAddition(documentId);
 	}
 
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
@@ -113,6 +118,10 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate){
 		return documentManagementDAO.getUrettiklerimList(organizationId,startDate,endDate);
+	}
+
+	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId){
+		return documentManagementDAO.getEbysUnsignableAdditionDocument(documentId);
 	}
 
 }

@@ -3,12 +3,12 @@ package com.digikent.config;
 import com.digikent.aop.logging.LoggingAspect;
 import org.springframework.context.annotation.*;
 
-@Configuration
-@EnableAspectJAutoProxy
+//@Configuration
+//@EnableAspectJAutoProxy
 public class LoggingAspectConfiguration {
 
-    @Bean
-    @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
+    //@Bean
+    //@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
     public LoggingAspect loggingAspect() {
         return new LoggingAspect();
     }

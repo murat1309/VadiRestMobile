@@ -79,6 +79,10 @@ public interface ManagementService {
 	public List<GraphGeneral> getIncomeManagementTaxPayer(String startDate, String endDate);
 	//finansman yonetimi gelir gider 
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense();
+	//finansman yonetimi gelir
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome();
+	//finansman yonetimi gider
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense();
 	//finansman yonetimi gelir gider ay bazinda
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year);
 	//finansman yonetimi gelir gider gun bazinda

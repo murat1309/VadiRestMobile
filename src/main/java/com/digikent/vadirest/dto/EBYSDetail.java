@@ -23,6 +23,7 @@ public class EBYSDetail {
     private Long paketId;
     private Long contentId;
     private String onaySirasiTuru;
+    private Boolean canBeSign;
 
     public Long getOnayId() {
         return onayId;
@@ -174,5 +175,13 @@ public class EBYSDetail {
 
     public void setOnaySirasiTuru(String onaySirasiTuru) {
         this.onaySirasiTuru = onaySirasiTuru;
+    }
+
+    public Boolean getCanBeSign() {
+        return canBeSign;
+    }
+
+    public void setCanBeSign(Boolean canBeSign) {
+        this.canBeSign = canBeSign;
     }
 }

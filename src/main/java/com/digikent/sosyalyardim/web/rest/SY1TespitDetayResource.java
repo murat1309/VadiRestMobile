@@ -36,7 +36,6 @@ public class SY1TespitDetayResource {
     @RequestMapping(method = GET, value = "/list", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<SY1TespitDetayDTO>> list() {
-
         List<SY1TespitDetayDTO> results = repository.list();
         return new ResponseEntity<List<SY1TespitDetayDTO>>(results, OK);
     }

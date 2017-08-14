@@ -35,6 +35,9 @@ public class DocumentManagementController {
 
 	@Autowired
 	private Environment environment;
+
+    private static RestTemplate restTemplate = new RestTemplate();
+
 	
 	//belge yonetim rol listesi
 	@RequestMapping(value = "" +
@@ -42,6 +45,7 @@ public class DocumentManagementController {
 	public List<Rol> getEBYSRollList(@PathVariable("persid") long persid){
 		System.out.println("--------get roll list---------");
 		System.out.println(persid);
+
 		List<SM1Roles> retval = documentManagementService.getEBYSRollList(persid);
 		List<Rol> rolList= new ArrayList();
 		for(int i=0 ; i<retval.size();i++){
@@ -114,6 +118,20 @@ public class DocumentManagementController {
 
 		LOG.debug("Rest Request to get dokuman detay documentId: {}", documentId);
 		return documentManagementService.getEbysDocumentDetail(documentId);
+	}
+
+	@RequestMapping(value="EBYSDokumanDetay/imzasizEk/{documentId}",method = RequestMethod.GET)
+	public List<EBYSDetail> getEbysUnsignableAdditionDocument(@PathVariable("documentId") long documentId){
+
+		LOG.debug("Rest Request to get imzasiz ekler documentId: {}", documentId);
+		return documentManagementService.getEbysUnsignableAdditionDocument(documentId);
+	}
+
+	@RequestMapping(value="EBYSDokumanDetay/EBYSTamamlanan/{documentId}",method = RequestMethod.GET)
+	public List<EBYSDetail> getEbysDocumentDetailForCompletedAddition(@PathVariable("documentId") long documentId){
+
+		LOG.debug("Rest Request to get dokuman detay for completed DOC, documentId: {}", documentId);
+		return documentManagementService.getEBYSAddition(documentId);
 	}
 
 	@RequestMapping(value="dokuman/{documentId}",method = RequestMethod.GET)

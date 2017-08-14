@@ -47,6 +47,8 @@ public interface ManagementDAO {
 	public List<GraphGeneral> getIncomeManagementStreetBorc(long year);
 	public List<GraphGeneral> getIncomeManagementTaxPayer(String startDate, String endDate);
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense();
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year);
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseDaily(long year, long month);
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeBudget();

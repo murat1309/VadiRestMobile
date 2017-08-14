@@ -10,6 +10,7 @@ public interface DocumentManagementDAO {
 	public List<SM1Roles> getEBYSRollList(long persid);
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
 	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate);
+	public List<EBYSDetail> getEBYSAddition(long documentId);
 	public List<EBYSDetail> getEbysDocumentDetail(long documentId);
 	public List<Rol> getDocRollList(long persid, long mastid);
 	public List<BelgeBasvuru> getApplyDoc(long rolid);
@@ -28,4 +29,5 @@ public interface DocumentManagementDAO {
 	public List<BasvuruOzet> getGelenBasvuruList(long organizationId, String startDate, String endDate);
 	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate);
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate);
+	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId);
 }

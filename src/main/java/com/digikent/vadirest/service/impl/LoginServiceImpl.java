@@ -1,5 +1,6 @@
 package com.digikent.vadirest.service.impl;
 
+import com.digikent.config.Constants;
 import com.digikent.vadirest.dao.LoginDAO;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.LoginService;
@@ -101,7 +102,7 @@ public class LoginServiceImpl implements LoginService {
 			BaseUrlDTO baseUrlDTO = new BaseUrlDTO();
 			String key = (String) keys.nextElement();
 			String value = urlProp.getProperty(key);
-			LOG.debug("Key,value:{}", key, value);
+			LOG.debug("Key : " + key +" value : " + value);
 			baseUrlDTO.setUrlName(key);
 			baseUrlDTO.setUrlPath(value);
 			baseUrlDTOs.add(baseUrlDTO);
@@ -184,6 +185,75 @@ public class LoginServiceImpl implements LoginService {
 		}
 
 		return null;
+	}
+
+	public Boolean isVersionUsable(String mobileVersion) {
+
+		String versionsList = readAppVersion();
+		if (versionsList != null) {
+			String[] versionList = versionsList.split(";");
+
+			for (String version: versionList) {
+				if (version.equalsIgnoreCase(mobileVersion)) {
+					LOG.debug("Versiyon kontrol yapildi. Uyumlu, mobileVersion = " + mobileVersion);
+					return true;
+				}
+			}
+
+		} else {
+			LOG.debug("Versiyon listesi cekilemedi");
+		}
+
+
+		/*
+		String versionsList = readAppVersion();
+		if (versionsList != null) {
+			String[] versionList = versionsList.split("%");
+
+			for (String item: versionList) {
+
+				String[] data = item.split(";");
+				String mobilVersion = data[0];
+				//kullanıcının mobileVersionuyla uyumlu restVersionlarını buluyoruz
+				String[] usableRestVersion = data[1].split("-");
+
+				if(mobilVersion.equalsIgnoreCase(version)) {
+					//uyumlu restVersion ile mevcut restVersion'la uyumunu kontrol edeceğiz
+					for (String restVers: usableRestVersion) {
+						if (restVers.equalsIgnoreCase(currentVersion)) {
+							LOG.debug("Versiyon kontrol yapildi. Uyumlu, mobileVersion = " + version + " restVersion = " + currentVersion);
+							return true;
+						}
+					}
+				}
+			}
+
+			LOG.debug("Versiyon kontrol yapildi. Uyumlu DEGIL, mobileVersion = " + version + " restVersion = " + currentVersion);
+		} else {
+			LOG.debug("Versiyon listesi cekilemedi");
+		}*/
+
+
+
+		return false;
+	}
+
+	private String readAppVersion() {
+
+		try {
+			String digikentPath = System.getenv("DIGIKENT_PATH");
+			Properties urlProp = FileUtil.getPropsFromFile(digikentPath
+					+ "/services/version.properties");
+			String versionlist = urlProp.getProperty("versionList");
+			//currentVersion = urlProp.getProperty("currentVersion");
+			LOG.debug("Version list = " + versionlist);
+
+			return versionlist;
+		} catch (Exception e) {
+			LOG.debug("versiyon list cekilemedi. " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 

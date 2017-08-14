@@ -16,6 +16,8 @@ import java.util.Map;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("documentManagementDao")
 @Transactional
 public class DocumentManagementDAOImpl implements DocumentManagementDAO {
+
+	private final Logger LOG = LoggerFactory.getLogger(DocumentManagementDAO.class);
 
 	@Autowired
 	protected SessionFactory sessionFactory;
@@ -82,15 +86,14 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK    FROM ABPMWORKITEM A ";
 
 		if(type.equalsIgnoreCase("ONAYBEKLEYEN"))
-			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE ONAYBEKLEYENMI = 'EVET')";
-		else if(type.equalsIgnoreCase("GONDERIMBEKLEYEN"))
-			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS'  AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE GONDERIMBEKLEYENMI = 'EVET')";
+			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE EIMZAREQUIRED = 'EVET')";
 		else if(type.equalsIgnoreCase("TAMAMLANAN"))
 			sql += "WHERE A.id > 0 AND  A.ACTION IN ('SEND','CANCEL','REJECT','DELEGATE') " +
-					" AND NVL(A.ACTIONDETAIL,'-') NOT IN ('GERICEKILDI') " +
+					" AND NVL(A.ACTIONDETAIL,'-') NOT IN ('GERICEKILDI','REDDEDILDI') " +
+					 "AND A.ABPMTASK_ID IN (SELECT T.ID FROM ABPMTASK T WHERE NVL(T.TASLAKMI,'HAYIR') = 'HAYIR')" +
 					"AND EXISTS (SELECT 1 FROM ABPMTASK WHERE ID=A.ABPMTASK_ID AND VISIBLEFORCOMPLETEDLIST='EVET')";
 		else if(type.equalsIgnoreCase("IADEEDILEN"))
-			sql += "WHERE A.id > 0  AND A.ACTION = 'PROGRESS'  AND (A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE IADEEDILENMI = 'EVET') OR A.ACTIONDETAIL='REDDEDILDI')";
+			sql += "WHERE A.id > 0  AND A.EBYSBELGEDURUMU = 'IADE' AND A.ISEBYSWORKITEM = 'E'";
 		else
 			sql += "WHERE A.id > 0  AND A.ACTION = 'PROGRESS'  AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE KISIYEATANANMI = 'EVET')";
 
@@ -142,6 +145,105 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		}
 		return ebysList;
 	}
+
+	public List<EBYSDetail> getEBYSAddition(long documentId) {
+/*		String sql= "select C.ID,D.EBYSDOCUMENT_ID,(SELECT X.TANIM FROM EBYSDOCUMENT X WHERE X.ID = D.EBYSDOCUMENT_ID) DokumanAdi,DECODE(C.DOCUMENTDEFINITIONKODU,'ILGI','İlgi','DOCLINK','Eklenti','ILISKILIBELGE','İlişkili Belge','-')," +
+				" C.CRUSER,C.DOCUMENTDEFINITIONKODU " +
+				" from EBYSDOCUMENT A,EBYSVERSION B,EBYSDOCUMENTVALUE C,EBYSFOLDERLINK D " +
+				" Where A.EBYSVERSION_LAST = B.ID And A.ID = C.EBYSDOCUMENT_ID AND A.EBYSVERSION_LAST = C.EBYSVERSION_ID AND  C.EBYSFOLDERLINK_ID = D.ID " +
+				" And C.EBYSDOCUMENT_ID  = " + documentId +
+				" And C.DOCUMENTDEFINITIONKODU IN ('DOCLINK','ILGI','ILISKILIBELGE') AND D.ID>0";*/
+
+
+
+		String sql = "SELECT ID,TANIM,'ÜST YAZI' as TURU FROM EBYSDOCUMENT WHERE ID= " + documentId +
+				"                               UNION " +
+				"                             select D.EBYSDOCUMENT_ID, (SELECT X.TANIM FROM EBYSDOCUMENT X WHERE X.ID = D.EBYSDOCUMENT_ID)," +
+				"							DECODE(C.DOCUMENTDEFINITIONKODU, 'ILGI','İlgi','DOCLINK','Eklenti','ILISKILIBELGE','İlişkili Belge','-')" +
+				"                               from EBYSDOCUMENT A,EBYSVERSION B,EBYSDOCUMENTVALUE C,EBYSFOLDERLINK D" +
+				"                               Where A.EBYSVERSION_LAST = B.ID And A.ID = C.EBYSDOCUMENT_ID" +
+				"                               AND A.EBYSVERSION_LAST = C.EBYSVERSION_ID AND  C.EBYSFOLDERLINK_ID = D.ID" +
+				"                               And C.EBYSDOCUMENT_ID  = " + documentId +
+				"                              And C.DOCUMENTDEFINITIONKODU IN ('DOCLINK', 'ILGI','ILISKILIBELGE') AND D.ID>0";
+
+		List<Object> list = new ArrayList();
+		List<EBYSDetail> ebysDetailList = new ArrayList();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		System.out.println("bu");
+
+		for(Object o : list){
+			Map map = (Map)o;
+			EBYSDetail ebysDetail = new EBYSDetail();
+
+			BigDecimal cid = (BigDecimal)map.get("CID");
+			BigDecimal aid =(BigDecimal)map.get("ID");
+			BigDecimal onaySirasi =(BigDecimal)map.get("ONAYSIRASI");
+			String tanim = (String)map.get("TANIM");
+			String durumu = (String)map.get("DURUMU");
+			String onayDurumu = (String)map.get("ONAYDURUMU");
+			String onayTipi = (String)map.get("ONAYTIPI");
+			String adSoyad = (String)map.get("ADSOYAD");
+			BigDecimal ihrPersonelId =(BigDecimal)map.get("IHR1PERSONEL_ID");
+			String dokumanTuru = (String)map.get("TURU");
+			String hitapEki = (String)map.get("HITAPEKI");
+			BigDecimal ebysVersionId=(BigDecimal)map.get("EBYSVERSION_ID");
+			BigDecimal bpmTaskId=(BigDecimal)map.get("BPMTASKID");
+			String eImzasizParaflama = (String)map.get("EIMZASIZPARAFLAMA");
+			BigDecimal ebysDocumentOnay = (BigDecimal)map.get("EBYSDOCUMENT_ONAY");
+			BigDecimal masterIdDagitim = (BigDecimal)map.get("MASTERID_DAGITIM");
+			BigDecimal paketId = (BigDecimal)map.get("PAKETID") ;
+			String onaySirasiTuru = (String)map.get("OS") ;
+			BigDecimal contentId = (BigDecimal)map.get("CONTENTID");
+
+			if(cid != null)
+				ebysDetail.setOnayId(cid.longValue());
+			if(aid != null)
+				ebysDetail.setDocumentId(aid.longValue());
+			if(onaySirasi != null)
+				ebysDetail.setOnaySirasi(onaySirasi.longValue());
+			if(tanim != null)
+				ebysDetail.setTanim(tanim);
+			if(durumu != null)
+				ebysDetail.setDurumu(durumu);
+			if(onayDurumu != null)
+				ebysDetail.setOnayDurumu(onayDurumu);
+			if(onayTipi != null)
+				ebysDetail.setOnayTipi(onayTipi);
+			if(adSoyad != null)
+				ebysDetail.setAdSoyad(adSoyad);
+			if(ihrPersonelId != null)
+				ebysDetail.setIhr1PersonelId(ihrPersonelId.longValue());
+			if(dokumanTuru != null)
+				ebysDetail.setDokumanTuru(dokumanTuru);
+			if(hitapEki != null)
+				ebysDetail.setHitapEki(hitapEki);
+			if(ebysVersionId != null)
+				ebysDetail.setEbysversiyonId(ebysVersionId.longValue());
+			if(bpmTaskId != null)
+				ebysDetail.setBpmTaskId(bpmTaskId.longValue());
+			if(eImzasizParaflama != null)
+				ebysDetail.seteImzasizParaflama(eImzasizParaflama);
+			if (ebysDocumentOnay != null)
+				ebysDetail.setEbysDocumentOnayId(ebysDocumentOnay.longValue());
+			if(masterIdDagitim != null)
+				ebysDetail.setMasterIdDagitim(masterIdDagitim.longValue());
+			if(paketId != null)
+				ebysDetail.setPaketId(paketId.longValue());
+			if(onaySirasiTuru != null)
+				ebysDetail.setOnaySirasiTuru(onaySirasiTuru);
+			if(contentId != null)
+				ebysDetail.setContentId(contentId.longValue());
+
+			ebysDetailList.add(ebysDetail);
+		}
+		return ebysDetailList;
+	}
+
+
 
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate) {
 		String sql="SELECT id as ID, ebysdocument_id as EBYSDOCUMENTID,action,creationdate,creationdatetime, " +
@@ -305,8 +407,17 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				ebysDetail.setAdSoyad(adSoyad);
 			if(ihrPersonelId != null)
 				ebysDetail.setIhr1PersonelId(ihrPersonelId.longValue());
-			if(dokumanTuru != null)
+			if(dokumanTuru != null) {
+                if (dokumanTuru.contains("Asıl") && paketId != null && paketId.intValue() > 0) {
+					LOG.debug("Asil dokuman, imzalama durumu kontrol edilecek. DocId = " + documentId);
+					ebysDetail.setCanBeSign(isCanBeSign(ebysDocumentOnay, ihrPersonelId));
+					LOG.debug("setCanBeSign değeri = " + ebysDetail.getCanBeSign());
+				} else {
+					LOG.debug("Asil dokuman olmadıgı için imzalanabilir deger true atandı");
+					ebysDetail.setCanBeSign(true);
+				}
 				ebysDetail.setDokumanTuru(dokumanTuru);
+            }
 			if(hitapEki != null)
 				ebysDetail.setHitapEki(hitapEki);
 			if(ebysVersionId != null)
@@ -326,10 +437,36 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			if(contentId != null)
 				ebysDetail.setContentId(contentId.longValue());
 
+
+
+
 			ebysDetailList.add(ebysDetail);
 		}
 		return ebysDetailList;
 	}
+
+    public Boolean isCanBeSign(BigDecimal docId, BigDecimal userId) {
+		LOG.debug("iscanbeSign kontrol ediliyor");
+        List<Object> list = new ArrayList();
+        String sql = "SELECT COUNT (*)" +
+                "  FROM EBYSONAY" +
+                " WHERE     EBYSONAY.ONAYDURUMU = 'ONAYBEKLIYOR'" +
+                "       AND EBYSONAY.IHR1PERSONEL_ID = " + userId +
+                "       AND EBYSONAY.DOKUMANTURU LIKE 'E%' " +
+                "   AND EBYSONAY.EBYSDOCUMENT_ID = " + docId;
+
+        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        for(Object o : list) {
+            Map map = (Map) o;
+			LOG.debug("COUNT degeri = " + ((BigDecimal)map.get("COUNT(*)")).longValue());
+            return !((((BigDecimal)map.get("COUNT(*)")).longValue() > 0));
+        }
+
+        return false;
+    }
 
 	public List<Rol> getDocRollList(long persid, long mastid) {
 		String sql="SELECT A.ID,B.MSM2ORGANIZASYON_ID,A.ADI||' '||A.SOYADI||'('|| (SELECT TANIM FROM MSM2ORGANIZASYON WHERE ID = B.MSM2ORGANIZASYON_ID) ||')' as ROLNAME "
@@ -1223,5 +1360,56 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			basvuruOzetList.add(basvuruOzet);
 		}
 		return basvuruOzetList;
+	}
+
+	@Override
+	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId) {
+
+		String sql = "                             select D.EBYSDOCUMENT_ID, (SELECT X.TANIM FROM EBYSDOCUMENT X WHERE X.ID = D.EBYSDOCUMENT_ID) AS TANIM," +
+				"							DECODE(C.DOCUMENTDEFINITIONKODU, 'ILGI','İlgi','DOCLINK','Eklenti','ILISKILIBELGE','İlişkili Belge','-') AS TURU" +
+				"                               from EBYSDOCUMENT A,EBYSVERSION B,EBYSDOCUMENTVALUE C,EBYSFOLDERLINK D" +
+				"                               Where A.EBYSVERSION_LAST = B.ID And A.ID = C.EBYSDOCUMENT_ID" +
+				"                               AND A.EBYSVERSION_LAST = C.EBYSVERSION_ID AND  C.EBYSFOLDERLINK_ID = D.ID" +
+				"                               And C.EBYSDOCUMENT_ID  = " + documentId +
+				"                              And C.DOCUMENTDEFINITIONKODU IN ('DOCLINK', 'ILGI','ILISKILIBELGE') AND D.ID>0" +
+				" AND D.EBYSDOCUMENT_ID NOT IN " +
+				"( SELECT" +
+						" a.ID                   AID " +
+						" FROM EBYSDOCUMENT a, EBYSONAY c " +
+						" WHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID " +
+						" and C.EBYSDOCUMENT_ID = " + documentId +")";
+
+		List<Object> list = new ArrayList();
+		List<EBYSDetail> ebysDetailList = new ArrayList();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for(Object o : list){
+			Map map = (Map)o;
+			EBYSDetail ebysDetail = new EBYSDetail();
+
+			BigDecimal cid = (BigDecimal)map.get("EBYSDOCUMENT_ID");
+			String tanim = (String)map.get("TANIM");
+			String dokumanTuru = (String)map.get("TURU");
+
+			if(cid != null)
+				ebysDetail.setOnayId(cid.longValue());
+
+
+			if(dokumanTuru != null) {
+				ebysDetail.setDokumanTuru(dokumanTuru);
+			}
+
+			if(tanim != null) {
+				ebysDetail.setTanim(tanim);
+			}
+
+			ebysDetail.setDocumentId(cid.longValue());
+
+			ebysDetailList.add(ebysDetail);
+		}
+		return ebysDetailList;
 	}
 }

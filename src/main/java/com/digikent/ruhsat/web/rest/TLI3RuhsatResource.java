@@ -28,7 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/ruhsat")
 public class TLI3RuhsatResource {
 
-    private final Logger LOG = LoggerFactory.getLogger(SY1DosyaRepository.class);
+    private final Logger LOG = LoggerFactory.getLogger(TLI3RuhsatResource.class);
 
     @Inject
     private TLI3RuhsatRepository repository;

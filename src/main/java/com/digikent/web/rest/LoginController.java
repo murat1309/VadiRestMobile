@@ -1,6 +1,7 @@
 package com.digikent.web.rest;
 
 
+import com.digikent.config.Constants;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.LoginService;
 
@@ -48,14 +49,32 @@ public class LoginController {
 
 	@RequestMapping(value ="/userName" , method = RequestMethod.PUT)
 	public UserAuthenticationInfo getUserIdFromActiveDirectoryName(@RequestBody UserDTO user){
-		LOG.debug("REST request to get userId with ad:{}", user.getActiveDirectoryUserName());
+		LOG.debug("REST request to get userId with LDAP :{}", user.getActiveDirectoryUserName());
 		return loginService.getUserNameFromActiveDirectoryName(user.getActiveDirectoryUserName());
 	}
 
 	@RequestMapping(value ="/baseUrl" , method = RequestMethod.GET)
 	public List<BaseUrlDTO> getBaseUrl(){
-		LOG.debug("REST request to get baseUrl");
-		return loginService.getBaseUrl();
+		LOG.debug("application is old version. will send upgrade link");
+		return null;
+	}
+
+	@RequestMapping(value ="/baseUrl/{version}" , method = RequestMethod.GET)
+	public ResponseBaseUrlDTO getBaseUrlWithVersion(@PathVariable("version") String version){
+		LOG.debug("version = " + version);
+		Boolean isVersionUsable = loginService.isVersionUsable(version);
+		ResponseBaseUrlDTO responseBaseUrlDTO = new ResponseBaseUrlDTO();
+
+		if (!isVersionUsable) {
+			responseBaseUrlDTO.setMessageId(Constants.MESSAGE_OLD_VERSION);
+			responseBaseUrlDTO.setBaseUrlDTOList(null);
+		} else {
+			LOG.debug("REST request to get baseUrl");
+			responseBaseUrlDTO.setMessageId(Constants.MESSAGE_CURRENT_VERSION);
+			responseBaseUrlDTO.setBaseUrlDTOList(loginService.getBaseUrl());
+		}
+
+		return responseBaseUrlDTO;
 	}
 	
 	@RequestMapping(value = "/yetki/{username}/" , method = RequestMethod.GET)

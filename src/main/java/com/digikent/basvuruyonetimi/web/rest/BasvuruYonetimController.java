@@ -1,35 +1,35 @@
 package com.digikent.basvuruyonetimi.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.digikent.basinyayin.dao.BasinYayinRepository;
-import com.digikent.basinyayin.dto.AsmaIndirmeIslemiDTO;
-import com.digikent.basinyayin.dto.TtnyekipDTO;
-import com.digikent.basinyayin.dto.TtnylokasyonDTO;
-import com.digikent.basinyayin.dto.VtnytanitimDTO;
 import com.digikent.basvuruyonetimi.dao.BasvuruYonetimRepository;
-import com.digikent.basvuruyonetimi.dto.Dm1IsakisiAdimAttachmentDTO;
-import com.digikent.web.rest.errors.CustomParameterizedException;
-import com.digikent.web.rest.util.HeaderUtil;
+import com.digikent.basvuruyonetimi.dto.DM1IsAkısıAdımDTO;
 import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisi;
 import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import javax.inject.Inject;
-import java.util.List;
+import javax.servlet.MultipartConfigElement;
 import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * Created by Serkan on 4/2/2016.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/basvuruYonetim")
 public class BasvuruYonetimController {
 
@@ -52,51 +52,85 @@ public class BasvuruYonetimController {
 
     @RequestMapping(value = "/{id}/edm1isakisiadim", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @Timed
     @Transactional
-    public ResponseEntity<DM1IsAkisiAdim> getEdm1isakisiadim(@PathVariable Long id) {
+    public ResponseEntity<DM1IsAkısıAdımDTO> getEdm1isakisiadim(@PathVariable Long id) {
         LOG.debug("REST request to get DM1IsAkisiAdim : {}", id);
 
-        return Optional.ofNullable(basvuruYonetimRepository.getEdm1isakisiadim(id))
-                .map(dM1IsAkisiAdim -> new ResponseEntity<>(dM1IsAkisiAdim, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(id);
+
+        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
+        dm1IsAkısıAdımDTO.setId(edm1isakisiadim.getID());
+        dm1IsAkısıAdımDTO.setIzahat(edm1isakisiadim.getIzahat());
+        dm1IsAkısıAdımDTO.setSonucDurumu(edm1isakisiadim.getSonucDurumu());
+
+        return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
+
     }
 
 
     @RequestMapping(value = "/edm1isakisiadim/{personelId}", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @Timed
     @Transactional
-    public ResponseEntity<DM1IsAkisiAdim> updateEdm1isakisiadim(@PathVariable Long personelId,
-                                                                @RequestBody DM1IsAkisiAdim dM1IsAkisiAdim) throws Exception {
-        LOG.debug("REST request to update DM1IsAkisiAdim : {}", dM1IsAkisiAdim.getID());
+    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadim(@PathVariable Long personelId,
+                                                                @RequestBody DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO) throws Exception {
 
-        basvuruYonetimRepository.updateEdm1isakisiadim(personelId, dM1IsAkisiAdim);
+        try {
+            LOG.debug("REST request to update updateEdm1isakisiadim : {}", dm1IsAkısıAdımDTO.getId());
 
-        return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert("DM1IsAkisiAdim", String.valueOf(dM1IsAkisiAdim.getID())))
-                .body(dM1IsAkisiAdim);
+            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(dm1IsAkısıAdımDTO.getId());
+            edm1isakisiadim.setIzahat(dm1IsAkısıAdımDTO.getIzahat());
+            edm1isakisiadim.setSonucDurumu(dm1IsAkısıAdımDTO.getSonucDurumu());
+            basvuruYonetimRepository.updateEdm1isakisiadim(personelId, edm1isakisiadim);
+
+            LOG.debug("This approve was updated a successfully ");
+        } catch (Exception ex) {
+            dm1IsAkısıAdımDTO.setError("ERROR");
+        }
+
+
+        return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
 
     }
 
-    @RequestMapping(value = "/edm1isakisiadimWithAttachment/{personelId}", method = RequestMethod.PUT,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @Timed
+    @RequestMapping(value = "/edm1isakisiadimWithAttachment/{isAkisiId}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity<DM1IsAkisiAdim> updateEdm1isakisiadimWithAttachment(
-                                                                @PathVariable Long personelId,
-                                                                @RequestBody Dm1IsakisiAdimAttachmentDTO dm1IsakisiAdimAttachmentDTO) throws Exception {
-        byte[] attachment = dm1IsakisiAdimAttachmentDTO.getAttachment();
-        DM1IsAkisiAdim dm1IsAkisiAdim = dm1IsakisiAdimAttachmentDTO.getDm1IsAkisiAdim();
-        LOG.debug("REST request to update DM1IsAkisiAdim : {}", dm1IsAkisiAdim.getID());
+    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(
+            @PathVariable Long isAkisiId,
+            @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
+        LOG.debug("REST request to update updateEdm1isakisiadimWithAttachment, iskisiId: {}", isAkisiId);
+        LOG.debug("count of uploaded document = " + uploadfiles.length);
+        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
+        try {
+            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(isAkisiId);
 
-        basvuruYonetimRepository.saveToDocumentum("EDM1ISAKISI", dm1IsAkisiAdim.getID(), attachment);
-        basvuruYonetimRepository.updateEdm1isakisiadim(personelId, dm1IsAkisiAdim);
+            for (int i=0; i<uploadfiles.length; i++) {
+                basvuruYonetimRepository.saveToDocumentum("DDM1ISAKISI", edm1isakisiadim.getDdm1isakisiId(), uploadfiles[i].getBytes());
+                LOG.debug("This document saved Documentum, docName = (" + i + uploadfiles[i].getName());
+            }
 
-        return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert("DM1IsAkisiAdim", String.valueOf(dm1IsAkisiAdim.getID())))
-                .body(dm1IsAkisiAdim);
+        } catch (Exception ex) {
+            dm1IsAkısıAdımDTO.setError("ERROR");
+        }
 
+        LOG.debug("images was upload");
+
+        return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
+    }
+
+    @Bean(name = "commonsMultipartResolver")
+    public MultipartResolver multipartResolver() {
+        return new StandardServletMultipartResolver();
+    }
+
+
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+
+        factory.setMaxFileSize("30MB");
+        factory.setMaxRequestSize("30MB");
+
+        return factory.createMultipartConfig();
     }
 
 }

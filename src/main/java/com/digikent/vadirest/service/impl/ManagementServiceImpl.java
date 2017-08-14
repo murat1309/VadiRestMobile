@@ -216,6 +216,14 @@ public class ManagementServiceImpl implements ManagementService {
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense(){
 		return managementDAO.getFinancialManagementIncomeExpense();
 	}
+
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(){
+		return managementDAO.getFinancialManagementIncome();
+	}
+
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(){
+		return managementDAO.getFinancialManagementExpense();
+	}
 	
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year){
 		return managementDAO.getFinancialManagementIncomeExpenseMonthly(year);

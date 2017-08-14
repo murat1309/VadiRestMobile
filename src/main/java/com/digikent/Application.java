@@ -10,8 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,8 +30,8 @@ import java.util.Collection;
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
 @EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*"})
-@EnableAutoConfiguration(exclude = {LiquibaseAutoConfiguration.class,MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
-@EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class })
+@EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
+@EnableConfigurationProperties({ JHipsterProperties.class })
 public class Application {
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);

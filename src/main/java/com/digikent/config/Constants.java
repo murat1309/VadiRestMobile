@@ -1,5 +1,9 @@
 package com.digikent.config;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Application constants.
  */
@@ -13,8 +17,9 @@ public final class Constants {
     public static final String SPRING_PROFILE_CLOUD = "cloud";
     // Spring profile used when deploying to Heroku
     public static final String SPRING_PROFILE_HEROKU = "heroku";
-
     public static final String SYSTEM_ACCOUNT = "system";
+    public static final int MESSAGE_OLD_VERSION = 9;
+    public static final int MESSAGE_CURRENT_VERSION = 1;
 
     private Constants() {
     }

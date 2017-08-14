@@ -622,7 +622,8 @@ public class ManagementDAOImpl implements ManagementDAO {
 				" AND A.BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI=" + year +" ) \n" +
 				" AND A.FISTIPI not like 'U' \n" +
 				" AND NOT EXISTS (SELECT 1 FROM ASM1PAYDASYETKI AA, ASM1PAYDASYETKILINE BB WHERE AA.ID = BB.ASM1PAYDASYETKI_ID " +
-				" AND AA.MPI1PAYDAS_ID = A.MPI1PAYDAS_ID AND BB.FSM1USERS_ID = 0) ORDER BY A.ID";
+				" AND AA.MPI1PAYDAS_ID = A.MPI1PAYDAS_ID AND BB.FSM1USERS_ID = 0)" +
+				" AND A.FISKAYNAGI='MUHASEBE' ORDER BY A.ID";
 
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -1863,14 +1864,24 @@ public class ManagementDAOImpl implements ManagementDAO {
 	}
 
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense(){
-		String sql = "select d.yili,Sum(Decode(SubStr(c.KODU,1,3),'830',b.BORCTUTARI,0)) Gider, "   
-				+" Sum(Decode(SubStr(c.KODU,1,3),'800',b.ALACAKTUTARI - b.BORCTUTARI,0)) Gelir, "
-				+" a.BFI1BUTCEDONEMI_ID ,d.TANIM from OFI2MUHASEBEFISI a,RFI2MUHASEBEFISILINE b, "
-				+" LFI2HESAPPLANI c,BFI1BUTCEDONEMI d where a.id = b.OFI2MUHASEBEFISI_ID   "
-				+" and b.LFI2HESAPPLANI_ID = c.id   and a.BFI1BUTCEDONEMI_ID = d.ID "
-				+" AND A.FISTIPI <> 'U'group by d.yili ,a.BFI1BUTCEDONEMI_ID,d.TANIM   "
-				+" having Sum(Decode(SubStr(c.kodU,1,3),'800',b.ALACAKTUTARI,b.BORCTUTARI,0))!=0 " 
-				+" ORDER BY D.YILI DESC";
+
+		String sql = "select d.yili, " +
+				" (Select Sum(BUTCETUTARI) FROM AFI1BUTCE " +
+				" Where BFI1BUTCEDONEMI_ID = a.BFI1BUTCEDONEMI_ID " +
+				" And TURU = 'A' AND KAYITDUZEYI = 1) GiderButcesi, " +
+				" Sum(Decode(SubStr(c.KODU,1,3),'830',b.BORCTUTARI- b.ALACAKTUTARI,0)) Gider_Gerceklesme, " +
+				"       (Select Sum(BUTCETUTARI) FROM AFI1BUTCE " +
+				" Where BFI1BUTCEDONEMI_ID = a.BFI1BUTCEDONEMI_ID " +
+				" And TURU = 'B' AND KAYITDUZEYI = 1) GelirButcesi, " +
+				"       Sum(Decode(SubStr(c.KODU,1,3),'800',b.ALACAKTUTARI - b.BORCTUTARI,0)) Gelir_Gerceklesme, " +
+				"     a.BFI1BUTCEDONEMI_ID ,d.TANIM from OFI2MUHASEBEFISI a,RFI2MUHASEBEFISILINE b, " +
+				"       LFI2HESAPPLANI c,BFI1BUTCEDONEMI d where a.id = b.OFI2MUHASEBEFISI_ID " +
+				"      and b.LFI2HESAPPLANI_ID = c.id and a.BFI1BUTCEDONEMI_ID = d.ID " +
+				"       AND A.FISTIPI <> 'U'group by d.yili ,a.BFI1BUTCEDONEMI_ID,d.TANIM " +
+				"              having Sum(Decode(SubStr(c.kodU,1,3),'800',b.ALACAKTUTARI,b.BORCTUTARI,0))!=0 " +
+				"       ORDER BY D.YILI DESC ";
+
+
 		
 		List<Object> list = new ArrayList<Object>();
 		List<FinansmanYonetimiGelirGider> finansmanYonetimiGelirGiderList = new ArrayList<FinansmanYonetimiGelirGider>();
@@ -1882,25 +1893,127 @@ public class ManagementDAOImpl implements ManagementDAO {
 		for (Object o : list ){
 			Map map = (Map) o;
 			FinansmanYonetimiGelirGider finansmanYonetimiGelirGider = new FinansmanYonetimiGelirGider();
-			
+
 			BigDecimal year = (BigDecimal) map.get("YILI");
 			BigDecimal bfi1ButceDonemiId = (BigDecimal) map.get("BFI1BUTCEDONEMI_ID");
-			BigDecimal gider = (BigDecimal) map.get("GIDER");
-			BigDecimal gelir = (BigDecimal) map.get("GELIR");
+			BigDecimal gelir = (BigDecimal) map.get("GELIRBUTCESI");
+			BigDecimal gelirGerceklesme = (BigDecimal) map.get("GELIR_GERCEKLESME");
+			BigDecimal gider = (BigDecimal) map.get("GIDERBUTCESI");
+			BigDecimal giderGerceklesme = (BigDecimal) map.get("GIDER_GERCEKLESME");
 			String tanim = (String) map.get("TANIM");
 
 			if(year != null)
 				finansmanYonetimiGelirGider.setYear(year.longValue());;
 			if(bfi1ButceDonemiId != null)
 				finansmanYonetimiGelirGider.setId(bfi1ButceDonemiId.longValue());
-			if(gider != null)
-				finansmanYonetimiGelirGider.setGider(gider.doubleValue());
 			if(gelir != null)
 				finansmanYonetimiGelirGider.setGelir(gelir.doubleValue());
+			if(gelirGerceklesme != null)
+				finansmanYonetimiGelirGider.setGelirGerceklesme(gelirGerceklesme.doubleValue());
+			if(gider != null)
+				finansmanYonetimiGelirGider.setGider(gider.doubleValue());
+			if(giderGerceklesme != null)
+				finansmanYonetimiGelirGider.setGiderGerceklesme(giderGerceklesme.doubleValue());
 			if(tanim != null)
 				finansmanYonetimiGelirGider.setTanim(tanim);
 			
 		
+			finansmanYonetimiGelirGiderList.add(finansmanYonetimiGelirGider);
+		}
+		return finansmanYonetimiGelirGiderList;
+	}
+
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(){
+
+		String sql = "Select KODU,TANIM,BUTCETUTARI,ENALTDUZEY,GERCEKLESENTUTAR, " +
+		"		( '% '||Round(( GERCEKLESENTUTAR / BUTCETUTARI ) * 100,2) ) YUZDE " +
+		" FROM AFI1BUTCE " +
+		" Where BFI1BUTCEDONEMI_ID = 2017 " +
+		" And TURU = 'B' " +
+		" AND BUTCETUTARI > 0 " +
+		" Order By KODU ";
+
+
+		List<Object> list = new ArrayList<Object>();
+		List<FinansmanYonetimiGelirGider> finansmanYonetimiGelirGiderList = new ArrayList<FinansmanYonetimiGelirGider>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for (Object o : list ){
+			Map map = (Map) o;
+			FinansmanYonetimiGelirGider finansmanYonetimiGelirGider = new FinansmanYonetimiGelirGider();
+
+			BigDecimal gelir = (BigDecimal) map.get("BUTCETUTARI");
+			BigDecimal gelirGerceklesme = (BigDecimal) map.get("GERCEKLESENTUTAR");
+			String tanim = (String) map.get("TANIM");
+			String kodu = (String) map.get("KODU");
+			String gelirGerceklesmeYuzdesi = (String) map.get("YUZDE");
+			String enAltDuzey = (String) map.get("ENALTDUZEY");
+
+			if(gelir != null)
+				finansmanYonetimiGelirGider.setGelir(gelir.doubleValue());
+			if(gelirGerceklesme != null)
+				finansmanYonetimiGelirGider.setGelirGerceklesme(gelirGerceklesme.doubleValue());
+			if(tanim != null)
+				finansmanYonetimiGelirGider.setTanim(tanim);
+			if(kodu != null)
+				finansmanYonetimiGelirGider.setKodu(kodu);
+			if(gelirGerceklesmeYuzdesi != null)
+				finansmanYonetimiGelirGider.setGelirGerceklesmeYuzdesi(gelirGerceklesmeYuzdesi);
+			if(enAltDuzey != null)
+				finansmanYonetimiGelirGider.setEnAltDuzey(enAltDuzey);
+
+			finansmanYonetimiGelirGiderList.add(finansmanYonetimiGelirGider);
+		}
+		return finansmanYonetimiGelirGiderList;
+	}
+
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(){
+
+		String sql = "Select KODU,TANIM,Sum(BUTCETUTARI) BUTCETUTARI,SUM(GERCEKLESENTUTAR) GERCEKLESENTUTAR, " +
+				"       ( '% '||Round(( Sum(GERCEKLESENTUTAR) / Sum(BUTCETUTARI) ) * 100,2) ) GERCEKLESMEYUZDESI, " +
+				"        '% '||round(100*(Sum(BUTCETUTARI) / sum(Sum(BUTCETUTARI)) over ()),2) BUTCEPAYI " +
+				"  FROM AFI1BUTCE " +
+				" Where BFI1BUTCEDONEMI_ID = 2017 " +
+				"  And TURU = 'A' " +
+				"  AND KAYITDUZEYI = 4 " +
+				"  AND BUTCETUTARI > 0 " +
+				" GROUP BY KODU,TANIM " +
+				" Order By KODU ";
+
+		List<Object> list = new ArrayList<Object>();
+		List<FinansmanYonetimiGelirGider> finansmanYonetimiGelirGiderList = new ArrayList<FinansmanYonetimiGelirGider>();
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		list = query.list();
+
+		for (Object o : list ){
+			Map map = (Map) o;
+			FinansmanYonetimiGelirGider finansmanYonetimiGelirGider = new FinansmanYonetimiGelirGider();
+
+			BigDecimal gider = (BigDecimal) map.get("BUTCETUTARI");
+			BigDecimal giderGerceklesme = (BigDecimal) map.get("GERCEKLESENTUTAR");
+			String tanim = (String) map.get("TANIM");
+			String kodu = (String) map.get("KODU");
+			String giderGerceklesmeYuzdesi = (String) map.get("GERCEKLESMEYUZDESI");
+			String butcePayi = (String) map.get("BUTCEPAYI");
+
+			if(gider != null)
+				finansmanYonetimiGelirGider.setGider(gider.doubleValue());
+			if(giderGerceklesme != null)
+				finansmanYonetimiGelirGider.setGiderGerceklesme(giderGerceklesme.doubleValue());
+			if(tanim != null)
+				finansmanYonetimiGelirGider.setTanim(tanim);
+			if(kodu != null)
+				finansmanYonetimiGelirGider.setKodu(kodu);
+			if(giderGerceklesmeYuzdesi != null)
+				finansmanYonetimiGelirGider.setGiderGerceklesmeYuzdesi(giderGerceklesmeYuzdesi);
+			if(butcePayi != null)
+				finansmanYonetimiGelirGider.setButcePayi(butcePayi);
+
 			finansmanYonetimiGelirGiderList.add(finansmanYonetimiGelirGider);
 		}
 		return finansmanYonetimiGelirGiderList;
@@ -4107,6 +4220,22 @@ public class ManagementDAOImpl implements ManagementDAO {
 			gelirlerYonetimiReklamBeyaniList.add(gelirlerYonetimiReklamBeyani);
 		}
 		return gelirlerYonetimiReklamBeyaniList;
+	}
+
+	private double sumAllIncome(List<FinansmanYonetimiGelirGider> finansmanYonetimiGelirGiderList) {
+		double total = 0;
+		for(FinansmanYonetimiGelirGider finansmanYonetimiGelirGider : finansmanYonetimiGelirGiderList){
+			total = total + finansmanYonetimiGelirGider.getGelir();
+		}
+		return total;
+	}
+
+	private double sumAllIncomeActualize(List<FinansmanYonetimiGelirGider> finansmanYonetimiGelirGiderList) {
+		double total = 0;
+		for(FinansmanYonetimiGelirGider finansmanYonetimiGelirGider : finansmanYonetimiGelirGiderList){
+			total = total + finansmanYonetimiGelirGider.getGelirGerceklesme();
+		}
+		return total;
 	}
 	
 }

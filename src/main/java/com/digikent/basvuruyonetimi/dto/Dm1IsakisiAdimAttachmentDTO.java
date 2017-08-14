@@ -8,7 +8,7 @@ import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
  */
 public class Dm1IsakisiAdimAttachmentDTO {
 
-    private DM1IsAkisiAdim dm1IsAkisiAdim;
+    private DM1IsAkısıAdımDTO dm1IsAkisiAdimDTO;
     private byte[] attachment;
 
     public byte[] getAttachment() {
@@ -19,12 +19,11 @@ public class Dm1IsakisiAdimAttachmentDTO {
         this.attachment = attachment;
     }
 
-    public DM1IsAkisiAdim getDm1IsAkisiAdim() {
-        return dm1IsAkisiAdim;
+    public DM1IsAkısıAdımDTO getDm1IsAkisiAdimDTO() {
+        return dm1IsAkisiAdimDTO;
     }
 
-    public void setDm1IsAkisiAdim(DM1IsAkisiAdim dm1IsAkisiAdim) {
-        this.dm1IsAkisiAdim = dm1IsAkisiAdim;
+    public void setDm1IsAkisiAdimDTO(DM1IsAkısıAdımDTO dm1IsAkisiAdimDTO) {
+        this.dm1IsAkisiAdimDTO = dm1IsAkisiAdimDTO;
     }
-
 }

@@ -301,7 +301,21 @@ public class ManagementController {
 		System.out.println("----------- finansman Yonetimi gelir gider----------");
 		return managementService.getFinancialManagementIncomeExpense();
 	}
-	
+
+	//Finansman yonetimi gelir butcesi
+	@RequestMapping(value = "finansmanYonetimiGelir", method = RequestMethod.GET)
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome() throws Throwable{
+		System.out.println("----------- finansman Yonetimi gelir ----------");
+		return managementService.getFinancialManagementIncome();
+	}
+
+	//Finansman yonetimi gider butcesi
+	@RequestMapping(value = "finansmanYonetimiGider", method = RequestMethod.GET)
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense() throws Throwable{
+		System.out.println("----------- finansman Yonetimi gider----------");
+		return managementService.getFinancialManagementExpense();
+	}
+
 	//Finansman yonetimi gelir gider butcesi ay bazinda
 	@RequestMapping(value = "finansmanYonetimiGelirGiderAyBazli/{year}", method = RequestMethod.GET)
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(@PathVariable("year") long year) throws Throwable{

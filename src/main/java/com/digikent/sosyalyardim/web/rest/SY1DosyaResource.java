@@ -32,7 +32,6 @@ public class SY1DosyaResource {
     @RequestMapping(method = GET, value = "/list", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<SY1DosyaDTO>> list() {
-
         List<SY1DosyaDTO> results = repository.list();
         return new ResponseEntity<List<SY1DosyaDTO>>(results, OK);
     }

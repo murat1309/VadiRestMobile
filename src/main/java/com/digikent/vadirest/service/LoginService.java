@@ -22,5 +22,6 @@ public interface LoginService {
 	public long getTopNavigationMessageCount(long userId);
 	public List<Message> getTopNavigationMessages(long userId);
 	public UserAuthenticationInfo activeDirectoryLogin(String userName, String password);
+	public Boolean isVersionUsable(String version);
 
 }
