@@ -85,7 +85,7 @@ public class LoginDAOImpl implements LoginDAO {
 	}
 	
 	public UserAuthenticationInfo loginWithoutPassword(String userName) {
-		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
+		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.ACTIVE, A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
 				   +"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
 	               +"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
 	               +"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
@@ -99,10 +99,11 @@ public class LoginDAOImpl implements LoginDAO {
 		
 		list = query.list();
 		UserAuthenticationInfo userAuthenticationInfo = new UserAuthenticationInfo();
-		
+
 		for(Object o : list){
 			int imageLength;
 			Map map = (Map) o;
+			String active = (String) map.get("ACTIVE");
 			BigDecimal id = (BigDecimal)map.get("ID");
 			BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
 			String firstName = (String) map.get("FIRSTNAME");
@@ -112,11 +113,18 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
 			BigDecimal bsm2ServisMudurluk = (BigDecimal) map.get("BSM2SERVIS_MUDURLUK");
 
-			
-			if(id != null)
-				userAuthenticationInfo.setId(id.longValue());
 			if(personelId != null)
 				userAuthenticationInfo.setPersonelId(personelId.longValue());
+			if(id != null)
+				userAuthenticationInfo.setId(id.longValue());
+
+			if (active != null) {
+				if (active.equalsIgnoreCase("H")) {
+					userAuthenticationInfo.setPersonelId(0);
+					userAuthenticationInfo.setId(0);
+				}
+			}
+
 			if(firstName != null)
 				userAuthenticationInfo.setFirstName(firstName);
 			if(lastName != null)

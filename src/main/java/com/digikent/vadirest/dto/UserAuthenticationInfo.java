@@ -99,5 +99,5 @@ public class UserAuthenticationInfo {
 	public void setServisId(long servisId) {
 		this.servisId = servisId;
 	}
-    
+
 }
