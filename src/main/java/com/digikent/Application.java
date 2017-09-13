@@ -29,7 +29,7 @@ import java.util.Collection;
 @ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*", "tr.com.vadi.*"}, excludeFilters={
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
-@EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*"})
+@EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*", "com.digikent.*"})
 @EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 @EnableConfigurationProperties({ JHipsterProperties.class })
 public class Application {
