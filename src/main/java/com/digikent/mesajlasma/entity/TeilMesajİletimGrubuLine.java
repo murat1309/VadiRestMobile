@@ -13,14 +13,10 @@ import java.io.Serializable;
 public class TeilMesajİletimGrubuLine extends BaseEntity implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "teilmesajgrubuline_seq", sequenceName = "TEILMESAJGRUPLINE_ID", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "teilmesajgrubuline_seq", sequenceName = "VEILMESAJ_ID", initialValue = 2, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teilmesajgrubuline_seq")
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
-
-    @ManyToOne
-    @JoinColumn(name = "TEILMESAJILETIMGRUBU_ID")
-    private TeilMesajIletimGrubu teilMesajIletimGrubu;
 
     @Column(name = "ASM2SERVISTURU_ID")
     private Long asm2ServisTuruId;
@@ -40,14 +36,6 @@ public class TeilMesajİletimGrubuLine extends BaseEntity implements Serializabl
 
     public void setID(Long ID) {
         this.ID = ID;
-    }
-
-    public TeilMesajIletimGrubu getTeilMesajIletimGrubu() {
-        return teilMesajIletimGrubu;
-    }
-
-    public void setTeilMesajIletimGrubu(TeilMesajIletimGrubu teilMesajIletimGrubu) {
-        this.teilMesajIletimGrubu = teilMesajIletimGrubu;
     }
 
     public Long getAsm2ServisTuruId() {

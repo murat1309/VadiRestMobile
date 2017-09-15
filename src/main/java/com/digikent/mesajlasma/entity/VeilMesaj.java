@@ -19,9 +19,9 @@ public class VeilMesaj extends BaseEntity implements Serializable {
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "GONDERIMZAMANI", nullable = false)
-    private Date gonderimZamani;
+    private Date gonderimZamani = new Date();
 
     @Column(name = "IHR1PERSONEL_YAZAN", nullable = false)
     private Long ihr1PersonelYazanId;
@@ -35,7 +35,7 @@ public class VeilMesaj extends BaseEntity implements Serializable {
     @Column(name = "MESAJ")
     private String mesaj;
 
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "OKUNMAZAMANI")
     private Date okunmaZamani;
 

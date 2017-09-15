@@ -4,17 +4,18 @@ import com.digikent.domain.BaseEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kadir on 11/09/17.
  */
-
 @Entity
 @Table(name = "TEILMESAJILETIMGRUBU")
 public class TeilMesajIletimGrubu extends BaseEntity implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "teilmesajgrubu_seq", sequenceName = "TEILMESAJGRUP_ID", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "teilmesajgrubu_seq", sequenceName = "VEILMESAJ_ID", initialValue = 2, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teilmesajgrubu_seq")
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
@@ -27,6 +28,11 @@ public class TeilMesajIletimGrubu extends BaseEntity implements Serializable {
 
     @Column(name = "IHR1PERSONEL_OLUSTURAN")
     private Long ihr1PersonelOlusturanId;
+
+
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name="TEILMESAJILETIMGRUBU_ID", nullable=false)
+    List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLineList = new ArrayList<>();
 
     public Long getID() {
         return ID;
@@ -58,5 +64,13 @@ public class TeilMesajIletimGrubu extends BaseEntity implements Serializable {
 
     public void setIhr1PersonelOlusturanId(Long ihr1PersonelOlusturanId) {
         this.ihr1PersonelOlusturanId = ihr1PersonelOlusturanId;
+    }
+
+    public List<TeilMesajİletimGrubuLine> getTeilMesajİletimGrubuLineList() {
+        return teilMesajİletimGrubuLineList;
+    }
+
+    public void setTeilMesajİletimGrubuLineList(List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLineList) {
+        this.teilMesajİletimGrubuLineList = teilMesajİletimGrubuLineList;
     }
 }

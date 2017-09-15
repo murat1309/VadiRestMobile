@@ -15,6 +15,17 @@ public class MessageDTO {
     private String mesaj;
     private Long groupId;
 
+    public MessageDTO() {
+    }
+
+    public MessageDTO(Long ihr1PersonelYazanId, String gonderimTuru, Long ihr1PersonelIletilenId, String mesaj, Long groupId) {
+        this.ihr1PersonelYazanId = ihr1PersonelYazanId;
+        this.gonderimTuru = gonderimTuru;
+        this.ihr1PersonelIletilenId = ihr1PersonelIletilenId;
+        this.mesaj = mesaj;
+        this.groupId = groupId;
+    }
+
     public Long getIhr1PersonelYazanId() {
         return ihr1PersonelYazanId;
     }
