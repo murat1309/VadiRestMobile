@@ -13,22 +13,28 @@ public class InboxMessageDTO implements Serializable {
     private Boolean isGroup;
     private Long groupId;
     private Long iletilenPersonelId;
+    private Long yazanPersonelId;
     private String lastMessage;
     private Date okunmaZamani;
     private Date sendDate;
+    private Boolean me;
+    private Boolean hasunread;
 
     public InboxMessageDTO() {
     }
 
-    public InboxMessageDTO(String personelName, String groupName, Boolean isGroup, Long groupId, Long iletilenPersonelId, String lastMessage, Date okunmaZamani, Date sendDate) {
+    public InboxMessageDTO(String personelName, String groupName, Boolean isGroup, Long groupId, Long iletilenPersonelId, Long yazanPersonelId, String lastMessage, Date okunmaZamani, Date sendDate, Boolean me, Boolean hasunread) {
         this.personelName = personelName;
         this.groupName = groupName;
         this.isGroup = isGroup;
         this.groupId = groupId;
         this.iletilenPersonelId = iletilenPersonelId;
+        this.yazanPersonelId = yazanPersonelId;
         this.lastMessage = lastMessage;
         this.okunmaZamani = okunmaZamani;
         this.sendDate = sendDate;
+        this.me = me;
+        this.hasunread = hasunread;
     }
 
     public String getPersonelName() {
@@ -93,5 +99,29 @@ public class InboxMessageDTO implements Serializable {
 
     public void setSendDate(Date sendDate) {
         this.sendDate = sendDate;
+    }
+
+    public Long getYazanPersonelId() {
+        return yazanPersonelId;
+    }
+
+    public void setYazanPersonelId(Long yazanPersonelId) {
+        this.yazanPersonelId = yazanPersonelId;
+    }
+
+    public Boolean getMe() {
+        return me;
+    }
+
+    public void setMe(Boolean me) {
+        this.me = me;
+    }
+
+    public Boolean getHasunread() {
+        return hasunread;
+    }
+
+    public void setHasunread(Boolean hasunread) {
+        this.hasunread = hasunread;
     }
 }

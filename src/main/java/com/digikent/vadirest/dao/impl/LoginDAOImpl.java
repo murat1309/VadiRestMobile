@@ -85,12 +85,12 @@ public class LoginDAOImpl implements LoginDAO {
 	}
 	
 	public UserAuthenticationInfo loginWithoutPassword(String userName) {
-		String sql = "select A.ID, A.IHR1PERSONEL_ID,A.ACTIVE, A.FIRSTNAME,A.LASTNAME,A.USERID,A.FSM1ROLES_ID, "
-				   +"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
-	               +"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
-	               +"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
-	               +"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
-				   +"from fsm1users A WHERE A.USERID ='"+ userName +"'";
+		String sql = "select A.ID, A.IHR1PERSONEL_ID,B.ADI,B.SOYADI,A.USERID,A.FSM1ROLES_ID, "
+				+"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IHR1PERSONEL_ID and rownum=1) AS  MSM2PERSONEL_ID, "
+				+"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IHR1PERSONEL_ID) SERVIS_ID, "
+				+"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
+				+"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
+				+"from fsm1users A, IHR1PERSONEL B WHERE A.USERID ='"+ userName +"' AND A.IKY_PERSONEL_ID=B.ID";
 		
 		List<Object> list = new ArrayList<Object>();
 		Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -106,8 +106,8 @@ public class LoginDAOImpl implements LoginDAO {
 			String active = (String) map.get("ACTIVE");
 			BigDecimal id = (BigDecimal)map.get("ID");
 			BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
-			String firstName = (String) map.get("FIRSTNAME");
-			String lastName = (String) map.get("LASTNAME");
+			String firstName = (String) map.get("ADI");
+			String lastName = (String) map.get("SOYADI");
 			BigDecimal msm2PersonelId = (BigDecimal)map.get("MSM2PERSONEL_ID");
 			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
