@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class TeilMesajİletimGrubuLine extends BaseEntity implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "teilmesajgrubuline_seq", sequenceName = "VEILMESAJ_ID", initialValue = 2, allocationSize = 1)
+    @SequenceGenerator(name = "teilmesajgrubuline_seq", sequenceName = "TEILMESAJILETIMGRUBULINE_ID", initialValue = 2, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teilmesajgrubuline_seq")
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;

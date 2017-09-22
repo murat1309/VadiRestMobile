@@ -1,5 +1,6 @@
 package com.digikent.mesajlasma.dao;
 
+import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.*;
 import com.digikent.mesajlasma.entity.TeilMesajIletimGrubu;
 import com.digikent.mesajlasma.entity.TeilMesajİletimGrubuLine;
@@ -46,6 +47,9 @@ public class MesajlasmaRepository {
             LOG.debug("Message saved. Time = " + veilMesaj.getGonderimZamani());
             LOG.debug("procedure will Call ");
             callProcedure(session, veilMesaj);
+            if (messageDTO.getGonderimTuru().equalsIgnoreCase("GRUBAILETIM")) {
+                doReadMessagesGroupSelf(messageDTO.getIhr1PersonelYazanId(), messageDTO.getGroupId());
+            }
         }catch(Exception e){
             LOG.error("while save message to database, An error occured. ");
             if(tx != null){
@@ -243,7 +247,6 @@ public class MesajlasmaRepository {
             if(groupOkunmayan != null && groupOkunmayan.longValue() > 0) {
                 inboxMessageDTO.setHasunread(true);
             }
-
             inboxMessageDTOList.add(inboxMessageDTO);
 
         }
@@ -260,7 +263,7 @@ public class MesajlasmaRepository {
         Long iletinlenPId = messageLineRequestDTO.getIlentilenPersonelId();
 
         if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("KISIYEILETIM")) {
-            sql = "SELECT A.GONDERIMZAMANI, C.ADI||' '||C.SOYADI MESAJSAHIBI, A.IHR1PERSONEL_YAZAN, A.MESAJ" +
+            sql = "SELECT A.GONDERIMZAMANI, C.ADI||' '||C.SOYADI MESAJSAHIBI, A.IHR1PERSONEL_YAZAN, A.MESAJ, B.OKUNMAZAMANI" +
                     " FROM VEILMESAJ A,VEILMESAJLINE B, IHR1PERSONEL C " +
                     "WHERE ((A.IHR1PERSONEL_YAZAN =" +  yazanPId + " AND A.IHR1PERSONEL_ILETILEN = " + iletinlenPId  + " ) " +
                     "        OR (A.IHR1PERSONEL_YAZAN = " + iletinlenPId  + "  AND A.IHR1PERSONEL_ILETILEN = " + yazanPId + " )) " +
@@ -268,7 +271,7 @@ public class MesajlasmaRepository {
                     "        AND (A.IHR1PERSONEL_YAZAN = C.ID)" +
                     "        ORDER BY A.GONDERIMZAMANI DESC";
         } else if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("GRUBAILETIM")) {
-            sql = "select A.ID,C.ADI||' '||C.SOYADI MESAJSAHIBI,A.GONDERIMZAMANI,A.MESAJ, A.IHR1PERSONEL_YAZAN " +
+            sql = "select A.ID,C.ADI||' '||C.SOYADI MESAJSAHIBI,A.GONDERIMZAMANI,A.MESAJ, A.IHR1PERSONEL_YAZAN, B.OKUNMAZAMANI" +
                     "  from VEILMESAJ A,VEILMESAJLINE B, IHR1PERSONEL C " +
                     " Where B.VEILMESAJ_ID = A.ID " +
                     "    And A.IHR1PERSONEL_YAZAN = C.ID " +
@@ -284,9 +287,15 @@ public class MesajlasmaRepository {
 
         list = query.list();
 
+        Boolean controlPersonal=true;
+        Boolean controlGroup=false;
+        int counter = 0;
+        int counter2 = 0;
+
         for(Object o : list){
             Map map = (Map) o;
             Date sendDate = (Date) map.get("GONDERIMZAMANI");
+            Date okunmaZamani = (Date) map.get("OKUNMAZAMANI");
             String personelName = (String) map.get("MESAJSAHIBI");
             BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_YAZAN");
             String message = (String) map.get("MESAJ");
@@ -301,8 +310,37 @@ public class MesajlasmaRepository {
                 messageLineDTO.setPersonelName(personelName);
             if(message != null)
                 messageLineDTO.setMessage(message);
+            messageLineDTO.setType(Constants.MESSAGE_TYPE_REAL_MESSAGE);
+
+            if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("KISIYEILETIM")) {
+                counter++;
+                if (personelId.longValue() != yazanPId.longValue()) {
+                    if (controlPersonal && okunmaZamani != null) {
+                        controlPersonal = false;
+                        if (counter2 != 0) {
+                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE));
+                        }
+                    }
+                    counter2 = counter;
+                }
+
+            } else if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("GRUBAILETIM")) {
+
+                counter++;
+                if (personelId.longValue() != yazanPId.longValue()) {
+                    if (controlPersonal && okunmaZamani != null) {
+                        controlPersonal = false;
+                        if (counter2 != 0) {
+                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE));
+                        }
+                    }
+                    counter2 = counter;
+                }
+
+            }
 
             messageLineDTOList.add(messageLineDTO);
+
         }
 
         //okundu
@@ -348,6 +386,52 @@ public class MesajlasmaRepository {
                 " WHERE VEILMESAJLINE.OKUNMAZAMANI is NULL AND VEILMESAJ_ID IN  " +
                 " (SELECT ID FROM VEILMESAJ A " +
                 " WHERE (A.IHR1PERSONEL_ILETILEN = " + personelId + " AND A.IHR1PERSONEL_YAZAN =" + iletilenPersonelId + "))";
+
+        List<Object> list = new ArrayList<Object>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setParameter("date", dateString);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        query.executeUpdate();
+
+        return true;
+    }
+
+    //kullanıcı mesaj attıktan sonra kendi mesajını kendisine okundu yapmak için
+    public Boolean doReadMessagesPersonalSelf(Long personelId) {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateString = dateFormat.format(date);
+
+        String sql = "UPDATE VEILMESAJLINE SET OKUNMAZAMANI= TO_DATE(:date,'YYYY-MM-DD HH24:mi:ss') " +
+                " WHERE VEILMESAJLINE.OKUNMAZAMANI is NULL AND VEILMESAJ_ID IN  " +
+                " (SELECT ID FROM VEILMESAJ A " +
+                " WHERE (A.IHR1PERSONEL_ILETILEN = " + personelId + " AND A.IHR1PERSONEL_YAZAN =" + personelId + "))";
+
+        List<Object> list = new ArrayList<Object>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setParameter("date", dateString);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        query.executeUpdate();
+
+        return true;
+    }
+
+    //kullanın gruba mesaj attıktan sonra kendi mesajını kendisine okundu yapmak için
+    public Boolean doReadMessagesGroupSelf(Long personelId, Long groupId) {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String dateString = dateFormat.format(date);
+
+        String sql = "UPDATE VEILMESAJLINE SET OKUNMAZAMANI= TO_DATE(:date,'YYYY-MM-DD HH24:mi:ss') " +
+                " WHERE VEILMESAJLINE.OKUNMAZAMANI is NULL AND VEILMESAJLINE.IHR1PERSONEL_ILETILEN=" + personelId +" AND VEILMESAJ_ID IN  " +
+                " (SELECT ID FROM VEILMESAJ A " +
+                " WHERE (A.TEILMESAJILETIMGRUBU_ILETILEN =  "+ groupId +" ) AND A.IHR1PERSONEL_YAZAN = " + personelId + ")";
 
         List<Object> list = new ArrayList<Object>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();

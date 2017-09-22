@@ -15,7 +15,7 @@ import java.util.List;
 public class TeilMesajIletimGrubu extends BaseEntity implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "teilmesajgrubu_seq", sequenceName = "VEILMESAJ_ID", initialValue = 2, allocationSize = 1)
+    @SequenceGenerator(name = "teilmesajgrubu_seq", sequenceName = "TEILMESAJILETIMGRUBU_ID", initialValue = 2, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teilmesajgrubu_seq")
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;

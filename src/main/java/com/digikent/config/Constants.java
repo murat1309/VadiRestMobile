@@ -20,6 +20,9 @@ public final class Constants {
     public static final String SYSTEM_ACCOUNT = "system";
     public static final int MESSAGE_OLD_VERSION = 9;
     public static final int MESSAGE_CURRENT_VERSION = 1;
+    public static final String MESSAGE_TYPE_REAL_MESSAGE = "real";
+    public static final String MESSAGE_TYPE_LINE_MESSAGE = "line";
+
 
     private Constants() {
     }

@@ -12,15 +12,17 @@ public class MessageLineDTO implements Serializable {
     private Long personelId;
     private String message;
     private Date sendDate;
+    private String type;
 
     public MessageLineDTO() {
     }
 
-    public MessageLineDTO(String personelName, Long personelId, String message, Date sendDate) {
+    public MessageLineDTO(String personelName, Long personelId, String message, Date sendDate, String type) {
         this.personelName = personelName;
         this.personelId = personelId;
         this.message = message;
         this.sendDate = sendDate;
+        this.type = type;
     }
 
     public String getPersonelName() {
@@ -53,5 +55,13 @@ public class MessageLineDTO implements Serializable {
 
     public void setSendDate(Date sendDate) {
         this.sendDate = sendDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
