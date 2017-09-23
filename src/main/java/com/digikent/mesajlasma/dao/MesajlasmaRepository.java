@@ -143,6 +143,8 @@ public class MesajlasmaRepository {
             tx.commit();
 
             LOG.debug("Group created id of group = " + group.getID() + " on Time = " + date);
+
+            sendDefaultGroupMessage(groupRequest, group);
         }catch(Exception e){
             LOG.error("while create group to database, An error occured. ");
             if(tx != null){
@@ -471,6 +473,20 @@ public class MesajlasmaRepository {
         veilMesaj.setOkunmaZamani(null);
 
         return veilMesaj;
+    }
+
+    /*
+    send default message when  create group
+     */
+    public void sendDefaultGroupMessage(GroupRequest groupRequest, TeilMesajIletimGrubu teilMesajIletimGrubu) {
+        MessageDTO messageDTO = new MessageDTO(
+                groupRequest.getGroupInformationDTO().getOlusturanPersonel(),
+                "GRUBAILETIM",
+                null,
+                "Otomatik Mesaj : " + groupRequest.getGroupInformationDTO().getGrupAdi() + " grubu oluşturuldu",
+                teilMesajIletimGrubu.getID()
+                );
+        savePersonalMessage(messageDTO);
     }
 
     //TODO check method
