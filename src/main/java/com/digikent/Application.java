@@ -71,7 +71,7 @@ public class Application {
     }
 
     /**
-     * Main method, used to run the application.
+     * UtilCrypto method, used to run the application.
      */
     public static void main(String[] args) throws UnknownHostException {
         SpringApplication app = new SpringApplication(Application.class);

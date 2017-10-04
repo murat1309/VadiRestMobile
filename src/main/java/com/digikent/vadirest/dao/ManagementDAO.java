@@ -19,14 +19,14 @@ public interface ManagementDAO {
 	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate);;
 	public List<KurumBorc> getDebtStatus(long id, long year);
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate);
-	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate);
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate, long personelId);
 	public List<Basvuru> getApplyCount(String startDate, String endDate);
 	public List<BasvuruOzet> getApplySummary(long birimId, String startDate, String endDate);
 	public BasvuruOzetDetay getApplySummaryDetail(long basvuruNo);
 	public List<FirmaBorc> getFirmDebtStatus(long persid, long year);
 	public String getFirmaAlacakType();
-	public List<FirmaAlacak> getFirmaAlacakTypeE(long year);
-	public List<FirmaAlacak> getFirmaAlacakTypeH(long year);
+	public List<FirmaAlacak> getFirmaAlacakTypeE(long year, long personelId);
+	public List<FirmaAlacak> getFirmaAlacakTypeH(long year, long personelId);
 	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate);
 	public List<Talep> getRequestCount(String timePeriod);
 	public List<GelirGrubu> getIncomeGroup(String timePeriod);
@@ -47,8 +47,8 @@ public interface ManagementDAO {
 	public List<GraphGeneral> getIncomeManagementStreetBorc(long year);
 	public List<GraphGeneral> getIncomeManagementTaxPayer(String startDate, String endDate);
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense();
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome();
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(long year, long personelId);
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(long year, long personelId);
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year);
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseDaily(long year, long month);
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeBudget();

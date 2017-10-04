@@ -1,14 +1,18 @@
 package com.digikent.mesajlasma.dao;
 
 import com.digikent.config.Constants;
+import com.digikent.crypt.UtilCrypto;
 import com.digikent.mesajlasma.dto.*;
 import com.digikent.mesajlasma.entity.TeilMesajIletimGrubu;
 import com.digikent.mesajlasma.entity.TeilMesajİletimGrubuLine;
 import com.digikent.mesajlasma.entity.VeilMesaj;
+import com.digikent.security.SecurityUtils;
 import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -31,16 +35,19 @@ public class MesajlasmaRepository {
     @Autowired
     SessionFactory sessionFactory;
 
+    @Autowired
+    UtilCrypto utilCrypto;
+
     public Boolean savePersonalMessage(MessageDTO messageDTO) {
-        VeilMesaj veilMesaj = convertMessageDTOToVeilMesaj(messageDTO);
+
         Session session = sessionFactory.openSession();
         Transaction tx = null;
-
-        if (messageDTO.getGroupId() != null) {
-            veilMesaj.setTeilMesajIletimGrubu(getMesajIletimGrubuById(session, messageDTO.getGroupId()));
-        }
-
         try{
+            VeilMesaj veilMesaj = convertMessageDTOToVeilMesaj(messageDTO);
+            if (messageDTO.getGroupId() != null) {
+                veilMesaj.setTeilMesajIletimGrubu(getMesajIletimGrubuById(session, messageDTO.getGroupId()));
+            }
+
             tx = session.beginTransaction();
             session.save(veilMesaj);
             tx.commit();
@@ -217,6 +224,12 @@ public class MesajlasmaRepository {
                 }
                 inboxMessageDTO.setIletilenPersonelId(iletilenPersonelId.longValue());
                 inboxMessageDTO.setYazanPersonelId(yazanPersonelId.longValue());
+                if(mesaj != null) {
+                    try {
+                        inboxMessageDTO.setLastMessage(utilCrypto.decryptMessage(mesaj, yazanPersonelId.longValue()));
+                    } catch (Exception e) {
+                    }
+                }
             }
 
             //grup konuşması
@@ -227,6 +240,13 @@ public class MesajlasmaRepository {
                 inboxMessageDTO.setYazanPersonelId(yazanPersonelId.longValue());
                 inboxMessageDTO.setGroup(true);
                 inboxMessageDTO.setGroupName(iletilenAdi);
+
+                if(mesaj != null) {
+                    try {
+                        inboxMessageDTO.setLastMessage(utilCrypto.decryptMessage(mesaj, groupId.longValue()));
+                    } catch (Exception e) {
+                    }
+                }
             }
 
             if(groupId != null) {
@@ -237,8 +257,7 @@ public class MesajlasmaRepository {
 
             if(groupName != null)
                 inboxMessageDTO.setGroupName(groupName);
-            if(mesaj != null)
-                inboxMessageDTO.setLastMessage(mesaj);
+
             if(gonderimZamani != null) {
                 inboxMessageDTO.setSendDate(gonderimZamani);
             }
@@ -258,6 +277,8 @@ public class MesajlasmaRepository {
     }
 
     public List<MessageLineDTO> getMessageLinesByPersonelId(MessageLineRequestDTO messageLineRequestDTO) {
+        /*String userName = SecurityUtils.getCurrentUserLogin();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();*/
         List<MessageLineDTO> messageLineDTOList = new ArrayList<>();
         String sql = "";
 
@@ -310,11 +331,10 @@ public class MesajlasmaRepository {
                 messageLineDTO.setSendDate(sendDate);
             if(personelName != null)
                 messageLineDTO.setPersonelName(personelName);
-            if(message != null)
-                messageLineDTO.setMessage(message);
             messageLineDTO.setType(Constants.MESSAGE_TYPE_REAL_MESSAGE);
 
             if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("KISIYEILETIM")) {
+                //kişisel mesaj
                 counter++;
                 if (personelId.longValue() != yazanPId.longValue()) {
                     if (controlPersonal && okunmaZamani != null) {
@@ -324,10 +344,16 @@ public class MesajlasmaRepository {
                         }
                     }
                     counter2 = counter;
+                }
+                try {
+                    if(message != null) {
+                        messageLineDTO.setMessage(utilCrypto.decryptMessage(message, personelId.longValue()));
+                    }
+                } catch (Exception e) {
                 }
 
             } else if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("GRUBAILETIM")) {
-
+                //Grup mesajı
                 counter++;
                 if (personelId.longValue() != yazanPId.longValue()) {
                     if (controlPersonal && okunmaZamani != null) {
@@ -338,7 +364,12 @@ public class MesajlasmaRepository {
                     }
                     counter2 = counter;
                 }
-
+                try {
+                    if(message != null) {
+                        messageLineDTO.setMessage(utilCrypto.decryptMessage(message, messageLineRequestDTO.getGroupId()));
+                    }
+                } catch (Exception e) {
+                }
             }
 
             messageLineDTOList.add(messageLineDTO);
@@ -461,12 +492,21 @@ public class MesajlasmaRepository {
         return (TeilMesajIletimGrubu) session.get(TeilMesajIletimGrubu.class, id);
     }
 
-    public VeilMesaj convertMessageDTOToVeilMesaj(MessageDTO messageDTO) {
+    public VeilMesaj convertMessageDTOToVeilMesaj(MessageDTO messageDTO) throws Exception {
         VeilMesaj veilMesaj = new VeilMesaj();
         veilMesaj.setGönderimTuru(messageDTO.getGonderimTuru());
         veilMesaj.setIhr1PersonelIletilenId(messageDTO.getIhr1PersonelIletilenId());
         veilMesaj.setIhr1PersonelYazanId(messageDTO.getIhr1PersonelYazanId());
-        veilMesaj.setMesaj(messageDTO.getMesaj());
+        try {
+            if (messageDTO.getGonderimTuru().equalsIgnoreCase("GRUBAILETIM")) {
+                veilMesaj.setMesaj(utilCrypto.encryptMessage(messageDTO.getMesaj(), messageDTO.getGroupId()));
+            } else if (messageDTO.getGonderimTuru().equalsIgnoreCase("KISIYEILETIM")) {
+                veilMesaj.setMesaj(utilCrypto.encryptMessage(messageDTO.getMesaj(), messageDTO.getIhr1PersonelYazanId()));
+            }
+
+        } catch (Exception e) {
+            throw new Exception();
+        }
         veilMesaj.setCrUser(messageDTO.getIhr1PersonelYazanId());
         veilMesaj.setIsActive(true);
         veilMesaj.setDeleteFlag("H");

@@ -612,14 +612,15 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return yapilanOdemelerList;
 	}
 
-	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate){
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate, long personelId){
 		String sql = "SELECT A.YEVMIYENUMARASI, A.YEVMIYETARIHI, A.IZAHAT, \n" +
 				" B.TUTAR FROM OFI2MUHASEBEFISI A, KFI2CEK B, RFI2MUHASEBEFISILINE FL \n" +
 				" WHERE FL.OFI2MUHASEBEFISI_ID = A.ID AND FL.KFI2CEK_ID = B.ID \n" +
 				" AND A.ID != 0 AND A.YEVMIYETARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and  \n" +
 				" TO_DATE ('"+endDate+"', 'dd-MM-yyyy') \n" +
-				" AND FL.LFI2HESAPPLANI_ID IN (SELECT ID FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID=" + year +" AND KODU LIKE '103%') \n" +
-				" AND A.BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI=" + year +" ) \n" +
+				" AND FL.LFI2HESAPPLANI_ID IN (SELECT ID FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
+				" AND KODU LIKE '103%') \n" +
+				" AND  BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
 				" AND A.FISTIPI not like 'U' \n" +
 				" AND NOT EXISTS (SELECT 1 FROM ASM1PAYDASYETKI AA, ASM1PAYDASYETKILINE BB WHERE AA.ID = BB.ASM1PAYDASYETKI_ID " +
 				" AND AA.MPI1PAYDAS_ID = A.MPI1PAYDAS_ID AND BB.FSM1USERS_ID = 0)" +
@@ -943,10 +944,10 @@ public class ManagementDAOImpl implements ManagementDAO {
 
 	}
 
-	public List<FirmaAlacak> getFirmaAlacakTypeE(long year){
+	public List<FirmaAlacak> getFirmaAlacakTypeE(long year, long personelId){
 		String sql = "SELECT  ADISOYADI AS TANIM ,SUM(TUTARI) BORC,SUM(ODENEN) ALACAK\n" +
 				",SUM(KALAN) BAKIYE  ,  NVL(MPI1PAYDAS_ID,0) AS PAYDAS\n" +
-				"FROM AFI2BUTCEEMANETALACAKVIEW  WHERE BFI1BUTCEDONEMI_ID=" + year + "\n" +
+				"FROM AFI2BUTCEEMANETALACAKVIEW  WHERE BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
 				"AND NVL(KALAN,0) >= 0\n" +
 				"GROUP BY ADISOYADI,NVL(MPI1PAYDAS_ID,0)\n" +
 				"ORDER BY ADISOYADI";
@@ -986,14 +987,14 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return firmaAlacaklist;
 	}
 
-	public List<FirmaAlacak> getFirmaAlacakTypeH(long year){
+	public List<FirmaAlacak> getFirmaAlacakTypeH(long year, long personelId){
 		String sql = "SELECT   TANIM , SUM(TOPLAMBORC) AS BORC\n" +
 				", SUM(TOPLAMALACAK) AS ALACAK \n" +
 				",  CASE WHEN SUM(TOPLAMALACAK-TOPLAMBORC) >0 THEN  SUM(TOPLAMALACAK-TOPLAMBORC)\n" +
 				"            WHEN SUM(TOPLAMBORC-TOPLAMALACAK) >0 THEN  SUM(TOPLAMBORC-TOPLAMALACAK)\n" +
 				"   END BAKIYE\n" +
 				", MPI1PAYDAS_ID AS PAYDAS \n" +
-				"  FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID=" + year +"\n" +
+				"  FROM LFI2HESAPPLANI WHERE BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
 				"  AND ENALTDUZEY='E'  AND ( (KODU LIKE '320%'   ) )  AND MPI1PAYDAS_ID>0\n" +
 				" GROUP BY TANIM,MPI1PAYDAS_ID  ORDER BY MPI1PAYDAS_ID";
 
@@ -1923,12 +1924,12 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return finansmanYonetimiGelirGiderList;
 	}
 
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(){
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(long year, long personelId){
 
 		String sql = "Select KODU,TANIM,BUTCETUTARI,ENALTDUZEY,GERCEKLESENTUTAR, " +
 		"		( '% '||Round(( GERCEKLESENTUTAR / BUTCETUTARI ) * 100,2) ) YUZDE " +
 		" FROM AFI1BUTCE " +
-		" Where BFI1BUTCEDONEMI_ID = 2017 " +
+		" Where  BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
 		" And TURU = 'B' " +
 		" AND BUTCETUTARI > 0 " +
 		" Order By KODU ";
@@ -1970,13 +1971,13 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return finansmanYonetimiGelirGiderList;
 	}
 
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(){
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(long year, long personelId){
 
 		String sql = "Select KODU,TANIM,Sum(BUTCETUTARI) BUTCETUTARI,SUM(GERCEKLESENTUTAR) GERCEKLESENTUTAR, " +
 				"       ( '% '||Round(( Sum(GERCEKLESENTUTAR) / Sum(BUTCETUTARI) ) * 100,2) ) GERCEKLESMEYUZDESI, " +
 				"        '% '||round(100*(Sum(BUTCETUTARI) / sum(Sum(BUTCETUTARI)) over ()),2) BUTCEPAYI " +
 				"  FROM AFI1BUTCE " +
-				" Where BFI1BUTCEDONEMI_ID = 2017 " +
+				" Where  BFI1BUTCEDONEMI_ID IN (SELECT ID FROM BFI1BUTCEDONEMI WHERE YILI="+ year + " AND SM1KURUM_ID IN (SELECT MSM1KURUM_ID  FROM FSM1USERS WHERE ID=" + personelId + "))" +
 				"  And TURU = 'A' " +
 				"  AND KAYITDUZEYI = 4 " +
 				"  AND BUTCETUTARI > 0 " +

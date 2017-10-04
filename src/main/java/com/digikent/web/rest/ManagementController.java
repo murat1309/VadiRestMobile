@@ -112,12 +112,13 @@ public class ManagementController {
 	}
 
 	//tum odemeler
-	@RequestMapping(value ="tumOdemeler/{year}/{startDate}/{endDate}", method = RequestMethod.GET)
+	@RequestMapping(value ="tumOdemeler/{year}/{startDate}/{endDate}/{personelId}", method = RequestMethod.GET)
 	public List<FirmaOdeme> getAllPayments(@PathVariable("year") long year,
 										   @PathVariable("startDate") String startDate,
-										   @PathVariable("endDate") String endDate ){
+										   @PathVariable("endDate") String endDate,
+										   @PathVariable("year") long personelId){
 		LOG.debug("Rest Request to get all payments year, startDate, endDate: {}", year, startDate, endDate);
-		return managementService.getAllPayments(year, startDate, endDate);
+		return managementService.getAllPayments(year, startDate, endDate, personelId);
 	}
 	
 	//birim bazinda basvuru sayisi
@@ -150,10 +151,10 @@ public class ManagementController {
 	}
 
 	//Firma Alacak durumu
-	@RequestMapping(value ="firmaAlacak/{year}", method = RequestMethod.GET)
-	public List<FirmaAlacak> getFirmaAlacak(@PathVariable("year") long year){
+	@RequestMapping(value ="firmaAlacak/{year}/{personelId}", method = RequestMethod.GET)
+	public List<FirmaAlacak> getFirmaAlacak(@PathVariable("year") long year, @PathVariable("personelId") long personelId){
 		LOG.debug("Rest Request to get firma alacak year: {}", year);
-		return managementService.getFirmaAlacak(year);
+		return managementService.getFirmaAlacak(year, personelId);
 	}
 
 	//Firma Alacak durumu
@@ -303,17 +304,17 @@ public class ManagementController {
 	}
 
 	//Finansman yonetimi gelir butcesi
-	@RequestMapping(value = "finansmanYonetimiGelir", method = RequestMethod.GET)
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome() throws Throwable{
+	@RequestMapping(value = "finansmanYonetimiGelir/{year}/{personelId}", method = RequestMethod.GET)
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(@PathVariable("year") long year, @PathVariable("personelId") long personelId) throws Throwable{
 		System.out.println("----------- finansman Yonetimi gelir ----------");
-		return managementService.getFinancialManagementIncome();
+		return managementService.getFinancialManagementIncome(year, personelId);
 	}
 
 	//Finansman yonetimi gider butcesi
-	@RequestMapping(value = "finansmanYonetimiGider", method = RequestMethod.GET)
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense() throws Throwable{
+	@RequestMapping(value = "finansmanYonetimiGider/{year}/{personelId}", method = RequestMethod.GET)
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(@PathVariable("year") long year, @PathVariable("personelId") long personelId) throws Throwable{
 		System.out.println("----------- finansman Yonetimi gider----------");
-		return managementService.getFinancialManagementExpense();
+		return managementService.getFinancialManagementExpense(year,personelId);
 	}
 
 	//Finansman yonetimi gelir gider butcesi ay bazinda

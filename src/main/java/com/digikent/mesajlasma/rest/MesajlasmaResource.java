@@ -53,7 +53,7 @@ public class MesajlasmaResource {
     /*
     tüm kullanıcılar çekilir. (parametredeki hariç)
      */
-    @RequestMapping(value = "/users/{username}", method = RequestMethod.GET)
+    @RequestMapping(value = "/users/{username}/", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<List<MessageUserDTO>> getDemirbasDTOAndDemirbasHareket(@PathVariable("username") String username) {
         LOG.debug("REST request to get userList");

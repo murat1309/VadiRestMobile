@@ -30,7 +30,7 @@ public interface ManagementService {
 	//Yapilan odemeler
 	public List<YapilanOdemeler> getPayments(String startDate, String endDate) throws Throwable;
 	//tum odemeler
-	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate);
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate, long getPayments);
 	//mudurluk bazinda basvuru
 	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable;
 	//Basvuru sayisi ozet
@@ -40,7 +40,7 @@ public interface ManagementService {
 	//Firma borc durumu
 	public List<FirmaBorc> getFirmDebtStatus(long persid, long year);
 	//Firma Alacak durumu
-	public List<FirmaAlacak> getFirmaAlacak(long year);
+	public List<FirmaAlacak> getFirmaAlacak(long year, long personelId);
 	//Firma Odeme durumu
 	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate);
 	//Konu bazinda talep sayisi
@@ -80,9 +80,9 @@ public interface ManagementService {
 	//finansman yonetimi gelir gider 
 	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncomeExpense();
 	//finansman yonetimi gelir
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(long year, long personelId);
 	//finansman yonetimi gider
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(long year, long personelId);
 	//finansman yonetimi gelir gider ay bazinda
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year);
 	//finansman yonetimi gelir gider gun bazinda

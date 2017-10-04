@@ -69,8 +69,8 @@ public class ManagementServiceImpl implements ManagementService {
 		return managementDAO.getPayments(startDate,endDate);
 	}
 
-	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate){
-		return managementDAO.getAllPayments(year, startDate, endDate);
+	public List<FirmaOdeme> getAllPayments(long year, String startDate, String endDate, long personelId){
+		return managementDAO.getAllPayments(year, startDate, endDate, personelId);
 	}
 	
 	public List<Basvuru> getApplyCount(String startDate, String endDate) throws Throwable{
@@ -89,12 +89,12 @@ public class ManagementServiceImpl implements ManagementService {
 		return managementDAO.getFirmDebtStatus(persid,year);
 	}
 
-	public List<FirmaAlacak> getFirmaAlacak(long year){
+	public List<FirmaAlacak> getFirmaAlacak(long year, long personelId){
 		String paymentType = managementDAO.getFirmaAlacakType();
 		if(paymentType.equalsIgnoreCase("E"))
-			return managementDAO.getFirmaAlacakTypeE(year);
+			return managementDAO.getFirmaAlacakTypeE(year, personelId);
 		else
-			return  managementDAO.getFirmaAlacakTypeH(year);
+			return  managementDAO.getFirmaAlacakTypeH(year, personelId);
 	}
 
 	public List<FirmaOdeme> getFirmaOdeme(long year, String startDate, String endDate){
@@ -217,12 +217,12 @@ public class ManagementServiceImpl implements ManagementService {
 		return managementDAO.getFinancialManagementIncomeExpense();
 	}
 
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(){
-		return managementDAO.getFinancialManagementIncome();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementIncome(long year, long personelId){
+		return managementDAO.getFinancialManagementIncome(year, personelId);
 	}
 
-	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(){
-		return managementDAO.getFinancialManagementExpense();
+	public List<FinansmanYonetimiGelirGider> getFinancialManagementExpense(long year, long personelId){
+		return managementDAO.getFinancialManagementExpense(year,personelId);
 	}
 	
 	public List<FinansmanYonetimiGelirGiderAylik> getFinancialManagementIncomeExpenseMonthly(long year){
