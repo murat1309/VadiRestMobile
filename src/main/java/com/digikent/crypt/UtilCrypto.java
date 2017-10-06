@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.nio.charset.Charset;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -36,7 +37,7 @@ public class UtilCrypto {
             Key desKey = generateKey(userIdOrGroupId.toString());
             Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, desKey);
-            byte[] textEncrypted = cipher.doFinal(messageText.getBytes());
+            byte[] textEncrypted = cipher.doFinal(messageText.getBytes("UTF-8"));
             Base64 codec = new Base64();
             return codec.encodeBase64String(textEncrypted);
         } catch (Exception e) {
@@ -57,7 +58,7 @@ public class UtilCrypto {
             cipher.init(Cipher.DECRYPT_MODE, desKey);
             byte[] decodebyte = new Base64().decode(base64String);
             byte[] textDecrypted = cipher.doFinal(decodebyte);
-            return new String(textDecrypted);
+            return new String(textDecrypted, "UTF-8");
 
         } catch (Exception e) {
             LOG.error("decrypt edilirken hata oluştu message = " + e.getMessage());
