@@ -116,7 +116,7 @@ public class ManagementController {
 	public List<FirmaOdeme> getAllPayments(@PathVariable("year") long year,
 										   @PathVariable("startDate") String startDate,
 										   @PathVariable("endDate") String endDate,
-										   @PathVariable("year") long personelId){
+										   @PathVariable("personelId") long personelId){
 		LOG.debug("Rest Request to get all payments year, startDate, endDate: {}", year, startDate, endDate);
 		return managementService.getAllPayments(year, startDate, endDate, personelId);
 	}
