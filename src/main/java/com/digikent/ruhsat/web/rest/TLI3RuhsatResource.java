@@ -37,7 +37,15 @@ public class TLI3RuhsatResource {
     @Transactional
     public ResponseEntity<List<TLI3RuhsatDTO>> search(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
         LOG.debug("REST request to get ruhsat with id : {}", tli3RuhsatDTO.getId());
-        List<TLI3RuhsatDTO> results = repository.get(tli3RuhsatDTO);
+        List<TLI3RuhsatDTO> results = repository.getRuhsatByBarcodeId(tli3RuhsatDTO);
+        return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
+    }
+
+    @RequestMapping(method = POST, value = "/tli3Ruhsat/basvuru", produces = APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<List<TLI3RuhsatDTO>> getBasvuruByPaydasNo(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
+        LOG.debug("REST request to get ruhsat with id : {}", tli3RuhsatDTO.getId());
+        List<TLI3RuhsatDTO> results = repository.getBasvuruByPaydasNo(tli3RuhsatDTO);
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
     }
 }

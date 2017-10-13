@@ -24,6 +24,17 @@ public class TLI3RuhsatDTO {
     private String ruhsatBaskanYardimcisi;
     private String ruhsatTuru;
     private Long dosyaReferansNo;
+    private Long dosyaNumarasi;
+    private String isyeriAnaFaaliyet;
+    private String ruhsatDurumu;
+    private String isyeriDurumu;
+    private String mahalle;
+    private Long mahalleId;
+    private String sokak;
+    private Long sokakId;
+    private String bina;
+    private Long binaId;
+
 
     public Long getDosyaReferansNo() {
         return dosyaReferansNo;
@@ -183,5 +194,85 @@ public class TLI3RuhsatDTO {
 
     public void setRuhsatTuru(String ruhsatTuru) {
         this.ruhsatTuru = ruhsatTuru;
+    }
+
+    public Long getDosyaNumarasi() {
+        return dosyaNumarasi;
+    }
+
+    public void setDosyaNumarasi(Long dosyaNumarasi) {
+        this.dosyaNumarasi = dosyaNumarasi;
+    }
+
+    public String getIsyeriAnaFaaliyet() {
+        return isyeriAnaFaaliyet;
+    }
+
+    public void setIsyeriAnaFaaliyet(String isyeriAnaFaaliyet) {
+        this.isyeriAnaFaaliyet = isyeriAnaFaaliyet;
+    }
+
+    public String getRuhsatDurumu() {
+        return ruhsatDurumu;
+    }
+
+    public void setRuhsatDurumu(String ruhsatDurumu) {
+        this.ruhsatDurumu = ruhsatDurumu;
+    }
+
+    public String getIsyeriDurumu() {
+        return isyeriDurumu;
+    }
+
+    public void setIsyeriDurumu(String isyeriDurumu) {
+        this.isyeriDurumu = isyeriDurumu;
+    }
+
+    public String getMahalle() {
+        return mahalle;
+    }
+
+    public void setMahalle(String mahalle) {
+        this.mahalle = mahalle;
+    }
+
+    public Long getMahalleId() {
+        return mahalleId;
+    }
+
+    public void setMahalleId(Long mahalleId) {
+        this.mahalleId = mahalleId;
+    }
+
+    public String getSokak() {
+        return sokak;
+    }
+
+    public void setSokak(String sokak) {
+        this.sokak = sokak;
+    }
+
+    public Long getSokakId() {
+        return sokakId;
+    }
+
+    public void setSokakId(Long sokakId) {
+        this.sokakId = sokakId;
+    }
+
+    public String getBina() {
+        return bina;
+    }
+
+    public void setBina(String bina) {
+        this.bina = bina;
+    }
+
+    public Long getBinaId() {
+        return binaId;
+    }
+
+    public void setBinaId(Long binaId) {
+        this.binaId = binaId;
     }
 }
