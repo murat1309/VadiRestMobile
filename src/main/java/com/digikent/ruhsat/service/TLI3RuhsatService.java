@@ -1,6 +1,9 @@
 package com.digikent.ruhsat.service;
 
 import com.digikent.ruhsat.dto.TLI3RuhsatDTO;
+import com.digikent.ruhsat.dto.TLI3RuhsatTuruDTO;
+import com.digikent.ruhsat.dto.TLI3RuhsatTuruRequestDTO;
+import com.digikent.ruhsat.dto.TLI3RuhsatTuruRequestDTOList;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -152,6 +155,50 @@ public class TLI3RuhsatService {
         }
 
         return tli3RuhsatDTOList;
+    }
+
+    public List<TLI3RuhsatTuruDTO> getRuhsatTuruList() {
+        String sql = "select ID,TANIM from SLI1RUHSATTURU where ISACTIVE='E' order by TANIM asc";
+        List<Object> objList = runRuhsatSQL(sql);
+        return convertObjectToRuhsatTuruDTO(objList);
+    }
+
+    public List<TLI3RuhsatTuruDTO> convertObjectToRuhsatTuruDTO(List<Object> objList) {
+        List<TLI3RuhsatTuruDTO> ruhsatTuruDTOList = new ArrayList<>();
+        for (Object item: objList) {
+            Map map = (Map)item;
+            BigDecimal id = (BigDecimal)map.get("ID");
+            String tanim = (String)map.get("TANIM");
+            TLI3RuhsatTuruDTO tli3RuhsatTuruDTO =  new TLI3RuhsatTuruDTO();
+
+            if(id != null)
+                tli3RuhsatTuruDTO.setId(id.longValue());
+
+            if(tanim != null)
+                tli3RuhsatTuruDTO.setTanim(tanim);
+
+            ruhsatTuruDTOList.add(tli3RuhsatTuruDTO);
+        }
+        return ruhsatTuruDTOList;
+    }
+
+    public List<TLI3RuhsatDTO> getRuhsatDTOListByRuhsatTuru(String additionSQL, TLI3RuhsatTuruRequestDTOList tli3RuhsatTuruRequestDTOList) {
+        String sql = addWhereCondition(additionSQL);
+        List<Long> turlist = seperateRuhsatTuruDTO(tli3RuhsatTuruRequestDTOList);
+        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        query.setParameterList("turlist", turlist);
+        List<Object> objects = query.list();
+
+        return convertRuhsatToRuhsatDTOList(objects);
+    }
+
+    public List<Long> seperateRuhsatTuruDTO(TLI3RuhsatTuruRequestDTOList tli3RuhsatTuruRequestDTOList) {
+        List<Long> longs = new ArrayList<>();
+        for (TLI3RuhsatTuruRequestDTO item : tli3RuhsatTuruRequestDTOList.getTli3RuhsatTuruRequestDTOs()) {
+            longs.add(item.getValue());
+        }
+        return longs;
     }
 
 }
