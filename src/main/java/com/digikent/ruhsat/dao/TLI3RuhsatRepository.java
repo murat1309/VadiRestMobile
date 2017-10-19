@@ -1,8 +1,6 @@
 package com.digikent.ruhsat.dao;
 
-import com.digikent.ruhsat.dto.TLI3RuhsatDTO;
-import com.digikent.ruhsat.dto.TLI3RuhsatTuruDTO;
-import com.digikent.ruhsat.dto.TLI3RuhsatTuruRequestDTOList;
+import com.digikent.ruhsat.dto.*;
 import com.digikent.ruhsat.service.TLI3RuhsatService;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
@@ -51,5 +49,32 @@ public class TLI3RuhsatRepository {
         return ruhsatService.getRuhsatDTOListByRuhsatTuru(additionSQL, tli3RuhsatTuruRequestDTOList);
     }
 
+    public List<TLI3RuhsatDTO> getRuhsatByAddressWithoutBina(TLI3RuhsatDTO tli3RuhsatDTO) {
+        String additionSQL = "";
+        if (tli3RuhsatDTO.getSokakId() != null) {
+            additionSQL = "and r.sre1sokak_id=" + tli3RuhsatDTO.getSokakId() + " and s.ISACTIVE='E'";
+        } else if (tli3RuhsatDTO.getMahalleId() != null) {
+            additionSQL = "and r.DRE1MAHALLE_ID=" + tli3RuhsatDTO.getMahalleId() + " and m.ISACTIVE='E'";
+        }
+
+        return ruhsatService.getRuhsatDTOListRunSQL(additionSQL);
+    }
+
+    public List<TLI3RuhsatDTO> getRuhsatByAddressWithBina(TLI3RuhsatDTO tli3RuhsatDTO) {
+        String additionSQL = "and y.ID=" + tli3RuhsatDTO.getBinaId();
+        return ruhsatService.getRuhsatDTOListWithERE1YAPI(additionSQL);
+    }
+
+    public List<DRE1MahalleDTO> getMahalleList() {
+        return ruhsatService.getMahalleList();
+    }
+
+    public List<SRE1SokakDTO> getSokakByMahalleId(Long mahId) {
+        return ruhsatService.getSokakByMahalleId(mahId);
+    }
+
+    public List<ERE1YapiDTO> getBinaBySokakId(Long sokakId) {
+        return ruhsatService.getBinaBySokakId(sokakId);
+    }
 
 }

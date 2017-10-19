@@ -1,9 +1,6 @@
 package com.digikent.ruhsat.service;
 
-import com.digikent.ruhsat.dto.TLI3RuhsatDTO;
-import com.digikent.ruhsat.dto.TLI3RuhsatTuruDTO;
-import com.digikent.ruhsat.dto.TLI3RuhsatTuruRequestDTO;
-import com.digikent.ruhsat.dto.TLI3RuhsatTuruRequestDTOList;
+import com.digikent.ruhsat.dto.*;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -54,14 +51,57 @@ public class TLI3RuhsatService {
                 "and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) ";
     }
 
+    public String getRuhsatSQLWithERE1YAPI() {
+        return "select R.ID,(r.YILI||'/'|| r.RUHSATID) RUHSATNUMARASI,b.raporadi as ADSOYAD,ISYERIUNVANI," +
+                "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
+                "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
+                "(select TANIM from PRE1IL where id=(select PRE1IL_ID from RRE1ILCE where id=m.RRE1ILCE_ID))as adres2," +
+                "r.KULLANIMALANI," +
+                "dosya.DOSYAREFERANSNO," +
+                "y.ID as ERE1YAPI_ID," +
+                "r.ELI1RUHSATDOSYA_ID as DOSYANUMARASI, " +
+                "(SELECT TANIM FROM GLI1FALIYET WHERE ID=r.GLI1FALIYET_ISYERI) as ISYERIANAFAALIYET, " +
+                "(SELECT TANIM FROM ALI1ISLEMDURUMU WHERE ID=r.ALI1ISLEMDURUMU_ID) as RUHSATDURUMU,    " +
+                "(SELECT TANIM FROM ALI1ISYERIDURUMU WHERE ID=r.ALI1ISYERIDURUMU_ID) as ISYERIDURUMU,  " +
+                "(select F_UPPER(TANIM) from ISM2FALIYET where id=r.ISM2FALIYET_ID) KISALTMA ," +
+                "(LI1.F_RUHSAT_FALIYET_GETIR(r.id)) rhs_faliyet_adi," +
+                "(select TANIM from GLI1FALIYET where id=r.GLI1FALIYET_ISYERI) rhs_faliyet_isyeri_adi," +
+                "r.ACILISSAATI,r.KAPANISSAATI,R.MPI1PAYDAS_ID," +
+                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATBASKAN_YARDIMCISI') RUHSATBASKANYARDIMCISI," +
+                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATMUDURU') RUHSATMUDURU," +
+                "(SELECT ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = R.IHR1PERSONEL_MEMUR) MEMUR," +
+                "r.IZAHAT" +
+                ",t.KAYITOZELISMI AS RUHSATTURU" +
+                ",nvl(decode(r.isyerisinifi,'Y','','L','LUKS SINIF ','1','1. SINIF ','2','2. SINIF ','3','3. SINIF ',r.isyerisinifi),' ') as isyerisinifi2, nvl(dosya.PAFTANO,'-') as PAFTANO ,nvl(dosya.ADANO,'-') as ADANO,nvl(dosya.PARSELNO,'-') as PARSELNO" +
+                ",(select adi||' '|| soyadi from ihr1personel where id=(select SM2.F_Parametre('RUHSATYONETIMI','RUHSATSEFI') from dual)) as SEF" +
+                "  from TLI3RUHSAT r,MPI1PAYDAS b,DRE1MAHALLE m,SRE1SOKAK s,SLI1RUHSATTURU t,eli1ruhsatdosya dosya, ERE1YAPI y" +
+                " where  r.MPI1PAYDAS_ID=b.ID" +
+                " and r.DRE1MAHALLE_ID=m.ID" +
+                " and r.SRE1SOKAK_ID=s.ID" +
+                " and r.SLI1RUHSATTURU_ID=t.id " +
+                "and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) " +
+                "and r.sre1sokak_id=y.SRE1SOKAK_ID " +
+                "and y.DRE1MAHALLE_ID=m.id ";
+    }
+
     public List<TLI3RuhsatDTO> getRuhsatDTOListRunSQL(String additionSQL) {
         String sql = addWhereCondition(additionSQL);
         List<Object> objectList = runRuhsatSQL(sql);
         return convertRuhsatToRuhsatDTOList(objectList);
     }
 
+    public List<TLI3RuhsatDTO> getRuhsatDTOListWithERE1YAPI(String additionSQL) {
+        String sql = addWhereConditionWithERE1YAPI(additionSQL);
+        List<Object> objectList = runRuhsatSQL(sql);
+        return convertRuhsatToRuhsatDTOList(objectList);
+    }
+
     public String addWhereCondition(String additionSQL) {
         return getruhsatCommonSQL() + additionSQL;
+    }
+
+    public String addWhereConditionWithERE1YAPI(String additionSQL) {
+        return getRuhsatSQLWithERE1YAPI() + additionSQL;
     }
 
     public List<Object> runRuhsatSQL(String sqlCommand) {
@@ -199,6 +239,85 @@ public class TLI3RuhsatService {
             longs.add(item.getValue());
         }
         return longs;
+    }
+
+    public List<DRE1MahalleDTO> getMahalleList() {
+        String sql = "select ID,TANIM||' '||decode(TURU,'K','KÖYÜ','M','MAH.') as TANIM from DRE1MAHALLE where RRE1ILCE_id =(select RRE1ILCE_id from nsm2parametre) and ISACTIVE='E' order by TANIM";
+        List<Object> objList = runRuhsatSQL(sql);
+        return convertObjectToDRE1MahalleDTO(objList);
+    }
+
+    public List<DRE1MahalleDTO> convertObjectToDRE1MahalleDTO(List<Object> objList) {
+        List<DRE1MahalleDTO> mahalleDTOList = new ArrayList<>();
+        for (Object item: objList) {
+            Map map = (Map)item;
+            BigDecimal id = (BigDecimal)map.get("ID");
+            String tanim = (String)map.get("TANIM");
+            DRE1MahalleDTO mahalleDTO =  new DRE1MahalleDTO();
+
+            if(id != null)
+                mahalleDTO.setId(id.longValue());
+
+            if(tanim != null)
+                mahalleDTO.setTanim(tanim);
+
+            mahalleDTOList.add(mahalleDTO);
+        }
+        return mahalleDTOList;
+    }
+
+    public List<SRE1SokakDTO> getSokakByMahalleId(Long mahId) {
+        String sql = "select ID,TANIM from sre1sokak where dre1mahalle_id = " + mahId + " and ISACTIVE='E' order by TANIM";
+        List<Object> objList = runRuhsatSQL(sql);
+        return convertObjectToSRE1SokakDTO(objList);
+    }
+
+    public List<SRE1SokakDTO> convertObjectToSRE1SokakDTO(List<Object> objList) {
+        List<SRE1SokakDTO> sokakDTOList = new ArrayList<>();
+        for (Object item: objList) {
+            Map map = (Map)item;
+            BigDecimal id = (BigDecimal)map.get("ID");
+            String tanim = (String)map.get("TANIM");
+            SRE1SokakDTO sokakDTO =  new SRE1SokakDTO();
+
+            if(id != null)
+                sokakDTO.setId(id.longValue());
+
+            if(tanim != null)
+                sokakDTO.setTanim(tanim);
+
+            sokakDTOList.add(sokakDTO);
+        }
+        return sokakDTOList;
+    }
+
+    public List<ERE1YapiDTO> getBinaBySokakId(Long sokakId) {
+        String sql = "SELECT ERE1YAPI_ID,(SELECT BINAADI FROM ERE1YAPI WHERE ID=ERE1YAPI_ID) AS BINA FROM FRE1KAPITAHSIS WHERE ERE1YAPI_ID != 0 and SRE1SOKAK_ID=" + sokakId +" group by ERE1YAPI_ID order by BINA";
+        List<Object> objList = runRuhsatSQL(sql);
+        return convertObjectToERE1YapiDTO(objList);
+    }
+
+    public List<ERE1YapiDTO> convertObjectToERE1YapiDTO(List<Object> objList) {
+        List<ERE1YapiDTO> binaDTOList = new ArrayList<>();
+        for (Object item: objList) {
+            Map map = (Map)item;
+            BigDecimal id = (BigDecimal)map.get("ERE1YAPI_ID");
+            String tanim = (String)map.get("BINA");
+            ERE1YapiDTO binaDTO =  new ERE1YapiDTO();
+
+            if(id != null)
+                binaDTO.setId(id.longValue());
+
+            if(tanim != null) {
+                binaDTO.setTanim(tanim);
+            } else {
+                binaDTO.setTanim("");
+            }
+
+
+            binaDTOList.add(binaDTO);
+        }
+        return binaDTOList;
     }
 
 }
