@@ -267,7 +267,10 @@ public class TLI3RuhsatService {
     }
 
     public List<SRE1SokakDTO> getSokakByMahalleId(Long mahId) {
-        String sql = "select ID,TANIM from sre1sokak where dre1mahalle_id = " + mahId + " and ISACTIVE='E' order by TANIM";
+        String sql = " SELECT S.ID, S.TANIM " +
+                " FROM DRE1MAHALLESOKAK MS , SRE1SOKAK S, DRE1MAHALLE M " +
+                " WHERE MS.SRE1SOKAK_ID =S.ID  AND MS.DRE1MAHALLE_ID =M.ID " +
+                " AND NVL(M.ISACTIVE,'E')='E' AND NVL(S.ISACTIVE,'E')='E'  AND M.ID IN (" + mahId + ")  ORDER BY S.TANIM ";
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToSRE1SokakDTO(objList);
     }
@@ -292,7 +295,15 @@ public class TLI3RuhsatService {
     }
 
     public List<ERE1YapiDTO> getBinaBySokakId(Long sokakId) {
-        String sql = "SELECT ERE1YAPI_ID,(SELECT BINAADI FROM ERE1YAPI WHERE ID=ERE1YAPI_ID) AS BINA FROM FRE1KAPITAHSIS WHERE ERE1YAPI_ID != 0 and SRE1SOKAK_ID=" + sokakId +" group by ERE1YAPI_ID order by BINA";
+        //String sql = "SELECT ERE1YAPI_ID,(SELECT BINAADI FROM ERE1YAPI WHERE ID=ERE1YAPI_ID) AS BINA FROM FRE1KAPITAHSIS WHERE ERE1YAPI_ID != 0 and SRE1SOKAK_ID=" + sokakId +" group by ERE1YAPI_ID order by BINA";
+        String sql = "SELECT " +
+                " ERE1YAPI.ID," +
+                " ERE1YAPI.BINAADI " +
+                " FROM FRE1KAPITAHSIS,ERE1YAPI, SRE1SOKAK " +
+                " WHERE FRE1KAPITAHSIS.ERE1YAPI_ID = ERE1YAPI.ID " +
+                " AND (FRE1KAPITAHSIS.SRE1SOKAK_ID = SRE1SOKAK.ID) " +
+                " AND ERE1YAPI.ID > 0 " +
+                " AND SRE1SOKAK.ID = " + sokakId;
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToERE1YapiDTO(objList);
     }
@@ -301,8 +312,8 @@ public class TLI3RuhsatService {
         List<ERE1YapiDTO> binaDTOList = new ArrayList<>();
         for (Object item: objList) {
             Map map = (Map)item;
-            BigDecimal id = (BigDecimal)map.get("ERE1YAPI_ID");
-            String tanim = (String)map.get("BINA");
+            BigDecimal id = (BigDecimal)map.get("ID");
+            String tanim = (String)map.get("BINAADI");
             ERE1YapiDTO binaDTO =  new ERE1YapiDTO();
 
             if(id != null)
