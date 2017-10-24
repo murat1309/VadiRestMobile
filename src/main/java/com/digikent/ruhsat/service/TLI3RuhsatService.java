@@ -49,7 +49,12 @@ public class TLI3RuhsatService {
                 " and r.DRE1MAHALLE_ID=m.ID" +
                 " and r.SRE1SOKAK_ID=s.ID" +
                 " and r.SLI1RUHSATTURU_ID=t.id " +
-                "and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) ";
+                "   AND r.SLI1RUHSATTURU_ID IN (SELECT B.SLI1RUHSATTURU_ID " +
+                "                                     FROM OLI1RUHSATTIPI A, " +
+                "                                          PLI1RUHSATTIPILINE B " +
+                "                                    WHERE     A.ID = B.OLI1RUHSATTIPI_ID " +
+                "                                          AND A.KAYITOZELISMI = 'ISYERIRUHSAT') " +
+                " and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) ";
     }
 
     public String getRuhsatSQLWithERE1YAPI() {
@@ -81,6 +86,11 @@ public class TLI3RuhsatService {
                 " and r.DRE1MAHALLE_ID=m.ID" +
                 " and r.SRE1SOKAK_ID=s.ID" +
                 " and r.SLI1RUHSATTURU_ID=t.id " +
+                "   AND SLI1RUHSATTURU_ID IN (SELECT B.SLI1RUHSATTURU_ID " +
+                "                                     FROM OLI1RUHSATTIPI A, " +
+                "                                          PLI1RUHSATTIPILINE B " +
+                "                                    WHERE     A.ID = B.OLI1RUHSATTIPI_ID " +
+                "                                          AND A.KAYITOZELISMI = 'ISYERIRUHSAT') " +
                 "and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) " +
                 "and r.sre1sokak_id=y.SRE1SOKAK_ID " +
                 "and y.DRE1MAHALLE_ID=m.id ";
@@ -183,6 +193,7 @@ public class TLI3RuhsatService {
                 "       BLOKNUMARASI\n" +
                 "  FROM ELI1RUHSATDOSYA, MPI1PAYDAS\n" +
                 "   WHERE ELI1RUHSATDOSYA.MPI1PAYDAS_ID = MPI1PAYDAS.ID and ELI1RUHSATDOSYA.ID>0\n" +
+                " AND EIN1GELIRGRUBU_ID = (SELECT ID FROM EIN1GELIRGRUBU WHERE TURU='IKTISAT') " +
                 "   AND MPI1PAYDAS.ID=" + paydasId;
         return sql;
     }
