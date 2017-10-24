@@ -34,6 +34,10 @@ public class TLI3RuhsatRepository {
         return ruhsatService.getRuhsatDTOListRunSQL(additionSQL);
     }
 
+    public List<RuhsatDurumuDTO> getRuhsatBasvuruByPaydasNo(Long paydasId) {
+        return ruhsatService.getRuhsatBasvuruDTOList(paydasId);
+    }
+
     //barcodeId = id
     public List<TLI3RuhsatDTO> getRuhsatByBarcodeId(TLI3RuhsatDTO tli3RuhsatDTO) {
         String additionSQL = "and r.ID=" + tli3RuhsatDTO.getId();

@@ -22,6 +22,8 @@ public final class Constants {
     public static final int MESSAGE_CURRENT_VERSION = 1;
     public static final String MESSAGE_TYPE_REAL_MESSAGE = "real";
     public static final String MESSAGE_TYPE_LINE_MESSAGE = "line";
+    public static final long RUHSAT_GENEL_SONUC = 1;
+    public static final long RUHSAT_BASVURU_DURUM = 2;
 
 
     private Constants() {

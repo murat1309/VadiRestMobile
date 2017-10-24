@@ -1,5 +1,6 @@
 package com.digikent.ruhsat.web.rest;
 
+import com.digikent.config.Constants;
 import com.digikent.ruhsat.dao.TLI3RuhsatRepository;
 import com.digikent.ruhsat.dto.*;
 import com.digikent.sosyalyardim.dao.SY1DosyaRepository;
@@ -42,12 +43,23 @@ public class TLI3RuhsatResource {
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
     }
 
-    @RequestMapping(method = POST, value = "/tli3Ruhsat/basvuru", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = POST, value = "/tli3Ruhsat/paydasNo", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<TLI3RuhsatDTO>> getRuhsatByPaydasNo(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
-        LOG.debug("REST request to get ruhsat with paydas no : {}", tli3RuhsatDTO.getId());
-        List<TLI3RuhsatDTO> results = repository.getRuhsatByPaydasNo(tli3RuhsatDTO);
+        LOG.debug("REST request to get ruhsat with paydas no : {}", tli3RuhsatDTO.getMpi1PaydasId());
+        List<TLI3RuhsatDTO> results = null;
+        results = repository.getRuhsatByPaydasNo(tli3RuhsatDTO);
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
+    }
+
+
+    @RequestMapping(method = POST, value = "/tli3Ruhsat/basvuru", produces = APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<List<RuhsatDurumuDTO>> getRuhsatBasvuruDurumuByPaydasNo(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
+        LOG.debug("REST request to get ruhsat with paydas no : {}", tli3RuhsatDTO.getMpi1PaydasId());
+        List<RuhsatDurumuDTO> results = null;
+        results = repository.getRuhsatBasvuruByPaydasNo(tli3RuhsatDTO.getMpi1PaydasId().longValue());
+        return new ResponseEntity<List<RuhsatDurumuDTO>>(results, OK);
     }
 
     @RequestMapping(method = POST, value = "/tli3Ruhsat/address", produces = APPLICATION_JSON_VALUE)

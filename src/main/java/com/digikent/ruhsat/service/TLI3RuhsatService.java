@@ -22,12 +22,13 @@ public class TLI3RuhsatService {
     SessionFactory sessionFactory;
 
     public String getruhsatCommonSQL() {
-        return "select R.ID,(r.YILI||'/'|| r.RUHSATID) RUHSATNUMARASI,b.raporadi as ADSOYAD,ISYERIUNVANI," +
+        return "select R.ID,r.RUHSATID,b.raporadi as ADSOYAD,ISYERIUNVANI," +
                 "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
                 "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
                 "(select TANIM from PRE1IL where id=(select PRE1IL_ID from RRE1ILCE where id=m.RRE1ILCE_ID))as adres2," +
                 "r.KULLANIMALANI," +
                 "dosya.DOSYAREFERANSNO," +
+                "r.YILI, " +
                 "r.ELI1RUHSATDOSYA_ID as DOSYANUMARASI, " +
                 "(SELECT TANIM FROM GLI1FALIYET WHERE ID=r.GLI1FALIYET_ISYERI) as ISYERIANAFAALIYET, " +
                 "(SELECT TANIM FROM ALI1ISLEMDURUMU WHERE ID=r.ALI1ISLEMDURUMU_ID) as RUHSATDURUMU,    " +
@@ -52,13 +53,14 @@ public class TLI3RuhsatService {
     }
 
     public String getRuhsatSQLWithERE1YAPI() {
-        return "select R.ID,(r.YILI||'/'|| r.RUHSATID) RUHSATNUMARASI,b.raporadi as ADSOYAD,ISYERIUNVANI," +
+        return "select R.ID, r.RUHSATID,b.raporadi as ADSOYAD,ISYERIUNVANI," +
                 "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
                 "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
                 "(select TANIM from PRE1IL where id=(select PRE1IL_ID from RRE1ILCE where id=m.RRE1ILCE_ID))as adres2," +
                 "r.KULLANIMALANI," +
                 "dosya.DOSYAREFERANSNO," +
                 "y.ID as ERE1YAPI_ID," +
+                "r.YILI, " +
                 "r.ELI1RUHSATDOSYA_ID as DOSYANUMARASI, " +
                 "(SELECT TANIM FROM GLI1FALIYET WHERE ID=r.GLI1FALIYET_ISYERI) as ISYERIANAFAALIYET, " +
                 "(SELECT TANIM FROM ALI1ISLEMDURUMU WHERE ID=r.ALI1ISLEMDURUMU_ID) as RUHSATDURUMU,    " +
@@ -84,10 +86,165 @@ public class TLI3RuhsatService {
                 "and y.DRE1MAHALLE_ID=m.id ";
     }
 
+    public String getRuhsatDurumuSQL(Long paydasId) {
+        String sql = "SELECT ELI1RUHSATDOSYA.ID,\n" +
+                "       ELI1RUHSATDOSYA.EIN1GELIRGRUBU_ID,\n" +
+                "       ELI1RUHSATDOSYA.DDM1ISAKISI_ID,\n" +
+                "       ELI1RUHSATDOSYA.SLI1RUHSATTURU_ID,\n" +
+                "       ELI1RUHSATDOSYA.DOSYAACILISTURU,\n" +
+                "       ELI1RUHSATDOSYA.YILI,\n" +
+                "       ELI1RUHSATDOSYA.DOSYAREFERANSNO,\n" +
+                "       ELI1RUHSATDOSYA.KAYITTARIHI,\n" +
+                "       ELI1RUHSATDOSYA.MPI1PAYDAS_ID,\n" +
+                "       ELI1RUHSATDOSYA.IRE1PARSEL_ID,\n" +
+                "       ELI1RUHSATDOSYA.DRE1BAGBOLUM_ID,\n" +
+                "       ELI1RUHSATDOSYA.DRE1MAHALLE_ID,\n" +
+                "       ELI1RUHSATDOSYA.SRE1SOKAK_ID,\n" +
+                "       ELI1RUHSATDOSYA.KAPINO,\n" +
+                "       ELI1RUHSATDOSYA.DAIRENO,\n" +
+                "       ELI1RUHSATDOSYA.PAFTANO,\n" +
+                "       ELI1RUHSATDOSYA.ADANO,\n" +
+                "       ELI1RUHSATDOSYA.PARSELNO,\n" +
+                "       ELI1RUHSATDOSYA.KAYITIPTALDURUMU,\n" +
+                "       ELI1RUHSATDOSYA.IPTALEDILMENEDENI,\n" +
+                "       ELI1RUHSATDOSYA.IZAHAT,\n" +
+                "       ELI1RUHSATDOSYA.RE1ARSIVID,\n" +
+                "       ELI1RUHSATDOSYA.ERE1YAPI_ID,\n" +
+                "       ELI1RUHSATDOSYA.KAYITNUMARASI,\n" +
+                "       ELI1RUHSATDOSYA.IHR1PERSONEL_ID,\n" +
+                "       ELI1RUHSATDOSYA.PROJETARIHI,\n" +
+                "       ELI1RUHSATDOSYA.PROJENUMARASI,\n" +
+                "       ELI1RUHSATDOSYA.ISM2FALIYET_ID,\n" +
+                "       ELI1RUHSATDOSYA.ARSIVNUMARASI,\n" +
+                "       ELI1RUHSATDOSYA.ARSIVADISOYADI,\n" +
+                "       ELI1RUHSATDOSYA.ONAYLAMAONAYI,\n" +
+                "       ELI1RUHSATDOSYA.ONAYLAMATARIHI,\n" +
+                "       ELI1RUHSATDOSYA.DURUMU,\n" +
+                "       ELI1RUHSATDOSYA.BSM2SERVIS_ID,\n" +
+                "       ELI1RUHSATDOSYA.SM2TUTANAK_ID,\n" +
+                "       ELI1RUHSATDOSYA.BASVURUSEKLI,\n" +
+                "       ELI1RUHSATDOSYA.RRE1SITE_ID,\n" +
+                "       ELI1RUHSATDOSYA.DOSYAYOLU,\n" +
+                "       ELI1RUHSATDOSYA.UPDUSER,\n" +
+                "       ELI1RUHSATDOSYA.UPDDATE,\n" +
+                "       ELI1RUHSATDOSYA.DELETEFLAG,\n" +
+                "       ELI1RUHSATDOSYA.CRUSER,\n" +
+                "       ELI1RUHSATDOSYA.CRDATE,\n" +
+                "       ELI1RUHSATDOSYA.UPDSEQ,\n" +
+                "       ELI1RUHSATDOSYA.DRE1BAGBOLUM_DIGER,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM ALI1DOSYADURUMU\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.ALI1DOSYADURUMU_ID) AS DOSYADURUMU,\n" +
+                "       MPI1PAYDAS.YEVTELEFONU,\n" +
+                "       MPI1PAYDAS.YISTELEFONU,\n" +
+                "       MPI1PAYDAS.YCEPTELEFONU,\n" +
+                "       MPI1PAYDAS.YFAKSTELEFONU,\n" +
+                "       ELI1RUHSATDOSYA.GLI1FALIYET_ID,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM GLI1FALIYET\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.GLI1FALIYET_ID),\n" +
+                "       ELI1RUHSATDOSYA.ADRESGIRISIPARSELDENALSIN,\n" +
+                "       ELI1RUHSATDOSYA.ARSANINALANI,\n" +
+                "       ELI1RUHSATDOSYA.KULLANIMALANI,\n" +
+                "       ELI1RUHSATDOSYA.BINAADI,\n" +
+                "       ELI1RUHSATDOSYA.GLI1FALIYET_ISYERI,\n" +
+                "       ELI1RUHSATDOSYA.TASINMAZSAHIBI,\n" +
+                "       ELI1RUHSATDOSYA.ALI1BINAADI_ID,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM ALI1BINAADI\n" +
+                "         WHERE id = ELI1RUHSATDOSYA.ALI1BINAADI_ID) AS KAPI,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM SLI1RUHSATTURU\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.SLI1RUHSATTURU_ID) AS RUHSATTURU,\n" +
+                "       MPI1PAYDAS.ADI || ' ' || MPI1PAYDAS.SOYADI AS ADISOYADI,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM DRE1MAHALLE\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.DRE1MAHALLE_ID)  AS MAHALLEADI,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM SRE1SOKAK\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.SRE1SOKAK_ID) AS SOKAKADI,\n" +
+                "       (SELECT ADI || ' ' || SOYADI\n" +
+                "          FROM IHR1PERSONEL\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.IHR1PERSONEL_ID),\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM ISM2FALIYET\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.ISM2FALIYET_ID),\n" +
+                "       (SELECT DAIRENO\n" +
+                "          FROM DRE1BAGBOLUM\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.DRE1BAGBOLUM_ID) AS DAIRENOBOLUM,\n" +
+                "       (SELECT TANIM\n" +
+                "          FROM GLI1FALIYET\n" +
+                "         WHERE ID = ELI1RUHSATDOSYA.GLI1FALIYET_ISYERI) AS ISYERIANAFAALIYET,\n" +
+                "       ISYERISINIFI,\n" +
+                "       ELI1RUHSATDOSYA.FAALIYETKULLANIMALANI,\n" +
+                "       ELI1RUHSATDOSYA.TALIFAALIYETKULLANIMALANI,\n" +
+                "       ELI1RUHSATDOSYA.SOZLESMEBITISTARIHI,\n" +
+                "       ALI1DOSYADURUMU_ID,\n" +
+                "       BLOKNUMARASI\n" +
+                "  FROM ELI1RUHSATDOSYA, MPI1PAYDAS\n" +
+                "   WHERE ELI1RUHSATDOSYA.MPI1PAYDAS_ID = MPI1PAYDAS.ID and ELI1RUHSATDOSYA.ID>0\n" +
+                "   AND MPI1PAYDAS.ID=" + paydasId;
+        return sql;
+    }
+
     public List<TLI3RuhsatDTO> getRuhsatDTOListRunSQL(String additionSQL) {
         String sql = addWhereCondition(additionSQL);
         List<Object> objectList = runRuhsatSQL(sql);
         return convertRuhsatToRuhsatDTOList(objectList);
+    }
+
+    public List<RuhsatDurumuDTO> getRuhsatBasvuruDTOList(Long paydasNo) {
+        List<Object> list = new ArrayList<>();
+        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(getRuhsatDurumuSQL(paydasNo));
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        List<RuhsatDurumuDTO> ruhsatDurumuDTOList = new ArrayList();
+        for(Object o : list) {
+            Map map = (Map) o;
+            RuhsatDurumuDTO ruhsatDurumuDTO = new RuhsatDurumuDTO();
+
+            BigDecimal dosyaNumarasi = (BigDecimal) map.get("DOSYAREFERANSNO");
+            BigDecimal yili = (BigDecimal) map.get("YILI");
+            BigDecimal kullanimAlani = (BigDecimal) map.get("KULLANIMALANI");
+            String adiSoyadi = (String) map.get("ADISOYADI");
+            String isyeriAnaFaaliyet = (String) map.get("ISYERIANAFAALIYET");
+            String mahalle = (String) map.get("MAHALLEADI");
+            String sokak = (String) map.get("SOKAKADI");
+            String kapi = (String) map.get("KAPI");
+            String daire = (String) map.get("DAIRENOBOLUM");
+            String ruhsatTuru = (String) map.get("RUHSATTURU");
+            String ruhsatDurumu = (String) map.get("DOSYADURUMU");
+
+            if(paydasNo != null)
+                ruhsatDurumuDTO.setPaydasId(paydasNo.longValue());
+            if(yili != null)
+                ruhsatDurumuDTO.setYili(yili.longValue());
+            if(kullanimAlani != null)
+                ruhsatDurumuDTO.setKullanimAlani(kullanimAlani.longValue());
+            if(dosyaNumarasi != null)
+                ruhsatDurumuDTO.setDosyaNumarasi(dosyaNumarasi.longValue());
+            if(adiSoyadi != null)
+                ruhsatDurumuDTO.setAdiSoyadi(adiSoyadi);
+            if(isyeriAnaFaaliyet != null)
+                ruhsatDurumuDTO.setIsyeriAnaFaaliyet(isyeriAnaFaaliyet);
+            if(mahalle != null)
+                ruhsatDurumuDTO.setMahalle(mahalle);
+            if(sokak != null)
+                ruhsatDurumuDTO.setSokak(sokak);
+            if(ruhsatTuru != null)
+                ruhsatDurumuDTO.setRuhsatTuru(ruhsatTuru);
+            if(kapi != null)
+                ruhsatDurumuDTO.setKapi(kapi);
+            if(daire != null)
+                ruhsatDurumuDTO.setDaire(daire);
+            if(ruhsatDurumu != null)
+                ruhsatDurumuDTO.setRuhsatDurumu(ruhsatDurumu);
+
+            ruhsatDurumuDTOList.add(ruhsatDurumuDTO);
+        }
+
+        return ruhsatDurumuDTOList;
     }
 
     public List<TLI3RuhsatDTO> getRuhsatDTOListWithERE1YAPI(String additionSQL) {
@@ -118,8 +275,8 @@ public class TLI3RuhsatService {
 
             BigDecimal id = (BigDecimal)map.get("ID");
             BigDecimal mpi1PaydasId = (BigDecimal)map.get("MPI1PAYDAS_ID");
-            BigDecimal yili = (BigDecimal)map.get("yili");
-            String ruhsatNumarasi = (String)map.get("RUHSATNUMARASI");
+            BigDecimal yili = (BigDecimal)map.get("YILI");
+            String ruhsatNumarasi = ((BigDecimal)map.get("RUHSATID")).toString();
             String isyeriUnvani = (String)map.get("ISYERIUNVANI");
             String adres1 = (String)map.get("ADRES1");
             String adres2 = (String)map.get("ADRES2");
