@@ -1981,6 +1981,9 @@ public class ManagementDAOImpl implements ManagementDAO {
 				"  And TURU = 'A' " +
 				"  AND KAYITDUZEYI = 4 " +
 				"  AND BUTCETUTARI > 0 " +
+				" and KODU LIKE " +
+				"       (SELECT NSM2PARAMETRE.KURUMKODU || bsm2servis.analitikbutcekodu from NSM2PARAMETRE,bsm2servis " +
+				"       where bsm2servis.ID=(select bsm2servis_gorev from ihr1personel where ID=(select IKY_PERSONEL_ID from FSM1USERS where ID=" + personelId + "))) " +
 				" GROUP BY KODU,TANIM " +
 				" Order By KODU ";
 
