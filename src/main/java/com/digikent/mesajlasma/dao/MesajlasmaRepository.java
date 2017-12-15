@@ -7,6 +7,7 @@ import com.digikent.mesajlasma.entity.TeilMesajIletimGrubu;
 import com.digikent.mesajlasma.entity.TeilMesajİletimGrubuLine;
 import com.digikent.mesajlasma.entity.VeilMesaj;
 import com.digikent.security.SecurityUtils;
+import net.sf.saxon.trans.Err;
 import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Kadir on 11/09/17.
@@ -543,6 +541,86 @@ public class MesajlasmaRepository {
         return date;
     }
 
+    public List<MessageUserDTO> getGroupUsersByGroupId(Long groupId) {
+        List<MessageUserDTO> messageUserDTOList = new ArrayList<>();
+
+        String sql = "select f.LASTNAME, f.FIRSTNAME, f.IHR1PERSONEL_ID, c.IHR1PERSONEL_OLUSTURAN from FSM1USERS f " +
+                    "INNER JOIN (select a.IHR1PERSONEL_ID, b.IHR1PERSONEL_OLUSTURAN from TEILMESAJILETIMGRUBULINE a " +
+                    "INNER JOIN TEILMESAJILETIMGRUBU b on a.TEILMESAJILETIMGRUBU_ID = b.ID where a.TEILMESAJILETIMGRUBU_ID = " +
+                    groupId +
+                    " AND a.ISACTIVE = 'E') c ON c.IHR1PERSONEL_ID = f.IHR1PERSONEL_ID ";
+        List<Object> list = new ArrayList<Object>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        list = query.list();
+
+        for(Object o : list){
+            Map map = (Map) o;
+            BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+            String firstName = (String) map.get("FIRSTNAME");
+            String lastName = (String) map.get("LASTNAME");
+            BigDecimal groupCreator = (BigDecimal) map.get("IHR1PERSONEL_OLUSTURAN");
+
+            MessageUserDTO userDTO = new MessageUserDTO();
+
+            if(personelId != null)
+                userDTO.setPersonelId(personelId.longValue());
+            if(firstName != null)
+                userDTO.setFirstName(firstName);
+            if(lastName != null)
+                userDTO.setLastName(lastName);
+            if(groupCreator != null) {
+                if(!groupCreator.equals(personelId))
+                    userDTO.setGroupAdmin(false);
+                else
+                    userDTO.setGroupAdmin(true);
+
+            }
+
+            messageUserDTOList.add(userDTO);
+        }
+
+        return messageUserDTOList;
+    }
+
+    public ErrorDTO deleteGroupByGroupId(Long groupId) {
+
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+
+            String sql2 = "update TEILMESAJILETIMGRUBU " +
+                          " set ISACTIVE = 'H' " +
+                          " where ID = " + groupId;
+            Session session2 = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query2 = session2.createSQLQuery(sql2);
+            query2.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            query2.executeUpdate();
+
+            String sql = "update TEILMESAJILETIMGRUBULINE " +
+                         " set ISACTIVE = 'H' " +
+                         " where TEILMESAJILETIMGRUBU_ID = " + groupId;
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            query.executeUpdate();
+
+
+
+        } catch (Exception e) {
+            errorDTO.setError(true);
+            errorDTO.setErrorMessage("Değişiklikler gerçekleştirilirken bir hata gerçekleşti");
+
+            return errorDTO;
+        }
+
+        errorDTO.setError(false);
+        errorDTO.setErrorMessage(null);
+
+        return errorDTO;
+    }
 
 }
 

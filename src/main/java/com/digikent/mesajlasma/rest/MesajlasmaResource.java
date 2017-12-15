@@ -2,8 +2,11 @@ package com.digikent.mesajlasma.rest;
 
 import com.digikent.mesajlasma.dao.MesajlasmaRepository;
 import com.digikent.mesajlasma.dto.*;
+import com.digikent.mesajlasma.service.MesajlasmaService;
+import net.sf.saxon.trans.Err;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -29,6 +34,9 @@ public class MesajlasmaResource {
 
     @Inject
     MesajlasmaRepository mesajlasmaRepository;
+
+    @Autowired
+    MesajlasmaService mesajlasmaService;
 
     /*
     Mesaj gönderilme apisi
@@ -121,4 +129,35 @@ public class MesajlasmaResource {
         return new ResponseEntity<MessageLineResponseDTO>(messageLineResponseDTO, OK);
     }
 
-}
+    @RequestMapping(value = "/group/info", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<GroupInfoResponseDTO> getGroupInfoByGroupId(@RequestBody GroupInfoRequestDTO groupInfoRequestDTO) {
+        GroupInfoResponseDTO groupInfoResponseDTO = null;
+
+        LOG.info(" Gelen group  id = " + groupInfoRequestDTO.getGroupId());
+        LOG.info(" Gelen sender id = " + groupInfoRequestDTO.getSenderId());
+        groupInfoResponseDTO = mesajlasmaService.getGroupInfoByGroupId(groupInfoRequestDTO.getGroupId());
+
+
+        return new ResponseEntity<GroupInfoResponseDTO>(groupInfoResponseDTO, OK);
+        }
+
+
+    @RequestMapping(value = "/group/delete", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<ErrorDTO> groupDeleteByGroupId(@RequestBody GroupDeleteRequestDTO groupDeleteRequestDTO) {
+        ErrorDTO errorDTO;
+        LOG.info(" Gelen group id = " + groupDeleteRequestDTO.getGroupId());
+
+        errorDTO = mesajlasmaService.deleteGroupByGroupId(groupDeleteRequestDTO.getGroupId());
+
+        return new ResponseEntity<ErrorDTO>(errorDTO, OK);
+    }
+
+
+
+        }

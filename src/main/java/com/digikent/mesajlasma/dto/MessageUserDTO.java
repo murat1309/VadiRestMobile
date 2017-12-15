@@ -9,17 +9,29 @@ public class MessageUserDTO {
     private String lastName;
     private String activeDirectoryUserName;
     private Long iletilenPersonelId;
+    private Boolean groupAdmin;
+    private Long personelId;
 
     public MessageUserDTO() {
     }
 
-    public MessageUserDTO(String userId, String firstName, String lastName, String activeDirectoryUserName, Long iletilenPersonelId) {
+    public MessageUserDTO(String userId, String firstName, String lastName, String activeDirectoryUserName, Long iletilenPersonelId, Boolean groupAdmin, Long personelId) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.activeDirectoryUserName = activeDirectoryUserName;
         this.iletilenPersonelId = iletilenPersonelId;
+        this.groupAdmin = groupAdmin;
+        this.personelId = personelId;
     }
+
+    public Long getPersonelId() { return personelId; }
+
+    public void setPersonelId(Long personelId) { this.personelId = personelId; }
+
+    public Boolean getGroupAdmin() { return groupAdmin; }
+
+    public void setGroupAdmin(Boolean groupAdmin) { this.groupAdmin = groupAdmin; }
 
     public String getUserId() {
         return userId;

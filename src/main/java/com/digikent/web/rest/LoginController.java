@@ -110,5 +110,5 @@ public class LoginController {
 		System.out.println(userId);
 		return loginService.getTopNavigationMessages(userId);
 	}
-	
+
 }
