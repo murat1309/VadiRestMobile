@@ -122,10 +122,7 @@ public class MesajlasmaResource {
     @Transactional
     public ResponseEntity<MessageLineResponseDTO> updateMessageReaded(@RequestBody MessageLineRequestDTO messageLineRequestDTO) {
         LOG.debug("REST request to get messages, personelID = " + messageLineRequestDTO.getPersonelId() + ", getirilen " + messageLineRequestDTO.getIlentilenPersonelId());
-        List<MessageLineDTO> messageLineDTOList = mesajlasmaRepository.getMessageLinesByPersonelId(messageLineRequestDTO);
-        ErrorDTO errorDTO = new ErrorDTO(false,null);
-        MessageLineResponseDTO messageLineResponseDTO = new MessageLineResponseDTO(errorDTO,messageLineDTOList);
-
+        MessageLineResponseDTO messageLineResponseDTO = mesajlasmaRepository.getMessageLinesByPersonelId(messageLineRequestDTO);
         return new ResponseEntity<MessageLineResponseDTO>(messageLineResponseDTO, OK);
     }
 
@@ -151,13 +148,55 @@ public class MesajlasmaResource {
     @Transactional
     public ResponseEntity<ErrorDTO> groupDeleteByGroupId(@RequestBody GroupDeleteRequestDTO groupDeleteRequestDTO) {
         ErrorDTO errorDTO;
-        LOG.info(" Gelen group id = " + groupDeleteRequestDTO.getGroupId());
 
+        LOG.info(" Gelen group id = " + groupDeleteRequestDTO.getGroupId());
         errorDTO = mesajlasmaService.deleteGroupByGroupId(groupDeleteRequestDTO.getGroupId());
 
         return new ResponseEntity<ErrorDTO>(errorDTO, OK);
     }
 
 
+    @RequestMapping(value = "/group/leave", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<ErrorDTO> groupLeaveByUserId(@RequestBody GroupLeaveRequestDTO groupLeaveRequestDTO) {
+        ErrorDTO errorDTO;
 
-        }
+        LOG.info(" Gelen group id = " + groupLeaveRequestDTO.getGroupId());
+        LOG.info(" Gelen personel id = " + groupLeaveRequestDTO.getUserId());
+        errorDTO = mesajlasmaService.groupLeaveByUserId(groupLeaveRequestDTO.getUserId(), groupLeaveRequestDTO.getGroupId());
+
+        return new ResponseEntity<ErrorDTO>(errorDTO, OK);
+    }
+
+
+    @RequestMapping(value = "/group/discard", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<ErrorDTO> userDiscardByGroupAndUserId(@RequestBody DiscardUserRequestDTO discardUserRequestDTO) {
+        ErrorDTO errorDTO;
+
+        LOG.info(" Gelen group id = " + discardUserRequestDTO.getGroupId());
+        LOG.info(" Gelen personel id = " + discardUserRequestDTO.getUserId());
+        errorDTO = mesajlasmaService.userDiscardByGroupAndUserId(discardUserRequestDTO.getUserId(), discardUserRequestDTO.getGroupId());
+
+        return new ResponseEntity<ErrorDTO>(errorDTO, OK);
+    }
+
+
+    @RequestMapping(value = "/group/add", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<ErrorDTO> groupUserAddByUserList(@RequestBody GroupRequest groupRequest) {
+        ErrorDTO errorDTO;
+
+        LOG.info(" Gelen group id = " + groupRequest.getGroupInformationDTO().getGroupId());
+        errorDTO = mesajlasmaService.groupUserAddByUserList(groupRequest);
+        return new ResponseEntity<ErrorDTO>(errorDTO, OK);
+    }
+
+
+}

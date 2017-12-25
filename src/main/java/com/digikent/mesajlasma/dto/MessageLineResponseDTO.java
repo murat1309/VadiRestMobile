@@ -10,6 +10,7 @@ public class MessageLineResponseDTO implements Serializable {
 
     private ErrorDTO errorDTO;
     private List<MessageLineDTO> messageLineDTOList;
+    private Boolean isActive;
 
     public MessageLineResponseDTO() {
     }
@@ -17,6 +18,20 @@ public class MessageLineResponseDTO implements Serializable {
     public MessageLineResponseDTO(ErrorDTO errorDTO, List<MessageLineDTO> messageLineDTOList) {
         this.errorDTO = errorDTO;
         this.messageLineDTOList = messageLineDTOList;
+    }
+
+    public MessageLineResponseDTO(ErrorDTO errorDTO, List<MessageLineDTO> messageLineDTOList, Boolean isActive) {
+        this.errorDTO = errorDTO;
+        this.messageLineDTOList = messageLineDTOList;
+        this.isActive = isActive;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        this.isActive = active;
     }
 
     public ErrorDTO getErrorDTO() {

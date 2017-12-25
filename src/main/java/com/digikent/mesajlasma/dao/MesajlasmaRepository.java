@@ -274,11 +274,13 @@ public class MesajlasmaRepository {
 
     }
 
-    public List<MessageLineDTO> getMessageLinesByPersonelId(MessageLineRequestDTO messageLineRequestDTO) {
+    public MessageLineResponseDTO getMessageLinesByPersonelId(MessageLineRequestDTO messageLineRequestDTO) {
         /*String userName = SecurityUtils.getCurrentUserLogin();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();*/
+        MessageLineResponseDTO messageLineResponseDTO =  null;
         List<MessageLineDTO> messageLineDTOList = new ArrayList<>();
         String sql = "";
+        Map map = null;
 
         Long yazanPId = messageLineRequestDTO.getPersonelId();
         Long iletinlenPId = messageLineRequestDTO.getIlentilenPersonelId();
@@ -292,14 +294,29 @@ public class MesajlasmaRepository {
                     "        AND (A.IHR1PERSONEL_YAZAN = C.ID)" +
                     "        ORDER BY A.GONDERIMZAMANI DESC";
         } else if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("GRUBAILETIM")) {
-            sql = "select A.ID,C.ADI||' '||C.SOYADI MESAJSAHIBI,A.GONDERIMZAMANI,A.MESAJ, A.IHR1PERSONEL_YAZAN, B.OKUNMAZAMANI" +
-                    "  from VEILMESAJ A,VEILMESAJLINE B, IHR1PERSONEL C " +
+            sql = "select A.ID,C.ADI||' '||C.SOYADI MESAJSAHIBI,A.GONDERIMZAMANI,A.MESAJ, A.IHR1PERSONEL_YAZAN, B.OKUNMAZAMANI, D.ISACTIVE " +
+                    "  from VEILMESAJ A,VEILMESAJLINE B, IHR1PERSONEL C, TEILMESAJILETIMGRUBULINE D " +
                     " Where B.VEILMESAJ_ID = A.ID " +
                     "    And A.IHR1PERSONEL_YAZAN = C.ID " +
                     "    And B.IHR1PERSONEL_ILETILEN = " + yazanPId +
                     "    And A.TEILMESAJILETIMGRUBU_ILETILEN = " + messageLineRequestDTO.getGroupId() +
-                    " ORDER BY A.GONDERIMZAMANI DESC ";
+                    "    And D.TEILMESAJILETIMGRUBU_ID = " + messageLineRequestDTO.getGroupId() +
+                    "    And D.IHR1PERSONEL_ID = " + yazanPId +
+                    " union all " +
+                    " select A.ID, 'SİSTEM' as MESAJSAHIBI, A.GONDERIMZAMANI, A.MESAJ, A.IHR1PERSONEL_YAZAN, B.OKUNMAZAMANI, D.ISACTIVE " +
+                    " from VEILMESAJ A, VEILMESAJLINE B, TEILMESAJILETIMGRUBULINE D " +
+                    " where B.VEILMESAJ_ID = A.ID " +
+                    " and B.IHR1PERSONEL_ILETILEN = " + yazanPId +
+                    " and A.TEILMESAJILETIMGRUBU_ILETILEN = " + messageLineRequestDTO.getGroupId() +
+                    " and D.TEILMESAJILETIMGRUBU_ID = " + messageLineRequestDTO.getGroupId() +
+                    " and D.IHR1PERSONEL_ID = " + yazanPId +
+                    " and A.IHR1PERSONEL_YAZAN = " + Constants.MESSAGE_SYSTEM_USER_ID +
+                    " order by GONDERIMZAMANI DESC ";
         }
+
+
+
+
 
         List<Object> list = new ArrayList<Object>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -314,7 +331,7 @@ public class MesajlasmaRepository {
         int counter2 = 0;
 
         for(Object o : list){
-            Map map = (Map) o;
+            map = (Map) o;
             Date sendDate = (Date) map.get("GONDERIMZAMANI");
             Date okunmaZamani = (Date) map.get("OKUNMAZAMANI");
             String personelName = (String) map.get("MESAJSAHIBI");
@@ -331,6 +348,8 @@ public class MesajlasmaRepository {
                 messageLineDTO.setPersonelName(personelName);
             messageLineDTO.setType(Constants.MESSAGE_TYPE_REAL_MESSAGE);
 
+            //messageLineDTO.setActive(isActive);
+
             if (messageLineRequestDTO.getIletimTuru().equalsIgnoreCase("KISIYEILETIM")) {
                 //kişisel mesaj
                 counter++;
@@ -338,7 +357,7 @@ public class MesajlasmaRepository {
                     if (controlPersonal && okunmaZamani != null) {
                         controlPersonal = false;
                         if (counter2 != 0) {
-                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE));
+                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE, null)); //!!!
                         }
                     }
                     counter2 = counter;
@@ -357,7 +376,7 @@ public class MesajlasmaRepository {
                     if (controlPersonal && okunmaZamani != null) {
                         controlPersonal = false;
                         if (counter2 != 0) {
-                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE));
+                            messageLineDTOList.add(counter2, new MessageLineDTO(null, null, null, null, Constants.MESSAGE_TYPE_LINE_MESSAGE, null)); //!!!
                         }
                     }
                     counter2 = counter;
@@ -368,6 +387,8 @@ public class MesajlasmaRepository {
                     }
                 } catch (Exception e) {
                 }
+
+
             }
 
             messageLineDTOList.add(messageLineDTO);
@@ -381,8 +402,22 @@ public class MesajlasmaRepository {
             doReadMessagesPersonalChat(messageLineRequestDTO.getPersonelId(), messageLineRequestDTO.getIlentilenPersonelId());
         }
 
+        messageLineResponseDTO = new MessageLineResponseDTO();
 
-        return messageLineDTOList;
+        if (map != null && !map.isEmpty()) {
+            String isActive = (String) map.get("ISACTIVE");
+            if (isActive != null && isActive.equalsIgnoreCase("H")) {
+                messageLineResponseDTO.setActive(false);
+            } else {
+                messageLineResponseDTO.setActive(true);
+            }
+        } else {
+            messageLineResponseDTO.setActive(true);
+        }
+        messageLineResponseDTO.setErrorDTO(new ErrorDTO(false,null));
+        messageLineResponseDTO.setMessageLineDTOList(messageLineDTOList);
+
+        return messageLineResponseDTO;
     }
 
     public Boolean doReadMessagesGroupChat(Long personelId, Long groupId) {
@@ -518,10 +553,10 @@ public class MesajlasmaRepository {
      */
     public void sendDefaultGroupMessage(GroupRequest groupRequest, TeilMesajIletimGrubu teilMesajIletimGrubu) {
         MessageDTO messageDTO = new MessageDTO(
-                groupRequest.getGroupInformationDTO().getOlusturanPersonel(),
+                Constants.MESSAGE_SYSTEM_USER_ID,
                 "GRUBAILETIM",
                 null,
-                "Otomatik Mesaj : " + groupRequest.getGroupInformationDTO().getGrupAdi() + " grubu oluşturuldu",
+                "" + groupRequest.getGroupInformationDTO().getOlusturanPersonelName() + " tarafından " + groupRequest.getGroupInformationDTO().getGrupAdi() + " grubu oluşturuldu",
                 teilMesajIletimGrubu.getID()
                 );
         savePersonalMessage(messageDTO);
@@ -621,6 +656,133 @@ public class MesajlasmaRepository {
 
         return errorDTO;
     }
+
+    /*
+    @param isActive type H or E
+     */
+    public ErrorDTO updateIsActiveInGroupLineByUserIdAndGroupId(Long userId, Long groupId, Character isActive) {
+
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+
+            String sql = " update TEILMESAJILETIMGRUBULINE " +
+                         " set ISACTIVE = '" + isActive +
+                         "' where TEILMESAJILETIMGRUBU_ID = " + groupId + " and IHR1PERSONEL_ID = " + userId;
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            query.executeUpdate();
+
+        } catch (Exception e) {
+            errorDTO.setError(true);
+            errorDTO.setErrorMessage("Değişiklikler gerçekleştirilirken bir hata gerçekleşti.");
+        }
+
+        errorDTO.setError(false);
+        errorDTO.setErrorMessage(null);
+
+        return errorDTO;
+    }
+
+    public ErrorDTO groupUserAddByUserList(GroupRequest groupRequest) {
+
+        ErrorDTO errorDTO = new ErrorDTO();
+        Date date = getcurrentDate();
+        List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLineList = new ArrayList<>();
+
+
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+
+            List<TeilMesajİletimGrubuLine> groupLineList = getAllGroupLineListByGroupId(groupRequest.getGroupInformationDTO().getGroupId());
+
+            for (MessageUserDTO user: groupRequest.getMessageUserDTOList()) {
+                Boolean control = false;
+                for (TeilMesajİletimGrubuLine teilMesajİletimGrubuLine : groupLineList) {
+                    if (teilMesajİletimGrubuLine.getIhr1PersonelId() != null && teilMesajİletimGrubuLine.getIhr1PersonelId().longValue() == user.getIletilenPersonelId().longValue()) {
+                        control = true;
+                        updateIsActiveInGroupLineByUserIdAndGroupId(teilMesajİletimGrubuLine.getIhr1PersonelId(),groupRequest.getGroupInformationDTO().getGroupId(),'E');
+                        break;
+                    }
+                }
+                if (!control) {
+                    //set new object
+                    TeilMesajİletimGrubuLine userLine = new TeilMesajİletimGrubuLine();
+                    userLine.setIhr1PersonelId(user.getIletilenPersonelId());
+                    userLine.setAsm2ServisTuruId(null);
+                    userLine.setBsm2ServisTuruId(null);
+                    userLine.setLhr1GorevTuruId(null);
+                    userLine.setIsActive(true);
+                    userLine.setCrUser(user.getIletilenPersonelId());
+                    userLine.setDeleteFlag("H");
+
+                    teilMesajİletimGrubuLineList.add(userLine);
+                }
+            }
+
+            TeilMesajIletimGrubu mesajIletimGrubu = getMesajIletimGrubuById(session, groupRequest.getGroupInformationDTO().getGroupId());
+            mesajIletimGrubu.setTeilMesajİletimGrubuLineList(teilMesajİletimGrubuLineList);
+
+            session.update(mesajIletimGrubu);
+            tx.commit();
+
+            errorDTO.setError(false);
+            errorDTO.setErrorMessage(null);
+            return errorDTO;
+        } catch (Exception e){
+
+            LOG.debug("Gruba kullanici eklerken bir hata olustu");
+        }
+
+        errorDTO.setError(true);
+        errorDTO.setErrorMessage("Gruba kullanici eklerken bir hata olustu");
+
+        return errorDTO;
+    }
+
+    public List<TeilMesajİletimGrubuLine> getAllGroupLineListByGroupId(Long groupId) {
+        List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLines = new ArrayList<>();
+
+        String sql = " SELECT * FROM TEILMESAJILETIMGRUBULINE WHERE TEILMESAJILETIMGRUBU_ID = " + groupId;
+        List<Object> list = new ArrayList<Object>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        list = query.list();
+
+        for(Object o : list){
+            Map map = (Map) o;
+            BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+            BigDecimal id = (BigDecimal) map.get("ID");
+            String isActive = (String) map.get("ISACTIVE");
+
+            TeilMesajİletimGrubuLine teilMesajİletimGrubuLine = new TeilMesajİletimGrubuLine();
+
+            if(personelId != null)
+                teilMesajİletimGrubuLine.setIhr1PersonelId(personelId.longValue());
+            if(id != null)
+                teilMesajİletimGrubuLine.setID(id.longValue());
+            if(isActive != null) {
+                if (isActive.equalsIgnoreCase("E")) {
+                    teilMesajİletimGrubuLine.setIsActive(true);
+                } else {
+                    teilMesajİletimGrubuLine.setIsActive(false);
+                }
+            }
+
+            teilMesajİletimGrubuLines.add(teilMesajİletimGrubuLine);
+        }
+
+        return teilMesajİletimGrubuLines;
+    }
+
+
+
 
 }
 

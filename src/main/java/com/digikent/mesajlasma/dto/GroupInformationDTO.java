@@ -10,6 +10,8 @@ public class GroupInformationDTO implements Serializable {
     private String grupAdi;
     private Long olusturanPersonel;
     private String grupTuru;
+    private Long groupId;
+    private String olusturanPersonelName;
 
     public GroupInformationDTO(String grupAdi, Long olusturanPersonel, String grupTuru) {
         this.grupAdi = grupAdi;
@@ -17,7 +19,22 @@ public class GroupInformationDTO implements Serializable {
         this.grupTuru = grupTuru;
     }
 
+    public GroupInformationDTO(String grupAdi, Long olusturanPersonel, String grupTuru, String olusturanPersonelName) {
+        this.grupAdi = grupAdi;
+        this.olusturanPersonel = olusturanPersonel;
+        this.grupTuru = grupTuru;
+        this.olusturanPersonelName = olusturanPersonelName;
+    }
+
     public GroupInformationDTO() {
+    }
+
+    public String getOlusturanPersonelName() {
+        return olusturanPersonelName;
+    }
+
+    public void setOlusturanPersonelName(String olusturanPersonelName) {
+        this.olusturanPersonelName = olusturanPersonelName;
     }
 
     public String getGrupAdi() {
@@ -42,5 +59,13 @@ public class GroupInformationDTO implements Serializable {
 
     public void setGrupTuru(String grupTuru) {
         this.grupTuru = grupTuru;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 }
