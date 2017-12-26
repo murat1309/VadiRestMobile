@@ -2,6 +2,8 @@ package com.digikent.web.rest;
 
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
+import com.digikent.web.rest.dto.DocumentRejectDTO;
+import com.digikent.web.rest.dto.ResponseUtil;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.ArrayList;
@@ -14,16 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import javax.ws.rs.PathParam;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
 @PropertySources({ @PropertySource(value = { "file:${DIGIKENT_PATH}/services/baseUrl.properties" }) })
 public class DocumentManagementController {
@@ -274,4 +278,12 @@ public class DocumentManagementController {
 												 @PathVariable("endDate")String endDate){
 		return documentManagementService.getUrettiklerimList(organizationId,startDate,endDate);
 	}
+
+	@RequestMapping(value = "ebys/belge/red",method = RequestMethod.POST)
+	public ResponseEntity<Boolean> documentReject(@RequestBody DocumentRejectDTO documentRejectDTO){
+		documentManagementService.rejectDocument(documentRejectDTO);
+		return new ResponseEntity<Boolean>(true, OK);
+	}
+
+
 }

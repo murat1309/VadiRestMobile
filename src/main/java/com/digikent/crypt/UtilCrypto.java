@@ -51,7 +51,6 @@ public class UtilCrypto {
         Return decrypted messageText
     */
     public String decryptMessage(String base64String, Long userIdOrGroupId) throws Exception {
-        LOG.info("mesaj decrypt edilecek. userId yada groupId = " + userIdOrGroupId);
         try {
             Key desKey = generateKey(userIdOrGroupId.toString());
             Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");

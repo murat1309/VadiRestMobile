@@ -3,6 +3,7 @@ package com.digikent.vadirest.service.impl;
 import com.digikent.vadirest.dao.DocumentManagementDAO;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
+import com.digikent.web.rest.dto.DocumentRejectDTO;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.List;
@@ -122,6 +123,11 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 
 	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId){
 		return documentManagementDAO.getEbysUnsignableAdditionDocument(documentId);
+	}
+
+	@Override
+	public Boolean rejectDocument(DocumentRejectDTO documentRejectDTO) {
+		return documentManagementDAO.documentReject(documentRejectDTO);
 	}
 
 }
