@@ -2,16 +2,14 @@ package com.digikent.vadirest.dao.impl;
 
 import com.digikent.vadirest.dao.DocumentManagementDAO;
 import com.digikent.vadirest.dto.*;
+import com.digikent.web.rest.dto.DocumentRejectDTO;
 import com.vadi.digikent.icerikyonetimi.bpm.model.BPMWorkitem;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
@@ -19,9 +17,13 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import javax.inject.Inject;
 
 
 @Repository("documentManagementDao")
@@ -30,9 +32,13 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 
 	private final Logger LOG = LoggerFactory.getLogger(DocumentManagementDAO.class);
 
+	@Inject
+	private Environment env;
+
 	@Autowired
 	protected SessionFactory sessionFactory;
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+	private RestTemplate restTemplate = new RestTemplate();
 	
 	public List<SM1Roles> getEBYSRollList(long persid) {
 		
@@ -1411,5 +1417,16 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			ebysDetailList.add(ebysDetail);
 		}
 		return ebysDetailList;
+	}
+
+	@Override
+	public Boolean documentReject(DocumentRejectDTO documentRejectDTO) {
+		String url = env.getProperty("eyazisma") + "paket/reddet";
+		HttpHeaders headers = new HttpHeaders();
+		//headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<DocumentRejectDTO> request = new HttpEntity<>(documentRejectDTO, headers);
+		ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
+		return true;
 	}
 }

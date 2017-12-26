@@ -1,6 +1,7 @@
 package com.digikent.vadirest.service;
 
 import com.digikent.vadirest.dto.*;
+import com.digikent.web.rest.dto.DocumentRejectDTO;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.List;
@@ -31,4 +32,5 @@ public interface DocumentManagementService {
 	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate);
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate);
 	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId);
+	public Boolean rejectDocument(DocumentRejectDTO documentRejectDTO);
 }
