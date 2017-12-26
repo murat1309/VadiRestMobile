@@ -1,5 +1,7 @@
 package com.digikent.mesajlasma.dto;
 
+import com.documentum.xml.xpath.operations.Bool;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,16 +15,26 @@ public class MessageLineDTO implements Serializable {
     private String message;
     private Date sendDate;
     private String type;
+    private String isActive;
 
     public MessageLineDTO() {
     }
 
-    public MessageLineDTO(String personelName, Long personelId, String message, Date sendDate, String type) {
+    public MessageLineDTO(String personelName, Long personelId, String message, Date sendDate, String type, String isActive) {
         this.personelName = personelName;
         this.personelId = personelId;
         this.message = message;
         this.sendDate = sendDate;
         this.type = type;
+        this.isActive = isActive;
+    }
+
+    public String getActive() {
+        return isActive;
+    }
+
+    public void setActive(String active) {
+        isActive = active;
     }
 
     public String getPersonelName() {

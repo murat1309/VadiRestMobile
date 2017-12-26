@@ -3,9 +3,6 @@ package com.digikent.mesajlasma.service;
 import com.digikent.mesajlasma.dao.MesajlasmaRepository;
 import com.digikent.mesajlasma.dto.*;
 
-import java.math.BigDecimal;
-
-import net.sf.saxon.trans.Err;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -40,4 +37,32 @@ public class MesajlasmaService {
         return errorDTO;
     }
 
+
+    public ErrorDTO groupLeaveByUserId(Long userId, Long groupId) {
+
+        ErrorDTO errorDTO;
+
+        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(userId, groupId, 'H');
+
+        return errorDTO;
+    }
+
+
+    public ErrorDTO userDiscardByGroupAndUserId(Long userId, Long groupId) {
+
+        ErrorDTO errorDTO;
+
+        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(userId, groupId, 'H');
+
+        return errorDTO;
+    }
+
+    public ErrorDTO groupUserAddByUserList(GroupRequest groupRequest) {
+
+        ErrorDTO errorDTO;
+
+        errorDTO = mesajlasmaRepository.groupUserAddByUserList(groupRequest);
+
+        return errorDTO;
+    }
 }

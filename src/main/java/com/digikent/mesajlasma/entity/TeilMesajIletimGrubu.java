@@ -30,9 +30,9 @@ public class TeilMesajIletimGrubu extends BaseEntity implements Serializable {
     private Long ihr1PersonelOlusturanId;
 
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="TEILMESAJILETIMGRUBU_ID", nullable=false)
-    List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLineList = new ArrayList<>();
+    List<TeilMesajİletimGrubuLine> teilMesajİletimGrubuLineList = new ArrayList<TeilMesajİletimGrubuLine>();
 
     public Long getID() {
         return ID;

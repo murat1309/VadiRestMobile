@@ -24,6 +24,7 @@ public final class Constants {
     public static final String MESSAGE_TYPE_LINE_MESSAGE = "line";
     public static final long RUHSAT_GENEL_SONUC = 1;
     public static final long RUHSAT_BASVURU_DURUM = 2;
+    public static final long MESSAGE_SYSTEM_USER_ID = -1;
 
 
     private Constants() {
