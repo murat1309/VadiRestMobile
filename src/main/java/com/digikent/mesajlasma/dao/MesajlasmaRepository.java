@@ -562,6 +562,61 @@ public class MesajlasmaRepository {
         savePersonalMessage(messageDTO);
     }
 
+
+    public void sendDefaultGroupMessageWhenUserAdded(GroupRequest groupRequest) {
+        for(MessageUserDTO messageUserDTO : groupRequest.getMessageUserDTOList()) {
+            MessageDTO messageDTO = new MessageDTO(
+                    Constants.MESSAGE_SYSTEM_USER_ID,
+                    "GRUBAILETIM",
+                    null,
+                    "" + groupRequest.getGroupInformationDTO().getOlusturanPersonelName() + ", " + messageUserDTO.getFirstName()+ " " + messageUserDTO.getLastName() + " kişisini ekledi",
+                    groupRequest.getGroupInformationDTO().getGroupId()
+            );
+            savePersonalMessage(messageDTO);
+        }
+
+    }
+
+    public void sendDefaultGroupDeleteMessage(GroupDeleteRequestDTO groupDeleteRequestDTO) {
+
+        MessageDTO messageDTO = new MessageDTO(
+                Constants.MESSAGE_SYSTEM_USER_ID,
+                "GRUBAILETIM",
+                null,
+                "" + groupDeleteRequestDTO.getOlusturanPersonelName() + " tarafından " + groupDeleteRequestDTO.getGroupName() + " grubu silindi",
+                groupDeleteRequestDTO.getGroupId()
+        );
+        savePersonalMessage(messageDTO);
+    }
+
+    public void sendDefaultGroupLeaveMessage(GroupLeaveRequestDTO groupLeaveRequestDTO) {
+
+        MessageDTO messageDTO = new MessageDTO(
+                Constants.MESSAGE_SYSTEM_USER_ID,
+                "GRUBAILETIM",
+                null,
+                "" + groupLeaveRequestDTO.getPersonelName() +  " gruptan ayrıldı",
+                groupLeaveRequestDTO.getGroupId()
+        );
+        savePersonalMessage(messageDTO);
+    }
+
+    /*
+        Grup yoneticisi gruptan birini çıkardığı zaman sistem mesajı yayınlanır
+     */
+    public void sendDefaultGroupDiscardMessage(GroupLeaveRequestDTO groupLeaveRequestDTO) {
+
+        MessageDTO messageDTO = new MessageDTO(
+                Constants.MESSAGE_SYSTEM_USER_ID,
+                "GRUBAILETIM",
+                null,
+                "" + groupLeaveRequestDTO.getDiscardedUserName() + ", " + groupLeaveRequestDTO.getPersonelName() +  " tarafından gruptan çıkarıldı",
+                groupLeaveRequestDTO.getGroupId()
+        );
+        savePersonalMessage(messageDTO);
+    }
+
+
     //TODO check method
     public Date getcurrentDate() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -620,15 +675,15 @@ public class MesajlasmaRepository {
         return messageUserDTOList;
     }
 
-    public ErrorDTO deleteGroupByGroupId(Long groupId) {
+    public ErrorDTO deleteGroupByGroupId(GroupDeleteRequestDTO groupDeleteRequestDTO) {
 
         ErrorDTO errorDTO = new ErrorDTO();
-
+        sendDefaultGroupDeleteMessage(groupDeleteRequestDTO);
         try {
 
             String sql2 = "update TEILMESAJILETIMGRUBU " +
                           " set ISACTIVE = 'H' " +
-                          " where ID = " + groupId;
+                          " where ID = " + groupDeleteRequestDTO.getGroupId();
             Session session2 = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query2 = session2.createSQLQuery(sql2);
             query2.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -636,12 +691,11 @@ public class MesajlasmaRepository {
 
             String sql = "update TEILMESAJILETIMGRUBULINE " +
                          " set ISACTIVE = 'H' " +
-                         " where TEILMESAJILETIMGRUBU_ID = " + groupId;
+                         " where TEILMESAJILETIMGRUBU_ID = " + groupDeleteRequestDTO.getGroupId();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
             query.executeUpdate();
-
 
 
         } catch (Exception e) {
@@ -660,7 +714,7 @@ public class MesajlasmaRepository {
     /*
     @param isActive type H or E
      */
-    public ErrorDTO updateIsActiveInGroupLineByUserIdAndGroupId(Long userId, Long groupId, Character isActive) {
+    public ErrorDTO updateIsActiveInGroupLineByUserIdAndGroupId(GroupLeaveRequestDTO groupLeaveRequestDTO, Character isActive) {
 
         ErrorDTO errorDTO = new ErrorDTO();
 
@@ -668,7 +722,7 @@ public class MesajlasmaRepository {
 
             String sql = " update TEILMESAJILETIMGRUBULINE " +
                          " set ISACTIVE = '" + isActive +
-                         "' where TEILMESAJILETIMGRUBU_ID = " + groupId + " and IHR1PERSONEL_ID = " + userId;
+                         "' where TEILMESAJILETIMGRUBU_ID = " + groupLeaveRequestDTO.getGroupId() + " and IHR1PERSONEL_ID = " + groupLeaveRequestDTO.getUserId();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -685,6 +739,14 @@ public class MesajlasmaRepository {
         return errorDTO;
     }
 
+    public void sendDefaultMessageWhenDiscardOrLeave(GroupLeaveRequestDTO groupLeaveRequestDTO) {
+        if(groupLeaveRequestDTO.getDiscardedUserName() != null) {
+            sendDefaultGroupDiscardMessage(groupLeaveRequestDTO);
+        } else {
+            sendDefaultGroupLeaveMessage(groupLeaveRequestDTO);
+        }
+    }
+
     public ErrorDTO groupUserAddByUserList(GroupRequest groupRequest) {
 
         ErrorDTO errorDTO = new ErrorDTO();
@@ -696,6 +758,7 @@ public class MesajlasmaRepository {
         Session session = sessionFactory.openSession();
         Transaction tx = null;
         try {
+
             tx = session.beginTransaction();
 
             List<TeilMesajİletimGrubuLine> groupLineList = getAllGroupLineListByGroupId(groupRequest.getGroupInformationDTO().getGroupId());
@@ -705,7 +768,10 @@ public class MesajlasmaRepository {
                 for (TeilMesajİletimGrubuLine teilMesajİletimGrubuLine : groupLineList) {
                     if (teilMesajİletimGrubuLine.getIhr1PersonelId() != null && teilMesajİletimGrubuLine.getIhr1PersonelId().longValue() == user.getIletilenPersonelId().longValue()) {
                         control = true;
-                        updateIsActiveInGroupLineByUserIdAndGroupId(teilMesajİletimGrubuLine.getIhr1PersonelId(),groupRequest.getGroupInformationDTO().getGroupId(),'E');
+                        GroupLeaveRequestDTO groupLeaveRequestDTO = new GroupLeaveRequestDTO();
+                        groupLeaveRequestDTO.setGroupId(groupRequest.getGroupInformationDTO().getGroupId());
+                        groupLeaveRequestDTO.setUserId(teilMesajİletimGrubuLine.getIhr1PersonelId());
+                        updateIsActiveInGroupLineByUserIdAndGroupId(groupLeaveRequestDTO,'E');
                         break;
                     }
                 }
@@ -727,8 +793,11 @@ public class MesajlasmaRepository {
             TeilMesajIletimGrubu mesajIletimGrubu = getMesajIletimGrubuById(session, groupRequest.getGroupInformationDTO().getGroupId());
             mesajIletimGrubu.setTeilMesajİletimGrubuLineList(teilMesajİletimGrubuLineList);
 
+
             session.update(mesajIletimGrubu);
             tx.commit();
+            sendDefaultGroupMessageWhenUserAdded(groupRequest);
+
 
             errorDTO.setError(false);
             errorDTO.setErrorMessage(null);

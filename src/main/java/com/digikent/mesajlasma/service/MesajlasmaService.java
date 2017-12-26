@@ -28,31 +28,34 @@ public class MesajlasmaService {
     }
 
 
-    public ErrorDTO deleteGroupByGroupId(Long groupId) {
+    public ErrorDTO deleteGroupByGroupId(GroupDeleteRequestDTO groupDeleteRequestDTO) {
 
         ErrorDTO errorDTO;
 
-        errorDTO = mesajlasmaRepository.deleteGroupByGroupId(groupId);
+        errorDTO = mesajlasmaRepository.deleteGroupByGroupId(groupDeleteRequestDTO);
 
         return errorDTO;
     }
 
 
-    public ErrorDTO groupLeaveByUserId(Long userId, Long groupId) {
+    public ErrorDTO groupLeaveByUserId(GroupLeaveRequestDTO groupLeaveRequestDTO) {
 
         ErrorDTO errorDTO;
 
-        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(userId, groupId, 'H');
+        mesajlasmaRepository.sendDefaultMessageWhenDiscardOrLeave(groupLeaveRequestDTO);
+        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(groupLeaveRequestDTO, 'H');
+
 
         return errorDTO;
     }
 
 
-    public ErrorDTO userDiscardByGroupAndUserId(Long userId, Long groupId) {
+    public ErrorDTO userDiscardByGroupAndUserId(GroupLeaveRequestDTO groupLeaveRequestDTO) {
 
         ErrorDTO errorDTO;
 
-        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(userId, groupId, 'H');
+        mesajlasmaRepository.sendDefaultMessageWhenDiscardOrLeave(groupLeaveRequestDTO);
+        errorDTO = mesajlasmaRepository.updateIsActiveInGroupLineByUserIdAndGroupId(groupLeaveRequestDTO, 'H');
 
         return errorDTO;
     }

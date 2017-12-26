@@ -2,6 +2,8 @@ package com.digikent.mesajlasma.rest;
 
 import com.digikent.mesajlasma.dao.MesajlasmaRepository;
 import com.digikent.mesajlasma.dto.*;
+import com.digikent.mesajlasma.dto.GroupDeleteRequestDTO;
+import com.digikent.mesajlasma.dto.GroupLeaveRequestDTO;
 import com.digikent.mesajlasma.service.MesajlasmaService;
 import net.sf.saxon.trans.Err;
 import org.slf4j.Logger;
@@ -150,7 +152,7 @@ public class MesajlasmaResource {
         ErrorDTO errorDTO;
 
         LOG.info(" Gelen group id = " + groupDeleteRequestDTO.getGroupId());
-        errorDTO = mesajlasmaService.deleteGroupByGroupId(groupDeleteRequestDTO.getGroupId());
+        errorDTO = mesajlasmaService.deleteGroupByGroupId(groupDeleteRequestDTO);
 
         return new ResponseEntity<ErrorDTO>(errorDTO, OK);
     }
@@ -165,7 +167,7 @@ public class MesajlasmaResource {
 
         LOG.info(" Gelen group id = " + groupLeaveRequestDTO.getGroupId());
         LOG.info(" Gelen personel id = " + groupLeaveRequestDTO.getUserId());
-        errorDTO = mesajlasmaService.groupLeaveByUserId(groupLeaveRequestDTO.getUserId(), groupLeaveRequestDTO.getGroupId());
+        errorDTO = mesajlasmaService.groupLeaveByUserId(groupLeaveRequestDTO);
 
         return new ResponseEntity<ErrorDTO>(errorDTO, OK);
     }
@@ -175,12 +177,12 @@ public class MesajlasmaResource {
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<ErrorDTO> userDiscardByGroupAndUserId(@RequestBody DiscardUserRequestDTO discardUserRequestDTO) {
+    public ResponseEntity<ErrorDTO> userDiscardByGroupAndUserId(@RequestBody GroupLeaveRequestDTO groupLeaveRequestDTO) {
         ErrorDTO errorDTO;
 
-        LOG.info(" Gelen group id = " + discardUserRequestDTO.getGroupId());
-        LOG.info(" Gelen personel id = " + discardUserRequestDTO.getUserId());
-        errorDTO = mesajlasmaService.userDiscardByGroupAndUserId(discardUserRequestDTO.getUserId(), discardUserRequestDTO.getGroupId());
+        LOG.info(" Gelen group id = " + groupLeaveRequestDTO.getGroupId());
+        LOG.info(" Gelen personel id = " + groupLeaveRequestDTO.getUserId());
+        errorDTO = mesajlasmaService.userDiscardByGroupAndUserId(groupLeaveRequestDTO);
 
         return new ResponseEntity<ErrorDTO>(errorDTO, OK);
     }

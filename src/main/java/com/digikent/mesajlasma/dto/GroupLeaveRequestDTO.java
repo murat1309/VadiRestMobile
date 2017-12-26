@@ -7,8 +7,26 @@ public class GroupLeaveRequestDTO {
 
     private Long userId;
     private Long groupId;
+    private String personelName;
+    private String discardedUserName;
 
     public GroupLeaveRequestDTO() {
+    }
+
+    public String getDiscardedUserName() {
+        return discardedUserName;
+    }
+
+    public void setDiscardedUserName(String discardedUserName) {
+        this.discardedUserName = discardedUserName;
+    }
+
+    public String getPersonelName() {
+        return personelName;
+    }
+
+    public void setPersonelName(String personelName) {
+        this.personelName = personelName;
     }
 
     public Long getUserId() {
