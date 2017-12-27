@@ -60,5 +60,6 @@ public class DemirbasResource {
         demirbasResponseDTO.setDemirbasHareketDTOList(demirbasHareketByDemirbasDTOList);
         return new ResponseEntity<DemirbasResponseDTO>(demirbasResponseDTO, OK);
     }
+    
 
 }
