@@ -12,6 +12,7 @@ public class GroupDeleteRequestDTO implements Serializable {
     private String olusturanPersonelName;
     private String groupName;
     private String fullName;
+    private Long olusturanPersonelId;
 
     public GroupDeleteRequestDTO() {
 
@@ -59,7 +60,11 @@ public class GroupDeleteRequestDTO implements Serializable {
         this.groupId = groupId;
     }
 
+    public Long getOlusturanPersonelId() {
+        return olusturanPersonelId;
+    }
 
-
-
+    public void setOlusturanPersonelId(Long olusturanPersonelId) {
+        this.olusturanPersonelId = olusturanPersonelId;
+    }
 }
