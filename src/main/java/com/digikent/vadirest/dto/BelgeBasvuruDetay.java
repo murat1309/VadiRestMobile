@@ -18,6 +18,7 @@ public class BelgeBasvuruDetay {
 	private String merciKurum;
 	private String adi;
 	private String soyadi;
+	private String konuTuru;
 	private String konusu;
 	private String sdpKodu;
 	private String ekBilgi;
@@ -48,7 +49,11 @@ public class BelgeBasvuruDetay {
 	
 	private String ilce;
 	private String mahalle;
-	
+	private String sokakAdi;
+	private String siteAdi;
+	private String kapiNo;
+	private String daireNo;
+
 	private String babaAdi;
 	private long tcKimlikNo;
 	private String bildirimdeBulunan;
@@ -104,6 +109,30 @@ public class BelgeBasvuruDetay {
 	}
 	public void setMahalle(String mahalle) {
 		this.mahalle = mahalle;
+	}
+	public String getSokakAdi() {
+		return sokakAdi;
+	}
+	public void setSokakAdi(String sokakAdi) {
+		this.sokakAdi = sokakAdi;
+	}
+	public String getSiteAdi() {
+		return siteAdi;
+	}
+	public void setSiteAdi(String siteAdi) {
+		this.siteAdi = siteAdi;
+	}
+	public String getKapiNo() {
+		return kapiNo;
+	}
+	public void setKapiNo(String kapiNo) {
+		this.kapiNo = kapiNo;
+	}
+	public String getDaireNo() {
+		return daireNo;
+	}
+	public void setDaireNo(String daireNo) {
+		this.daireNo = daireNo;
 	}
 	public long getTelefonNumarasi() {
 		return telefonNumarasi;
@@ -226,6 +255,12 @@ public class BelgeBasvuruDetay {
 	}
 	public void setSoyadi(String soyadi) {
 		this.soyadi = soyadi;
+	}
+	public String getKonuTuru() {
+		return konuTuru;
+	}
+	public void setKonuTuru(String konuTuru) {
+		this.konuTuru = konuTuru;
 	}
 	public String getKonusu() {
 		return konusu;

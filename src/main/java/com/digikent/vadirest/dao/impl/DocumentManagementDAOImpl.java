@@ -476,10 +476,10 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 
 	public List<Rol> getDocRollList(long persid, long mastid) {
 		String sql="SELECT A.ID,B.MSM2ORGANIZASYON_ID,A.ADI||' '||A.SOYADI||' ('|| (SELECT TANIM FROM MSM2ORGANIZASYON WHERE ID = B.MSM2ORGANIZASYON_ID) ||')' as ROLNAME "
-				+"FROM IHR1PERSONEL A,IHR1PERSONELORGANIZASYON B WHERE A.ID = B.IHR1PERSONEL_ID AND A.ID ="+ persid 
-				+" union all SELECT A.ID,A.MSM2ORGANIZASYON_ID,A.ADI||' '||A.SOYADI||' ('|| (SELECT TANIM FROM MSM2ORGANIZASYON WHERE ID = A.MSM2ORGANIZASYON_ID) ||')' "
-				+"FROM IHR1PERSONEL A WHERE A.MSM2ORGANIZASYON_ID IN (SELECT MSM2ORGANIZASYON_ID FROM MSM2ORGANIZASYON_YETKILI WHERE MSM2ORGANIZASYON_MASTER ="+ mastid+")";
-		
+      +"FROM IHR1PERSONEL A,IHR1PERSONELORGANIZASYON B WHERE A.ID = B.IHR1PERSONEL_ID AND A.ID ="+ persid
+      +" UNION all SELECT A.ID,A.MSM2ORGANIZASYON_ID,A.ADI||' '||A.SOYADI||' ('|| (SELECT TANIM FROM MSM2ORGANIZASYON WHERE ID = A.MSM2ORGANIZASYON_ID) ||')' "
+      +"FROM IHR1PERSONEL A WHERE A.MSM2ORGANIZASYON_ID IN (SELECT MSM2ORGANIZASYON_ID FROM MSM2ORGANIZASYON_YETKILI WHERE MSM2ORGANIZASYON_MASTER ="+ mastid+")";
+
 		List<Object> list = new ArrayList();
 		List<Rol> rolList = new ArrayList();
 		
@@ -565,7 +565,10 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public BelgeBasvuruDetay getApplyDocDetail(long docId) {
-		String sql ="select * from ddm1isakisi where ID=" + docId;
+		String sql ="SELECT HDM1ISAKISITURU.TANIM, DDM1ISAKISI.ADI || ' ' || DDM1ISAKISI.SOYADI as ADISOYADI, "
+				  + "DDM1ISAKISI.* FROM HDM1ISAKISITURU JOIN DDM1ISAKISI ON HDM1ISAKISITURU.ID = DDM1ISAKISI.HDM1ISAKISITURU_ID "
+		          + "WHERE DDM1ISAKISI.ID=" + docId;
+
 		List<Object> list = new ArrayList();
 
 		SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
@@ -587,8 +590,9 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 
 			BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
 			String merciKurum = (String) map.get("MERCIKURUM");
-			String adi = (String) map.get("ADI");
+			String adi = (String) map.get("ADISOYADI");
 			String soyadi = (String) map.get("SOYADI");
+			String konuTuru = (String) map.get("TANIM");
 			String konusu = (String) map.get("KONUSU");
 			String sdpKodu = (String) map.get("SDPKODU");
 			String ekBilgi = (String) map.get("EKBILGI");
@@ -618,7 +622,11 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			String geriBildirimYapildi =(String) map.get("GERIBILDIRIMYAPILDI");
 			
 			String ilce = (String) map.get("RRE1ILCE_ADI");
-			String mahalle = (String) map.get("RRE1ILCE_ADI");
+			String mahalle = (String) map.get("DRE1MAHALLE_ADI");
+			String sokakAdi = (String) map.get("SRE1SOKAK_ADI");
+			String siteAdi = (String) map.get("RRE1SITE_ADI");
+			String kapiNo = (String) map.get("KAPINO");
+			String daireNo = (String) map.get("DAIRENO");
 			
 			String babaAdi = (String) map.get("BABAADI");
 			BigDecimal tcKimlikNo =(BigDecimal) map.get("TCKIMLIKNO");
@@ -654,6 +662,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				belgeBasvuruDetay.setAdi(adi);
 			if(soyadi != null)
 				belgeBasvuruDetay.setSoyadi(soyadi);
+			if(konuTuru != null)
+				belgeBasvuruDetay.setKonuTuru(konuTuru);
 			if(konusu != null)
 				belgeBasvuruDetay.setKonusu(konusu);
 			if(sdpKodu != null)
@@ -708,6 +718,14 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				belgeBasvuruDetay.setIlce(ilce);
 			if(mahalle != null)
 				belgeBasvuruDetay.setMahalle(mahalle);
+			if(sokakAdi != null)
+				belgeBasvuruDetay.setSokakAdi(sokakAdi);
+			if(siteAdi != null)
+				belgeBasvuruDetay.setSiteAdi(siteAdi);
+			if(kapiNo != null)
+				belgeBasvuruDetay.setKapiNo(kapiNo);
+			if(daireNo != null)
+				belgeBasvuruDetay.setDaireNo(daireNo);
 			if(babaAdi != null)
 				belgeBasvuruDetay.setBabaAdi(babaAdi);
 			if(tcKimlikNo != null)
