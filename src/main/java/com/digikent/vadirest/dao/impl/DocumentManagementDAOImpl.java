@@ -89,7 +89,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				+"FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID) BASVURUDURUMU_ADI, SUBSTR (TASKCOMMENT, 1, 20) AS COZUM, ebysiletimnedeni, "
 				+"(SELECT BEKLENENBITISTARIHI FROM EBYSBELGE WHERE ID = A.EBYSBELGE_ID AND A.EBYSBELGE_ID > 0) BEKLENENBITISTARIHI,(SELECT COMPLETEDDATETIME "
 				+"FROM ABPMWORKFLOW WHERE ID = A.ABPMWORKFLOW_ID) COMPLETEDDATETIME, NVL (READFLAG, 'H') READFLAG, TOPLUIMZALAMAYAPILACAK, (SELECT (SELECT B.TANIM "
-				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK    FROM ABPMWORKITEM A ";
+				+"FROM BSM2SERVIS B WHERE B.ID = E.BSM2SERVIS_MUDURLUK) FROM EBYSBELGE E WHERE E.ID = EBYSBELGE_ID) URETENMUDURLUK, A.ABPMWORKFLOW_ID    FROM ABPMWORKITEM A ";
 
 		if(type.equalsIgnoreCase("ONAYBEKLEYEN"))
 			sql += "WHERE A.id > 0 AND A.ACTION = 'PROGRESS' AND A.ABPMTASK_ID IN (SELECT ID FROM ABPMTASK WHERE EIMZAREQUIRED = 'EVET')";
@@ -129,6 +129,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			String message = (String) map.get("MESSAGE");
 			BigDecimal docId = (BigDecimal) map.get("DOCID");
 			BigDecimal paketId = (BigDecimal)map.get("PAKETID");
+			BigDecimal workFlowId = (BigDecimal)map.get("ABPMWORKFLOW_ID");
 
 			if(id != null)
 				ebys.setId(id.longValue());
@@ -146,6 +147,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				ebys.setDocId(docId.longValue());
 			if(paketId != null)
 				ebys.setPaketId(paketId.longValue());
+			if(workFlowId != null)
+				ebys.setWorkFlowId(workFlowId.longValue());
 
 			ebysList.add(ebys);
 		}
@@ -1445,6 +1448,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<DocumentRejectDTO> request = new HttpEntity<>(documentRejectDTO, headers);
 		ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
+		LOG.debug("belge reddi başarıyla gerçekleşti. response Code = " + response.getStatusCode().toString());
 		return true;
 	}
 }

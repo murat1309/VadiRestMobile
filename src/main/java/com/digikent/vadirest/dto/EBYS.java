@@ -12,26 +12,23 @@ public class EBYS {
 	private long docId;
 	private String creationDate;
 	private long paketId;
+	private long workFlowId;
 
 	public long getPaketId() {
 		return paketId;
 	}
-
 	public void setPaketId(long paketId) {
 		this.paketId = paketId;
 	}
-
 	public long getId() {
 		return id;
 	}
-
 	public void setId(long id) {
 		this.id = id;
 	}
 	public long getEbysDocumentId() {
 		return ebysDocumentId;
 	}
-
 	public void setEbysDocumentId(long ebysDocumentId) {
 		this.ebysDocumentId = ebysDocumentId;
 	}
@@ -64,6 +61,12 @@ public class EBYS {
 	}
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
+	}
+	public long getWorkFlowId() {
+		return workFlowId;
+	}
+	public void setWorkFlowId(long workFlowId) {
+		this.workFlowId = workFlowId;
 	}
 	
 }
