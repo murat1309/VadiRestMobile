@@ -27,11 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Created by Kadir on 17/07/17.
@@ -60,6 +63,23 @@ public class DemirbasResource {
         demirbasResponseDTO.setDemirbasHareketDTOList(demirbasHareketByDemirbasDTOList);
         return new ResponseEntity<DemirbasResponseDTO>(demirbasResponseDTO, OK);
     }
+
+//    @RequestMapping(value = "/sanaldepo/{barcodeId}")
+//    @Consumes(APPLICATION_JSON_VALUE)
+//    @Produces(APPLICATION_JSON_VALUE)
+//    @Transactional
+//    public DemirbasResponseDTO getSanalDepoDemirbasInfoAndUrunHareket(@PathVariable("barcodeId") Long barcodeId) {
+//
+//        DemirbasResponseDTO demirbasResponseDTO = new DemirbasResponseDTO();
+//
+//        LOG.debug(" /sanaldepo/{barcodeId} Gelen barcodeId : " + barcodeId);
+//
+//
+//
+//        return demirbasResponseDTO;
+//    }
+
+
     
 
 }
