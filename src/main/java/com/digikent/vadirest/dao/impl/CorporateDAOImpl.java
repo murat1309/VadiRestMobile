@@ -127,10 +127,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 	}
 	
 	public List<PR1Haber> getCurrent(){
-		String sql = "SELECT ID,BASLIK,TARIH,IZAHAT,RESIM,FILENAME,FILETYPE,KURUMSALPORTALGOSTER,UPDUSER,UPDDATE,DELETEFLAG,CRUSER,CRDATE,UPDSEQ,TURU,SUBSTR(BASLIK,1,23) KISA_BASLIK,SUBSTR(IZAHAT,1,220)||'...' KISA_IZAHAT,KIOSKGOSTER,KURUMICIPORTALGOSTER,MENUDEGOSTER FROM BPR1HABER"
-				+ " WHERE 1=1 AND KURUMSALPORTALGOSTER='E' AND TURU = 'H' "
-				+ " AND TO_DATE(  NVL(  SONYAYINLANMATARIHI,SYSDATE) ,'dd/MM/RRRR')   >=TO_DATE(SYSDATE,'dd/MM/RRRR') "
-				+ " ORDER BY SIRANUMARASI ASC,TARIH DESC";
+		String sql = "SELECT  B.ID, B.BASLIK, B.TARIH, B.IZAHAT, B.RESIM, B.FILENAME, B.FILETYPE, B.KURUMSALPORTALGOSTER, B.UPDUSER, B.UPDDATE, B.DELETEFLAG, B.CRUSER, B.CRDATE, B.UPDSEQ, B.TURU, SUBSTR(B.BASLIK,1,23) KISA_BASLIK, SUBSTR(B.IZAHAT,1,220)||'...' KISA_IZAHAT, B.KIOSKGOSTER, B.KURUMICIPORTALGOSTER, B.MENUDEGOSTER, (SELECT ICERIK FROM CPR1RESIM WHERE BPR1HABER_ID=B.ID AND ROWNUM=1) AS ICERIK FROM BPR1HABER B WHERE 1=1 AND B.KURUMSALPORTALGOSTER='E' AND B.TURU = 'H' AND TO_DATE(  NVL(  B.SONYAYINLANMATARIHI,SYSDATE) ,'DD/MM/RRRR')   >=TO_DATE(SYSDATE,'DD/MM/RRRR') ORDER BY B.SIRANUMARASI ASC,B.TARIH DESC";
 
 		List list = new ArrayList<Object>();
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
@@ -141,6 +138,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 
 		for (Object o : list) {
 			Map map = (Map) o;
+			int imageLength;
 			PR1Haber haber = new PR1Haber();
 
 			BigDecimal id = (BigDecimal) map.get("ID");
@@ -166,6 +164,7 @@ public class CorporateDAOImpl implements CorporateDAO {
 			String kisaBaslik = (String) map.get("KISA_BASLIK");
 			String kisaIzahat = clob2Str((Clob) map.get("KISA_IZAHAT"));
 			// byte[] denemeicerik = (byte[]) map.get("DENEMEICERIK");
+			Blob denemeicerik = (Blob) map.get("ICERIK");
 
 			if(id != null)
 				haber.setID(id.longValue());
@@ -201,6 +200,16 @@ public class CorporateDAOImpl implements CorporateDAO {
 				haber.setKisaBaslik(kisaBaslik);
 			if(kisaIzahat != null)
 				haber.setKisaIzahat(escapeHtml(kisaIzahat, "basic"));
+			try {
+				if (denemeicerik!=null){
+					imageLength = (int) denemeicerik.length();
+					haber.setDenemeicerik(denemeicerik.getBytes(1, imageLength));
+					denemeicerik.free();
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
 			haber.setIzahat_nohtml(escapeHtml(haber.getIzahat(), null));
 

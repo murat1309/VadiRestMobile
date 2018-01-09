@@ -14,12 +14,18 @@ private static final long serialVersionUID = 752402762702860418L;
     private String kisaIzahat;
     private char[] resim;
     private String kisaBaslik;
-    
-    
-	
+    private byte[] denemeicerik;
 
     public String getKisaIzahat() {
 		return kisaIzahat;
+	}
+
+	public byte[] getDenemeicerik() {
+		return denemeicerik;
+	}
+
+	public void setDenemeicerik(byte[] denemeicerik) {
+		this.denemeicerik = denemeicerik;
 	}
 
 	public void setKisaIzahat(String kisaIzahat) {
