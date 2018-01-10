@@ -43,7 +43,7 @@ public class SurecYonetimiRepository {
         try {
             String schemaName = env.getProperty("bpmSchema");
 
-            String sql = "SELECT TO_CHAR(A.SUBJECT) as SUBJECT, TO_CHAR(A.CLOSE_DATETIME, 'DD-MM-YYYY hh24:mi:ss') as date2, TO_CHAR(B.FULL_NAME) as FULL_NAME " +
+            String sql = "SELECT TO_CHAR(A.SUBJECT) as SUBJECT, TO_CHAR(A.CLOSE_DATETIME, 'YYYY-MM-DD hh24:mi:ss') as date2, TO_CHAR(B.FULL_NAME) as FULL_NAME " +
                          " FROM " + schemaName + ".LSW_TASK A, " + schemaName + ".LSW_USR_XREF B, " +  schemaName + ".LSW_BPD_INSTANCE C " +
                          " WHERE A.USER_ID = B.USER_ID " +
                          " AND A.USER_ID != 9 " +
@@ -52,7 +52,7 @@ public class SurecYonetimiRepository {
                          " AND C.BPD_INSTANCE_ID = '" + surecSorguRequestDTO.getSorguNo() + "' " +
                          " union " +
                          " SELECT TO_CHAR(A.SUBJECT) as SUBJECT, " +
-                         " TO_CHAR(A.CLOSE_DATETIME, 'DD-MM-YYYY hh24:mi:ss') as date2, " +
+                         " TO_CHAR(A.CLOSE_DATETIME, 'YYYY-MM-DD hh24:mi:ss') as date2, " +
                          " TO_CHAR(E.DISPLAY_NAME) as DISPLAY_NAME " +
                          " FROM " + schemaName + ".LSW_TASK A, " + schemaName + ".LSW_BPD_INSTANCE C, " + schemaName + ".LSW_USR_GRP_XREF E " +
                          " WHERE " +

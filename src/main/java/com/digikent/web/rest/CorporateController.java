@@ -74,7 +74,9 @@ public class CorporateController {
 				announcement.setTarih(dateFormat.format(retval.get(i).getTarih()));
 			if(retval.get(i).getSonyayinlanmatarihi() != null)				
 				announcement.setSonTarih(dateFormat.format(retval.get(i).getTarih()));
+			announcement.setDenemeicerik(retval.get(i).getDenemeicerik());
 			announcementList.add(announcement);
+
 		}
 		return announcementList;
 	}
