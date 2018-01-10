@@ -24,4 +24,13 @@ public class SurecYonetimiService {
 
         return surecSorguResponseDTO;
     }
+
+    public SurecSorguResponseDTO getSurecInfoBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
+
+        SurecSorguResponseDTO surecSorguResponseDTO;
+
+        surecSorguResponseDTO = surecYonetimiRepository.getSurecInfoBySorguNo(surecSorguRequestDTO);
+
+        return surecSorguResponseDTO;
+    }
 }

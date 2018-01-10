@@ -1,6 +1,7 @@
 package com.digikent.surecyonetimi.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
+import com.digikent.surecyonetimi.dto.SurecInfoDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguRequestDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguResponseDTO;
@@ -101,6 +102,50 @@ public class SurecYonetimiRepository {
             errorDTO.setError(true);
 
             surecSorguResponseDTO.setSurecSorguDTOList(null);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+
+        }
+
+        return surecSorguResponseDTO;
+    }
+
+    @Nationalized
+    public SurecSorguResponseDTO getSurecInfoBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
+
+        SurecSorguResponseDTO surecSorguResponseDTO = new SurecSorguResponseDTO();
+        SurecInfoDTO surecInfoDTO = new SurecInfoDTO();
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+            String schemaName = env.getProperty("bpmSchema");
+
+            String sql = "SELECT TO_CHAR(INSTANCE_NAME) AS IZAHAT FROM " + schemaName + ".LSW_BPD_INSTANCE WHERE BPD_INSTANCE_ıd="+ surecSorguRequestDTO.getSorguNo();
+
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            for(Object o : list) {
+                Map map = (Map) o;
+
+                String surecInfo = (String) map.get("IZAHAT");
+
+                if(surecInfo != null)
+                    surecInfoDTO.setSurecInfo(surecInfo);
+
+
+            }
+            errorDTO.setErrorMessage(null);
+            errorDTO.setError(false);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+            surecSorguResponseDTO.setSurecInfoDTO(surecInfoDTO);
+
+        } catch (Exception e) {
+
+            errorDTO.setErrorMessage("Bir hata meydana geldi.");
+            errorDTO.setError(true);
             surecSorguResponseDTO.setErrorDTO(errorDTO);
 
         }
