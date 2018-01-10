@@ -60,7 +60,7 @@ public class SurecYonetimiRepository {
                          " AND A.BPD_INSTANCE_ID = C.BPD_INSTANCE_ID " +
                          " AND E.GROUP_ID>0 " +
                          " AND C.BPD_INSTANCE_ID = '" + surecSorguRequestDTO.getSorguNo() + "' " +
-                         " order by A.CLOSE_DATETIME asc ";
+                         " order by date2 asc ";
 
 
 
