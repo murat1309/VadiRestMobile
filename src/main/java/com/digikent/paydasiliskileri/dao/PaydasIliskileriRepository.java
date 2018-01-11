@@ -148,7 +148,6 @@ public class PaydasIliskileriRepository {
 
             errorDTO.setError(false);
             errorDTO.setErrorMessage(null);
-            paydasSorguResponseDTO.setPaydasBorcSorguResponse(paydasBorcSorguList);
 
         } catch (Exception e) {
 
@@ -156,6 +155,7 @@ public class PaydasIliskileriRepository {
             errorDTO.setErrorMessage("Bir Hatayla Karşılaşıldı");
         }
 
+        paydasSorguResponseDTO.setPaydasBorcSorguResponse(paydasBorcSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
 
         return paydasSorguResponseDTO;
