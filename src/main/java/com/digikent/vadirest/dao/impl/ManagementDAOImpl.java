@@ -395,6 +395,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
 					   +" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
+					   +" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
 					   +" order by a.ADISOYADI";
 		}
 		else{
@@ -402,6 +403,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
 					   +" And a.CIKISTARIHI IS NULL and a.TURU = '"+turu+"'"
+					   +" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
 					   +" order by a.ADISOYADI";
 		}
 		
@@ -459,6 +461,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 				+"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 				+" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID and a.BSM2SERVIS_KADRO = "+servisKadroId
 				+" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
+				+" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
 				+" order by a.ADISOYADI";
 
 		List<Object> list = new ArrayList<Object>();
