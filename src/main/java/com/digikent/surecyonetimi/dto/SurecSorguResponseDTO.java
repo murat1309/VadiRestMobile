@@ -12,6 +12,7 @@ public class SurecSorguResponseDTO {
     private List<SurecSorguDTO> surecSorguDTOList;
     private SurecInfoDTO surecInfoDTO;
     private ErrorDTO errorDTO;
+    private SurecCommentDTO surecCommentDTO;
 
     public SurecSorguResponseDTO() {
     }
@@ -30,6 +31,14 @@ public class SurecSorguResponseDTO {
 
     public void setSurecInfoDTO(SurecInfoDTO surecInfoDTO) {
         this.surecInfoDTO = surecInfoDTO;
+    }
+
+    public SurecCommentDTO getSurecCommentDTO() {
+        return surecCommentDTO;
+    }
+
+    public void setSurecCommentDTO(SurecCommentDTO surecCommentDTO) {
+        this.surecCommentDTO = surecCommentDTO;
     }
 
     public ErrorDTO getErrorDTO() {
