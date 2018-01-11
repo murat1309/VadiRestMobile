@@ -119,7 +119,7 @@ public class SY1TespitDetayRepository {
             BigDecimal soruid = (BigDecimal) map.get("SORUID");
             String soru = (String) map.get("SORU");
             String alanturu = (String)map.get("ALANTURU");
-            String cbrbdegeri = (String)map.get("CBRBDEGERI");
+            BigDecimal cbrbdegeri = (BigDecimal)map.get("CBRBDEGERI");
             String stnmdegeri = (String) map.get("STNMDEGERI");
             BigDecimal countcevap=(BigDecimal)map.get("COUNTCEVAP");
 
@@ -134,7 +134,7 @@ public class SY1TespitDetayRepository {
             if(alanturu != null)
                 sy1TespitDetayDTO.setAlanturu(alanturu);
             if(cbrbdegeri != null)
-                sy1TespitDetayDTO.setCbrbdegeri(cbrbdegeri);
+                sy1TespitDetayDTO.setCbrbdegeri(cbrbdegeri.toString());
             if(stnmdegeri != null)
                 sy1TespitDetayDTO.setStnmdegeri(stnmdegeri);
             if(countcevap != null)

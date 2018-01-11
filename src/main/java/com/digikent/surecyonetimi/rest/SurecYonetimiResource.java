@@ -1,6 +1,7 @@
 package com.digikent.surecyonetimi.rest;
 
 import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
+import com.digikent.surecyonetimi.dto.SurecCommentDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguRequestDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguResponseDTO;
 import com.digikent.surecyonetimi.service.SurecYonetimiService;
@@ -8,6 +9,7 @@ import org.mortbay.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/surecyonetimi")
 public class SurecYonetimiResource {
 
@@ -49,10 +51,33 @@ public class SurecYonetimiResource {
 
         surecSorguResponseDTO = surecYonetimiService.getSurecSorguListesiBySorguNo(surecSorguRequestDTO);
 
-
         return surecSorguResponseDTO;
     }
 
+    @RequestMapping(value = "/basvurubilgi", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public SurecSorguResponseDTO getSurecInfoBySorguNo(@RequestBody SurecSorguRequestDTO surecSorguRequestDTO) {
+
+        SurecSorguResponseDTO surecSorguResponseDTO;
+
+        LOG.debug("Gelen Surec Sorgu No: " + surecSorguRequestDTO.getSorguNo());
+
+        surecSorguResponseDTO = surecYonetimiService.getSurecInfoBySorguNo(surecSorguRequestDTO);
+
+        return surecSorguResponseDTO;
+    }
+    @RequestMapping(value = "/kullaniciyorum", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public SurecSorguResponseDTO getSurecCommentBySorguNo(@RequestBody SurecSorguRequestDTO surecSorguRequestDTO){
+
+        SurecSorguResponseDTO surecSorguResponseDTO;
+        LOG.debug("Gelen Surec Sorgu No: " + surecSorguRequestDTO.getSorguNo());
+        surecSorguResponseDTO = surecYonetimiService.getSurecCommentBySorguNo(surecSorguRequestDTO);
+
+        return surecSorguResponseDTO;
+    }
 
 
 }
