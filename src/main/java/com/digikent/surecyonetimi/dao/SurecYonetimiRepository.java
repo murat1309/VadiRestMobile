@@ -1,10 +1,7 @@
 package com.digikent.surecyonetimi.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import com.digikent.surecyonetimi.dto.SurecInfoDTO;
-import com.digikent.surecyonetimi.dto.SurecSorguDTO;
-import com.digikent.surecyonetimi.dto.SurecSorguRequestDTO;
-import com.digikent.surecyonetimi.dto.SurecSorguResponseDTO;
+import com.digikent.surecyonetimi.dto.*;
 import oracle.sql.TIMESTAMP;
 import org.hibernate.annotations.Nationalized;
 import org.slf4j.Logger;
@@ -16,6 +13,8 @@ import org.springframework.core.env.Environment;
 import tr.com.ega.em;
 
 import javax.inject.Inject;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.*;
 
@@ -152,5 +151,79 @@ public class SurecYonetimiRepository {
 
         return surecSorguResponseDTO;
     }
+    public SurecSorguResponseDTO getSurecCommentBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
+
+        SurecSorguResponseDTO surecSorguResponseDTO = new SurecSorguResponseDTO();
+        SurecCommentDTO surecCommentDTO = new SurecCommentDTO();
+        List<SurecCommentDTO> surecCommentDTOList = new ArrayList<>();
+
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+            String tableName = new String();
+            String sql = "SELECT TABLENAME FROM vbpmdigikent where processinstanceid =" + surecSorguRequestDTO.getSorguNo();
+
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+            for(Object o : list) {
+                Map map = (Map) o;
+
+                tableName = (String) map.get("TABLENAME");
+
+                if(tableName != null)
+                   break;
+            }
+            if(tableName.equalsIgnoreCase("ELI1RUHSATDOSYA")){
+                sql = "select kullaniciaciklama from eli1ruhsatdosya where vbpmprocessinstance_id ='" + surecSorguRequestDTO.getSorguNo() + "'";
+            }else{
+                sql = "select kullaniciaciklama from vimrbasvuru where vbpmprocessinstance_id ='" + surecSorguRequestDTO.getSorguNo() + "'";
+            }
+
+            query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            for(Object o : list) {
+                Map map = (Map) o;
+
+                String kullaniciYorum = clob2Str((Clob) map.get("KULLANICIACIKLAMA"));
+
+                if(kullaniciYorum != null)
+                    surecCommentDTO.setKullaniciYorum(kullaniciYorum);
+            }
+
+            /*Object o = list.get(0);
+            Map map = (Map) o;
+            String fsa = new String();
+            fsa = clob2Str((Clob) map.get("KULLANICIACIKLAMA"));*/
+
+            errorDTO.setErrorMessage(null);
+            errorDTO.setError(false);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+            surecSorguResponseDTO.setSurecCommentDTO(surecCommentDTO);
+        } catch (Exception e) {
+            errorDTO.setErrorMessage("Bir hata meydana geldi.");
+            errorDTO.setError(true);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+        }
+        return surecSorguResponseDTO;
+    }
+    private String clob2Str(Clob clob) {
+        try {
+            if (clob == null)
+                return "";
+            else if (((int) clob.length()) > 0) {
+                return clob.getSubString(1, (int) clob.length());
+            }
+        } catch (SQLException e) {
+        }
+        return "";
+    }
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.digikent.surecyonetimi.rest;
 
 import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
+import com.digikent.surecyonetimi.dto.SurecCommentDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguRequestDTO;
 import com.digikent.surecyonetimi.dto.SurecSorguResponseDTO;
 import com.digikent.surecyonetimi.service.SurecYonetimiService;
@@ -65,7 +66,17 @@ public class SurecYonetimiResource {
         surecSorguResponseDTO = surecYonetimiService.getSurecInfoBySorguNo(surecSorguRequestDTO);
 
         return surecSorguResponseDTO;
+    }
+    @RequestMapping(value = "/kullaniciyorum", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public SurecSorguResponseDTO getSurecCommentBySorguNo(@RequestBody SurecSorguRequestDTO surecSorguRequestDTO){
 
+        SurecSorguResponseDTO surecSorguResponseDTO;
+        LOG.debug("Gelen Surec Sorgu No: " + surecSorguRequestDTO.getSorguNo());
+        surecSorguResponseDTO = surecYonetimiService.getSurecCommentBySorguNo(surecSorguRequestDTO);
+
+        return surecSorguResponseDTO;
     }
 
 
