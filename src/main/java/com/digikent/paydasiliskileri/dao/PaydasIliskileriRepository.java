@@ -106,7 +106,7 @@ public class PaydasIliskileriRepository {
             errorDTO.setErrorMessage("Bir hata meydana geldi.");
             errorDTO.setError(true);
             paydasSorguResponseDTO.setErrorDTO(errorDTO);
-
+            //paydasSorguResponseDTO.getPaydasSorguResponse().add(paydasSorguDTO);
         }
 
         return paydasSorguResponseDTO;
@@ -154,7 +154,6 @@ public class PaydasIliskileriRepository {
             errorDTO.setError(true);
             errorDTO.setErrorMessage("Bir Hatayla Karşılaşıldı");
         }
-
 
         paydasSorguResponseDTO.setPaydasBorcSorguResponse(paydasBorcSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
@@ -226,7 +225,6 @@ public class PaydasIliskileriRepository {
 
                 errorDTO.setError(false);
                 errorDTO.setErrorMessage(null);
-
             }
 
         } catch(Exception e) {
@@ -237,7 +235,6 @@ public class PaydasIliskileriRepository {
 
         paydasSorguResponseDTO.setPaydasIlanSorguResponse(paydasIlanSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
-
         return paydasSorguResponseDTO;
     }
 }

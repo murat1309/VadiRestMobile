@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
 @PropertySources({ @PropertySource(value = { "file:${DIGIKENT_PATH}/services/baseUrl.properties" }) })
 public class DocumentManagementController {
