@@ -52,9 +52,6 @@ public class MesajlasmaRepository {
             LOG.debug("Message saved. Time = " + veilMesaj.getGonderimZamani());
             LOG.debug("procedure will Call ");
             callProcedure(session, veilMesaj);
-            if (messageDTO.getGonderimTuru().equalsIgnoreCase("GRUBAILETIM")) {
-                doReadMessagesGroupSelf(messageDTO.getIhr1PersonelYazanId(), messageDTO.getGroupId());
-            }
         }catch(Exception e){
             LOG.error("while save message to database, An error occured. ");
             if(tx != null){
@@ -148,8 +145,9 @@ public class MesajlasmaRepository {
             tx.commit();
 
             LOG.debug("Group created id of group = " + group.getID() + " on Time = " + date);
-
+            groupRequest.getGroupInformationDTO().setGroupId(group.getID());
             sendDefaultGroupMessage(groupRequest, group);
+            sendDefaultGroupMessageWhenUserAdded(groupRequest);
         }catch(Exception e){
             LOG.error("while create group to database, An error occured. ");
             if(tx != null){
@@ -488,24 +486,28 @@ public class MesajlasmaRepository {
     }
 
     //kullanın gruba mesaj attıktan sonra kendi mesajını kendisine okundu yapmak için
-    public Boolean doReadMessagesGroupSelf(Long personelId, Long groupId) {
+    public Boolean doReadMessagesGroupSelf(Long personelId, Long groupId, Long yazanPersonelId) {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String dateString = dateFormat.format(date);
 
+        Transaction tx = null;
+
         String sql = "UPDATE VEILMESAJLINE SET OKUNMAZAMANI= TO_DATE(:date,'YYYY-MM-DD HH24:mi:ss') " +
                 " WHERE VEILMESAJLINE.OKUNMAZAMANI is NULL AND VEILMESAJLINE.IHR1PERSONEL_ILETILEN=" + personelId +" AND VEILMESAJ_ID IN  " +
                 " (SELECT ID FROM VEILMESAJ A " +
-                " WHERE (A.TEILMESAJILETIMGRUBU_ILETILEN =  "+ groupId +" ) AND A.IHR1PERSONEL_YAZAN = " + personelId + ")";
+                " WHERE (A.TEILMESAJILETIMGRUBU_ILETILEN =  "+ groupId +" ) AND A.IHR1PERSONEL_YAZAN = " + yazanPersonelId + ")";
 
         List<Object> list = new ArrayList<Object>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        tx = session.beginTransaction();
         SQLQuery query = session.createSQLQuery(sql);
         query.setParameter("date", dateString);
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 
         query.executeUpdate();
+        tx.commit();
 
         return true;
     }
@@ -560,23 +562,31 @@ public class MesajlasmaRepository {
                 teilMesajIletimGrubu.getID()
                 );
         savePersonalMessage(messageDTO);
+        readMessageByCriteria(messageDTO, groupRequest.getGroupInformationDTO().getOlusturanPersonel());
     }
 
 
     public void sendDefaultGroupMessageWhenUserAdded(GroupRequest groupRequest) {
+        MessageDTO messageDTO = null;
         for(MessageUserDTO messageUserDTO : groupRequest.getMessageUserDTOList()) {
-            MessageDTO messageDTO = new MessageDTO(
-                    Constants.MESSAGE_SYSTEM_USER_ID,
-                    "GRUBAILETIM",
-                    null,
-                    "" + groupRequest.getGroupInformationDTO().getOlusturanPersonelName() + ", " + messageUserDTO.getFirstName()+ " " + messageUserDTO.getLastName() + " kişisini ekledi",
-                    groupRequest.getGroupInformationDTO().getGroupId()
-            );
-            savePersonalMessage(messageDTO);
+            if (groupRequest.getGroupInformationDTO().getOlusturanPersonel() == null || messageUserDTO.getIletilenPersonelId().longValue() != groupRequest.getGroupInformationDTO().getOlusturanPersonel().longValue()) {
+                //gruba sonradan ekleme yapılıyor ve kendisi değil
+                messageDTO = new MessageDTO(
+                        Constants.MESSAGE_SYSTEM_USER_ID,
+                        "GRUBAILETIM",
+                        null,
+                        "" + groupRequest.getGroupInformationDTO().getOlusturanPersonelName() + ", " + messageUserDTO.getFirstName()+ " " + messageUserDTO.getLastName() + " kişisini ekledi",
+                        groupRequest.getGroupInformationDTO().getGroupId()
+                );
+                savePersonalMessage(messageDTO);
+            }
         }
-
+        readMessageByCriteria(messageDTO,groupRequest.getGroupInformationDTO().getOlusturanPersonel());
     }
 
+    /*
+        Grup silindiği zaman default mesaj yayınlanır
+     */
     public void sendDefaultGroupDeleteMessage(GroupDeleteRequestDTO groupDeleteRequestDTO) {
 
         MessageDTO messageDTO = new MessageDTO(
@@ -587,8 +597,12 @@ public class MesajlasmaRepository {
                 groupDeleteRequestDTO.getGroupId()
         );
         savePersonalMessage(messageDTO);
+        readMessageByCriteria(messageDTO, groupDeleteRequestDTO.getOlusturanPersonelId());
     }
 
+    /*
+        Gruptan birisi ayrıldığı zaman sistem mesajı yayınlanır
+     */
     public void sendDefaultGroupLeaveMessage(GroupLeaveRequestDTO groupLeaveRequestDTO) {
 
         MessageDTO messageDTO = new MessageDTO(
@@ -599,6 +613,7 @@ public class MesajlasmaRepository {
                 groupLeaveRequestDTO.getGroupId()
         );
         savePersonalMessage(messageDTO);
+        readMessageByCriteria(messageDTO, groupLeaveRequestDTO.getUserId());
     }
 
     /*
@@ -614,6 +629,15 @@ public class MesajlasmaRepository {
                 groupLeaveRequestDTO.getGroupId()
         );
         savePersonalMessage(messageDTO);
+        readMessageByCriteria(messageDTO, groupLeaveRequestDTO.getGroupAdmin());
+    }
+
+    public void readMessageByCriteria(MessageDTO messageDTO, Long sessionUserId) {
+        if (messageDTO.getGonderimTuru().equalsIgnoreCase("GRUBAILETIM") && (messageDTO.getIhr1PersonelYazanId() != null && messageDTO.getIhr1PersonelYazanId().longValue() != Constants.MESSAGE_SYSTEM_USER_ID)) {
+            doReadMessagesGroupSelf(messageDTO.getIhr1PersonelYazanId(), messageDTO.getGroupId(), messageDTO.getIhr1PersonelYazanId());
+        } else if (messageDTO.getGonderimTuru().equalsIgnoreCase("GRUBAILETIM") && (messageDTO.getIhr1PersonelYazanId() != null && messageDTO.getIhr1PersonelYazanId().longValue() == Constants.MESSAGE_SYSTEM_USER_ID)) {
+            doReadMessagesGroupSelf(sessionUserId.longValue(), messageDTO.getGroupId(), messageDTO.getIhr1PersonelYazanId());
+        }
     }
 
 

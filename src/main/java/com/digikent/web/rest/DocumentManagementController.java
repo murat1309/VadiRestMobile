@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
 @PropertySources({ @PropertySource(value = { "file:${DIGIKENT_PATH}/services/baseUrl.properties" }) })
 public class DocumentManagementController {
@@ -281,6 +281,10 @@ public class DocumentManagementController {
 
 	@RequestMapping(value = "ebys/belge/red",method = RequestMethod.POST)
 	public ResponseEntity<Boolean> documentReject(@RequestBody DocumentRejectDTO documentRejectDTO){
+		LOG.debug("Belge red istegi geldi");
+		LOG.debug("documentId=" + documentRejectDTO.getEbysdocument_id());
+		LOG.debug("workFlowId=" + documentRejectDTO.getAbpmworkflow_id());
+		LOG.debug("iptal nedeni=" + documentRejectDTO.getIptalAciklamasi());
 		documentManagementService.rejectDocument(documentRejectDTO);
 		return new ResponseEntity<Boolean>(true, OK);
 	}

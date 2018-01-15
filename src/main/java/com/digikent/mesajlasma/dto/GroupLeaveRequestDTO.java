@@ -9,6 +9,7 @@ public class GroupLeaveRequestDTO {
     private Long groupId;
     private String personelName;
     private String discardedUserName;
+    private Long groupAdmin;
 
     public GroupLeaveRequestDTO() {
     }
@@ -43,5 +44,13 @@ public class GroupLeaveRequestDTO {
 
     public void setGroupId(Long groupId) {
         this.groupId = groupId;
+    }
+
+    public Long getGroupAdmin() {
+        return groupAdmin;
+    }
+
+    public void setGroupAdmin(Long groupAdmin) {
+        this.groupAdmin = groupAdmin;
     }
 }
