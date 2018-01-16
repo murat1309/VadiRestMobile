@@ -192,7 +192,7 @@ public class SurecYonetimiRepository {
 
                 String kullaniciYorum = clob2Str((Clob) map.get("KULLANICIACIKLAMA"));
 
-                if(kullaniciYorum != null)
+                if(kullaniciYorum != null && !kullaniciYorum.trim().equals(""))
                     surecCommentDTO.setKullaniciYorum(kullaniciYorum);
             }
 
