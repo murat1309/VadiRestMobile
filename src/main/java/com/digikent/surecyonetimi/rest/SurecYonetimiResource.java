@@ -78,6 +78,15 @@ public class SurecYonetimiResource {
 
         return surecSorguResponseDTO;
     }
+    @RequestMapping(value = "/basvurubelge", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public SurecSorguResponseDTO getSurecDocumentBySorguNo(@RequestBody SurecSorguRequestDTO surecSorguRequestDTO){
 
+        SurecSorguResponseDTO surecSorguResponseDTO;
+        LOG.debug("Gelen Surec Sorgu No: " + surecSorguRequestDTO.getSorguNo());
+        surecSorguResponseDTO = surecYonetimiService.getSurecDocumentBySorguNo(surecSorguRequestDTO);
 
+        return surecSorguResponseDTO;
+    }
 }

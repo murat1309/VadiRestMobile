@@ -42,4 +42,13 @@ public class SurecYonetimiService {
 
         return surecSorguResponseDTO;
     }
+
+    public SurecSorguResponseDTO getSurecDocumentBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
+
+        SurecSorguResponseDTO surecSorguResponseDTO;
+
+        surecSorguResponseDTO = surecYonetimiRepository.getSurecDocumentBySorguNo(surecSorguRequestDTO);
+
+        return surecSorguResponseDTO;
+    }
 }

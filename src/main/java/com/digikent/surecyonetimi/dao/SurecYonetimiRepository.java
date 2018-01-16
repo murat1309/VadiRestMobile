@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import tr.com.ega.em;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -195,11 +196,6 @@ public class SurecYonetimiRepository {
                     surecCommentDTO.setKullaniciYorum(kullaniciYorum);
             }
 
-            /*Object o = list.get(0);
-            Map map = (Map) o;
-            String fsa = new String();
-            fsa = clob2Str((Clob) map.get("KULLANICIACIKLAMA"));*/
-
             errorDTO.setErrorMessage(null);
             errorDTO.setError(false);
             surecSorguResponseDTO.setErrorDTO(errorDTO);
@@ -223,7 +219,73 @@ public class SurecYonetimiRepository {
         return "";
     }
 
+    public SurecSorguResponseDTO getSurecDocumentBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
 
+        SurecSorguResponseDTO surecSorguResponseDTO = new SurecSorguResponseDTO();
+        List<SurecDocumentDTO> surecDocumentDTOList = new ArrayList<>();
+        ErrorDTO errorDTO = new ErrorDTO();
 
+        try {
 
+            String tableName = new String();
+            String sql = "SELECT TABLENAME FROM vbpmdigikent where processinstanceid =" + surecSorguRequestDTO.getSorguNo();
+
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+            for(Object o : list) {
+                Map map = (Map) o;
+
+                tableName = (String) map.get("TABLENAME");
+
+                if(tableName != null)
+                    break;
+            }
+            if(tableName.equalsIgnoreCase("VIMRBASVURU")){
+                sql = "SELECT BT.TANIM AS BELGE_ADI, V.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM VIMRBASVURUBELGE V " +
+                        "JOIN TIMRBASVURUTURUBELGE BTB ON BTB.ID = V.TIMRBASVURUTURUBELGE_ID " +
+                        "JOIN TIMRBELGETURU BT ON BT.ID = BTB.TIMRBELGETURU_ID " +
+                        "WHERE V.VIMRBASVURU_ID = " +
+                        "(SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID ='" + surecSorguRequestDTO.getSorguNo() + "')";
+            }else{
+                sql = "SELECT C.BELGEADI AS BELGE_ADI, H.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM HLI1DOSYABELGELER H "
+                        + "JOIN CLI1BELGETURU C ON C.ID = H.CLI1BELGETURU_ID "
+                        + "WHERE ELI1RUHSATDOSYA_ID=(select ANAHTARALAN from vbpmdigikent where processinstanceid='" + surecSorguRequestDTO.getSorguNo() + "')";
+            }
+
+            query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            for(Object o : list) {
+                Map map = (Map) o;
+
+                String belgeAdi = (String) map.get("BELGE_ADI");
+                BigDecimal documentId = (BigDecimal) map.get("DOKUMAN_NUMARASI");
+
+                SurecDocumentDTO surecDocumentDTO = new SurecDocumentDTO();
+
+                if(belgeAdi != null)
+                    surecDocumentDTO.setBelgeAdi(belgeAdi);
+                if(documentId != null)
+                    surecDocumentDTO.setDocumentId(documentId.longValue());
+
+                surecDocumentDTOList.add(surecDocumentDTO);
+            }
+            errorDTO.setErrorMessage(null);
+            errorDTO.setError(false);
+
+            surecSorguResponseDTO.setSurecDocumentDTOList(surecDocumentDTOList);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+
+        }catch (Exception e){
+
+            errorDTO.setErrorMessage("Bir hata meydana geldi.");
+            errorDTO.setError(true);
+            surecSorguResponseDTO.setErrorDTO(errorDTO);
+        }
+        return surecSorguResponseDTO;
+    }
 }
