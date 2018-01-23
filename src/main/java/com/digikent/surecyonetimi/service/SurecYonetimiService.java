@@ -1,11 +1,18 @@
 package com.digikent.surecyonetimi.service;
 
 import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
-import com.digikent.surecyonetimi.dto.SurecSorguRequestDTO;
-import com.digikent.surecyonetimi.dto.SurecSorguResponseDTO;
+import com.digikent.surecyonetimi.dto.*;
+import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Medet on 12/28/2017.
@@ -51,4 +58,5 @@ public class SurecYonetimiService {
 
         return surecSorguResponseDTO;
     }
+
 }

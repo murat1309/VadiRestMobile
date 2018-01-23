@@ -2,6 +2,7 @@ package com.digikent.surecyonetimi.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.surecyonetimi.dto.*;
+import com.digikent.surecyonetimi.service.SurecYonetimiService;
 import oracle.sql.TIMESTAMP;
 import org.hibernate.annotations.Nationalized;
 import org.slf4j.Logger;
@@ -105,7 +106,6 @@ public class SurecYonetimiRepository {
             surecSorguResponseDTO.setErrorDTO(errorDTO);
 
         }
-
         return surecSorguResponseDTO;
     }
 
@@ -134,8 +134,6 @@ public class SurecYonetimiRepository {
 
                 if(surecInfo != null)
                     surecInfoDTO.setSurecInfo(surecInfo);
-
-
             }
             errorDTO.setErrorMessage(null);
             errorDTO.setError(false);
@@ -287,5 +285,112 @@ public class SurecYonetimiRepository {
             surecSorguResponseDTO.setErrorDTO(errorDTO);
         }
         return surecSorguResponseDTO;
+    }
+
+    public List<ImarBasvuruTuruDTO> getBasvuruTuruList() {
+
+        String sql = "SELECT ID, TANIM FROM TIMRBASVURUTURU WHERE ISACTIVE = 'E'";
+
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        List<ImarBasvuruTuruDTO> basvuruTuruDTOList = new ArrayList<>();
+        for (Object o: list) {
+            Map map = (Map)o;
+            BigDecimal id = (BigDecimal)map.get("ID");
+            String tanim = (String)map.get("TANIM");
+            ImarBasvuruTuruDTO imarBasvuruTuruDTO =  new ImarBasvuruTuruDTO();
+
+            if(id != null)
+                imarBasvuruTuruDTO.setId(id.longValue());
+
+            if(tanim != null)
+                imarBasvuruTuruDTO.setTanim(tanim);
+
+            basvuruTuruDTOList.add(imarBasvuruTuruDTO);
+        }
+        return basvuruTuruDTOList;
+    }
+    public String addConditionWordToSql(String sql){
+        String conditionWord;
+        if(sql.substring(sql.indexOf("MPI1PAYDAS.ID")+ 13, sql.length()).equalsIgnoreCase("")){
+            conditionWord = " WHERE ";
+        }else {
+            conditionWord = " AND "; }
+        return sql + conditionWord;
+    }
+    public List<ImarSurecDTO> getSurecList(ImarSurecRequestDTO imarSurecRequestDTO) {
+
+        List<ImarSurecDTO> imarSurecDTOList = new ArrayList<>();
+
+        String sql = "SELECT VBPMPROCESSINSTANCE_ID, (SELECT T.TANIM FROM TIMRBASVURUTURU T WHERE T.ID ="
+                + " TIMRBASVURUTURU_ID AND T.ISACTIVE = 'E') TANIM, PAFTANO, ADANO, PARSELNO,"
+                + " (SELECT I.ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = IHR1PERSONEL_RAPORTOR) RAPORTOR, "
+                + " MPI1PAYDAS_ID, (SELECT TANIM FROM TIMRBASVURUDURUMU WHERE TIMRBASVURUDURUMU.ID = TIMRBASVURUDURUMU_ID) BASVURUDURUMU, "
+                + " MPI1PAYDAS.ADI, MPI1PAYDAS.SOYADI, MPI1PAYDAS.TCKIMLIKNO FROM VIMRBASVURU "
+                + " JOIN MPI1PAYDAS ON VIMRBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID";
+
+        if(imarSurecRequestDTO.getPaftaNo() != null && !imarSurecRequestDTO.getPaftaNo().equalsIgnoreCase(""))
+            sql = addConditionWordToSql(sql) + "PAFTANO = '" + imarSurecRequestDTO.getPaftaNo() + "'";
+        if(imarSurecRequestDTO.getParselNo() != null && !imarSurecRequestDTO.getParselNo().equalsIgnoreCase(""))
+            sql = addConditionWordToSql(sql) + "PARSELNO = '" + imarSurecRequestDTO.getParselNo() + "'";
+        if(imarSurecRequestDTO.getAdaNo() != null && !imarSurecRequestDTO.getAdaNo().equalsIgnoreCase(""))
+            sql = addConditionWordToSql(sql) + "ADANO = '" + imarSurecRequestDTO.getAdaNo() + "'";
+        if(imarSurecRequestDTO.getPaydasNo() != null)
+            sql = addConditionWordToSql(sql) + "MPI1PAYDAS_ID = " + imarSurecRequestDTO.getPaydasNo();
+        if(imarSurecRequestDTO.getTcNo() != null)
+            sql = addConditionWordToSql(sql) + "TCKIMLIKNO = " + imarSurecRequestDTO.getTcNo();
+
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query =session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        for(Object o : list) {
+            Map map = (Map) o;
+            String adaNo = (String) map.get("ADANO");
+            String paftaNo = (String) map.get("PAFTANO");
+            String parselNo = (String) map.get("PARSELNO");
+            String surecNo = (String) map.get("VBPMPROCESSINSTANCE_ID");
+            String basvuruDurumu = (String) map.get("BASVURUDURUMU");
+            String paydasAdı = (String) map.get("ADI");
+            String paydasSoyadı = (String) map.get("SOYADI");
+            String basvuruTuru = (String) map.get("TANIM");
+            String raportor = (String) map.get("RAPORTOR");
+            BigDecimal tcNo = (BigDecimal) map.get("TCKIMLIKNO");
+            BigDecimal paydasNo = (BigDecimal) map.get("MPI1PAYDAS_ID");
+
+            ImarSurecDTO imarSurecDTO = new ImarSurecDTO();
+
+            if (adaNo != null)
+                imarSurecDTO.setAdaNo(adaNo);
+            if (paftaNo != null)
+                imarSurecDTO.setPaftaNo(paftaNo);
+            if (parselNo != null)
+                imarSurecDTO.setParselNo(parselNo);
+            if (surecNo != null)
+                imarSurecDTO.setSurecNo(surecNo);
+            if (basvuruDurumu != null)
+                imarSurecDTO.setBasvuruDurumu(basvuruDurumu);
+            if (paydasAdı != null)
+                imarSurecDTO.setPaydasAdı(paydasAdı);
+            if (paydasSoyadı != null)
+                imarSurecDTO.setPaydasSoyadı(paydasSoyadı);
+            if (basvuruTuru != null)
+                imarSurecDTO.setBasvuruTuru(basvuruTuru);
+            if(raportor != null)
+                imarSurecDTO.setRaportor(raportor);
+            if (tcNo != null)
+                imarSurecDTO.setTcNo(tcNo.longValue());
+            if (paydasNo != null)
+                imarSurecDTO.setPaydasNo(paydasNo.longValue());
+
+            imarSurecDTOList.add(imarSurecDTO);
+        }
+        return imarSurecDTOList;
     }
 }
