@@ -16,8 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
-import java.util.List;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -26,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("ybs/")
-public class PaydasIliskileriResource {
+public class  PaydasIliskileriResource {
 
     private final Logger LOG = LoggerFactory.getLogger(PaydasIliskileriResource.class);
 
@@ -56,15 +54,14 @@ public class PaydasIliskileriResource {
     @Consumes(APPLICATION_JSON_VALUE)
     @Produces(APPLICATION_JSON_VALUE)
     public PaydasSorguResponseDTO getPaydasInfoAndDebtInfo(@RequestBody PaydasSorguRequestDTO paydasSorguRequestDTO) {
-        PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
 
         LOG.debug(" /paydasborcsorgu Gelen Paydas Sorgu No : " + paydasSorguRequestDTO.getPaydasNo());
         LOG.debug(" /paydasborcsorgu Gelen Paydas T.C Kimlik No : " + paydasSorguRequestDTO.getTcNo());
         LOG.debug(" /paydasborcsorgu Gelen Paydas Vergi No : " + paydasSorguRequestDTO.getVergiNo());
         LOG.debug(" /paydasborcsorgu Gelen Paydas Sorgu Adi : " + paydasSorguRequestDTO.getSorguAdi());
 
-        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasInfoByCriteria(paydasSorguRequestDTO);
-        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasDebtInfoByCriteria(paydasSorguResponseDTO, paydasSorguRequestDTO);
+        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasDebtInfoByPaydasNo(paydasSorguRequestDTO);
 
         return paydasSorguResponseDTO;
     }
@@ -73,15 +70,30 @@ public class PaydasIliskileriResource {
     @Consumes(APPLICATION_JSON_VALUE)
     @Produces(APPLICATION_JSON_VALUE)
     public PaydasSorguResponseDTO getPaydasInfoAndAdvertInfo(@RequestBody PaydasSorguRequestDTO paydasSorguRequestDTO) {
-        PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
 
         LOG.debug(" /paydasilansorgu Gelen Paydas Sorgu No : " + paydasSorguRequestDTO.getPaydasNo());
         LOG.debug(" /paydasilansorgu Gelen Paydas T.C Kimlik No : " + paydasSorguRequestDTO.getTcNo());
         LOG.debug(" /paydasilansorgu Gelen Paydas Vergi No : " + paydasSorguRequestDTO.getVergiNo());
         LOG.debug(" /paydasilansorgu Gelen Paydas Sorgu Adi : " + paydasSorguRequestDTO.getSorguAdi());
 
-        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasInfoByCriteria(paydasSorguRequestDTO);
-        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasAdvertInfoByCriteria(paydasSorguResponseDTO, paydasSorguRequestDTO);
+        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasAdvertInfoByPaydasNo(paydasSorguRequestDTO);
+
+        return paydasSorguResponseDTO;
+    }
+
+    @RequestMapping("paydasgeneltahakkuk")
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Produces(APPLICATION_JSON_VALUE)
+    public PaydasSorguResponseDTO getPaydasInfoAndTahakkukInfo(@RequestBody PaydasSorguRequestDTO paydasSorguRequestDTO) {
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
+
+        LOG.debug(" /paydasgeneltahakkuk Gelen Paydas Sorgu No : " + paydasSorguRequestDTO.getPaydasNo());
+        LOG.debug(" /paydasgeneltahakkuk Gelen Paydas T.C Kimlik No : " + paydasSorguRequestDTO.getTcNo());
+        LOG.debug(" /paydasgeneltahakkuk Gelen Paydas Vergi No : " + paydasSorguRequestDTO.getVergiNo());
+        LOG.debug(" /paydasgeneltahakkuk Gelen Paydas Sorgu Adi : " + paydasSorguRequestDTO.getSorguAdi());
+
+        paydasSorguResponseDTO = paydasIliskileriManagementService.getPaydasTahakkukInfoByPaydasNo(paydasSorguRequestDTO);
 
         return paydasSorguResponseDTO;
     }

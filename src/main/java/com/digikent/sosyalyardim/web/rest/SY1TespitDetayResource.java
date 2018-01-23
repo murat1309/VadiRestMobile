@@ -26,7 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by Serkan on 8/16/16.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1tespitline")
 public class SY1TespitDetayResource {
 
