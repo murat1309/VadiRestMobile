@@ -112,13 +112,17 @@ public class PaydasIliskileriRepository {
         return paydasSorguResponseDTO;
     }
 
-    public PaydasSorguResponseDTO getPaydasDebtInfoByCriteria(PaydasSorguResponseDTO paydasSorguResponseDTO, PaydasSorguRequestDTO paydasSorguRequestDTO, String sql) {
+    public PaydasSorguResponseDTO getPaydasDebtInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
 
-        
+        PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
         List<PaydasBorcSorguDTO> paydasBorcSorguList = new ArrayList<>();
         ErrorDTO errorDTO = new ErrorDTO();
 
         try {
+
+            String sql = "SELECT TAHAKKUKTARIHI ,(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, BORCTUTARI FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
+                    " AND BORCTUTARI > 0 AND MPI1PAYDAS.ID = " + paydasSorguRequestDTO.getPaydasNo();
+
 
             List list = new ArrayList<>();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -174,12 +178,16 @@ public class PaydasIliskileriRepository {
  IZAHAT      VARCHAR2
      */
 
-    public PaydasSorguResponseDTO getPaydasAdvertInfoByCriteria(PaydasSorguResponseDTO paydasSorguResponseDTO, PaydasSorguRequestDTO paydasSorguRequestDTO, String sql) {
+    public PaydasSorguResponseDTO getPaydasAdvertInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
 
+        PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
         List<PaydasIlanSorguDTO> paydasIlanSorguList = new ArrayList<>();
         ErrorDTO errorDTO = new ErrorDTO();
 
         try {
+
+            String sql = "SELECT A.KAYITTARIHI,A.FIN7TARIFETURU_ID as TARIFETURU,A.TABELAENI,A.BOY,A.TABELAYUZU,A.ILANADEDI,A.ILANALANI,A.IZAHAT " +
+                    " FROM CIN7BILDIRIMEK A,MPI1PAYDAS B where A.ID = B.ID AND B.ID = " + paydasSorguRequestDTO.getPaydasNo();
 
             List list = new ArrayList<>();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -234,6 +242,60 @@ public class PaydasIliskileriRepository {
         }
 
         paydasSorguResponseDTO.setPaydasIlanSorguResponse(paydasIlanSorguList);
+        paydasSorguResponseDTO.setErrorDTO(errorDTO);
+        return paydasSorguResponseDTO;
+    }
+
+    public PaydasSorguResponseDTO getPaydasTahakkukInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
+
+
+        PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
+        List<PaydasTahakkukSorguDTO> paydasTahakkukSorguList = new ArrayList<>();
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+
+            String sql = "SELECT SUM(TAHAKKUKTUTARI) AS TAHAKKUKTUTARI,SUM(BORCTUTARI) AS BORCTUTARI FROM JIN2TAHAKKUKVIEW\n" +
+                    "WHERE  MPI1PAYDAS_ID = " + paydasSorguRequestDTO.getPaydasNo();
+
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            if(!list.isEmpty()) {
+                for(Object o : list) {
+
+                    Map map = (Map) o;
+                    PaydasTahakkukSorguDTO paydasTahakkukSorguDTO = new PaydasTahakkukSorguDTO();
+
+                    BigDecimal tahakkukTutar = (BigDecimal) map.get("TAHAKKUKTUTARI");
+                    BigDecimal borcTutar = (BigDecimal) map.get("BORCTUTARI");
+
+                    if(tahakkukTutar != null)
+                        paydasTahakkukSorguDTO.setTahakkukTutar(tahakkukTutar);
+                    if(borcTutar != null)
+                        paydasTahakkukSorguDTO.setBorcTutar(borcTutar);
+
+                    paydasTahakkukSorguList.add(paydasTahakkukSorguDTO);
+                }
+
+                errorDTO.setError(false);
+                errorDTO.setErrorMessage(null);
+
+            }
+
+
+
+        } catch(Exception e) {
+
+            errorDTO.setError(true);
+            errorDTO.setErrorMessage("Bir hatayla Karşılaşıldı.");
+
+        }
+
+        paydasSorguResponseDTO.setPaydasTahakkukResponse(paydasTahakkukSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
         return paydasSorguResponseDTO;
     }

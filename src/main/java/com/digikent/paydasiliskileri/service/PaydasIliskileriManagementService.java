@@ -39,43 +39,7 @@ public class PaydasIliskileriManagementService {
         return query;
     }
 
-    public String getPaydasDebtInfoDynamicQueryContextByCriteria(PaydasSorguRequestDTO paydasSorguRequestDTO) {
 
-        String query = new String();
-        String baseQuery = "SELECT TAHAKKUKTARIHI ,(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, BORCTUTARI FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
-                " AND BORCTUTARI > 0 ";
-
-        if(paydasSorguRequestDTO.getPaydasNo() != null)
-            query = baseQuery + "AND MPI1PAYDAS.ID= " + paydasSorguRequestDTO.getPaydasNo();
-        else if(paydasSorguRequestDTO.getSorguAdi() != null)
-            query = baseQuery + " AND MPI1PAYDAS.SORGUADI LIKE '" + paydasSorguRequestDTO.getSorguAdi() + "%'";
-        else if(paydasSorguRequestDTO.getVergiNo() != null)
-            query = baseQuery + " AND MPI1PAYDAS.VERGINUMARASI= '" + paydasSorguRequestDTO.getVergiNo() + "'";
-        else if(paydasSorguRequestDTO.getTcNo() != null)
-            query = baseQuery + " AND MPI1PAYDAS.TCKIMLIKNO= " + paydasSorguRequestDTO.getTcNo();
-
-        return query;
-    }
-
-    public String getPaydasAdvertInfoDynamicQueryContextByCriteria(PaydasSorguRequestDTO paydasSorguRequestDTO) {
-
-        String query = new String();
-        String baseQuery = "SELECT A.KAYITTARIHI,A.FIN7TARIFETURU_ID as TARIFETURU,A.TABELAENI,A.BOY,A.TABELAYUZU,A.ILANADEDI,A.ILANALANI,A.IZAHAT " +
-                           " FROM CIN7BILDIRIMEK A,MPI1PAYDAS B where A.ID = B.ID AND B.";
-
-
-        if(paydasSorguRequestDTO.getPaydasNo() != null)
-            query = baseQuery + "ID= " + paydasSorguRequestDTO.getPaydasNo();
-        else if(paydasSorguRequestDTO.getSorguAdi() != null)
-            query = baseQuery + "SORGUADI LIKE '" + paydasSorguRequestDTO.getSorguAdi() + "%'";
-        else if(paydasSorguRequestDTO.getVergiNo() != null)
-            query = baseQuery + "VERGINUMARASI= '" + paydasSorguRequestDTO.getVergiNo() + "'";
-        else if(paydasSorguRequestDTO.getTcNo() != null)
-            query = baseQuery + "TCKIMLIKNO= " + paydasSorguRequestDTO.getTcNo();
-
-        return query;
-
-    }
 
     public PaydasSorguResponseDTO getPaydasInfoByCriteria(PaydasSorguRequestDTO paydasSorguRequestDTO) {
         PaydasSorguResponseDTO paydasSorguResponseDTO;
@@ -86,19 +50,27 @@ public class PaydasIliskileriManagementService {
         return paydasSorguResponseDTO;
     }
 
-    public PaydasSorguResponseDTO getPaydasDebtInfoByCriteria(PaydasSorguResponseDTO paydasSorguResponseDTO,PaydasSorguRequestDTO paydasSorguRequestDTO) {
+    public PaydasSorguResponseDTO getPaydasDebtInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
 
-
-        String query = getPaydasDebtInfoDynamicQueryContextByCriteria(paydasSorguRequestDTO);
-        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasDebtInfoByCriteria(paydasSorguResponseDTO,paydasSorguRequestDTO, query);
+        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasDebtInfoByPaydasNo(paydasSorguRequestDTO);
 
         return paydasSorguResponseDTO;
     }
 
-    public PaydasSorguResponseDTO getPaydasAdvertInfoByCriteria(PaydasSorguResponseDTO paydasSorguResponseDTO, PaydasSorguRequestDTO paydasSorguRequestDTO) {
+    public PaydasSorguResponseDTO getPaydasAdvertInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
 
-        String query = getPaydasAdvertInfoDynamicQueryContextByCriteria(paydasSorguRequestDTO);
-        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasAdvertInfoByCriteria(paydasSorguResponseDTO, paydasSorguRequestDTO, query);
+
+        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasAdvertInfoByPaydasNo(paydasSorguRequestDTO);
+
+        return paydasSorguResponseDTO;
+    }
+
+    public PaydasSorguResponseDTO getPaydasTahakkukInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
+        PaydasSorguResponseDTO paydasSorguResponseDTO;
+
+        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasTahakkukInfoByPaydasNo(paydasSorguRequestDTO);
 
         return paydasSorguResponseDTO;
     }

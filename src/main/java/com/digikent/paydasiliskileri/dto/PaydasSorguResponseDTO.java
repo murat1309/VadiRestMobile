@@ -36,9 +36,18 @@ public class PaydasSorguResponseDTO {
     private List<PaydasIlanSorguDTO> paydasIlanSorguResponse;
     private List<PaydasBorcSorguDTO> paydasBorcSorguResponse;
     private List<PaydasSorguDTO> paydasSorguResponse;
+    private List<PaydasTahakkukSorguDTO> paydasTahakkukResponse;
     private ErrorDTO errorDTO;
 
     public PaydasSorguResponseDTO() {
+    }
+
+    public List<PaydasTahakkukSorguDTO> getPaydasTahakkukResponse() {
+        return paydasTahakkukResponse;
+    }
+
+    public void setPaydasTahakkukResponse(List<PaydasTahakkukSorguDTO> paydasTahakkukResponse) {
+        this.paydasTahakkukResponse = paydasTahakkukResponse;
     }
 
     public List<PaydasIlanSorguDTO> getPaydasIlanSorguResponse() {
