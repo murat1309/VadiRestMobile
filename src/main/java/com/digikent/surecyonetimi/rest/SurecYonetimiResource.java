@@ -32,7 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/surecyonetimi")
 public class SurecYonetimiResource {
 
@@ -43,7 +43,6 @@ public class SurecYonetimiResource {
 
     @Autowired
     SurecYonetimiService surecYonetimiService;
-
 
     @RequestMapping(value = "/surecsorgu", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
@@ -58,7 +57,6 @@ public class SurecYonetimiResource {
 
         return surecSorguResponseDTO;
     }
-
     @RequestMapping(value = "/basvurubilgi", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -94,26 +92,18 @@ public class SurecYonetimiResource {
 
         return surecSorguResponseDTO;
     }
-
     @RequestMapping(method = GET, value = "/basvuruturu", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<ImarBasvuruTuruDTO>> getBasvuruTuru() {
-        LOG.debug("REST request to get basvuru turu");
+        LOG.debug("REST request to get basvuru turu checkbox list");
         List<ImarBasvuruTuruDTO> results = surecYonetimiRepository.getBasvuruTuruList();
         return new ResponseEntity<List<ImarBasvuruTuruDTO>>(results, OK);
     }
-
-    @RequestMapping(method = POST, value = "/imarsurec", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = POST, value = "/imar", produces = APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<List<ImarSurecDTO>> getList(@RequestBody ImarSurecRequestDTO imarSurecRequestDTO) {
+    public ResponseEntity<List<ImarSurecDTO>> getList(@RequestBody ImarRequestDTO imarRequestDTO) {
         LOG.debug("REST request to get surec parameters");
-        LOG.debug("Gelen tcno: " + imarSurecRequestDTO.getTcNo());
-        LOG.debug("Gelen paydasno: " + imarSurecRequestDTO.getPaydasNo());
-        LOG.debug("Gelen adano: " + imarSurecRequestDTO.getAdaNo());
-        LOG.debug("Gelen paftano: " + imarSurecRequestDTO.getPaftaNo());
-        LOG.debug("Gelen parselno: " + imarSurecRequestDTO.getParselNo());
-
-        List<ImarSurecDTO> results = surecYonetimiRepository.getSurecList(imarSurecRequestDTO);
+        List<ImarSurecDTO> results = surecYonetimiRepository.getSurecListBySelected(imarRequestDTO);
         return new ResponseEntity<List<ImarSurecDTO>>(results, OK);
     }
 }

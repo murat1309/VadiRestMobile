@@ -1,7 +1,7 @@
 package com.digikent.surecyonetimi.dto;
 
 
-
+import java.util.List;
 
 public class ImarSurecRequestDTO {
 

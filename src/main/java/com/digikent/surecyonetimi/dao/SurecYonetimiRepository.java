@@ -314,40 +314,40 @@ public class SurecYonetimiRepository {
         }
         return basvuruTuruDTOList;
     }
-    public String addConditionWordToSql(String sql){
-        String conditionWord;
-        if(sql.substring(sql.indexOf("MPI1PAYDAS.ID")+ 13, sql.length()).equalsIgnoreCase("")){
-            conditionWord = " WHERE ";
-        }else {
-            conditionWord = " AND "; }
-        return sql + conditionWord;
-    }
-    public List<ImarSurecDTO> getSurecList(ImarSurecRequestDTO imarSurecRequestDTO) {
+    public List<ImarSurecDTO> getSurecListBySelected(ImarRequestDTO imarRequestDTO) {
 
         List<ImarSurecDTO> imarSurecDTOList = new ArrayList<>();
 
-        String sql = "SELECT VBPMPROCESSINSTANCE_ID, (SELECT T.TANIM FROM TIMRBASVURUTURU T WHERE T.ID ="
-                + " TIMRBASVURUTURU_ID AND T.ISACTIVE = 'E') TANIM, PAFTANO, ADANO, PARSELNO,"
-                + " (SELECT I.ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = IHR1PERSONEL_RAPORTOR) RAPORTOR, "
-                + " MPI1PAYDAS_ID, (SELECT TANIM FROM TIMRBASVURUDURUMU WHERE TIMRBASVURUDURUMU.ID = TIMRBASVURUDURUMU_ID) BASVURUDURUMU, "
-                + " MPI1PAYDAS.ADI, MPI1PAYDAS.SOYADI, MPI1PAYDAS.TCKIMLIKNO FROM VIMRBASVURU "
-                + " JOIN MPI1PAYDAS ON VIMRBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID";
+        String sql = "SELECT VBPMPROCESSINSTANCE_ID, T.TANIM, T.ISACTIVE, PAFTANO, ADANO, PARSELNO, "
+                   + "(SELECT I.ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = IHR1PERSONEL_RAPORTOR) RAPORTOR, "
+                   + "MPI1PAYDAS_ID, (SELECT TANIM FROM TIMRBASVURUDURUMU WHERE TIMRBASVURUDURUMU.ID = TIMRBASVURUDURUMU_ID) BASVURUDURUMU, "
+                   + "MPI1PAYDAS.ADI, MPI1PAYDAS.SOYADI, MPI1PAYDAS.TCKIMLIKNO FROM VIMRBASVURU "
+                   + "JOIN MPI1PAYDAS ON VIMRBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID "
+                   + "JOIN TIMRBASVURUTURU T ON T.ID = VIMRBASVURU.TIMRBASVURUTURU_ID WHERE T.ISACTIVE = 'E'";
 
-        if(imarSurecRequestDTO.getPaftaNo() != null && !imarSurecRequestDTO.getPaftaNo().equalsIgnoreCase(""))
-            sql = addConditionWordToSql(sql) + "PAFTANO = '" + imarSurecRequestDTO.getPaftaNo() + "'";
-        if(imarSurecRequestDTO.getParselNo() != null && !imarSurecRequestDTO.getParselNo().equalsIgnoreCase(""))
-            sql = addConditionWordToSql(sql) + "PARSELNO = '" + imarSurecRequestDTO.getParselNo() + "'";
-        if(imarSurecRequestDTO.getAdaNo() != null && !imarSurecRequestDTO.getAdaNo().equalsIgnoreCase(""))
-            sql = addConditionWordToSql(sql) + "ADANO = '" + imarSurecRequestDTO.getAdaNo() + "'";
-        if(imarSurecRequestDTO.getPaydasNo() != null)
-            sql = addConditionWordToSql(sql) + "MPI1PAYDAS_ID = " + imarSurecRequestDTO.getPaydasNo();
-        if(imarSurecRequestDTO.getTcNo() != null)
-            sql = addConditionWordToSql(sql) + "TCKIMLIKNO = " + imarSurecRequestDTO.getTcNo();
+        if(imarRequestDTO.getImarSurecRequestDTO().getPaftaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getPaftaNo().equalsIgnoreCase(""))
+            sql = sql + " AND PAFTANO = '" + imarRequestDTO.getImarSurecRequestDTO().getPaftaNo() + "'";
+        if(imarRequestDTO.getImarSurecRequestDTO().getParselNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getParselNo().equalsIgnoreCase(""))
+            sql = sql + " AND PARSELNO = '" + imarRequestDTO.getImarSurecRequestDTO().getParselNo() + "'";
+        if(imarRequestDTO.getImarSurecRequestDTO().getAdaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getAdaNo().equalsIgnoreCase(""))
+            sql = sql + " AND ADANO = '" + imarRequestDTO.getImarSurecRequestDTO().getAdaNo() + "'";
+        if(imarRequestDTO.getImarSurecRequestDTO().getPaydasNo() != null)
+            sql = sql + " AND MPI1PAYDAS_ID = " + imarRequestDTO.getImarSurecRequestDTO().getPaydasNo();
+        if(imarRequestDTO.getImarSurecRequestDTO().getTcNo() != null)
+            sql = sql + " AND MPI1PAYDAS.TCKIMLIKNO = " + imarRequestDTO.getImarSurecRequestDTO().getTcNo();
+
+        List<Long> basvuruturulist = new ArrayList<>();
+        for (ImarBasvuruTuruRequestDTO item : imarRequestDTO.getImarBasvuruTuruRequestDTOList()) {
+            basvuruturulist.add(item.getValue());
+        }
+
+        sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist)";
 
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
         SQLQuery query =session.createSQLQuery(sql);
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        query.setParameterList("basvuruturulist", basvuruturulist);
         list = query.list();
 
         for(Object o : list) {
