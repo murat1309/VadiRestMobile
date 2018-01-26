@@ -341,7 +341,7 @@ public class SurecYonetimiRepository {
             basvuruturulist.add(item.getValue());
         }
 
-        sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist)";
+        sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist) ORDER BY ABS(VBPMPROCESSINSTANCE_ID) ASC";
 
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
