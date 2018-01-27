@@ -2,6 +2,8 @@ package com.digikent.paydasiliskileri.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.dto.*;
+import com.digikent.zabita.dto.paydas.ZabitaPaydasDTO;
+import com.digikent.zabita.dto.paydas.ZabitaPaydasResponseDTO;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -29,7 +31,7 @@ public class PaydasIliskileriRepository {
     @Autowired
     SessionFactory sessionFactory;
 
-    public PaydasSorguResponseDTO getPaydasInfoByCriteria(PaydasSorguRequestDTO paydasSorguRequestDTO, String sql) {
+    public PaydasSorguResponseDTO getPaydasInfoByCriteria(String sql) {
 
         PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
 
@@ -298,6 +300,125 @@ public class PaydasIliskileriRepository {
         paydasSorguResponseDTO.setPaydasTahakkukResponse(paydasTahakkukSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
         return paydasSorguResponseDTO;
+    }
+
+    public ZabitaPaydasResponseDTO getPaydasInformationZabitaByCriteria(String sql) {
+
+        ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = new ZabitaPaydasResponseDTO();
+
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            if(!list.isEmpty()) {
+                zabitaPaydasResponseDTO.setResponseZabitaPaydasList(new ArrayList<>());
+                for(Object o : list) {
+                    Map map = (Map) o;
+                    ZabitaPaydasDTO zabitaPaydasDTO = new ZabitaPaydasDTO();
+
+                    BigDecimal paydasNo = (BigDecimal) map.get("ID");
+                    String adi = (String) map.get("ADI");
+                    String soyAdi = (String) map.get("SOYADI");
+                    String unvan = (String) map.get("UNVAN");
+                    String vergiNo = (String) map.get("VERGINUMARASI");
+                    String telNo = (String) map.get("TELEFON");
+                    String paydasTuru = (String) map.get("PAYDASTURU");
+                    String tabelaAdi = (String) map.get("TABELAADI");
+                    String izahat = (String) map.get("IZAHAT");
+                    String kayitDurumu = (String) map.get("KAYITDURUMU");
+                    String mahalleAdi = (String) map.get("MAHALLEADI");
+                    String binaAdi = (String) map.get("BINAADI");
+                    String blokNo = (String) map.get("BLOKNO");
+                    String kapiNo = (String) map.get("KAPINO");
+                    String ilceAdi = (String) map.get("ILCEADI");
+                    String kapiNoHarf = (String) map.get("KAPINOHARF");
+                    String daireNoHarf = (String) map.get("DAIRENOHARF");
+                    String caddeAdi = (String) map.get("CADDESADI");
+                    String katHarf = (String) map.get("KATHARF");
+                    BigDecimal kapinoSayi = (BigDecimal) map.get("KAPINOSAYI");
+                    BigDecimal daireNoSayi = (BigDecimal) map.get("DAIRENOSAYI");
+                    BigDecimal katSayi = (BigDecimal) map.get("KATSAYI");
+
+
+                    if(paydasNo != null)
+                        zabitaPaydasDTO.setPaydasNo(paydasNo.longValue());
+                    if(adi != null)
+                        zabitaPaydasDTO.setAdi(adi);
+                    if(soyAdi != null)
+                        zabitaPaydasDTO.setSoyAdi(soyAdi);
+                    if(telNo != null)
+                        zabitaPaydasDTO.setTelefon(telNo);
+                    if(kayitDurumu != null)
+                        zabitaPaydasDTO.setKayitDurumu(kayitDurumu);
+                    if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
+                        zabitaPaydasDTO.setUnvan(unvan);
+                    if(paydasTuru != null)
+                        if(paydasTuru.equalsIgnoreCase("S")) {
+                            zabitaPaydasDTO.setPaydasTuru("Şahıs");
+                        } else {
+                            zabitaPaydasDTO.setPaydasTuru("Kurum");
+                        }
+                    if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
+                        if(vergiNo != null)
+                            zabitaPaydasDTO.setVergiNo(vergiNo);
+                        if(izahat != null)
+                            zabitaPaydasDTO.setIzahat(izahat);
+                        if(tabelaAdi != null)
+                            zabitaPaydasDTO.setTabelaAdi(tabelaAdi);
+                    }
+                    //adres
+                    if(mahalleAdi != null)
+                        zabitaPaydasDTO.setMahalleAdi(mahalleAdi);
+                    if(binaAdi != null)
+                        zabitaPaydasDTO.setBinaAdi(binaAdi);
+                    if(blokNo != null)
+                        zabitaPaydasDTO.setBlokNo(blokNo);
+                    if(kapiNo != null)
+                        zabitaPaydasDTO.setKapiNo(kapiNo);
+                    if(ilceAdi != null)
+                        zabitaPaydasDTO.setIlceAdi(ilceAdi);
+                    if(kapiNoHarf != null)
+                        zabitaPaydasDTO.setKapiNoHarf(kapiNoHarf);
+                    if(daireNoHarf != null)
+                        zabitaPaydasDTO.setDaireNoHarf(daireNoHarf);
+                    if(caddeAdi != null)
+                        zabitaPaydasDTO.setCaddeAdi(caddeAdi);
+                    if(katHarf != null)
+                        zabitaPaydasDTO.setKatHarf(katHarf);
+
+
+                    if(kapinoSayi != null)
+                        zabitaPaydasDTO.setKapiNoSayi(kapinoSayi.longValue());
+                    if(daireNoSayi != null)
+                        zabitaPaydasDTO.setDaireNoSayi(daireNoSayi.longValue());
+                    if(katSayi != null)
+                        zabitaPaydasDTO.setKatSayi(katSayi.longValue());
+
+                    zabitaPaydasResponseDTO.getResponseZabitaPaydasList().add(zabitaPaydasDTO);
+                }
+
+            }
+
+            errorDTO.setErrorMessage(null);
+            errorDTO.setError(false);
+            zabitaPaydasResponseDTO.setErrorDTO(errorDTO);
+
+
+        } catch (Exception e) {
+
+
+            errorDTO.setErrorMessage("Bir hata meydana geldi.");
+            errorDTO.setError(true);
+            zabitaPaydasResponseDTO.setErrorDTO(errorDTO);
+            //paydasSorguResponseDTO.getPaydasSorguResponse().add(paydasSorguDTO);
+        }
+
+        return zabitaPaydasResponseDTO;
     }
 }
 
