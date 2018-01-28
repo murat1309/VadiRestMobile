@@ -3,6 +3,7 @@ package com.digikent.zabita.rest;
 import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
+import com.digikent.zabita.dto.adres.MahalleSokakDTO;
 import com.digikent.zabita.dto.denetim.DenetimTuruDTO;
 import com.digikent.zabita.dto.denetim.DenetimTuruResponse;
 import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
@@ -70,9 +71,22 @@ public class ZabitaResource {
     public ResponseEntity<Boolean> saveDenetim(@RequestBody ZabitaDenetimRequest zabitaDenetimRequest) {
         LOG.debug("Zabita - denetim kayıt. paydaş ID : " + zabitaDenetimRequest.getPaydasId());
 
-        zabitaService.saveZabitaDenetim(zabitaDenetimRequest.getPaydasId());
+        zabitaService.saveZabitaDenetim(zabitaDenetimRequest);
 
         return new ResponseEntity<Boolean>(true, OK);
+    }
+
+    /*
+        Adres bilgilerini getirir
+    */
+    @RequestMapping(value = "/mahalle/sokak", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<MahalleSokakDTO>> getMahalleAndSokakList() {
+        LOG.debug("/mahalle/sokak REST request to get mahalle-sokak List");
+
+        List<MahalleSokakDTO> mahalleSokakDTOs = zabitaService.getMahalleSokakList();
+
+        return new ResponseEntity<List<MahalleSokakDTO>>(mahalleSokakDTOs, OK);
     }
 
     /*

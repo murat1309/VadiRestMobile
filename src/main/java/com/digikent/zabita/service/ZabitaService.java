@@ -1,6 +1,8 @@
 package com.digikent.zabita.service;
 
 import com.digikent.zabita.dao.ZabitaRepository;
+import com.digikent.zabita.dto.adres.MahalleSokakDTO;
+import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
 import com.digikent.zabita.entity.BDNTDenetim;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Kadir on 26.01.2018.
@@ -27,26 +30,11 @@ public class ZabitaService {
     @Inject
     ZabitaRepository zabitaRepository;
 
-    public Boolean saveZabitaDenetim(Long paydasId) {
+    public Boolean saveZabitaDenetim(ZabitaDenetimRequest zabitaDenetimRequest) {
+        return zabitaRepository.saveZabitaDenetim(zabitaDenetimRequest);
+    }
 
-        LOG.debug("Denetim KAYDI paydas ID = " + paydasId);
-
-        BDNTDenetim bdntDenetim = new BDNTDenetim();
-        bdntDenetim.setMpi1PaydasId(paydasId);
-        bdntDenetim.setDenetimTarihi(new Date());
-        //TODO buralara doğru şekilde setleme yap
-        bdntDenetim.setCrUser(1l);
-        bdntDenetim.setCrDate(new Date());
-        bdntDenetim.setDeleteFlag("H");
-        bdntDenetim.setIsActive(true);
-        bdntDenetim.setDenetimTarafTipi("I");
-
-        Session session = sessionFactory.openSession();
-        Transaction tx = null;
-        tx = session.beginTransaction();
-        session.save(bdntDenetim);
-        tx.commit();
-
-        return true;
+    public List<MahalleSokakDTO> getMahalleSokakList() {
+        return zabitaRepository.findMahalleAndSokakList();
     }
 }
