@@ -8,12 +8,12 @@ public class ZabitaOlayYeriAdresi {
     private Long rre1IlceOlayYeri;
     private Long dre1MahalleOlayYeri;
     private Long sre1SokakOlayYeri;
-    private Long ere1YapiOlayYeri;
-    private Long ire1ParselOlayYeri;
-    private Long dre1BagBolumOlayYeri;
+    private Long ere1YapiOlayYeri; //
+    private Long ire1ParselOlayYeri; //
+    private Long dre1BagBolumOlayYeri; //
     private String paftaOlayYeri;
     private String adaNoOlayYeri;
-    private String parselOlayYeri;
+    private String parselOlayYeri;//
     private String siteAdiOlayYeri;
     private String blokNoOlayYeri;
     private String kapiNoHarfOlayYeri;
