@@ -331,6 +331,8 @@ public class SurecYonetimiRepository {
             sql = sql + " AND PARSELNO = '" + imarRequestDTO.getImarSurecRequestDTO().getParselNo() + "'";
         if(imarRequestDTO.getImarSurecRequestDTO().getAdaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getAdaNo().equalsIgnoreCase(""))
             sql = sql + " AND ADANO = '" + imarRequestDTO.getImarSurecRequestDTO().getAdaNo() + "'";
+        if(imarRequestDTO.getImarSurecRequestDTO().getSurecNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getSurecNo().equalsIgnoreCase(""))
+            sql = sql + " AND VBPMPROCESSINSTANCE_ID = '" + imarRequestDTO.getImarSurecRequestDTO().getSurecNo() + "'";
         if(imarRequestDTO.getImarSurecRequestDTO().getPaydasNo() != null)
             sql = sql + " AND MPI1PAYDAS_ID = " + imarRequestDTO.getImarSurecRequestDTO().getPaydasNo();
         if(imarRequestDTO.getImarSurecRequestDTO().getTcNo() != null)
@@ -340,9 +342,7 @@ public class SurecYonetimiRepository {
         for (ImarBasvuruTuruRequestDTO item : imarRequestDTO.getImarBasvuruTuruRequestDTOList()) {
             basvuruturulist.add(item.getValue());
         }
-
         sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist) ORDER BY ABS(VBPMPROCESSINSTANCE_ID) ASC";
-
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
         SQLQuery query =session.createSQLQuery(sql);
