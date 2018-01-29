@@ -81,26 +81,25 @@ public class PaydasIliskileriManagementService {
         String query = "";
         ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = null;
 
-        String baseQuery = "select ID,ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT," +
-                "PAYDASTURU,TABELAADI,KAYITDURUMU," +
-                " NVL((SELECT NVL(MAHALLEADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS MAHALLEADI,\n" +
-                "NVL((SELECT NVL(BINAADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS BINAADI,\n" +
-                "NVL((SELECT NVL(BLOKNO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS BLOKNO,\n" +
-                "NVL((SELECT NVL(KAPINO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KAPINO,\n" +
-                "NVL((SELECT NVL(RRE1ILCE_ADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS ILCEADI,\n" +
-                "(SELECT KAPINOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS KAPINOSAYI,\n" +
-                "NVL((SELECT NVL(KAPINOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KAPINOHARF,\n" +
-                "(SELECT DAIRENOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS DAIRENOSAYI,\n" +
-                "NVL((SELECT NVL(DAIRENOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS DAIRENOHARF,\n" +
-                "NVL((SELECT NVL(CADDESADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS CADDESADI,\n" +
-                "(SELECT KATSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS KATSAYI,\n" +
-                "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KATHARF " +
+        String baseQuery = "select ID,ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT,PAYDASTURU,TABELAADI,KAYITDURUMU, \n" +
+                "NVL((SELECT NVL(MAHALLEADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS MAHALLEADI,\n" +
+                "NVL((SELECT NVL(BINAADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS BINAADI,\n" +
+                "NVL((SELECT NVL(BLOKNO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS BLOKNO,\n" +
+                "NVL((SELECT NVL(KAPINO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KAPINO,\n" +
+                "NVL((SELECT NVL(RRE1ILCE_ADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS ILCEADI,\n" +
+                "(SELECT KAPINOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS KAPINOSAYI,\n" +
+                "NVL((SELECT NVL(KAPINOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KAPINOHARF,\n" +
+                "(SELECT DAIRENOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS DAIRENOSAYI,\n" +
+                "NVL((SELECT NVL(DAIRENOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS DAIRENOHARF,\n" +
+                "NVL((SELECT NVL(CADDESADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS CADDESADI,\n" +
+                "(SELECT KATSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS KATSAYI,\n" +
+                "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KATHARF \n" +
                 "from MPI1PAYDAS ";
 
         if(zabitaPaydasRequestDTO.getFilter() != null && !zabitaPaydasRequestDTO.getFilter().isEmpty()) {
-            query = baseQuery + " where SORGUADI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
+            query = baseQuery + " where ROWNUM <= 20 AND (SORGUADI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
                     " OR VERGINUMARASI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
-                    " OR TCKIMLIKNO LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'";
+                    " OR TCKIMLIKNO LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%')";
         }
 
         zabitaPaydasResponseDTO = paydasIliskileriRepository.getPaydasInformationZabitaByCriteria(query);

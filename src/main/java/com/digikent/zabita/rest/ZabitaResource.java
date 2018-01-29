@@ -3,6 +3,7 @@ package com.digikent.zabita.rest;
 import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
+import com.digikent.zabita.dto.adres.BelediyeDTO;
 import com.digikent.zabita.dto.adres.MahalleSokakDTO;
 import com.digikent.zabita.dto.denetim.DenetimTuruDTO;
 import com.digikent.zabita.dto.denetim.DenetimTuruResponse;
@@ -79,14 +80,27 @@ public class ZabitaResource {
     /*
         Adres bilgilerini getirir
     */
-    @RequestMapping(value = "/mahalle/sokak", method = RequestMethod.GET)
+    @RequestMapping(value = "/mahalle/sokak/{belediyeId}", method = RequestMethod.GET)
     @Transactional
-    public ResponseEntity<List<MahalleSokakDTO>> getMahalleAndSokakList() {
-        LOG.debug("/mahalle/sokak REST request to get mahalle-sokak List");
+    public ResponseEntity<List<MahalleSokakDTO>> getMahalleAndSokakList(@PathVariable("belediyeId") Long belediyeId) {
+        LOG.debug("/mahalle/sokak REST request to get mahalle-sokak List by belediye id = " + belediyeId);
 
-        List<MahalleSokakDTO> mahalleSokakDTOs = zabitaService.getMahalleSokakList();
+        List<MahalleSokakDTO> mahalleSokakDTOs = zabitaService.getMahalleSokakListByBelediyeId(belediyeId);
 
         return new ResponseEntity<List<MahalleSokakDTO>>(mahalleSokakDTOs, OK);
+    }
+
+    /*
+        Geçerli ildeki belediye listesini getirir
+    */
+    @RequestMapping(value = "/belediyeler", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListCurrentCity() {
+        LOG.debug("/belediyeler REST request to get belediye list");
+
+        List<BelediyeDTO> belediyeDTOList = zabitaService.getBelediyeList();
+
+        return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
     }
 
     /*
@@ -105,9 +119,5 @@ public class ZabitaResource {
 
         return new ResponseEntity<DenetimTuruResponse>(denetimTuruResponse, OK);
     }
-
-
-
-
 
 }
