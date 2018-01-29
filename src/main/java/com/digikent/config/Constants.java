@@ -25,6 +25,7 @@ public final class Constants {
     public static final long RUHSAT_GENEL_SONUC = 1;
     public static final long RUHSAT_BASVURU_DURUM = 2;
     public static final long MESSAGE_SYSTEM_USER_ID = -1;
+    public static final String ERROR_MESSAGE_PAYDAS_MIN_CHARACHTER_SIZE = "Filtreleme yetersiz";
 
 
     private Constants() {

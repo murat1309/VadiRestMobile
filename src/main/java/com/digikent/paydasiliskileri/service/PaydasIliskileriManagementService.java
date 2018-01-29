@@ -3,6 +3,8 @@ package com.digikent.paydasiliskileri.service;
 import com.digikent.paydasiliskileri.dao.PaydasIliskileriRepository;
 import com.digikent.paydasiliskileri.dto.PaydasSorguRequestDTO;
 import com.digikent.paydasiliskileri.dto.PaydasSorguResponseDTO;
+import com.digikent.zabita.dto.paydas.ZabitaPaydasRequestDTO;
+import com.digikent.zabita.dto.paydas.ZabitaPaydasResponseDTO;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -45,7 +47,7 @@ public class PaydasIliskileriManagementService {
         PaydasSorguResponseDTO paydasSorguResponseDTO;
         String query = getPaydasInfoDynamicQueryContextByCriteria(paydasSorguRequestDTO);
 
-        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasInfoByCriteria(paydasSorguRequestDTO, query);
+        paydasSorguResponseDTO = paydasIliskileriRepository.getPaydasInfoByCriteria(query);
 
         return paydasSorguResponseDTO;
     }
@@ -74,4 +76,36 @@ public class PaydasIliskileriManagementService {
 
         return paydasSorguResponseDTO;
     }
+
+    public ZabitaPaydasResponseDTO getPaydasInfoByZabitaFilter(ZabitaPaydasRequestDTO zabitaPaydasRequestDTO) {
+        String query = "";
+        ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = null;
+
+        String baseQuery = "select ID,ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT," +
+                "PAYDASTURU,TABELAADI,KAYITDURUMU," +
+                " NVL((SELECT NVL(MAHALLEADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS MAHALLEADI,\n" +
+                "NVL((SELECT NVL(BINAADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS BINAADI,\n" +
+                "NVL((SELECT NVL(BLOKNO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS BLOKNO,\n" +
+                "NVL((SELECT NVL(KAPINO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KAPINO,\n" +
+                "NVL((SELECT NVL(RRE1ILCE_ADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS ILCEADI,\n" +
+                "(SELECT KAPINOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS KAPINOSAYI,\n" +
+                "NVL((SELECT NVL(KAPINOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KAPINOHARF,\n" +
+                "(SELECT DAIRENOSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS DAIRENOSAYI,\n" +
+                "NVL((SELECT NVL(DAIRENOHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS DAIRENOHARF,\n" +
+                "NVL((SELECT NVL(CADDESADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS CADDESADI,\n" +
+                "(SELECT KATSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') AS KATSAYI,\n" +
+                "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E'),'-') AS KATHARF " +
+                "from MPI1PAYDAS ";
+
+        if(zabitaPaydasRequestDTO.getFilter() != null && !zabitaPaydasRequestDTO.getFilter().isEmpty()) {
+            query = baseQuery + " where SORGUADI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
+                    " OR VERGINUMARASI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
+                    " OR TCKIMLIKNO LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'";
+        }
+
+        zabitaPaydasResponseDTO = paydasIliskileriRepository.getPaydasInformationZabitaByCriteria(query);
+
+        return zabitaPaydasResponseDTO;
+    }
+
 }
