@@ -331,19 +331,19 @@ public class PaydasIliskileriRepository {
                     String tabelaAdi = (String) map.get("TABELAADI");
                     String izahat = (String) map.get("IZAHAT");
                     String kayitDurumu = (String) map.get("KAYITDURUMU");
-                    String mahalleAdi = (String) map.get("MAHALLEADI");
                     String binaAdi = (String) map.get("BINAADI");
                     String blokNo = (String) map.get("BLOKNO");
                     String kapiNo = (String) map.get("KAPINO");
                     String ilceAdi = (String) map.get("ILCEADI");
                     String kapiNoHarf = (String) map.get("KAPINOHARF");
                     String daireNoHarf = (String) map.get("DAIRENOHARF");
-                    String caddeAdi = (String) map.get("CADDESADI");
                     String katHarf = (String) map.get("KATHARF");
                     BigDecimal kapinoSayi = (BigDecimal) map.get("KAPINOSAYI");
                     BigDecimal daireNoSayi = (BigDecimal) map.get("DAIRENOSAYI");
                     BigDecimal katSayi = (BigDecimal) map.get("KATSAYI");
-
+                    BigDecimal dre1MahalleId = (BigDecimal) map.get("DRE1MAHALLE_ID");
+                    BigDecimal sre1SokakId = (BigDecimal) map.get("SRE1SOKAK_ID");
+                    BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
 
                     if(paydasNo != null)
                         zabitaPaydasDTO.setPaydasNo(paydasNo.longValue());
@@ -372,8 +372,6 @@ public class PaydasIliskileriRepository {
                             zabitaPaydasDTO.setTabelaAdi(tabelaAdi);
                     }
                     //adres
-                    if(mahalleAdi != null)
-                        zabitaPaydasDTO.setMahalleAdi(mahalleAdi);
                     if(binaAdi != null)
                         zabitaPaydasDTO.setBinaAdi(binaAdi);
                     if(blokNo != null)
@@ -386,18 +384,20 @@ public class PaydasIliskileriRepository {
                         zabitaPaydasDTO.setKapiNoHarf(kapiNoHarf);
                     if(daireNoHarf != null)
                         zabitaPaydasDTO.setDaireNoHarf(daireNoHarf);
-                    if(caddeAdi != null)
-                        zabitaPaydasDTO.setCaddeAdi(caddeAdi);
                     if(katHarf != null)
                         zabitaPaydasDTO.setKatHarf(katHarf);
-
-
                     if(kapinoSayi != null)
                         zabitaPaydasDTO.setKapiNoSayi(kapinoSayi.longValue());
                     if(daireNoSayi != null)
                         zabitaPaydasDTO.setDaireNoSayi(daireNoSayi.longValue());
                     if(katSayi != null)
                         zabitaPaydasDTO.setKatSayi(katSayi.longValue());
+                    if(dre1MahalleId != null)
+                        zabitaPaydasDTO.setDre1MahalleId(dre1MahalleId.longValue());
+                    if(sre1SokakId != null)
+                        zabitaPaydasDTO.setSre1SokakId(sre1SokakId.longValue());
+                    if(rre1IlceId != null)
+                        zabitaPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
 
                     zabitaPaydasResponseDTO.getResponseZabitaPaydasList().add(zabitaPaydasDTO);
                 }

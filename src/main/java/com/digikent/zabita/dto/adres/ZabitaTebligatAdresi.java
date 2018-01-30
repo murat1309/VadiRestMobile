@@ -10,12 +10,13 @@ public class ZabitaTebligatAdresi implements Serializable {
     private String siteAdiTebligat;
     private String blokNotebligat;
     private String kapiHarfNoTebligat;
+    private Long kapiNoSayiTebligat;
     private String daireNoHarfTebligat;
+    private Long daireNoSayiTebligat;
     private Long rre1ilceTebligat;
     private Long dre1MahalleTebligat;
     private Long sre1SokakTebligat;
-    private Long kapiNoSayiTebligat;
-    private Long daireNoSayiTebligat;
+
 
     public String getSiteAdiTebligat() {
         return siteAdiTebligat;

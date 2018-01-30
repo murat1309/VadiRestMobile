@@ -3,7 +3,9 @@ package com.digikent.zabita.dao;
 import com.digikent.mesajlasma.dao.MesajlasmaRepository;
 import com.digikent.paydasiliskileri.dto.PaydasSorguDTO;
 import com.digikent.zabita.dto.adres.BelediyeDTO;
+import com.digikent.zabita.dto.adres.MahalleDTO;
 import com.digikent.zabita.dto.adres.MahalleSokakDTO;
+import com.digikent.zabita.dto.adres.SokakDTO;
 import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
 import com.digikent.zabita.entity.BDNTDenetim;
 import org.hibernate.*;
@@ -53,9 +55,10 @@ public class ZabitaRepository {
         bdntDenetim.setSiteAdiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSiteAdiTebligat());
         bdntDenetim.setDaireNoHarfTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDaireNoHarfTebligat());
         bdntDenetim.setDaireNoSayiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDaireNoSayiTebligat());
-        bdntDenetim.setDre1MahalleTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDre1MahalleTebligat());
         bdntDenetim.setKapiHarfNoTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getKapiHarfNoTebligat());
         bdntDenetim.setKapiNoSayiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getKapiNoSayiTebligat());
+        bdntDenetim.setBlokNotebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getBlokNotebligat());
+        bdntDenetim.setDre1MahalleTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDre1MahalleTebligat());
         bdntDenetim.setRre1ilceTebligat(zabitaDenetimRequest.getRre1IlceId());
         bdntDenetim.setSre1SokakTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSre1SokakTebligat());
 
@@ -119,7 +122,7 @@ public class ZabitaRepository {
 
     public List<BelediyeDTO> findBelediyeList() {
         List<BelediyeDTO> belediyeDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND TURU='I' AND NVL(ISACTIVE,'E') = 'E'";
+        String sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND TURU='I' AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -146,6 +149,64 @@ public class ZabitaRepository {
 
 
         return belediyeDTOList;
+    }
+
+    public List<MahalleDTO> findMahalleListByBelediyeId(Long belediyeId) {
+        List<MahalleDTO> mahalleDTOList = new ArrayList<>();
+        String sql = "SELECT ID, TANIM FROM DRE1MAHALLE WHERE RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                MahalleDTO mahalleDTO = new MahalleDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+
+                if(id != null)
+                    mahalleDTO.setId(id.longValue());
+                if(tanim != null)
+                    mahalleDTO.setTanim(tanim);
+
+                mahalleDTOList.add(mahalleDTO);
+            }
+        }
+        return mahalleDTOList;
+    }
+
+    public List<SokakDTO> findSokakListByMahalleId(Long mahalleId) {
+        List<SokakDTO> sokakDTOList = new ArrayList<>();
+        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                SokakDTO sokakDTO = new SokakDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+
+                if(id != null)
+                    sokakDTO.setId(id.longValue());
+                if(tanim != null)
+                    sokakDTO.setTanim(tanim);
+
+                sokakDTOList.add(sokakDTO);
+            }
+        }
+        return sokakDTOList;
     }
 
 }

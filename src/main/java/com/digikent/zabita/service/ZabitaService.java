@@ -2,7 +2,9 @@ package com.digikent.zabita.service;
 
 import com.digikent.zabita.dao.ZabitaRepository;
 import com.digikent.zabita.dto.adres.BelediyeDTO;
+import com.digikent.zabita.dto.adres.MahalleDTO;
 import com.digikent.zabita.dto.adres.MahalleSokakDTO;
+import com.digikent.zabita.dto.adres.SokakDTO;
 import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
 import com.digikent.zabita.entity.BDNTDenetim;
 import org.hibernate.Session;
@@ -41,5 +43,13 @@ public class ZabitaService {
 
     public List<BelediyeDTO> getBelediyeList() {
         return zabitaRepository.findBelediyeList();
+    }
+
+    public List<MahalleDTO> getMahalleByBelediyeId(Long belediyeId) {
+        return zabitaRepository.findMahalleListByBelediyeId(belediyeId);
+    }
+
+    public List<SokakDTO> getSokakByMahalleId(Long mahalleId) {
+        return zabitaRepository.findSokakListByMahalleId(mahalleId);
     }
 }
