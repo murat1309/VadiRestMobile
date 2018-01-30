@@ -31,6 +31,7 @@ public class ZabitaPaydasDTO implements Serializable {
     private Long dre1MahalleId;
     private Long sre1SokakId;
     private Long rre1IlceId;
+    private Long tcKimlikNo;
 
     public Long getPaydasNo() {
         return paydasNo;
@@ -214,5 +215,13 @@ public class ZabitaPaydasDTO implements Serializable {
 
     public void setRre1IlceId(Long rre1IlceId) {
         this.rre1IlceId = rre1IlceId;
+    }
+
+    public Long getTcKimlikNo() {
+        return tcKimlikNo;
+    }
+
+    public void setTcKimlikNo(Long tcKimlikNo) {
+        this.tcKimlikNo = tcKimlikNo;
     }
 }

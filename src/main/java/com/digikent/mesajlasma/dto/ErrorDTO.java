@@ -13,6 +13,10 @@ public class ErrorDTO {
     public ErrorDTO() {
     }
 
+    public ErrorDTO(Boolean isError) {
+        this.isError = isError;
+    }
+
     public ErrorDTO(Boolean isError, String errorMessage) {
         this.isError = isError;
         this.errorMessage = errorMessage;

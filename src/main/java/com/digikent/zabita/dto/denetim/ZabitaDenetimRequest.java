@@ -2,6 +2,7 @@ package com.digikent.zabita.dto.denetim;
 
 import com.digikent.zabita.dto.adres.ZabitaOlayYeriAdresi;
 import com.digikent.zabita.dto.adres.ZabitaTebligatAdresi;
+import com.digikent.zabita.dto.paydas.ZabitaPaydasDTO;
 
 import java.io.Serializable;
 
@@ -10,17 +11,16 @@ import java.io.Serializable;
  */
 public class ZabitaDenetimRequest implements Serializable{
 
-    private Long paydasId;
-    private Long rre1IlceId;
+    private ZabitaPaydasDTO zabitaPaydasDTO;
     private ZabitaTebligatAdresi zabitaTebligatAdresi;
     private ZabitaOlayYeriAdresi zabitaOlayYeriAdresi;
 
-    public Long getPaydasId() {
-        return paydasId;
+    public ZabitaPaydasDTO getZabitaPaydasDTO() {
+        return zabitaPaydasDTO;
     }
 
-    public void setPaydasId(Long paydasId) {
-        this.paydasId = paydasId;
+    public void setZabitaPaydasDTO(ZabitaPaydasDTO zabitaPaydasDTO) {
+        this.zabitaPaydasDTO = zabitaPaydasDTO;
     }
 
     public ZabitaTebligatAdresi getZabitaTebligatAdresi() {
@@ -37,13 +37,5 @@ public class ZabitaDenetimRequest implements Serializable{
 
     public void setZabitaOlayYeriAdresi(ZabitaOlayYeriAdresi zabitaOlayYeriAdresi) {
         this.zabitaOlayYeriAdresi = zabitaOlayYeriAdresi;
-    }
-
-    public Long getRre1IlceId() {
-        return rre1IlceId;
-    }
-
-    public void setRre1IlceId(Long rre1IlceId) {
-        this.rre1IlceId = rre1IlceId;
     }
 }

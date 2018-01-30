@@ -9,6 +9,15 @@ public class MahalleDTO implements Serializable {
 
     private Long id;
     private String tanim;
+    private Long rre1IlceId;
+
+    public Long getRre1IlceId() {
+        return rre1IlceId;
+    }
+
+    public void setRre1IlceId(Long rre1IlceId) {
+        this.rre1IlceId = rre1IlceId;
+    }
 
     public Long getId() {
         return id;

@@ -71,12 +71,20 @@ public class ZabitaResource {
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<Boolean> saveDenetim(@RequestBody ZabitaDenetimRequest zabitaDenetimRequest) {
-        LOG.debug("Zabita - denetim kayıt. paydaş ID : " + zabitaDenetimRequest.getPaydasId());
+    public ResponseEntity<ZabitaDenetimResponse> saveDenetim(@RequestBody ZabitaDenetimRequest zabitaDenetimRequest) {
+        LOG.debug("Zabita - denetim kayıt. paydaş ID : " + zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
 
-        zabitaService.saveZabitaDenetim(zabitaDenetimRequest);
+        ZabitaDenetimResponse zabitaDenetimResponse = new ZabitaDenetimResponse();
+        Boolean result = zabitaService.saveZabitaDenetim(zabitaDenetimRequest);
 
-        return new ResponseEntity<Boolean>(true, OK);
+        if (result) {
+            zabitaDenetimResponse.setSuccessful(result);
+        } else {
+            zabitaDenetimResponse.setSuccessful(result);
+            zabitaDenetimResponse.setErrorDTO(new ErrorDTO(true));
+        }
+
+        return new ResponseEntity<ZabitaDenetimResponse>(zabitaDenetimResponse, OK);
     }
 
     /*
@@ -105,8 +113,20 @@ public class ZabitaResource {
     }
 
     /*
-    Mahalleye göre sokakları getirir
-*/
+        geçerli ilçeye ait mahalleleri getirir
+    */
+    @RequestMapping(value = "/mahalle", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<MahalleDTO>> getMahalleList() {
+        LOG.debug("/mahalle REST request to get current mahalle List = ");
+        List<MahalleDTO> mahalleDTOs = zabitaService.getMahalleListByCurrentBelediye();
+
+        return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
+    }
+
+    /*
+        Mahalleye göre sokakları getirir
+    */
     @RequestMapping(value = "/sokak/{mahalleId}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<List<SokakDTO>> getSokakList(@PathVariable("mahalleId") Long mahalleId) {

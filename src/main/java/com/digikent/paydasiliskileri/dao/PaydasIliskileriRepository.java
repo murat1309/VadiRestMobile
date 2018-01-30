@@ -344,6 +344,7 @@ public class PaydasIliskileriRepository {
                     BigDecimal dre1MahalleId = (BigDecimal) map.get("DRE1MAHALLE_ID");
                     BigDecimal sre1SokakId = (BigDecimal) map.get("SRE1SOKAK_ID");
                     BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
+                    BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
 
                     if(paydasNo != null)
                         zabitaPaydasDTO.setPaydasNo(paydasNo.longValue());
@@ -398,6 +399,8 @@ public class PaydasIliskileriRepository {
                         zabitaPaydasDTO.setSre1SokakId(sre1SokakId.longValue());
                     if(rre1IlceId != null)
                         zabitaPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
+                    if(tcKimlikNo != null)
+                        zabitaPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
 
                     zabitaPaydasResponseDTO.getResponseZabitaPaydasList().add(zabitaPaydasDTO);
                 }

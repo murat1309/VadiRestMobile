@@ -33,12 +33,22 @@ public class ZabitaRepository {
 
     public Boolean saveZabitaDenetim(ZabitaDenetimRequest zabitaDenetimRequest) {
 
-        LOG.debug("Denetim KAYDI paydas ID = " + zabitaDenetimRequest.getPaydasId());
+        LOG.debug("Denetim KAYDI paydas ID = " + zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
 
         BDNTDenetim bdntDenetim = new BDNTDenetim();
 
-        bdntDenetim.setMpi1PaydasId(zabitaDenetimRequest.getPaydasId());
+        bdntDenetim.setMpi1PaydasId(zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
+        bdntDenetim.setIzahat(null);
+        bdntDenetim.setVsynRoleTeamId(null);
+        if (zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasTuru().equalsIgnoreCase("Kurum")) {
+            //TODO uygun setlemeyi yap
+            bdntDenetim.setBislIsletme(null);
+        } else if(zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasTuru().equalsIgnoreCase("Şahıs")) {
+            bdntDenetim.setTcKimlikNo(zabitaDenetimRequest.getZabitaPaydasDTO().getTcKimlikNo());
+            bdntDenetim.setBislIsletme(null);
+        }
+
         //olay yeri adresi
         bdntDenetim.setPaftaOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getPaftaOlayYeri());
         bdntDenetim.setAdaNoOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getAdaNoOlayYeri());
@@ -49,7 +59,7 @@ public class ZabitaRepository {
         bdntDenetim.setDre1MahalleOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getDre1MahalleOlayYeri());
         bdntDenetim.setKapiNoHarfOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getKapiNoHarfOlayYeri());
         bdntDenetim.setKapiNoSayiOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getKapiNoSayiOlayYeri());
-        bdntDenetim.setRre1IlceOlayYeri(zabitaDenetimRequest.getRre1IlceId());
+        bdntDenetim.setRre1IlceOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getRre1IlceOlayYeri());
         bdntDenetim.setSre1SokakOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getSre1SokakOlayYeri());
         //tebligat adresi
         bdntDenetim.setSiteAdiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSiteAdiTebligat());
@@ -59,7 +69,7 @@ public class ZabitaRepository {
         bdntDenetim.setKapiNoSayiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getKapiNoSayiTebligat());
         bdntDenetim.setBlokNotebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getBlokNotebligat());
         bdntDenetim.setDre1MahalleTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDre1MahalleTebligat());
-        bdntDenetim.setRre1ilceTebligat(zabitaDenetimRequest.getRre1IlceId());
+        bdntDenetim.setRre1ilceTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getRre1ilceTebligat());
         bdntDenetim.setSre1SokakTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSre1SokakTebligat());
 
         bdntDenetim.setCrUser(1l);
@@ -153,7 +163,7 @@ public class ZabitaRepository {
 
     public List<MahalleDTO> findMahalleListByBelediyeId(Long belediyeId) {
         List<MahalleDTO> mahalleDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM FROM DRE1MAHALLE WHERE RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM, RRE1ILCE_ID FROM DRE1MAHALLE WHERE RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -168,11 +178,14 @@ public class ZabitaRepository {
 
                 BigDecimal id = (BigDecimal) map.get("ID");
                 String tanim = (String) map.get("TANIM");
+                BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
 
                 if(id != null)
                     mahalleDTO.setId(id.longValue());
                 if(tanim != null)
                     mahalleDTO.setTanim(tanim);
+                if(rre1IlceId != null)
+                    mahalleDTO.setRre1IlceId(rre1IlceId.longValue());
 
                 mahalleDTOList.add(mahalleDTO);
             }
@@ -209,4 +222,35 @@ public class ZabitaRepository {
         return sokakDTOList;
     }
 
+    public List<MahalleDTO> findMahalleListByCurrentBelediye() {
+        List<MahalleDTO> mahalleDTOList = new ArrayList<>();
+        String sql = "SELECT ID,TANIM,RRE1ILCE_ID FROM DRE1MAHALLE WHERE RRE1ILCE_ID = (SELECT RRE1ILCE_ID FROM NSM2PARAMETRE) AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                MahalleDTO mahalleDTO = new MahalleDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+                BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
+
+                if(id != null)
+                    mahalleDTO.setId(id.longValue());
+                if(tanim != null)
+                    mahalleDTO.setTanim(tanim);
+                if(rre1IlceId != null)
+                    mahalleDTO.setRre1IlceId(rre1IlceId.longValue());
+
+                mahalleDTOList.add(mahalleDTO);
+            }
+        }
+        return mahalleDTOList;
+    }
 }

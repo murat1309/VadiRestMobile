@@ -52,4 +52,8 @@ public class ZabitaService {
     public List<SokakDTO> getSokakByMahalleId(Long mahalleId) {
         return zabitaRepository.findSokakListByMahalleId(mahalleId);
     }
+
+    public List<MahalleDTO> getMahalleListByCurrentBelediye() {
+        return zabitaRepository.findMahalleListByCurrentBelediye();
+    }
 }

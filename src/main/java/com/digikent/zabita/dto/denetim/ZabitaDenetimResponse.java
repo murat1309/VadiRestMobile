@@ -1,5 +1,7 @@
 package com.digikent.zabita.dto.denetim;
 
+import com.digikent.mesajlasma.dto.ErrorDTO;
+
 import java.io.Serializable;
 
 /**
@@ -7,13 +9,22 @@ import java.io.Serializable;
  */
 public class ZabitaDenetimResponse implements Serializable {
 
-    private Long paydasId;
+    private Boolean isSuccessful;
+    private ErrorDTO errorDTO;
 
-    public Long getPaydasId() {
-        return paydasId;
+    public Boolean getSuccessful() {
+        return isSuccessful;
     }
 
-    public void setPaydasId(Long paydasId) {
-        this.paydasId = paydasId;
+    public void setSuccessful(Boolean successful) {
+        isSuccessful = successful;
+    }
+
+    public ErrorDTO getErrorDTO() {
+        return errorDTO;
+    }
+
+    public void setErrorDTO(ErrorDTO errorDTO) {
+        this.errorDTO = errorDTO;
     }
 }
