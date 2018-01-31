@@ -449,6 +449,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -505,6 +511,7 @@
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+                    <include>**/*.vm</include>
                 </includes>
             </resource>
             <resource>

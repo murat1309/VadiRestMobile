@@ -1,12 +1,11 @@
-package com.digikent.zabita.dto.paydas;
+package com.digikent.denetimyonetimi.dto.paydas;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * Created by Kadir on 25.01.2018.
  */
-public class ZabitaPaydasDTO implements Serializable {
+public class DenetimPaydasDTO implements Serializable {
 
     private Long paydasNo;
     private String adi;
@@ -18,7 +17,6 @@ public class ZabitaPaydasDTO implements Serializable {
     private String tabelaAdi;
     private String izahat;
     private String kayitDurumu;
-    private String mahalleAdi;
     private String binaAdi;
     private String kapiNo;
     private String ilceAdi;
@@ -26,10 +24,13 @@ public class ZabitaPaydasDTO implements Serializable {
     private String kapiNoHarf;
     private String daireNoHarf;
     private Long daireNoSayi;
-    private String caddeAdi;
     private Long katSayi;
     private String katHarf;
     private String blokNo;
+    private Long dre1MahalleId;
+    private Long sre1SokakId;
+    private Long rre1IlceId;
+    private Long tcKimlikNo;
 
     public Long getPaydasNo() {
         return paydasNo;
@@ -111,14 +112,6 @@ public class ZabitaPaydasDTO implements Serializable {
         this.kayitDurumu = kayitDurumu;
     }
 
-    public String getMahalleAdi() {
-        return mahalleAdi;
-    }
-
-    public void setMahalleAdi(String mahalleAdi) {
-        this.mahalleAdi = mahalleAdi;
-    }
-
     public String getBinaAdi() {
         return binaAdi;
     }
@@ -167,14 +160,6 @@ public class ZabitaPaydasDTO implements Serializable {
         this.daireNoSayi = daireNoSayi;
     }
 
-    public String getCaddeAdi() {
-        return caddeAdi;
-    }
-
-    public void setCaddeAdi(String caddeAdi) {
-        this.caddeAdi = caddeAdi;
-    }
-
     public Long getKatSayi() {
         return katSayi;
     }
@@ -205,5 +190,37 @@ public class ZabitaPaydasDTO implements Serializable {
 
     public void setKapiNoHarf(String kapiNoHarf) {
         this.kapiNoHarf = kapiNoHarf;
+    }
+
+    public Long getDre1MahalleId() {
+        return dre1MahalleId;
+    }
+
+    public void setDre1MahalleId(Long dre1MahalleId) {
+        this.dre1MahalleId = dre1MahalleId;
+    }
+
+    public Long getSre1SokakId() {
+        return sre1SokakId;
+    }
+
+    public void setSre1SokakId(Long sre1SokakId) {
+        this.sre1SokakId = sre1SokakId;
+    }
+
+    public Long getRre1IlceId() {
+        return rre1IlceId;
+    }
+
+    public void setRre1IlceId(Long rre1IlceId) {
+        this.rre1IlceId = rre1IlceId;
+    }
+
+    public Long getTcKimlikNo() {
+        return tcKimlikNo;
+    }
+
+    public void setTcKimlikNo(Long tcKimlikNo) {
+        this.tcKimlikNo = tcKimlikNo;
     }
 }

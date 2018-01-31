@@ -1,4 +1,4 @@
-package com.digikent.zabita.dto.denetim;
+package com.digikent.denetimyonetimi.dto.denetim;
 
 import java.io.Serializable;
 import java.util.List;
@@ -9,12 +9,6 @@ import java.util.List;
 public class DenetimTuruResponse implements Serializable {
 
     private List<DenetimTuruDTO> denetimTuruDTOList;
-
-
-
-
-
-
 
     public List<DenetimTuruDTO> getDenetimTuruDTOList() {
         return denetimTuruDTOList;

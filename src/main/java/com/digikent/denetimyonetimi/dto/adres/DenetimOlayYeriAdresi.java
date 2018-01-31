@@ -1,19 +1,19 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 /**
  * Created by Kadir on 28.01.2018.
  */
-public class ZabitaOlayYeriAdresi {
+public class DenetimOlayYeriAdresi {
 
     private Long rre1IlceOlayYeri;
     private Long dre1MahalleOlayYeri;
     private Long sre1SokakOlayYeri;
-    private Long ere1YapiOlayYeri;
-    private Long ire1ParselOlayYeri;
-    private Long dre1BagBolumOlayYeri;
+    private Long ere1YapiOlayYeri; //
+    private Long ire1ParselOlayYeri; //
+    private Long dre1BagBolumOlayYeri; //
     private String paftaOlayYeri;
     private String adaNoOlayYeri;
-    private String parselOlayYeri;
+    private String parselOlayYeri;//
     private String siteAdiOlayYeri;
     private String blokNoOlayYeri;
     private String kapiNoHarfOlayYeri;

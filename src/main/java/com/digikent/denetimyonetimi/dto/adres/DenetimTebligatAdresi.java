@@ -1,21 +1,22 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 import java.io.Serializable;
 
 /**
  * Created by Kadir on 28.01.2018.
  */
-public class ZabitaTebligatAdresi implements Serializable {
+public class DenetimTebligatAdresi implements Serializable {
 
     private String siteAdiTebligat;
     private String blokNotebligat;
     private String kapiHarfNoTebligat;
+    private Long kapiNoSayiTebligat;
     private String daireNoHarfTebligat;
+    private Long daireNoSayiTebligat;
     private Long rre1ilceTebligat;
     private Long dre1MahalleTebligat;
     private Long sre1SokakTebligat;
-    private Long kapiNoSayiTebligat;
-    private Long daireNoSayiTebligat;
+
 
     public String getSiteAdiTebligat() {
         return siteAdiTebligat;

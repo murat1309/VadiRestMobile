@@ -43,5 +43,5 @@ public class SY1TespitResource {
         List<SY1TespitDTO> results = repository.search(sy1Tespit);
         return new ResponseEntity<List<SY1TespitDTO>>(results, OK);
     }
-    
+
 }

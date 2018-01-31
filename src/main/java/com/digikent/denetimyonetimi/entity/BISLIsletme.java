@@ -1,4 +1,4 @@
-package com.digikent.zabita.entity;
+package com.digikent.denetimyonetimi.entity;
 
 import com.digikent.domain.BaseEntity;
 
