@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
@@ -167,16 +168,17 @@ public class DenetimResource {
     }
 
     /*
-    Geçerli ildeki belediye listesini getirir
-*/
-    @RequestMapping(value = "/velocity", method = RequestMethod.GET)
+        Denetim raporunu getirir
+    */
+    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
     @Transactional
-    public ResponseEntity<String> getVelocityTemplate() {
-        LOG.debug("/belediyeler REST request to get belediye list");
+    public ResponseEntity<ReportResponse> createDenetimReport() {
+        LOG.debug("/denetim report REST request");
 
-        String temp = denetimService.createVelocityTemplate();
+        String htmlContent = denetimService.createDenetimReport();
+        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
 
-        return new ResponseEntity<String>(temp, OK);
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
     }
 
 }

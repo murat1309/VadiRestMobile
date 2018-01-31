@@ -5,17 +5,17 @@ public class TespitDTO {
   private String deger;
   private String dayanakKanunu;
   private String dayanakMaddesi;
-  private String cezaTutarı;
+  private String cezaTutari;
   private String aciklama;
 
 
-  public TespitDTO(String aciklamamalar, String deger, String dayanakKanunu, String dayanakMaddesi, String cezaTutarı, String aciklama) {
+  public TespitDTO(String aciklamamalar, String deger, String dayanakKanunu, String dayanakMaddesi, String cezaTutari, String aciklama) {
     super();
     this.aciklamamalar = aciklamamalar;
     this.deger = deger;
     this.dayanakKanunu = dayanakKanunu;
     this.dayanakMaddesi = dayanakMaddesi;
-    this.cezaTutarı = cezaTutarı;
+    this.cezaTutari = cezaTutari;
     this.aciklama = aciklama;
   }
 
@@ -51,12 +51,12 @@ public class TespitDTO {
     this.dayanakMaddesi = dayanakMaddesi;
   }
 
-  public String getCezaTutarı() {
-    return cezaTutarı;
+  public String getCezaTutari() {
+    return cezaTutari;
   }
 
-  public void setCezaTutarı(String cezaTutarı) {
-    this.cezaTutarı = cezaTutarı;
+  public void setCezaTutari(String cezaTutari) {
+    this.cezaTutari = cezaTutari;
   }
 
   public String getAciklama() {

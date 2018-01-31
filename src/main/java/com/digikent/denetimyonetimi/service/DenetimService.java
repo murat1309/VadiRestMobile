@@ -62,7 +62,7 @@ public class DenetimService {
         return denetimRepository.findMahalleListByCurrentBelediye();
     }
 
-    public String createVelocityTemplate() {
+    public String createDenetimReport() {
 
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -83,15 +83,15 @@ public class DenetimService {
 
         List<InformationDTO> informationDTOs = new ArrayList<InformationDTO>();
         for (int i = 0; i < 2; i++) {
-            informationDTOs.add(new InformationDTO("sample " + i, "value " + i,
-                    "description description descriptiondescriptiondescription descriptiondescription descriptiondescription" + i));
+            informationDTOs.add(new InformationDTO("Araç Marka " + i, "Audi " + i,
+                    "Ekipman eksikliği " + i));
         }
         vc.put("informationDTOs", informationDTOs);
 
         List<TespitDTO> tespitDTOs = new ArrayList<TespitDTO>();
-        for (int i = 0; i < 3; i++) {
-            tespitDTOs.add(new TespitDTO("sample " + i, "value " + i, "dayanak Kanunu " + i, "dayanak Maddesi " + i, "ceza tutarı " + i,
-                    "description description descriptiondescriptiondescription descriptiondescription descriptiondescription" + i));
+        for (int i = 0; i < 2; i++) {
+            tespitDTOs.add(new TespitDTO("Hileli olarak karışık veya standartlara aykırı mal satılması " + i, "50 " + i, " Sebze ve Meyveler ile Yeterli Arz ve Talep Derinliği Bulunan Diğer Malların Ticaretinin Düzenlenmesi Kanunu/Pazar yerleri Yönetmeliği " + i, "5957 " + i, "750 TL " + i,
+                    "Mallara ilişkin künyenin ya da malın kalitesine standardına veya gıda güvenliğine ilişkin belgelerde bilerek değişiklik yapılması, bunların tahrif veya taklit edilmesi ya da bunlarda üçüncü şahısları yanıltıcı ifadelere yer verilmesi" + i));
         }
         vc.put("tespitDTOs", tespitDTOs);
 
