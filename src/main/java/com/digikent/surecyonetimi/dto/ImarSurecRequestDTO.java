@@ -10,7 +10,7 @@ public class ImarSurecRequestDTO {
     private String adaNo;
     private String parselNo;
     private String paftaNo;
-    private String surecNo;
+    private Long surecNo;
 
     public Long getTcNo() {
         return tcNo;
@@ -52,11 +52,11 @@ public class ImarSurecRequestDTO {
         this.paftaNo = paftaNo;
     }
 
-    public String getSurecNo() {
+    public Long getSurecNo() {
         return surecNo;
     }
 
-    public void setSurecNo(String surecNo) {
+    public void setSurecNo(Long surecNo) {
         this.surecNo = surecNo;
     }
 }

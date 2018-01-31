@@ -318,12 +318,15 @@ public class SurecYonetimiRepository {
 
         List<ImarSurecDTO> imarSurecDTOList = new ArrayList<>();
 
-        String sql = "SELECT VBPMPROCESSINSTANCE_ID, T.TANIM, T.ISACTIVE, PAFTANO, ADANO, PARSELNO, "
-                   + "(SELECT I.ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = IHR1PERSONEL_RAPORTOR) RAPORTOR, "
-                   + "MPI1PAYDAS_ID, (SELECT TANIM FROM TIMRBASVURUDURUMU WHERE TIMRBASVURUDURUMU.ID = TIMRBASVURUDURUMU_ID) BASVURUDURUMU, "
-                   + "MPI1PAYDAS.ADI, MPI1PAYDAS.SOYADI, MPI1PAYDAS.TCKIMLIKNO FROM VIMRBASVURU "
-                   + "JOIN MPI1PAYDAS ON VIMRBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID "
-                   + "JOIN TIMRBASVURUTURU T ON T.ID = VIMRBASVURU.TIMRBASVURUTURU_ID WHERE T.ISACTIVE = 'E'";
+        String sql = "SELECT T.TANIM, T.ISACTIVE, PAFTANO, ADANO, PARSELNO, VBPMPROCESSINSTANCE_ID, "
+                + "VBPMDIGIKENT.PROCESSINSTANCEID, "
+                + "(SELECT I.ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = IHR1PERSONEL_RAPORTOR) RAPORTOR, "
+                + "MPI1PAYDAS_ID, (SELECT TANIM FROM TIMRBASVURUDURUMU WHERE TIMRBASVURUDURUMU.ID = TIMRBASVURUDURUMU_ID) BASVURUDURUMU, "
+                + "MPI1PAYDAS.ADI || ' ' || MPI1PAYDAS.SOYADI AS PAYDASADSOYAD, MPI1PAYDAS.TCKIMLIKNO FROM VIMRBASVURU "
+                + "JOIN MPI1PAYDAS ON VIMRBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID "
+                + "JOIN TIMRBASVURUTURU T ON T.ID = VIMRBASVURU.TIMRBASVURUTURU_ID "
+                + "JOIN VBPMDIGIKENT ON VBPMDIGIKENT.ANAHTARALAN = VIMRBASVURU.ID "
+                + "WHERE T.ISACTIVE = 'E' AND ABS(VBPMPROCESSINSTANCE_ID)>0";
 
         if(imarRequestDTO.getImarSurecRequestDTO().getPaftaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getPaftaNo().equalsIgnoreCase(""))
             sql = sql + " AND PAFTANO = '" + imarRequestDTO.getImarSurecRequestDTO().getPaftaNo() + "'";
@@ -331,8 +334,8 @@ public class SurecYonetimiRepository {
             sql = sql + " AND PARSELNO = '" + imarRequestDTO.getImarSurecRequestDTO().getParselNo() + "'";
         if(imarRequestDTO.getImarSurecRequestDTO().getAdaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getAdaNo().equalsIgnoreCase(""))
             sql = sql + " AND ADANO = '" + imarRequestDTO.getImarSurecRequestDTO().getAdaNo() + "'";
-        if(imarRequestDTO.getImarSurecRequestDTO().getSurecNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getSurecNo().equalsIgnoreCase(""))
-            sql = sql + " AND VBPMPROCESSINSTANCE_ID = '" + imarRequestDTO.getImarSurecRequestDTO().getSurecNo() + "'";
+        if(imarRequestDTO.getImarSurecRequestDTO().getSurecNo() != null)
+            sql = sql + " AND VIMRBASVURU.ID = (SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID = " + imarRequestDTO.getImarSurecRequestDTO().getSurecNo() + ")";
         if(imarRequestDTO.getImarSurecRequestDTO().getPaydasNo() != null)
             sql = sql + " AND MPI1PAYDAS_ID = " + imarRequestDTO.getImarSurecRequestDTO().getPaydasNo();
         if(imarRequestDTO.getImarSurecRequestDTO().getTcNo() != null)
@@ -342,7 +345,7 @@ public class SurecYonetimiRepository {
         for (ImarBasvuruTuruRequestDTO item : imarRequestDTO.getImarBasvuruTuruRequestDTOList()) {
             basvuruturulist.add(item.getValue());
         }
-        sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist) ORDER BY ABS(VBPMPROCESSINSTANCE_ID) ASC";
+        sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist) ORDER BY VBPMDIGIKENT.PROCESSINSTANCEID ASC";
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
         SQLQuery query =session.createSQLQuery(sql);
@@ -355,10 +358,9 @@ public class SurecYonetimiRepository {
             String adaNo = (String) map.get("ADANO");
             String paftaNo = (String) map.get("PAFTANO");
             String parselNo = (String) map.get("PARSELNO");
-            String surecNo = (String) map.get("VBPMPROCESSINSTANCE_ID");
+            BigDecimal surecNo = (BigDecimal) map.get("PROCESSINSTANCEID");
             String basvuruDurumu = (String) map.get("BASVURUDURUMU");
-            String paydasAdı = (String) map.get("ADI");
-            String paydasSoyadı = (String) map.get("SOYADI");
+            String paydasAdSoyad = (String) map.get("PAYDASADSOYAD");
             String basvuruTuru = (String) map.get("TANIM");
             String raportor = (String) map.get("RAPORTOR");
             BigDecimal tcNo = (BigDecimal) map.get("TCKIMLIKNO");
@@ -373,13 +375,11 @@ public class SurecYonetimiRepository {
             if (parselNo != null)
                 imarSurecDTO.setParselNo(parselNo);
             if (surecNo != null)
-                imarSurecDTO.setSurecNo(surecNo);
+                imarSurecDTO.setSurecNo(surecNo.longValue());
             if (basvuruDurumu != null)
                 imarSurecDTO.setBasvuruDurumu(basvuruDurumu);
-            if (paydasAdı != null)
-                imarSurecDTO.setPaydasAdı(paydasAdı);
-            if (paydasSoyadı != null)
-                imarSurecDTO.setPaydasSoyadı(paydasSoyadı);
+            if (paydasAdSoyad != null)
+                imarSurecDTO.setPaydasAdSoyad(paydasAdSoyad);
             if (basvuruTuru != null)
                 imarSurecDTO.setBasvuruTuru(basvuruTuru);
             if(raportor != null)

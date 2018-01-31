@@ -11,12 +11,11 @@ public class ImarSurecDTO {
     private String parselNo;
     private Long tcNo;
     private Long paydasNo;
-    private String surecNo;
+    private Long surecNo;
     private String basvuruTuru;
     private String basvuruDurumu;
-    private String paydasAdı;
-    private String paydasSoyadı;
     private String raportor;
+    private String paydasAdSoyad;
 
     public String getAdaNo() {
         return adaNo;
@@ -58,11 +57,11 @@ public class ImarSurecDTO {
         this.paydasNo = paydasNo;
     }
 
-    public String getSurecNo() {
+    public Long getSurecNo() {
         return surecNo;
     }
 
-    public void setSurecNo(String surecNo) {
+    public void setSurecNo(Long surecNo) {
         this.surecNo = surecNo;
     }
 
@@ -82,27 +81,19 @@ public class ImarSurecDTO {
         this.basvuruDurumu = basvuruDurumu;
     }
 
-    public String getPaydasAdı() {
-        return paydasAdı;
-    }
-
-    public void setPaydasAdı(String paydasAdı) {
-        this.paydasAdı = paydasAdı;
-    }
-
-    public String getPaydasSoyadı() {
-        return paydasSoyadı;
-    }
-
-    public void setPaydasSoyadı(String paydasSoyadı) {
-        this.paydasSoyadı = paydasSoyadı;
-    }
-
     public String getRaportor() {
         return raportor;
     }
 
     public void setRaportor(String raportor) {
         this.raportor = raportor;
+    }
+
+    public String getPaydasAdSoyad() {
+        return paydasAdSoyad;
+    }
+
+    public void setPaydasAdSoyad(String paydasAdSoyad) {
+        this.paydasAdSoyad = paydasAdSoyad;
     }
 }
