@@ -1,13 +1,11 @@
-package com.digikent.zabita.dao;
+package com.digikent.denetimyonetimi.dao;
 
-import com.digikent.mesajlasma.dao.MesajlasmaRepository;
-import com.digikent.paydasiliskileri.dto.PaydasSorguDTO;
-import com.digikent.zabita.dto.adres.BelediyeDTO;
-import com.digikent.zabita.dto.adres.MahalleDTO;
-import com.digikent.zabita.dto.adres.MahalleSokakDTO;
-import com.digikent.zabita.dto.adres.SokakDTO;
-import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
-import com.digikent.zabita.entity.BDNTDenetim;
+import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
+import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
+import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
+import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
+import com.digikent.denetimyonetimi.entity.BDNTDenetim;
 import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,53 +22,53 @@ import java.util.Map;
  * Created by Kadir on 26.01.2018.
  */
 @Repository
-public class ZabitaRepository {
+public class DenetimRepository {
 
-    private final Logger LOG = LoggerFactory.getLogger(ZabitaRepository.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimRepository.class);
 
     @Autowired
     SessionFactory sessionFactory;
 
-    public Boolean saveZabitaDenetim(ZabitaDenetimRequest zabitaDenetimRequest) {
+    public Boolean saveDenetim(DenetimRequest denetimRequest) {
 
-        LOG.debug("Denetim KAYDI paydas ID = " + zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
+        LOG.debug("Denetim KAYDI paydas ID = " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
 
         BDNTDenetim bdntDenetim = new BDNTDenetim();
 
-        bdntDenetim.setMpi1PaydasId(zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
+        bdntDenetim.setMpi1PaydasId(denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
         bdntDenetim.setVsynRoleTeamId(null);
-        if (zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasTuru().equalsIgnoreCase("Kurum")) {
+        if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("Kurum")) {
             //TODO uygun setlemeyi yap
             bdntDenetim.setBislIsletme(null);
-        } else if(zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasTuru().equalsIgnoreCase("Şahıs")) {
-            bdntDenetim.setTcKimlikNo(zabitaDenetimRequest.getZabitaPaydasDTO().getTcKimlikNo());
+        } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("Şahıs")) {
+            bdntDenetim.setTcKimlikNo(denetimRequest.getDenetimPaydasDTO().getTcKimlikNo());
             bdntDenetim.setBislIsletme(null);
         }
 
         //olay yeri adresi
-        bdntDenetim.setPaftaOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getPaftaOlayYeri());
-        bdntDenetim.setAdaNoOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getAdaNoOlayYeri());
-        bdntDenetim.setBlokNoOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getBlokNoOlayYeri());
-        bdntDenetim.setSiteAdiOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getSiteAdiOlayYeri());
-        bdntDenetim.setDaireNoHarfOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getDaireNoHarfOlayYeri());
-        bdntDenetim.setDaireNoSayiOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getDaireNoSayiOlayYeri());
-        bdntDenetim.setDre1MahalleOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getDre1MahalleOlayYeri());
-        bdntDenetim.setKapiNoHarfOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getKapiNoHarfOlayYeri());
-        bdntDenetim.setKapiNoSayiOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getKapiNoSayiOlayYeri());
-        bdntDenetim.setRre1IlceOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getRre1IlceOlayYeri());
-        bdntDenetim.setSre1SokakOlayYeri(zabitaDenetimRequest.getZabitaOlayYeriAdresi().getSre1SokakOlayYeri());
+        bdntDenetim.setPaftaOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getPaftaOlayYeri());
+        bdntDenetim.setAdaNoOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getAdaNoOlayYeri());
+        bdntDenetim.setBlokNoOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getBlokNoOlayYeri());
+        bdntDenetim.setSiteAdiOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getSiteAdiOlayYeri());
+        bdntDenetim.setDaireNoHarfOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getDaireNoHarfOlayYeri());
+        bdntDenetim.setDaireNoSayiOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getDaireNoSayiOlayYeri());
+        bdntDenetim.setDre1MahalleOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getDre1MahalleOlayYeri());
+        bdntDenetim.setKapiNoHarfOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getKapiNoHarfOlayYeri());
+        bdntDenetim.setKapiNoSayiOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getKapiNoSayiOlayYeri());
+        bdntDenetim.setRre1IlceOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getRre1IlceOlayYeri());
+        bdntDenetim.setSre1SokakOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getSre1SokakOlayYeri());
         //tebligat adresi
-        bdntDenetim.setSiteAdiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSiteAdiTebligat());
-        bdntDenetim.setDaireNoHarfTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDaireNoHarfTebligat());
-        bdntDenetim.setDaireNoSayiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDaireNoSayiTebligat());
-        bdntDenetim.setKapiHarfNoTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getKapiHarfNoTebligat());
-        bdntDenetim.setKapiNoSayiTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getKapiNoSayiTebligat());
-        bdntDenetim.setBlokNotebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getBlokNotebligat());
-        bdntDenetim.setDre1MahalleTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getDre1MahalleTebligat());
-        bdntDenetim.setRre1ilceTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getRre1ilceTebligat());
-        bdntDenetim.setSre1SokakTebligat(zabitaDenetimRequest.getZabitaTebligatAdresi().getSre1SokakTebligat());
+        bdntDenetim.setSiteAdiTebligat(denetimRequest.getDenetimTebligatAdresi().getSiteAdiTebligat());
+        bdntDenetim.setDaireNoHarfTebligat(denetimRequest.getDenetimTebligatAdresi().getDaireNoHarfTebligat());
+        bdntDenetim.setDaireNoSayiTebligat(denetimRequest.getDenetimTebligatAdresi().getDaireNoSayiTebligat());
+        bdntDenetim.setKapiHarfNoTebligat(denetimRequest.getDenetimTebligatAdresi().getKapiHarfNoTebligat());
+        bdntDenetim.setKapiNoSayiTebligat(denetimRequest.getDenetimTebligatAdresi().getKapiNoSayiTebligat());
+        bdntDenetim.setBlokNotebligat(denetimRequest.getDenetimTebligatAdresi().getBlokNotebligat());
+        bdntDenetim.setDre1MahalleTebligat(denetimRequest.getDenetimTebligatAdresi().getDre1MahalleTebligat());
+        bdntDenetim.setRre1ilceTebligat(denetimRequest.getDenetimTebligatAdresi().getRre1ilceTebligat());
+        bdntDenetim.setSre1SokakTebligat(denetimRequest.getDenetimTebligatAdresi().getSre1SokakTebligat());
 
         bdntDenetim.setCrUser(1l);
         bdntDenetim.setCrDate(new Date());

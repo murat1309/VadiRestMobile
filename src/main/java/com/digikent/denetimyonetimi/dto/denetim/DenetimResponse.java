@@ -1,4 +1,4 @@
-package com.digikent.zabita.dto.denetim;
+package com.digikent.denetimyonetimi.dto.denetim;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 
@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by Serkan on 26.01.2018.
  */
-public class ZabitaDenetimResponse implements Serializable {
+public class DenetimResponse implements Serializable {
 
     private Boolean isSuccessful;
     private ErrorDTO errorDTO;

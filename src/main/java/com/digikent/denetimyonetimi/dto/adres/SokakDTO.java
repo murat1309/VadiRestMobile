@@ -1,23 +1,14 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 import java.io.Serializable;
 
 /**
  * Created by Kadir on 29.01.2018.
  */
-public class MahalleDTO implements Serializable {
+public class SokakDTO implements Serializable {
 
     private Long id;
     private String tanim;
-    private Long rre1IlceId;
-
-    public Long getRre1IlceId() {
-        return rre1IlceId;
-    }
-
-    public void setRre1IlceId(Long rre1IlceId) {
-        this.rre1IlceId = rre1IlceId;
-    }
 
     public Long getId() {
         return id;

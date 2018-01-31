@@ -1,11 +1,11 @@
-package com.digikent.zabita.dto.paydas;
+package com.digikent.denetimyonetimi.dto.paydas;
 
 import java.io.Serializable;
 
 /**
  * Created by Kadir on 25.01.2018.
  */
-public class ZabitaPaydasRequestDTO implements Serializable {
+public class DenetimPaydasRequestDTO implements Serializable {
 
     private String filter;
 

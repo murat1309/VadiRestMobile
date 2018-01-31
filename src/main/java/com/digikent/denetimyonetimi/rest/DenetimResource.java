@@ -1,19 +1,19 @@
-package com.digikent.zabita.rest;
+package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
-import com.digikent.zabita.dto.adres.BelediyeDTO;
-import com.digikent.zabita.dto.adres.MahalleDTO;
-import com.digikent.zabita.dto.adres.MahalleSokakDTO;
-import com.digikent.zabita.dto.adres.SokakDTO;
-import com.digikent.zabita.dto.denetim.DenetimTuruDTO;
-import com.digikent.zabita.dto.denetim.DenetimTuruResponse;
-import com.digikent.zabita.dto.denetim.ZabitaDenetimRequest;
-import com.digikent.zabita.dto.denetim.ZabitaDenetimResponse;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasRequestDTO;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasResponseDTO;
-import com.digikent.zabita.service.ZabitaService;
+import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
+import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
+import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
+import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruResponse;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimResponse;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
+import com.digikent.denetimyonetimi.service.DenetimService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,58 +33,58 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @RestController
 //@PreAuthorize("hasRole('ROLE_USER')")
-@RequestMapping("/zabita")
-public class ZabitaResource {
+@RequestMapping("/denetim")
+public class DenetimResource {
 
-    private final Logger LOG = LoggerFactory.getLogger(ZabitaResource.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimResource.class);
 
     @Autowired
     PaydasIliskileriManagementService paydasIliskileriManagementService;
 
     @Autowired
-    ZabitaService zabitaService;
+    DenetimService denetimService;
 
     /*
-        zabita - paydas search by single filter
+        denetimyonetimi - paydas search by single filter
     */
     @RequestMapping(value = "/paydas/search", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<ZabitaPaydasResponseDTO> getPaydasListByCriteria(@RequestBody ZabitaPaydasRequestDTO zabitaPaydasRequestDTO) {
-        LOG.debug("Zabita - paydas/search Gelen Paydas Arama Kriteri : " + zabitaPaydasRequestDTO.getFilter());
+    public ResponseEntity<DenetimPaydasResponseDTO> getPaydasListByCriteria(@RequestBody DenetimPaydasRequestDTO denetimPaydasRequestDTO) {
+        LOG.debug("Denetim - paydas/search Gelen Paydas Arama Kriteri : " + denetimPaydasRequestDTO.getFilter());
 
-        ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = null;
-        if(zabitaPaydasRequestDTO.getFilter() != null && !zabitaPaydasRequestDTO.getFilter().isEmpty()) {
-            zabitaPaydasResponseDTO = paydasIliskileriManagementService.getPaydasInfoByZabitaFilter(zabitaPaydasRequestDTO);
+        DenetimPaydasResponseDTO denetimPaydasResponseDTO = null;
+        if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
+            denetimPaydasResponseDTO = paydasIliskileriManagementService.getPaydasInfoByDenetimFilter(denetimPaydasRequestDTO);
         } else {
-            zabitaPaydasResponseDTO.setErrorDTO(new ErrorDTO(true, Constants.ERROR_MESSAGE_PAYDAS_MIN_CHARACHTER_SIZE));
+            denetimPaydasResponseDTO.setErrorDTO(new ErrorDTO(true, Constants.ERROR_MESSAGE_PAYDAS_MIN_CHARACHTER_SIZE));
         }
 
-        return new ResponseEntity<ZabitaPaydasResponseDTO>(zabitaPaydasResponseDTO, OK);
+        return new ResponseEntity<DenetimPaydasResponseDTO>(denetimPaydasResponseDTO, OK);
     }
 
     /*
-        zabita - paydas search by single filter
+        denetimyonetimi - paydas search by single filter
     */
-    @RequestMapping(value = "/denetim/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<ZabitaDenetimResponse> saveDenetim(@RequestBody ZabitaDenetimRequest zabitaDenetimRequest) {
-        LOG.debug("Zabita - denetim kayıt. paydaş ID : " + zabitaDenetimRequest.getZabitaPaydasDTO().getPaydasNo());
+    public ResponseEntity<DenetimResponse> saveDenetim(@RequestBody DenetimRequest denetimRequest) {
+        LOG.debug("Denetim kayıt. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
 
-        ZabitaDenetimResponse zabitaDenetimResponse = new ZabitaDenetimResponse();
-        Boolean result = zabitaService.saveZabitaDenetim(zabitaDenetimRequest);
+        DenetimResponse denetimResponse = new DenetimResponse();
+        Boolean result = denetimService.saveDenetim(denetimRequest);
 
         if (result) {
-            zabitaDenetimResponse.setSuccessful(result);
+            denetimResponse.setSuccessful(result);
         } else {
-            zabitaDenetimResponse.setSuccessful(result);
-            zabitaDenetimResponse.setErrorDTO(new ErrorDTO(true));
+            denetimResponse.setSuccessful(result);
+            denetimResponse.setErrorDTO(new ErrorDTO(true));
         }
 
-        return new ResponseEntity<ZabitaDenetimResponse>(zabitaDenetimResponse, OK);
+        return new ResponseEntity<DenetimResponse>(denetimResponse, OK);
     }
 
     /*
@@ -95,7 +95,7 @@ public class ZabitaResource {
     public ResponseEntity<List<MahalleSokakDTO>> getMahalleAndSokakList(@PathVariable("belediyeId") Long belediyeId) {
         LOG.debug("/mahalle/sokak REST request to get mahalle-sokak List by belediye id = " + belediyeId);
 
-        List<MahalleSokakDTO> mahalleSokakDTOs = zabitaService.getMahalleSokakListByBelediyeId(belediyeId);
+        List<MahalleSokakDTO> mahalleSokakDTOs = denetimService.getMahalleSokakListByBelediyeId(belediyeId);
 
         return new ResponseEntity<List<MahalleSokakDTO>>(mahalleSokakDTOs, OK);
     }
@@ -107,7 +107,7 @@ public class ZabitaResource {
     @Transactional
     public ResponseEntity<List<MahalleDTO>> getMahalleList(@PathVariable("belediyeId") Long belediyeId) {
         LOG.debug("/mahalle REST request to get mahalle List by belediye id = " + belediyeId);
-        List<MahalleDTO> mahalleDTOs = zabitaService.getMahalleByBelediyeId(belediyeId);
+        List<MahalleDTO> mahalleDTOs = denetimService.getMahalleByBelediyeId(belediyeId);
 
         return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
     }
@@ -119,7 +119,7 @@ public class ZabitaResource {
     @Transactional
     public ResponseEntity<List<MahalleDTO>> getMahalleList() {
         LOG.debug("/mahalle REST request to get current mahalle List = ");
-        List<MahalleDTO> mahalleDTOs = zabitaService.getMahalleListByCurrentBelediye();
+        List<MahalleDTO> mahalleDTOs = denetimService.getMahalleListByCurrentBelediye();
 
         return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
     }
@@ -131,7 +131,7 @@ public class ZabitaResource {
     @Transactional
     public ResponseEntity<List<SokakDTO>> getSokakList(@PathVariable("mahalleId") Long mahalleId) {
         LOG.debug("/mahalle REST request to get sokak List by mahalle id = " + mahalleId);
-        List<SokakDTO> sokakDTOs = zabitaService.getSokakByMahalleId(mahalleId);
+        List<SokakDTO> sokakDTOs = denetimService.getSokakByMahalleId(mahalleId);
 
         return new ResponseEntity<List<SokakDTO>>(sokakDTOs, OK);
     }
@@ -144,7 +144,7 @@ public class ZabitaResource {
     public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListCurrentCity() {
         LOG.debug("/belediyeler REST request to get belediye list");
 
-        List<BelediyeDTO> belediyeDTOList = zabitaService.getBelediyeList();
+        List<BelediyeDTO> belediyeDTOList = denetimService.getBelediyeList();
 
         return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
     }
@@ -164,6 +164,19 @@ public class ZabitaResource {
         DenetimTuruResponse denetimTuruResponse = new DenetimTuruResponse();
 
         return new ResponseEntity<DenetimTuruResponse>(denetimTuruResponse, OK);
+    }
+
+    /*
+    Geçerli ildeki belediye listesini getirir
+*/
+    @RequestMapping(value = "/velocity", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<String> getVelocityTemplate() {
+        LOG.debug("/belediyeler REST request to get belediye list");
+
+        String temp = denetimService.createVelocityTemplate();
+
+        return new ResponseEntity<String>(temp, OK);
     }
 
 }

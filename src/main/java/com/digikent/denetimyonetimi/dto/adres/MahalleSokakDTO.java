@@ -1,4 +1,4 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package com.digikent.zabita.dto.denetim;
+package com.digikent.denetimyonetimi.dto.denetim;
 
 import java.io.Serializable;
 

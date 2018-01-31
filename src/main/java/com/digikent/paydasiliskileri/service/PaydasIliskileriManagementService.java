@@ -3,8 +3,8 @@ package com.digikent.paydasiliskileri.service;
 import com.digikent.paydasiliskileri.dao.PaydasIliskileriRepository;
 import com.digikent.paydasiliskileri.dto.PaydasSorguRequestDTO;
 import com.digikent.paydasiliskileri.dto.PaydasSorguResponseDTO;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasRequestDTO;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasResponseDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -77,9 +77,9 @@ public class PaydasIliskileriManagementService {
         return paydasSorguResponseDTO;
     }
 
-    public ZabitaPaydasResponseDTO getPaydasInfoByZabitaFilter(ZabitaPaydasRequestDTO zabitaPaydasRequestDTO) {
+    public DenetimPaydasResponseDTO getPaydasInfoByDenetimFilter(DenetimPaydasRequestDTO denetimPaydasRequestDTO) {
         String query = "";
-        ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = null;
+        DenetimPaydasResponseDTO denetimPaydasResponseDTO = null;
 
         String baseQuery = "select ID,SORGUADI, TCKIMLIKNO, ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT,PAYDASTURU,TABELAADI,KAYITDURUMU, \n" +
                 "(SELECT DRE1MAHALLE_ID  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS DRE1MAHALLE_ID,\n" +
@@ -97,15 +97,15 @@ public class PaydasIliskileriManagementService {
                 "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KATHARF \n" +
                 "from MPI1PAYDAS  ";
 
-        if(zabitaPaydasRequestDTO.getFilter() != null && !zabitaPaydasRequestDTO.getFilter().isEmpty()) {
-            query = baseQuery + " where ROWNUM <= 20 AND (SORGUADI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
-                    " OR VERGINUMARASI LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%'" +
-                    " OR TCKIMLIKNO LIKE '%" + zabitaPaydasRequestDTO.getFilter() + "%')";
+        if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
+            query = baseQuery + " where ROWNUM <= 20 AND (SORGUADI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
+                    " OR VERGINUMARASI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
+                    " OR TCKIMLIKNO LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%')";
         }
 
-        zabitaPaydasResponseDTO = paydasIliskileriRepository.getPaydasInformationZabitaByCriteria(query);
+        denetimPaydasResponseDTO = paydasIliskileriRepository.getPaydasInformationDenetimByCriteria(query);
 
-        return zabitaPaydasResponseDTO;
+        return denetimPaydasResponseDTO;
     }
 
 }

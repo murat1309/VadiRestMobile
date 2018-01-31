@@ -1,11 +1,11 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 import java.io.Serializable;
 
 /**
  * Created by Kadir on 29.01.2018.
  */
-public class SokakDTO implements Serializable {
+public class BelediyeDTO implements Serializable {
 
     private Long id;
     private String tanim;

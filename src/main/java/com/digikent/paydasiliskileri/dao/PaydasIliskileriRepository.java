@@ -2,8 +2,8 @@ package com.digikent.paydasiliskileri.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.dto.*;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasDTO;
-import com.digikent.zabita.dto.paydas.ZabitaPaydasResponseDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -302,9 +302,9 @@ public class PaydasIliskileriRepository {
         return paydasSorguResponseDTO;
     }
 
-    public ZabitaPaydasResponseDTO getPaydasInformationZabitaByCriteria(String sql) {
+    public DenetimPaydasResponseDTO getPaydasInformationDenetimByCriteria(String sql) {
 
-        ZabitaPaydasResponseDTO zabitaPaydasResponseDTO = new ZabitaPaydasResponseDTO();
+        DenetimPaydasResponseDTO denetimPaydasResponseDTO = new DenetimPaydasResponseDTO();
 
         ErrorDTO errorDTO = new ErrorDTO();
 
@@ -316,10 +316,10 @@ public class PaydasIliskileriRepository {
             list = query.list();
 
             if(!list.isEmpty()) {
-                zabitaPaydasResponseDTO.setResponseZabitaPaydasList(new ArrayList<>());
+                denetimPaydasResponseDTO.setResponseDenetimPaydasList(new ArrayList<>());
                 for(Object o : list) {
                     Map map = (Map) o;
-                    ZabitaPaydasDTO zabitaPaydasDTO = new ZabitaPaydasDTO();
+                    DenetimPaydasDTO denetimPaydasDTO = new DenetimPaydasDTO();
 
                     BigDecimal paydasNo = (BigDecimal) map.get("ID");
                     String adi = (String) map.get("ADI");
@@ -347,69 +347,69 @@ public class PaydasIliskileriRepository {
                     BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
 
                     if(paydasNo != null)
-                        zabitaPaydasDTO.setPaydasNo(paydasNo.longValue());
+                        denetimPaydasDTO.setPaydasNo(paydasNo.longValue());
                     if(adi != null)
-                        zabitaPaydasDTO.setAdi(adi);
+                        denetimPaydasDTO.setAdi(adi);
                     if(soyAdi != null)
-                        zabitaPaydasDTO.setSoyAdi(soyAdi);
+                        denetimPaydasDTO.setSoyAdi(soyAdi);
                     if(telNo != null)
-                        zabitaPaydasDTO.setTelefon(telNo);
+                        denetimPaydasDTO.setTelefon(telNo);
                     if(kayitDurumu != null)
-                        zabitaPaydasDTO.setKayitDurumu(kayitDurumu);
+                        denetimPaydasDTO.setKayitDurumu(kayitDurumu);
                     if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
-                        zabitaPaydasDTO.setUnvan(unvan);
+                        denetimPaydasDTO.setUnvan(unvan);
                     if(paydasTuru != null)
                         if(paydasTuru.equalsIgnoreCase("S")) {
-                            zabitaPaydasDTO.setPaydasTuru("Şahıs");
+                            denetimPaydasDTO.setPaydasTuru("Şahıs");
                         } else {
-                            zabitaPaydasDTO.setPaydasTuru("Kurum");
+                            denetimPaydasDTO.setPaydasTuru("Kurum");
                         }
                     if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
                         if(vergiNo != null)
-                            zabitaPaydasDTO.setVergiNo(vergiNo);
+                            denetimPaydasDTO.setVergiNo(vergiNo);
                         if(izahat != null)
-                            zabitaPaydasDTO.setIzahat(izahat);
+                            denetimPaydasDTO.setIzahat(izahat);
                         if(tabelaAdi != null)
-                            zabitaPaydasDTO.setTabelaAdi(tabelaAdi);
+                            denetimPaydasDTO.setTabelaAdi(tabelaAdi);
                     }
                     //adres
                     if(binaAdi != null)
-                        zabitaPaydasDTO.setBinaAdi(binaAdi);
+                        denetimPaydasDTO.setBinaAdi(binaAdi);
                     if(blokNo != null)
-                        zabitaPaydasDTO.setBlokNo(blokNo);
+                        denetimPaydasDTO.setBlokNo(blokNo);
                     if(kapiNo != null)
-                        zabitaPaydasDTO.setKapiNo(kapiNo);
+                        denetimPaydasDTO.setKapiNo(kapiNo);
                     if(ilceAdi != null)
-                        zabitaPaydasDTO.setIlceAdi(ilceAdi);
+                        denetimPaydasDTO.setIlceAdi(ilceAdi);
                     if(kapiNoHarf != null)
-                        zabitaPaydasDTO.setKapiNoHarf(kapiNoHarf);
+                        denetimPaydasDTO.setKapiNoHarf(kapiNoHarf);
                     if(daireNoHarf != null)
-                        zabitaPaydasDTO.setDaireNoHarf(daireNoHarf);
+                        denetimPaydasDTO.setDaireNoHarf(daireNoHarf);
                     if(katHarf != null)
-                        zabitaPaydasDTO.setKatHarf(katHarf);
+                        denetimPaydasDTO.setKatHarf(katHarf);
                     if(kapinoSayi != null)
-                        zabitaPaydasDTO.setKapiNoSayi(kapinoSayi.longValue());
+                        denetimPaydasDTO.setKapiNoSayi(kapinoSayi.longValue());
                     if(daireNoSayi != null)
-                        zabitaPaydasDTO.setDaireNoSayi(daireNoSayi.longValue());
+                        denetimPaydasDTO.setDaireNoSayi(daireNoSayi.longValue());
                     if(katSayi != null)
-                        zabitaPaydasDTO.setKatSayi(katSayi.longValue());
+                        denetimPaydasDTO.setKatSayi(katSayi.longValue());
                     if(dre1MahalleId != null)
-                        zabitaPaydasDTO.setDre1MahalleId(dre1MahalleId.longValue());
+                        denetimPaydasDTO.setDre1MahalleId(dre1MahalleId.longValue());
                     if(sre1SokakId != null)
-                        zabitaPaydasDTO.setSre1SokakId(sre1SokakId.longValue());
+                        denetimPaydasDTO.setSre1SokakId(sre1SokakId.longValue());
                     if(rre1IlceId != null)
-                        zabitaPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
+                        denetimPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
                     if(tcKimlikNo != null)
-                        zabitaPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
+                        denetimPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
 
-                    zabitaPaydasResponseDTO.getResponseZabitaPaydasList().add(zabitaPaydasDTO);
+                    denetimPaydasResponseDTO.getResponseDenetimPaydasList().add(denetimPaydasDTO);
                 }
 
             }
 
             errorDTO.setErrorMessage(null);
             errorDTO.setError(false);
-            zabitaPaydasResponseDTO.setErrorDTO(errorDTO);
+            denetimPaydasResponseDTO.setErrorDTO(errorDTO);
 
 
         } catch (Exception e) {
@@ -417,11 +417,11 @@ public class PaydasIliskileriRepository {
 
             errorDTO.setErrorMessage("Bir hata meydana geldi.");
             errorDTO.setError(true);
-            zabitaPaydasResponseDTO.setErrorDTO(errorDTO);
+            denetimPaydasResponseDTO.setErrorDTO(errorDTO);
             //paydasSorguResponseDTO.getPaydasSorguResponse().add(paydasSorguDTO);
         }
 
-        return zabitaPaydasResponseDTO;
+        return denetimPaydasResponseDTO;
     }
 }
 

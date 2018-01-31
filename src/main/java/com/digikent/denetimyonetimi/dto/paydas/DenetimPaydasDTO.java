@@ -1,12 +1,11 @@
-package com.digikent.zabita.dto.paydas;
+package com.digikent.denetimyonetimi.dto.paydas;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * Created by Kadir on 25.01.2018.
  */
-public class ZabitaPaydasDTO implements Serializable {
+public class DenetimPaydasDTO implements Serializable {
 
     private Long paydasNo;
     private String adi;

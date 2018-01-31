@@ -1,9 +1,9 @@
-package com.digikent.zabita.dto.adres;
+package com.digikent.denetimyonetimi.dto.adres;
 
 /**
  * Created by Kadir on 28.01.2018.
  */
-public class ZabitaOlayYeriAdresi {
+public class DenetimOlayYeriAdresi {
 
     private Long rre1IlceOlayYeri;
     private Long dre1MahalleOlayYeri;
