@@ -1,17 +1,17 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.denetim.*;
+import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
+import com.digikent.denetimyonetimi.service.ReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruResponse;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimResponse;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
@@ -44,6 +44,9 @@ public class DenetimResource {
 
     @Autowired
     DenetimService denetimService;
+
+    @Autowired
+    ReportService reportService;
 
     /*
         denetimyonetimi - paydas search by single filter
@@ -151,23 +154,6 @@ public class DenetimResource {
     }
 
     /*
-        Denetim türlerini getirir
-     */
-    @RequestMapping(value = "/denetimturu", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<DenetimTuruResponse> getDenetimTuruList(@PathVariable("whom") Long personelId) {
-        LOG.debug("REST request to get message list whom id : " + personelId);
-        List<DenetimTuruDTO> denetimTuruDTOList = null;
-
-        // denetimTuruDTOList =
-
-        ErrorDTO errorDTO = new ErrorDTO(false,null);
-        DenetimTuruResponse denetimTuruResponse = new DenetimTuruResponse();
-
-        return new ResponseEntity<DenetimTuruResponse>(denetimTuruResponse, OK);
-    }
-
-    /*
         Denetim raporunu getirir
     */
     @RequestMapping(value = "/create/report", method = RequestMethod.GET)
@@ -175,10 +161,49 @@ public class DenetimResource {
     public ResponseEntity<ReportResponse> createDenetimReport() {
         LOG.debug("/denetim report REST request");
 
-        String htmlContent = denetimService.createDenetimReport();
+        String htmlContent = reportService.createDenetimReport();
         ReportResponse reportResponse = new ReportResponse(htmlContent,null);
 
         return new ResponseEntity<ReportResponse>(reportResponse, OK);
+    }
+
+    /*
+        Denetim türlerini getirir
+     */
+    @RequestMapping(value = "/list/denetimturu", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimTuruDTO>> getDenetimTuruList() {
+        LOG.debug("REST request to get all denetim turu ");
+        List<DenetimTuruDTO> denetimTuruDTOList = null;
+        denetimTuruDTOList = denetimService.getDenetimTuruDTOList();
+
+        return new ResponseEntity<List<DenetimTuruDTO>>(denetimTuruDTOList, OK);
+    }
+
+    /*
+        Denetim Türü Id'sine göre tespit gruplarını getirir
+    */
+    @RequestMapping(value = "/list/tespitgrubu/{denetimTuruId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<TespitGrubuDTO>> getTespitGrubuListByDenetimTuru(@PathVariable("denetimTuruId") Long denetimTuruId) {
+        LOG.debug("REST request to get all tespit grubu by denetim turu Id = " + denetimTuruId);
+        List<TespitGrubuDTO> tespitGrubuDTOList = null;
+        tespitGrubuDTOList = denetimService.getTespitGrubuDTOListByDenetimTuruId(denetimTuruId);
+
+        return new ResponseEntity<List<TespitGrubuDTO>>(tespitGrubuDTOList, OK);
+    }
+
+    /*
+        tespit grubu Id'sine göre tespitleri getirir
+    */
+    @RequestMapping(value = "/list/tespit/{tespitGrubuId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<TespitDTO>> getTespitDTOListByTespitGrubuId(@PathVariable("tespitGrubuId") Long tespitGrubuId) {
+        LOG.debug("REST request to get all tespit by tespit grubu Id = " + tespitGrubuId);
+        List<TespitDTO> tespitDTOs = null;
+        tespitDTOs = denetimService.getTespitDTOListByTespitGrubuId(tespitGrubuId);
+
+        return new ResponseEntity<List<TespitDTO>>(tespitDTOs, OK);
     }
 
 }

@@ -6,12 +6,10 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
-import com.digikent.denetimyonetimi.dto.velocity.*;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,45 +57,33 @@ public class DenetimService {
         return denetimRepository.findMahalleListByCurrentBelediye();
     }
 
-    public String createDenetimReport() {
+    public List<DenetimTuruDTO> getDenetimTuruDTOList() {
+        return denetimRepository.getDenetimTuruDTOList();
+    }
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+    public List<TespitGrubuDTO> getTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
+        return denetimRepository.findTespitGrubuDTOListByDenetimTuruId(denetimTuruId);
+    }
 
-        ve.init();
-        Template t = ve.getTemplate("templates/template.vm", "UTF-8");
-        VelocityContext vc = new VelocityContext();
+    public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
+        List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
+        List<SecenekTuruDTO> secenekTuruDTOList = denetimRepository.findSecenekDTOListByTespitGrubuId(tespitGrubuId);
 
-        UserDTO userDTO = new UserDTO("Ahmet", "Korkmaz", "12345678901", "+90 212 123 4567");
-        vc.put("userDTO", userDTO);
+        return groupingTespitAndSecenekTuru(tespitDTOList, secenekTuruDTOList);
+    }
 
-        DocumentDTO documentDTO = new DocumentDTO(new Date(), "147852369");
-        vc.put("documentDTO", documentDTO);
+    public List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
 
-        LocationDTO locationDTO = new LocationDTO("Batı", "Aydınlı", "Bahar", "36", "12", "23", "44");
-        vc.put("locationDTO", locationDTO);
-
-        List<InformationDTO> informationDTOs = new ArrayList<InformationDTO>();
-        for (int i = 0; i < 2; i++) {
-            informationDTOs.add(new InformationDTO("Araç Marka " + i, "Audi " + i,
-                    "Ekipman eksikliği " + i));
+        for (TespitDTO tespitDTO : tespitDTOList) {
+            if (tespitDTO.getSecenekTuru().equals("CHECKBOX")) {
+                for (SecenekTuruDTO secenekTuruDTO : secenekTuruDTOList) {
+                    if (tespitDTO.getId().longValue() == secenekTuruDTO.getTespitId().longValue()) {
+                        tespitDTO.getSecenekTuruDTOList().add(secenekTuruDTO);
+                    }
+                }
+            }
         }
-        vc.put("informationDTOs", informationDTOs);
 
-        List<TespitDTO> tespitDTOs = new ArrayList<TespitDTO>();
-        for (int i = 0; i < 2; i++) {
-            tespitDTOs.add(new TespitDTO("Hileli olarak karışık veya standartlara aykırı mal satılması " + i, "50 " + i, " Sebze ve Meyveler ile Yeterli Arz ve Talep Derinliği Bulunan Diğer Malların Ticaretinin Düzenlenmesi Kanunu/Pazar yerleri Yönetmeliği " + i, "5957 " + i, "750 TL " + i,
-                    "Mallara ilişkin künyenin ya da malın kalitesine standardına veya gıda güvenliğine ilişkin belgelerde bilerek değişiklik yapılması, bunların tahrif veya taklit edilmesi ya da bunlarda üçüncü şahısları yanıltıcı ifadelere yer verilmesi" + i));
-        }
-        vc.put("tespitDTOs", tespitDTOs);
-
-
-
-        StringWriter sw = new StringWriter();
-        t.merge(vc, sw);
-        System.out.println(sw);
-
-        return sw.toString();
+        return tespitDTOList;
     }
 }

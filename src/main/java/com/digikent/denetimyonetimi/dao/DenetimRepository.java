@@ -5,6 +5,10 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.entity.BDNTDenetim;
 import org.hibernate.*;
 import org.slf4j.Logger;
@@ -250,5 +254,171 @@ public class DenetimRepository {
             }
         }
         return mahalleDTOList;
+    }
+
+    public List<DenetimTuruDTO> getDenetimTuruDTOList() {
+        List<DenetimTuruDTO> denetimTuruDTOs = new ArrayList<>();
+        String sql = "SELECT ID,TANIM,KAYITOZELISMI,IZAHAT FROM LDNTDENETIMTURU WHERE ISACTIVE='E'";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                DenetimTuruDTO denetimTuruDTO = new DenetimTuruDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+                String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
+                String izahat = (String) map.get("IZAHAT");
+
+                if(id != null)
+                    denetimTuruDTO.setId(id.longValue());
+                if(tanim != null)
+                    denetimTuruDTO.setTanim(tanim);
+                if(kayitOzelIsmi != null)
+                    denetimTuruDTO.setKayitOzelIsmi(kayitOzelIsmi);
+                if(izahat != null)
+                    denetimTuruDTO.setIzahat(izahat);
+
+                denetimTuruDTOs.add(denetimTuruDTO);
+            }
+        }
+        return denetimTuruDTOs;
+    }
+
+    public List<TespitGrubuDTO> findTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
+        List<TespitGrubuDTO> tespitGrubuDTOList = new ArrayList<>();
+        String sql = "SELECT A.ID,A.TANIM,A.KAYITOZELISMI,A.IZAHAT FROM LDNTTESPITGRUBU A JOIN ADNTDENETIMTURUTESPITGRUBU B " +
+                " ON A.ISACTIVE='E' AND A.ID=B.LDNTTESPITGRUBU_ID AND B.LDNTDENETIMTURU_ID=" + denetimTuruId;
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                TespitGrubuDTO tespitGrubuDTO = new TespitGrubuDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+                String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
+                String izahat = (String) map.get("IZAHAT");
+
+                if(id != null)
+                    tespitGrubuDTO.setId(id.longValue());
+                if(tanim != null)
+                    tespitGrubuDTO.setTanim(tanim);
+                if(kayitOzelIsmi != null)
+                    tespitGrubuDTO.setKayitOzelIsmi(kayitOzelIsmi);
+                if(izahat != null)
+                    tespitGrubuDTO.setIzahat(izahat);
+
+                tespitGrubuDTOList.add(tespitGrubuDTO);
+            }
+        }
+        return tespitGrubuDTOList;
+    }
+
+
+    public List<TespitDTO> findTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
+
+        List<TespitDTO> tespitDTOList = new ArrayList<>();
+        String sql = "SELECT ID,TANIM,SIRASI,KAYITOZELISMI,SECENEKTURU,AKSIYON,EKSUREVERILEBILIRMI,EKSURE,IZAHAT " +
+                " FROM LDNTTESPIT WHERE ISACTIVE = 'E' AND LDNTTESPITGRUBU_ID = " + tespitGrubuId +
+                " ORDER BY ID ";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                TespitDTO tespitDTO = new TespitDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+                String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
+                String izahat = (String) map.get("IZAHAT");
+                String secenekTuru = (String) map.get("SECENEKTURU");
+                String aksiyon = (String) map.get("AKSIYON");
+                String ekSureVerileblirMi = (String) map.get("EKSUREVERILEBILIRMI");
+                BigDecimal ekSure = (BigDecimal) map.get("EKSURE");
+                BigDecimal sirasi = (BigDecimal) map.get("SIRASI");
+
+                if(id != null)
+                    tespitDTO.setId(id.longValue());
+                if(tanim != null)
+                    tespitDTO.setTanim(tanim);
+                if(kayitOzelIsmi != null)
+                    tespitDTO.setKayitOzelIsmi(kayitOzelIsmi);
+                if(izahat != null)
+                    tespitDTO.setIzahat(izahat);
+                if(aksiyon != null)
+                    tespitDTO.setAksiyon(aksiyon);
+                if(secenekTuru != null)
+                    tespitDTO.setSecenekTuru(secenekTuru);
+                if(ekSureVerileblirMi != null)
+                    tespitDTO.setEkSureVerilebilirMi(ekSureVerileblirMi);
+                if(ekSure != null)
+                    tespitDTO.setEkSure(ekSure.longValue());
+                if(sirasi != null)
+                    tespitDTO.setSirasi(sirasi.longValue());
+
+                tespitDTOList.add(tespitDTO);
+            }
+        }
+        return tespitDTOList;
+
+
+    }
+
+    public List<SecenekTuruDTO> findSecenekDTOListByTespitGrubuId(Long tespitGrubuId) {
+        List<SecenekTuruDTO> secenekTuruDTOList = new ArrayList<>();
+        String sql = "SELECT B.ID, A.ID AS TESPITID,B.SIRASI, B.DEGERI " +
+                " FROM LDNTTESPIT A, LDNTTESPITSECENEK B " +
+                " WHERE A.LDNTTESPITGRUBU_ID = " + tespitGrubuId +
+                " AND A.ID=B.LDNTTESPIT_ID AND A.SECENEKTURU='CHECKBOX' AND B.ISACTIVE='1' AND A.ISACTIVE = 'E' ORDER BY B.SIRASI";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if (!list.isEmpty()) {
+            for (Object o : list) {
+                Map map = (Map) o;
+                SecenekTuruDTO secenekTuruDTO = new SecenekTuruDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                BigDecimal tespitId = (BigDecimal) map.get("TESPITID");
+                BigDecimal sirasi = (BigDecimal) map.get("SIRASI");
+                String degeri = (String) map.get("DEGERI");
+
+                if (id != null)
+                    secenekTuruDTO.setId(id.longValue());
+                if (tespitId != null)
+                    secenekTuruDTO.setTespitId(tespitId.longValue());
+                if (sirasi != null)
+                    secenekTuruDTO.setSirasi(sirasi.longValue());
+                if (degeri != null)
+                    secenekTuruDTO.setDegeri(degeri);
+
+                secenekTuruDTOList.add(secenekTuruDTO);
+            }
+        }
+
+        return secenekTuruDTOList;
     }
 }
