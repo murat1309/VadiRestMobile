@@ -60,7 +60,7 @@ public class ReportService {
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
-        System.out.println(sw);
+        //System.out.println(sw);
 
         return sw.toString();
     }
