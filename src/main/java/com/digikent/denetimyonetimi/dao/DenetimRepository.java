@@ -6,10 +6,13 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.entity.BDNTDenetim;
+import com.digikent.denetimyonetimi.entity.MPI1Paydas;
 import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -420,5 +423,81 @@ public class DenetimRepository {
         }
 
         return secenekTuruDTOList;
+    }
+
+    public List<DenetimIsletmeDTO> findIsletmeDTOListByPaydasId(Long paydasId) {
+        List<DenetimIsletmeDTO> denetimIsletmeDTOList = new ArrayList<>();
+        String sql = "SELECT ID,MPI1PAYDAS_ID,ISLETMAADI,TABELAUNVANI,FAALIYETKONUSU, " +
+                "SORUMLUADI || ' ' || SORUMLUSOYADI AS ADSOYAD FROM BISLISLETME WHERE ISACTIVE='E' AND MPI1PAYDAS_ID="+paydasId;
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if (!list.isEmpty()) {
+            for (Object o : list) {
+                Map map = (Map) o;
+                DenetimIsletmeDTO denetimIsletmeDTO = new DenetimIsletmeDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                BigDecimal mpi1PaydasId = (BigDecimal) map.get("MPI1PAYDAS_ID");
+                String isletmeAdi = (String) map.get("ISLETMAADI");
+                String tabelaUnvani = (String) map.get("TABELAUNVANI");
+                String faaliyetKonusu = (String) map.get("FAALIYETKONUSU");
+                String sorumluAdSoyad = (String) map.get("ADSOYAD");
+
+                if (id != null)
+                    denetimIsletmeDTO.setId(id.longValue());
+                if (mpi1PaydasId != null)
+                    denetimIsletmeDTO.setPaydasId(mpi1PaydasId.longValue());
+                if (isletmeAdi != null)
+                    denetimIsletmeDTO.setIsletmeAdi(isletmeAdi);
+                if (tabelaUnvani != null)
+                    denetimIsletmeDTO.setTabelaUnvani(tabelaUnvani);
+                if (faaliyetKonusu != null)
+                    denetimIsletmeDTO.setFaaliyetKonusu(faaliyetKonusu);
+                if (sorumluAdSoyad != null)
+                    denetimIsletmeDTO.setSorumluAdSoyad(sorumluAdSoyad);
+
+                denetimIsletmeDTOList.add(denetimIsletmeDTO);
+            }
+        }
+
+        return denetimIsletmeDTOList;
+    }
+
+    public Boolean saveSahisPaydas(DenetimPaydasDTO denetimPaydasDTO) {
+        LOG.debug("Şahıs Paydaş kaydı ADI = " + denetimPaydasDTO.getAdi());
+
+        MPI1Paydas mpi1Paydas = new MPI1Paydas();
+        mpi1Paydas.setKayitDurumu("A");
+        mpi1Paydas.setPaydasTuru("S");
+        mpi1Paydas.setRaporAdi("VADI YAZILIM");
+        mpi1Paydas.setSorguAdi("VADI BILISIM");
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        session.save(mpi1Paydas);
+        tx.commit();
+
+        return true;
+    }
+
+    public void savePaydas() {
+
+        MPI1Paydas mpi1Paydas = new MPI1Paydas();
+        mpi1Paydas.setKayitDurumu("A");
+        mpi1Paydas.setPaydasTuru("S");
+        mpi1Paydas.setRaporAdi("VADI YAZILIM");
+        mpi1Paydas.setSorguAdi("VADI BILISIM");
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        session.save(mpi1Paydas);
+        tx.commit();
     }
 }

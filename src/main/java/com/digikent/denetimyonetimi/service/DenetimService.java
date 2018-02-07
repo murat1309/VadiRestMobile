@@ -7,6 +7,8 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
@@ -85,5 +87,17 @@ public class DenetimService {
         }
 
         return tespitDTOList;
+    }
+
+    public List<DenetimIsletmeDTO> getIsletmeDTOListByPaydasId(Long paydasId) {
+        return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
+    }
+
+    public Boolean saveSahisPaydas(DenetimPaydasDTO denetimPaydasDTO) {
+        return denetimRepository.saveSahisPaydas(denetimPaydasDTO);
+    }
+
+    public void savePaydas() {
+        denetimRepository.savePaydas();
     }
 }

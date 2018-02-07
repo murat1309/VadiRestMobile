@@ -2,6 +2,8 @@ package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
@@ -15,6 +17,8 @@ import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
+import com.documentum.xml.xpath.operations.Bool;
+import com.vadi.smartkent.datamodel.domains.paydas.PI1Paydas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +163,7 @@ public class DenetimResource {
     @RequestMapping(value = "/create/report", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<ReportResponse> createDenetimReport() {
-        LOG.debug("/denetim report REST request");
+        LOG.debug("/create/report REST request");
 
         String htmlContent = reportService.createDenetimReport();
         ReportResponse reportResponse = new ReportResponse(htmlContent,null);
@@ -204,6 +208,50 @@ public class DenetimResource {
         tespitDTOs = denetimService.getTespitDTOListByTespitGrubuId(tespitGrubuId);
 
         return new ResponseEntity<List<TespitDTO>>(tespitDTOs, OK);
+    }
+
+    /*
+        paydaş id'e göre işletme listesini getirir
+    */
+    @RequestMapping(value = "/list/isletme/{paydasId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimIsletmeDTO>> getIsletmeDTOListByPaydasId(@PathVariable("paydasId") Long paydasId) {
+        LOG.debug("REST list/isletme/{paydasId} request to get isletme list by paydas Id = " + paydasId);
+        List<DenetimIsletmeDTO> denetimIsletmeDTOList = null;
+        denetimIsletmeDTOList = denetimService.getIsletmeDTOListByPaydasId(paydasId);
+
+        return new ResponseEntity<List<DenetimIsletmeDTO>>(denetimIsletmeDTOList, OK);
+    }
+
+
+    /*
+        şahıs paydaş kayıt
+    */
+    @RequestMapping(value = "/save/sahispaydas", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<DenetimResponse> saveSahisPaydas(@RequestBody DenetimPaydasDTO denetimPaydasDTO) {
+        LOG.debug("Paydaş Şahıs kayit islemi");
+
+        DenetimResponse denetimResponse = new DenetimResponse();
+        Boolean result = denetimService.saveSahisPaydas(denetimPaydasDTO);
+
+        if (result) {
+            denetimResponse.setSuccessful(result);
+        } else {
+            denetimResponse.setSuccessful(result);
+            denetimResponse.setErrorDTO(new ErrorDTO(true));
+        }
+
+        return new ResponseEntity<DenetimResponse>(denetimResponse, OK);
+    }
+
+    @RequestMapping(value = "/deneme", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<Boolean> dene() {
+        denetimService.savePaydas();
+        return new ResponseEntity<Boolean>(true, OK);
     }
 
 }
