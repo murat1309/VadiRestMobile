@@ -1,10 +1,7 @@
 package com.digikent.sosyalyardim.web.rest;
 
 import com.digikent.sosyalyardim.dao.SY1TespitDetayRepository;
-import com.digikent.sosyalyardim.dao.SY1TespitRepository;
-import com.digikent.sosyalyardim.web.dto.SY1TespitDTO;
 import com.digikent.sosyalyardim.web.dto.SY1TespitDetayDTO;
-import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Tespit;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1TespitDetay;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

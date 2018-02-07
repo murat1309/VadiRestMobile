@@ -15,16 +15,16 @@ public class MPI1Paydas {
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
 
-    @Column(name = "KAYIT_DURUMU")
+    @Column(name = "KAYITDURUMU")
     private String kayitDurumu;
 
     @Column(name = "PAYDASTURU")
     private String paydasTuru;
 
-    @Column(name = "RAPOR_ADI")
+    @Column(name = "RAPORADI")
     private String raporAdi;
 
-    @Column(name = "SORGU_ADI")
+    @Column(name = "SORGUADI")
     private String sorguAdi;
 
     public Long getID() {
