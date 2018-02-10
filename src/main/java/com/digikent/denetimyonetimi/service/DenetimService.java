@@ -9,9 +9,11 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasSaveResponseDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +100,28 @@ public class DenetimService {
         return denetimRepository.saveSahisPaydas(denetimPaydasDTO);
     }
 
-    public void savePaydas() {
-        denetimRepository.savePaydas();
+    public UtilDenetimSaveDTO savePaydasAllInformation(DenetimPaydasDTO denetimPaydasDTO) {
+        //paydas kayit edilecek
+        UtilDenetimSaveDTO utilDenetimSaveDTO = savePaydas(denetimPaydasDTO);
+        if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
+            //adresleri kayıt edilecek
+            saveAdres(denetimPaydasDTO,utilDenetimSaveDTO.getRecordId());
+            //telefonlar kayıt edilecek
+            saveTelefon(denetimPaydasDTO.getTelefonCep(),denetimPaydasDTO.getTelefonIs(),utilDenetimSaveDTO.getRecordId());
+        }
+        return utilDenetimSaveDTO;
+    }
+
+    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO  = denetimRepository.savePaydas(denetimPaydasDTO);
+        return utilDenetimSaveDTO;
+    }
+
+    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId) {
+        return denetimRepository.saveAdres(denetimPaydasDTO,paydasId);
+    }
+
+    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId) {
+        return denetimRepository.saveTelefon(telefonCep,telefonIs, paydasId);
     }
 }

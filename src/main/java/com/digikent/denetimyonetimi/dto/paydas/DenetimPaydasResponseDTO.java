@@ -1,5 +1,6 @@
 package com.digikent.denetimyonetimi.dto.paydas;
 
+import com.digikent.denetimyonetimi.dto.adres.DenetimTebligatAdresi;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 
 import java.io.Serializable;
@@ -12,8 +13,7 @@ public class DenetimPaydasResponseDTO implements Serializable {
 
     private List<DenetimPaydasDTO> responseDenetimPaydasList;
     private ErrorDTO errorDTO;
-
-
+    private DenetimTebligatAdresi denetimTebligatAdresi;
 
     public List<DenetimPaydasDTO> getResponseDenetimPaydasList() {
         return responseDenetimPaydasList;
@@ -29,5 +29,13 @@ public class DenetimPaydasResponseDTO implements Serializable {
 
     public void setErrorDTO(ErrorDTO errorDTO) {
         this.errorDTO = errorDTO;
+    }
+
+    public DenetimTebligatAdresi getDenetimTebligatAdresi() {
+        return denetimTebligatAdresi;
+    }
+
+    public void setDenetimTebligatAdresi(DenetimTebligatAdresi denetimTebligatAdresi) {
+        this.denetimTebligatAdresi = denetimTebligatAdresi;
     }
 }

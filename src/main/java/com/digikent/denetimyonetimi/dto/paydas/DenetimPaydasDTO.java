@@ -31,6 +31,11 @@ public class DenetimPaydasDTO implements Serializable {
     private Long sre1SokakId;
     private Long rre1IlceId;
     private Long tcKimlikNo;
+    private Long telefonCep;
+    private Long telefonIs;
+    private Long ticaretSicilNo;
+    private String vergiDairesi;
+    private String siteAdi;
 
     public Long getPaydasNo() {
         return paydasNo;
@@ -222,5 +227,45 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setTcKimlikNo(Long tcKimlikNo) {
         this.tcKimlikNo = tcKimlikNo;
+    }
+
+    public Long getTelefonCep() {
+        return telefonCep;
+    }
+
+    public void setTelefonCep(Long telefonCep) {
+        this.telefonCep = telefonCep;
+    }
+
+    public Long getTelefonIs() {
+        return telefonIs;
+    }
+
+    public void setTelefonIs(Long telefonIs) {
+        this.telefonIs = telefonIs;
+    }
+
+    public Long getTicaretSicilNo() {
+        return ticaretSicilNo;
+    }
+
+    public void setTicaretSicilNo(Long ticaretSicilNo) {
+        this.ticaretSicilNo = ticaretSicilNo;
+    }
+
+    public String getVergiDairesi() {
+        return vergiDairesi;
+    }
+
+    public void setVergiDairesi(String vergiDairesi) {
+        this.vergiDairesi = vergiDairesi;
+    }
+
+    public String getSiteAdi() {
+        return siteAdi;
+    }
+
+    public void setSiteAdi(String siteAdi) {
+        this.siteAdi = siteAdi;
     }
 }

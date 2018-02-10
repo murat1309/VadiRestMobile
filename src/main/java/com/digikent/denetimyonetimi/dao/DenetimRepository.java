@@ -8,12 +8,15 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasSaveResponseDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
-import com.digikent.denetimyonetimi.entity.BDNTDenetim;
-import com.digikent.denetimyonetimi.entity.MPI1Paydas;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
+import com.digikent.denetimyonetimi.entity.*;
+import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.hibernate.*;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -486,18 +489,172 @@ public class DenetimRepository {
         return true;
     }
 
-    public void savePaydas() {
+    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        LOG.debug("Paydas kayit islemi basladi");;
+        try {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            tx = session.beginTransaction();
+            if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase("S") && denetimPaydasDTO.getTcKimlikNo() != null) {
+                //şahıs paydaşı
+                //unique lik kontrolü
+                MPI1Paydas mpi1PaydasObj = null;
+                Criteria criteria = session.createCriteria(MPI1Paydas.class);
+                criteria.add(Restrictions.eq("tcKimlikNo", denetimPaydasDTO.getTcKimlikNo()));
+                criteria.add(Restrictions.eq("kayitDurumu", "A"));
+                Object mpi1PaydasCriteria = criteria.uniqueResult();
 
-        MPI1Paydas mpi1Paydas = new MPI1Paydas();
-        mpi1Paydas.setKayitDurumu("A");
-        mpi1Paydas.setPaydasTuru("S");
-        mpi1Paydas.setRaporAdi("VADI YAZILIM");
-        mpi1Paydas.setSorguAdi("VADI BILISIM");
+                if (mpi1PaydasCriteria != null) {
+                    LOG.debug("Ayni TC'e ait paydaş bulunmustur. TC=" + denetimPaydasDTO.getTcKimlikNo());
+                    utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true, "Aynı TC'e ait paydaş bulunmuştur."),null);
+                } else {
+                    LOG.debug("Girilen TC'e ait kayit bulunamadi. Yeni kayit edilecek. TC=" + denetimPaydasDTO.getTcKimlikNo());
+                    MPI1Paydas mpi1Paydas = new MPI1Paydas();
+                    mpi1Paydas.setKayitDurumu("A");
+                    mpi1Paydas.setPaydasTuru(denetimPaydasDTO.getPaydasTuru());
+                    mpi1Paydas.setRaporAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
+                    mpi1Paydas.setSorguAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
+                    mpi1Paydas.setTcKimlikNo(denetimPaydasDTO.getTcKimlikNo());
 
-        Session session = sessionFactory.openSession();
-        Transaction tx = null;
-        tx = session.beginTransaction();
-        session.save(mpi1Paydas);
-        tx.commit();
+                    Object o = session.save(mpi1Paydas);
+                    tx.commit();
+                    utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+                }
+            } else if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase("K")) {
+                //Kurum paydaşı
+                MPI1Paydas mpi1Paydas = new MPI1Paydas();
+                mpi1Paydas.setKayitDurumu("A");
+                mpi1Paydas.setPaydasTuru(denetimPaydasDTO.getPaydasTuru());
+                mpi1Paydas.setRaporAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
+                mpi1Paydas.setSorguAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
+                mpi1Paydas.setTcKimlikNo(denetimPaydasDTO.getTcKimlikNo());
+                mpi1Paydas.setTicaretSicilNo(denetimPaydasDTO.getTicaretSicilNo());
+                mpi1Paydas.setVergiNumarasi(denetimPaydasDTO.getVergiNo());
+                mpi1Paydas.setVergiDairesi(denetimPaydasDTO.getVergiDairesi());
+
+                Object o = session.save(mpi1Paydas);
+                tx.commit();
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+            } else {
+                //paydaş türü istenilen kriterde gelmedi
+                LOG.debug("paydas istenilen kriterde gelmedi. paydas turu = " + denetimPaydasDTO.getPaydasTuru() + " TC=" + denetimPaydasDTO.getTcKimlikNo());
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true, "Paydaş Türü hatası"),null);
+            }
+        } catch (Exception ex) {
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true, ex.getMessage()),null);
+            LOG.debug("paydas kayit esnasinda hata meydana geldi : " + ex.getStackTrace());
+        } finally {
+            LOG.debug("Paydas kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+            return utilDenetimSaveDTO;
+        }
+    }
+
+    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs,Long paydasId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            tx = session.beginTransaction();
+
+            EILTelefonTuru eilTelefonTuruCep = null;
+            EILTelefonTuru eilTelefonTuruIs = null;
+
+            if (telefonCep != null) {
+                LOG.debug("Cep Telefonu kayıt edilecek cepTel = " + telefonCep);
+                Criteria criteria = session.createCriteria(EILTelefonTuru.class);
+                Object telefonTuruObj = criteria.add(Restrictions.eq("kayitozelismi", "CEP")).uniqueResult();
+                eilTelefonTuruCep = (EILTelefonTuru)telefonTuruObj;
+
+                EILTelefon eilTelefon = new EILTelefon();
+                eilTelefon.setAhr1adresId(0l);
+                eilTelefon.setBpi1adresId(0l);
+                eilTelefon.setDahili(null);
+                eilTelefon.setEILTelefonTuru(eilTelefonTuruCep);
+                eilTelefon.setIhr1personelId(0l);
+                eilTelefon.setIzahat(null);
+                eilTelefon.setMpi1paydasId(paydasId);
+                eilTelefon.setTelefonnumarasi(telefonCep);
+                eilTelefon.setCrDate(new Date());
+                eilTelefon.setCrUser(0l);
+                eilTelefon.setUpdUser(0l);
+
+                Object o = session.save(eilTelefon);
+                LOG.debug("Cep Telefonu id = " + (Long)o);
+            }
+
+            if (telefonIs != null) {
+                LOG.debug("Is Telefonu kayit edilecek isTel = " + telefonIs);
+                Criteria criteria = session.createCriteria(EILTelefonTuru.class);
+                Object telefonTuruObj = criteria.add(Restrictions.eq("kayitozelismi", "IS")).uniqueResult();
+                eilTelefonTuruIs = (EILTelefonTuru)telefonTuruObj;
+
+                EILTelefon eilTelefon = new EILTelefon();
+                eilTelefon.setAhr1adresId(0l);
+                eilTelefon.setBpi1adresId(0l);
+                eilTelefon.setDahili(null);
+                eilTelefon.setEILTelefonTuru(eilTelefonTuruIs);
+                eilTelefon.setIhr1personelId(0l);
+                eilTelefon.setIzahat(null);
+                eilTelefon.setMpi1paydasId(paydasId);
+                eilTelefon.setTelefonnumarasi(telefonIs);
+                eilTelefon.setCrDate(new Date());
+                eilTelefon.setCrUser(0l);
+                eilTelefon.setUpdUser(0l);
+
+                Object o = session.save(eilTelefon);
+                LOG.debug("Is Telefonu id = " + (Long)o);
+            }
+
+            if (telefonCep != null || telefonIs != null) {
+                tx.commit();
+            }
+
+            LOG.debug("telefon kayit islemleri basarili. PaydasId = " + paydasId);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true, null, null);
+        } catch (Exception ex) {
+            LOG.debug("Telefon kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
+    }
+
+    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            LOG.debug("BPI1Adres icin kayit olusturulacak paydasID = " + paydasId);
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+
+            BPI1Adres bpi1Adres = new BPI1Adres();
+            bpi1Adres.setMpi1paydasId(paydasId);
+            bpi1Adres.setBlokNo(denetimPaydasDTO.getBlokNo());
+            bpi1Adres.setDaireNoHarf(denetimPaydasDTO.getDaireNoHarf());
+            bpi1Adres.setDaireNoSayi(denetimPaydasDTO.getDaireNoSayi());
+            bpi1Adres.setDre1MahalleId(denetimPaydasDTO.getDre1MahalleId());
+            bpi1Adres.setKapiNoHarf(denetimPaydasDTO.getKapiNoHarf());
+            bpi1Adres.setKapiNoSayi(denetimPaydasDTO.getKapiNoSayi());
+            bpi1Adres.setRre1IlceId(denetimPaydasDTO.getRre1IlceId());
+            bpi1Adres.setRre1SiteAdi(denetimPaydasDTO.getSiteAdi());
+            bpi1Adres.setSre1SokakId(denetimPaydasDTO.getSre1SokakId());
+            bpi1Adres.setPre1IlId(0l);
+            bpi1Adres.setDre1BagBolumId(0l);
+            bpi1Adres.setCrDate(new Date());
+            bpi1Adres.setCrUser(0l);
+            bpi1Adres.setUpdUser(0l);
+
+            Object o = session.save(bpi1Adres);
+            session.getTransaction().commit();
+            LOG.debug("bpi1Adres eklendi. bpi1AdresID = " + (Long)o);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+        } catch (Exception ex) {
+            LOG.debug("Adres kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
     }
 }
