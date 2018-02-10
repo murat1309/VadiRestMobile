@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
 import com.digikent.denetimyonetimi.service.ReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
@@ -223,34 +224,32 @@ public class DenetimResource {
         return new ResponseEntity<List<DenetimIsletmeDTO>>(denetimIsletmeDTOList, OK);
     }
 
-
     /*
-        şahıs paydaş kayıt
+        şahıs/kurum paydaş kayıt
     */
-    @RequestMapping(value = "/save/sahispaydas", method = RequestMethod.POST)
+    @RequestMapping(value = "/save/paydas", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<DenetimResponse> saveSahisPaydas(@RequestBody DenetimPaydasDTO denetimPaydasDTO) {
-        LOG.debug("Paydaş Şahıs kayit islemi");
-
-        DenetimResponse denetimResponse = new DenetimResponse();
-        Boolean result = denetimService.saveSahisPaydas(denetimPaydasDTO);
-
-        if (result) {
-            denetimResponse.setSuccessful(result);
-        } else {
-            denetimResponse.setSuccessful(result);
-            denetimResponse.setErrorDTO(new ErrorDTO(true));
-        }
-
-        return new ResponseEntity<DenetimResponse>(denetimResponse, OK);
+    public ResponseEntity<UtilDenetimSaveDTO> saveSahisPaydas(@RequestBody DenetimPaydasDTO denetimPaydasDTO) {
+        LOG.debug("Paydaş kayit islemi yapilacak");
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.savePaydasAllInformation(denetimPaydasDTO);
+        LOG.debug("Paydaş kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("PaydasId="+utilDenetimSaveDTO.getRecordId());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
+
+
+
+
+
+
 
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<Boolean> dene() {
-        denetimService.savePaydas();
+        denetimService.saveTelefon(547898457l,2342342l,5000000l);
         return new ResponseEntity<Boolean>(true, OK);
     }
 
