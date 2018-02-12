@@ -9,12 +9,12 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasSaveResponseDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import org.hibernate.SessionFactory;
+import org.hibernate.procedure.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +95,6 @@ public class DenetimService {
         return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
     }
 
-    public Boolean saveSahisPaydas(DenetimPaydasDTO denetimPaydasDTO) {
-        return denetimRepository.saveSahisPaydas(denetimPaydasDTO);
-    }
-
     public UtilDenetimSaveDTO savePaydasAllInformation(DenetimPaydasDTO denetimPaydasDTO) {
         //paydas kayit edilecek
         UtilDenetimSaveDTO utilDenetimSaveDTO = savePaydas(denetimPaydasDTO);
@@ -122,5 +118,24 @@ public class DenetimService {
 
     public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId) {
         return denetimRepository.saveTelefon(telefonCep,telefonIs, paydasId);
+    }
+
+    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = denetimRepository.saveIsletme(denetimIsletmeDTO);
+        if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
+            UtilDenetimSaveDTO utilDenetimSaveDTOAdres = saveIsletmeAdresi(denetimIsletmeDTO,utilDenetimSaveDTO.getRecordId());
+            if (utilDenetimSaveDTOAdres.getSaved() && utilDenetimSaveDTOAdres.getRecordId() != null) {
+                updateIsletme(utilDenetimSaveDTO.getRecordId(),utilDenetimSaveDTOAdres.getRecordId());
+            }
+        }
+        return utilDenetimSaveDTO;
+    }
+
+    private void updateIsletme(Long isletmeId, Long isletmeAdresId) {
+        denetimRepository.updateIsletme(isletmeId,isletmeAdresId);
+    }
+
+    private UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
+        return denetimRepository.saveIsletmeAdresi(denetimIsletmeDTO,isletmeId);
     }
 }

@@ -8,7 +8,6 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasSaveResponseDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
@@ -656,5 +655,84 @@ public class DenetimRepository {
         } finally {
             return utilDenetimSaveDTO;
         }
+    }
+
+    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            LOG.debug("Isletme icin kayit olusturulacak. Isletme Adi = " + denetimIsletmeDTO.getIsletmeAdi());
+            BISLIsletme isletme = new BISLIsletme();
+            isletme.setVergiDairesi(denetimIsletmeDTO.getVergiDairesi());
+            isletme.setIsActive(true);
+            isletme.setCrUser(1l);
+            isletme.setCrDate(new Date());
+            isletme.setBislIsletmeAdresId(null);
+            isletme.setTabelaUnvani(denetimIsletmeDTO.getTabelaUnvani());
+            isletme.setMpi1PaydasId(denetimIsletmeDTO.getPaydasId());
+            isletme.setIsletmeAdi(denetimIsletmeDTO.getIsletmeAdi());
+            isletme.setVergiNumarasi(denetimIsletmeDTO.getVergiNo());
+            isletme.setDeleteFlag("H");
+
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+            Object o = session.save(isletme);
+            session.getTransaction().commit();
+            LOG.debug("isletme eklendi. isletmeID = " + (Long)o);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+        } catch (Exception ex) {
+            LOG.debug("Isletme kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
+    }
+
+    public UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            LOG.debug("BISLIsletmeAdresi icin kayit olusturulacak. isletmeId = " + isletmeId);
+            BISLIsletmeAdres bislIsletmeAdres = new BISLIsletmeAdres();
+            bislIsletmeAdres.setBlokNo(denetimIsletmeDTO.getBlokNo());
+            bislIsletmeAdres.setDaireNoHarf(denetimIsletmeDTO.getDaireNoHarf());
+            bislIsletmeAdres.setDaireNoSayi(denetimIsletmeDTO.getDaireNoSayi());
+            bislIsletmeAdres.setDre1MahalleId(denetimIsletmeDTO.getDre1MahalleId());
+            bislIsletmeAdres.setKapiNoHarf(denetimIsletmeDTO.getKapiNoHarf());
+            bislIsletmeAdres.setKapiNoSayi(denetimIsletmeDTO.getKapiNoSayi());
+            bislIsletmeAdres.setRre1IlceId(denetimIsletmeDTO.getRre1IlceId());
+            bislIsletmeAdres.setSiteAdi(denetimIsletmeDTO.getSiteAdi());
+            bislIsletmeAdres.setSre1SokakId(denetimIsletmeDTO.getSre1SokakId());
+            bislIsletmeAdres.setDre1BagBolumId(0l);
+            bislIsletmeAdres.setIletisimAdresiMi("EVET");
+            bislIsletmeAdres.setBislIsletmeId(isletmeId);
+            bislIsletmeAdres.setCrDate(new Date());
+            bislIsletmeAdres.setCrUser(1l);
+            bislIsletmeAdres.setUpdUser(1l);
+            bislIsletmeAdres.setDeleteFlag("H");
+
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+            Object o = session.save(bislIsletmeAdres);
+            session.getTransaction().commit();
+            LOG.debug("bislIsletmeAdres eklendi. bislIsletmeAdresID = " + (Long)o);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+        } catch (Exception ex) {
+            LOG.debug("bislIsletmeAdres kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
+    }
+
+    public void updateIsletme(Long isletmeId, Long isletmeAdresId) {
+        Session session = sessionFactory.openSession();
+        session.getTransaction().begin();
+        Object o = session.get(BISLIsletme.class,isletmeId);
+        BISLIsletme bisletme = (BISLIsletme)o;
+        bisletme.setBislIsletmeAdresId(isletmeAdresId);
+        session.update(bisletme);
+        session.getTransaction().commit();
+        LOG.debug("bislIsletme icin bislIsletmeAdresID guncellendi. bislIsletmeId=" + isletmeId);
     }
 }

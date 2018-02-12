@@ -240,6 +240,21 @@ public class DenetimResource {
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 
+    /*
+        şahıs/kurum paydaş kayıt
+    */
+    @RequestMapping(value = "/save/isletme", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> saveIsletme(@RequestBody DenetimIsletmeDTO denetimIsletmeDTO) {
+        LOG.debug("Isletme kayit islemi yapilacak paydasID="+denetimIsletmeDTO.getPaydasId());
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.saveIsletme(denetimIsletmeDTO);
+        LOG.debug("Isletme kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("isletme="+utilDenetimSaveDTO.getRecordId());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
 
 
 
