@@ -393,7 +393,7 @@ public class DenetimRepository {
         String sql = "SELECT B.ID, A.ID AS TESPITID,B.SIRASI, B.DEGERI " +
                 " FROM LDNTTESPIT A, LDNTTESPITSECENEK B " +
                 " WHERE A.LDNTTESPITGRUBU_ID = " + tespitGrubuId +
-                " AND A.ID=B.LDNTTESPIT_ID AND A.SECENEKTURU='CHECKBOX' AND B.ISACTIVE='1' AND A.ISACTIVE = 'E' ORDER BY B.SIRASI";
+                " AND A.ID=B.LDNTTESPIT_ID AND A.SECENEKTURU='CHECKBOX' AND B.ISACTIVE='E' AND A.ISACTIVE = 'E' ORDER BY B.SIRASI";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();

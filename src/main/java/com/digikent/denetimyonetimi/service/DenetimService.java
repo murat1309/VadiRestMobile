@@ -91,6 +91,7 @@ public class DenetimService {
         return tespitDTOList;
     }
 
+
     public List<DenetimIsletmeDTO> getIsletmeDTOListByPaydasId(Long paydasId) {
         return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
     }
