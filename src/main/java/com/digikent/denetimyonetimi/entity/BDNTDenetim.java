@@ -23,9 +23,10 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @Column(name = "DENETIMTARIHI", nullable = false)
     private Date denetimTarihi = new Date();
 
-    @OneToOne
-    @JoinColumn(name = "BISLISLETME_ID")
-    private BISLIsletme bislIsletme;
+    //@OneToOne
+    //@JoinColumn(name = "BISLISLETME_ID")
+    @Column(name = "BISLISLETME_ID")
+    private Long bislIsletmeId;
 
     @Column(name = "MPI1PAYDAS_ID")
     private Long mpi1PaydasId;
@@ -130,12 +131,12 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
         this.denetimTarihi = denetimTarihi;
     }
 
-    public BISLIsletme getBislIsletme() {
-        return bislIsletme;
+    public Long getBislIsletmeId() {
+        return bislIsletmeId;
     }
 
-    public void setBislIsletme(BISLIsletme bislIsletme) {
-        this.bislIsletme = bislIsletme;
+    public void setBislIsletmeId(Long bislIsletmeId) {
+        this.bislIsletmeId = bislIsletmeId;
     }
 
     public Long getMpi1PaydasId() {

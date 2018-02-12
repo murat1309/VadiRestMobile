@@ -75,6 +75,15 @@ public class MPI1Paydas extends BaseEntity implements Serializable {
     @Column(name = "TICARETSICILNUMARASI")
     private Long ticaretSicilNo;
 
+    @Column(name = "ADI")
+    private String adi;
+
+    @Column(name = "SOYADI")
+    private String soyadi;
+
+    @Column(name = "TABELAADI")
+    private String tabelaAdi;
+
     public Long getID() {
         return ID;
     }
@@ -233,5 +242,29 @@ public class MPI1Paydas extends BaseEntity implements Serializable {
 
     public void setVergiDairesi(String vergiDairesi) {
         this.vergiDairesi = vergiDairesi;
+    }
+
+    public String getAdi() {
+        return adi;
+    }
+
+    public void setAdi(String adi) {
+        this.adi = adi;
+    }
+
+    public String getSoyadi() {
+        return soyadi;
+    }
+
+    public void setSoyadi(String soyadi) {
+        this.soyadi = soyadi;
+    }
+
+    public String getTabelaAdi() {
+        return tabelaAdi;
+    }
+
+    public void setTabelaAdi(String tabelaAdi) {
+        this.tabelaAdi = tabelaAdi;
     }
 }

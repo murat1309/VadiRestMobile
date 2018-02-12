@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
@@ -138,5 +139,9 @@ public class DenetimService {
 
     private UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
         return denetimRepository.saveIsletmeAdresi(denetimIsletmeDTO,isletmeId);
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
+        return denetimRepository.saveDenetimTespit(denetimTespitRequest);
     }
 }

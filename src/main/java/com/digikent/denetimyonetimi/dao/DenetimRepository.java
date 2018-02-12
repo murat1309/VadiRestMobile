@@ -5,6 +5,7 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
@@ -48,12 +49,11 @@ public class DenetimRepository {
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
         bdntDenetim.setVsynRoleTeamId(null);
-        if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("Kurum")) {
-            //TODO uygun setlemeyi yap
-            bdntDenetim.setBislIsletme(null);
-        } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("Şahıs")) {
+        if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("K")) {
+            bdntDenetim.setBislIsletmeId(denetimRequest.getIsletmeId());
+        } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("S")) {
             bdntDenetim.setTcKimlikNo(denetimRequest.getDenetimPaydasDTO().getTcKimlikNo());
-            bdntDenetim.setBislIsletme(null);
+            bdntDenetim.setBislIsletmeId(null);
         }
 
         //olay yeri adresi
@@ -83,6 +83,7 @@ public class DenetimRepository {
         bdntDenetim.setCrDate(new Date());
         bdntDenetim.setDeleteFlag("H");
         bdntDenetim.setIsActive(true);
+        //TODO burayı tam olarak öğren
         bdntDenetim.setDenetimTarafTipi("I");
 
         Session session = sessionFactory.openSession();
@@ -515,6 +516,8 @@ public class DenetimRepository {
                     mpi1Paydas.setRaporAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
                     mpi1Paydas.setSorguAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
                     mpi1Paydas.setTcKimlikNo(denetimPaydasDTO.getTcKimlikNo());
+                    mpi1Paydas.setAdi(denetimPaydasDTO.getAdi());
+                    mpi1Paydas.setSoyadi(denetimPaydasDTO.getSoyAdi());
 
                     Object o = session.save(mpi1Paydas);
                     tx.commit();
@@ -525,12 +528,14 @@ public class DenetimRepository {
                 MPI1Paydas mpi1Paydas = new MPI1Paydas();
                 mpi1Paydas.setKayitDurumu("A");
                 mpi1Paydas.setPaydasTuru(denetimPaydasDTO.getPaydasTuru());
-                mpi1Paydas.setRaporAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
-                mpi1Paydas.setSorguAdi(denetimPaydasDTO.getAdi() + " " + denetimPaydasDTO.getSoyAdi());
+                mpi1Paydas.setRaporAdi(denetimPaydasDTO.getUnvan());
+                mpi1Paydas.setSorguAdi(denetimPaydasDTO.getUnvan());
                 mpi1Paydas.setTcKimlikNo(denetimPaydasDTO.getTcKimlikNo());
                 mpi1Paydas.setTicaretSicilNo(denetimPaydasDTO.getTicaretSicilNo());
                 mpi1Paydas.setVergiNumarasi(denetimPaydasDTO.getVergiNo());
                 mpi1Paydas.setVergiDairesi(denetimPaydasDTO.getVergiDairesi());
+                mpi1Paydas.setTabelaAdi(denetimPaydasDTO.getUnvan());
+                mpi1Paydas.setUnvan(denetimPaydasDTO.getUnvan());
 
                 Object o = session.save(mpi1Paydas);
                 tx.commit();
@@ -643,6 +648,8 @@ public class DenetimRepository {
             bpi1Adres.setCrDate(new Date());
             bpi1Adres.setCrUser(0l);
             bpi1Adres.setUpdUser(0l);
+            bpi1Adres.setActive(true);
+            bpi1Adres.setMektupGonderimAdresiMi("E");
 
             Object o = session.save(bpi1Adres);
             session.getTransaction().commit();
@@ -734,5 +741,37 @@ public class DenetimRepository {
         session.update(bisletme);
         session.getTransaction().commit();
         LOG.debug("bislIsletme icin bislIsletmeAdresID guncellendi. bislIsletmeId=" + isletmeId);
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+
+        try {
+            BDNTDenetimTespit bdntDenetimTespit = new BDNTDenetimTespit();
+            bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
+            bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
+            bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+            //TODO buranın doğru şeylerle setlenmesi lazım
+            bdntDenetimTespit.setDenetimAksiyonu("TUTANAK");
+            bdntDenetimTespit.setIzahat(null);
+            bdntDenetimTespit.setVerilenSure(null);
+            bdntDenetimTespit.setCrDate(new Date());
+            bdntDenetimTespit.setDeleteFlag("H");
+            bdntDenetimTespit.setIsActive(true);
+            bdntDenetimTespit.setCrUser(1l);
+
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+            Object o = session.save(bdntDenetimTespit);
+            session.getTransaction().commit();
+            LOG.debug("bdntDenetimTespit eklendi. bdntDenetimTespitID = " + (Long)o);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetimTespit kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
     }
 }

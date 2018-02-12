@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.entity;
 
 import com.vadi.digikent.base.model.BaseEntity;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -55,25 +56,32 @@ public class BPI1Adres implements Serializable {
     @Column(name = "DAIRENOHARF")
     private String daireNoHarf;
 
+    @Column(name = "MEKTUPGONDERIMADRESIMI")
+    private String mektupGonderimAdresiMi;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "UPDDATE")
-    protected Date updDate;
+    private Date updDate;
 
     @Column(name = "UPDSEQ")
-    protected Long updSeq;
+    private Long updSeq;
 
     @Column(name = "UPDUSER")
-    protected Long updUser;
+    private Long updUser;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CRDATE")
-    protected Date crDate = new Date();
+    private Date crDate = new Date();
 
     @Column(name = "CRUSER")
-    protected Long crUser;
+    private Long crUser;
 
     @Column(name = "DELETEFLAG", length = 1)
-    protected String deleteFlag;
+    private String deleteFlag;
+
+    @Type(type = "com.vadi.smartkent.datamodel.domains.base.EvetHayirType")
+    @Column(name = "ISACTIVE", length = 1)
+    private Boolean isActive;
 
     public Long getID() {
         return ID;
@@ -225,5 +233,21 @@ public class BPI1Adres implements Serializable {
 
     public void setDeleteFlag(String deleteFlag) {
         this.deleteFlag = deleteFlag;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public String getMektupGonderimAdresiMi() {
+        return mektupGonderimAdresiMi;
+    }
+
+    public void setMektupGonderimAdresiMi(String mektupGonderimAdresiMi) {
+        this.mektupGonderimAdresiMi = mektupGonderimAdresiMi;
     }
 }
