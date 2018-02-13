@@ -76,11 +76,7 @@ public class PaydasIliskileriRepository {
                     if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
                         paydasSorguDTO.setUnvan(unvan);
                     if(paydasTuru != null)
-                        if(paydasTuru.equalsIgnoreCase("S")) {
-                            paydasSorguDTO.setPaydasTuru("Şahıs");
-                        } else {
-                            paydasSorguDTO.setPaydasTuru("Kurum");
-                        }
+                        paydasSorguDTO.setPaydasTuru(paydasTuru);
                     if(adres != null)
                         paydasSorguDTO.setAdres(adres);
                     if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
@@ -359,11 +355,7 @@ public class PaydasIliskileriRepository {
                     if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
                         denetimPaydasDTO.setUnvan(unvan);
                     if(paydasTuru != null)
-                        if(paydasTuru.equalsIgnoreCase("S")) {
-                            denetimPaydasDTO.setPaydasTuru("Şahıs");
-                        } else {
-                            denetimPaydasDTO.setPaydasTuru("Kurum");
-                        }
+                        denetimPaydasDTO.setPaydasTuru(paydasTuru);
                     if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
                         if(vergiNo != null)
                             denetimPaydasDTO.setVergiNo(vergiNo);
