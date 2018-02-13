@@ -38,7 +38,7 @@ public class DenetimService {
     @Inject
     DenetimRepository denetimRepository;
 
-    public Boolean saveDenetim(DenetimRequest denetimRequest) {
+    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
         return denetimRepository.saveDenetim(denetimRequest);
     }
 
