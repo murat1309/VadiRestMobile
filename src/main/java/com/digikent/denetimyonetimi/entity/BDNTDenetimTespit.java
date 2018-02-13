@@ -4,6 +4,8 @@ import com.digikent.domain.BaseEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kadir on 12.02.2018.
@@ -35,6 +37,9 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     @Column(name = "IZAHAT")
     private String izahat;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit")
+    List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
 
     public Long getID() {
         return ID;
@@ -90,5 +95,13 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setIzahat(String izahat) {
         this.izahat = izahat;
+    }
+
+    public List<BDNTDenetimTespitLine> getBdntDenetimTespitLineList() {
+        return bdntDenetimTespitLineList;
+    }
+
+    public void setBdntDenetimTespitLineList(List<BDNTDenetimTespitLine> bdntDenetimTespitLineList) {
+        this.bdntDenetimTespitLineList = bdntDenetimTespitLineList;
     }
 }

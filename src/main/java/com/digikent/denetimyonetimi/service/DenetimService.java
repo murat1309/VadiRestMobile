@@ -13,6 +13,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import org.hibernate.SessionFactory;
 import org.hibernate.procedure.internal.Util;
@@ -143,5 +144,9 @@ public class DenetimService {
 
     public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
         return denetimRepository.saveDenetimTespit(denetimTespitRequest);
+    }
+
+    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
+        return denetimRepository.saveTespitler(tespitlerRequest);
     }
 }

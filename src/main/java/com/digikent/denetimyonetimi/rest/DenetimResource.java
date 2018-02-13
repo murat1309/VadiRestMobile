@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
 import com.digikent.denetimyonetimi.service.ReportService;
@@ -274,14 +275,11 @@ public class DenetimResource {
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<UtilDenetimSaveDTO> saveTespitler(@RequestBody DenetimTespitRequest denetimTespitRequest) {
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimID="+denetimTespitRequest.getDenetimId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
+    public ResponseEntity<UtilDenetimSaveDTO> saveTespitler(@RequestBody TespitlerRequest tespitlerRequest) {
+        LOG.debug("tespitler kayit islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveDenetimTespit(denetimTespitRequest);
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
-        LOG.debug("denetimTespitID="+utilDenetimSaveDTO.getRecordId());
+        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
+        LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 

@@ -9,9 +9,7 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.mesajlasma.dto.ErrorDTO;
@@ -23,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -757,6 +756,7 @@ public class DenetimRepository {
             bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
             bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
             bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+            bdntDenetimTespit.setBdntDenetimTespitLineList(null);
             //TODO buranın doğru şeylerle setlenmesi lazım
             bdntDenetimTespit.setDenetimAksiyonu("TUTANAK");
             bdntDenetimTespit.setIzahat(null);
@@ -774,6 +774,59 @@ public class DenetimRepository {
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
         } catch (Exception ex) {
             LOG.debug("bdntDenetimTespit kayit esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
+        }
+    }
+
+    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
+        try {
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+            Object o = session.get(BDNTDenetimTespit.class,tespitlerRequest.getDenetimTespitId());
+            BDNTDenetimTespit bdntDenetimTespitDB = (BDNTDenetimTespit)o;
+
+            if (bdntDenetimTespitDB != null) {
+                for (TespitSaveDTO tespitSaveDTO: tespitlerRequest.getTespitSaveDTOList()) {
+                    BDNTDenetimTespitLine bdntDenetimTespitLine = new BDNTDenetimTespitLine();
+                    bdntDenetimTespitLine.setBdntDenetimTespit(bdntDenetimTespitDB);
+                    bdntDenetimTespitLine.setTespitId(tespitSaveDTO.getTespitId());
+                    bdntDenetimTespitLine.setTutari(tespitSaveDTO.getTutari());
+                    bdntDenetimTespitLine.setStringValue(tespitSaveDTO.getTespitCevap().getStringValue());
+                    bdntDenetimTespitLine.setNumberValue(tespitSaveDTO.getTespitCevap().getNumberValue());
+                    bdntDenetimTespitLine.setTextValue(tespitSaveDTO.getTespitCevap().getTextValue());
+                    bdntDenetimTespitLine.setIzahat(null);
+                    bdntDenetimTespitLine.setCrDate(new Date());
+                    bdntDenetimTespitLine.setDeleteFlag("H");
+                    bdntDenetimTespitLine.setIsActive(true);
+                    bdntDenetimTespitLine.setCrUser(1l);
+                    //date value
+                    if (tespitSaveDTO.getTespitCevap().getDateValue() != null) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                        Date date = formatter.parse(tespitSaveDTO.getTespitCevap().getDateValue());
+                        bdntDenetimTespitLine.setDateValue(date);
+                    } else {
+                        bdntDenetimTespitLine.setDateValue(null);
+                    }
+
+                    bdntDenetimTespitLineList.add(bdntDenetimTespitLine);
+                }
+                bdntDenetimTespitDB.setBdntDenetimTespitLineList(bdntDenetimTespitLineList);
+                session.saveOrUpdate(bdntDenetimTespitDB);
+                session.getTransaction().commit();
+                LOG.debug("bdntDenetimTespit guncellendi. bdntDenetimTespitID = " + bdntDenetimTespitDB.getID());
+                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitLineList.size());
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
+            } else {
+                LOG.debug("HATA = bdntDenetimTespit database den null geldi. Bu yuzden tespit kayitlari olusturulamadi");
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,"bdntDenetimTespit bulunamadi"), null);
+            }
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetimTespit veya bdntTespitLine da kayit esnasinda bir hata olustu");
             LOG.debug("HATA MESAJI = " + ex.getMessage());
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
         } finally {
