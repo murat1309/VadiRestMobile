@@ -1,22 +1,25 @@
 package com.digikent.denetimyonetimi.dto.paydas;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 
 /**
- * Created by Kadir on 25.01.2018.
+ * Created by Kadir on 6.02.2018.
  */
-public class DenetimPaydasDTO implements Serializable {
+public class DenetimIsletmeDTO implements Serializable {
 
-    private Long paydasNo;
-    private String adi;
-    private String soyAdi;
-    private String unvan;
-    private String vergiNo;
-    private String telefon;
-    private String paydasTuru;
-    private String tabelaAdi;
-    private String izahat;
-    private String kayitDurumu;
+    private Long id;
+    private Long paydasId;
+    private String isletmeAdi;
+    private String tabelaUnvani;
+    private String faaliyetKonusu;
+    private String sorumluAdSoyad;
+    private Long vergiNo;
+    private Long ticaretSicilNo;
+    private Long telefonCep;
+    private Long telefonIs;
     private String binaAdi;
     private String kapiNo;
     private String ilceAdi;
@@ -27,94 +30,91 @@ public class DenetimPaydasDTO implements Serializable {
     private Long katSayi;
     private String katHarf;
     private String blokNo;
+    private String siteAdi;
     private Long dre1MahalleId;
     private Long sre1SokakId;
     private Long rre1IlceId;
-    private Long tcKimlikNo;
-    private Long telefonCep;
-    private Long telefonIs;
-    private Long ticaretSicilNo;
     private String vergiDairesi;
-    private String siteAdi;
 
-    public Long getPaydasNo() {
-        return paydasNo;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setPaydasNo(Long paydasNo) {
-        this.paydasNo = paydasNo;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getAdi() {
-        return adi;
+    public Long getPaydasId() {
+        return paydasId;
     }
 
-    public void setAdi(String adi) {
-        this.adi = adi;
+    public void setPaydasId(Long paydasId) {
+        this.paydasId = paydasId;
     }
 
-    public String getSoyAdi() {
-        return soyAdi;
+    public String getIsletmeAdi() {
+        return isletmeAdi;
     }
 
-    public void setSoyAdi(String soyAdi) {
-        this.soyAdi = soyAdi;
+    public void setIsletmeAdi(String isletmeAdi) {
+        this.isletmeAdi = isletmeAdi;
     }
 
-    public String getUnvan() {
-        return unvan;
+    public String getTabelaUnvani() {
+        return tabelaUnvani;
     }
 
-    public void setUnvan(String unvan) {
-        this.unvan = unvan;
+    public void setTabelaUnvani(String tabelaUnvani) {
+        this.tabelaUnvani = tabelaUnvani;
     }
 
-    public String getVergiNo() {
+    public String getFaaliyetKonusu() {
+        return faaliyetKonusu;
+    }
+
+    public void setFaaliyetKonusu(String faaliyetKonusu) {
+        this.faaliyetKonusu = faaliyetKonusu;
+    }
+
+    public String getSorumluAdSoyad() {
+        return sorumluAdSoyad;
+    }
+
+    public void setSorumluAdSoyad(String sorumluAdSoyad) {
+        this.sorumluAdSoyad = sorumluAdSoyad;
+    }
+
+    public Long getVergiNo() {
         return vergiNo;
     }
 
-    public void setVergiNo(String vergiNo) {
+    public void setVergiNo(Long vergiNo) {
         this.vergiNo = vergiNo;
     }
 
-    public String getTelefon() {
-        return telefon;
+    public Long getTicaretSicilNo() {
+        return ticaretSicilNo;
     }
 
-    public void setTelefon(String telefon) {
-        this.telefon = telefon;
+    public void setTicaretSicilNo(Long ticaretSicilNo) {
+        this.ticaretSicilNo = ticaretSicilNo;
     }
 
-    public String getPaydasTuru() {
-        return paydasTuru;
+    public Long getTelefonCep() {
+        return telefonCep;
     }
 
-    public void setPaydasTuru(String paydasTuru) {
-        this.paydasTuru = paydasTuru;
+    public void setTelefonCep(Long telefonCep) {
+        this.telefonCep = telefonCep;
     }
 
-    public String getTabelaAdi() {
-        return tabelaAdi;
+    public Long getTelefonIs() {
+        return telefonIs;
     }
 
-    public void setTabelaAdi(String tabelaAdi) {
-        this.tabelaAdi = tabelaAdi;
-    }
-
-    public String getIzahat() {
-        return izahat;
-    }
-
-    public void setIzahat(String izahat) {
-        this.izahat = izahat;
-    }
-
-    public String getKayitDurumu() {
-        return kayitDurumu;
-    }
-
-    public void setKayitDurumu(String kayitDurumu) {
-        this.kayitDurumu = kayitDurumu;
+    public void setTelefonIs(Long telefonIs) {
+        this.telefonIs = telefonIs;
     }
 
     public String getBinaAdi() {
@@ -147,6 +147,14 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setKapiNoSayi(Long kapiNoSayi) {
         this.kapiNoSayi = kapiNoSayi;
+    }
+
+    public String getKapiNoHarf() {
+        return kapiNoHarf;
+    }
+
+    public void setKapiNoHarf(String kapiNoHarf) {
+        this.kapiNoHarf = kapiNoHarf;
     }
 
     public String getDaireNoHarf() {
@@ -189,14 +197,6 @@ public class DenetimPaydasDTO implements Serializable {
         this.blokNo = blokNo;
     }
 
-    public String getKapiNoHarf() {
-        return kapiNoHarf;
-    }
-
-    public void setKapiNoHarf(String kapiNoHarf) {
-        this.kapiNoHarf = kapiNoHarf;
-    }
-
     public Long getDre1MahalleId() {
         return dre1MahalleId;
     }
@@ -219,38 +219,6 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setRre1IlceId(Long rre1IlceId) {
         this.rre1IlceId = rre1IlceId;
-    }
-
-    public Long getTcKimlikNo() {
-        return tcKimlikNo;
-    }
-
-    public void setTcKimlikNo(Long tcKimlikNo) {
-        this.tcKimlikNo = tcKimlikNo;
-    }
-
-    public Long getTelefonCep() {
-        return telefonCep;
-    }
-
-    public void setTelefonCep(Long telefonCep) {
-        this.telefonCep = telefonCep;
-    }
-
-    public Long getTelefonIs() {
-        return telefonIs;
-    }
-
-    public void setTelefonIs(Long telefonIs) {
-        this.telefonIs = telefonIs;
-    }
-
-    public Long getTicaretSicilNo() {
-        return ticaretSicilNo;
-    }
-
-    public void setTicaretSicilNo(Long ticaretSicilNo) {
-        this.ticaretSicilNo = ticaretSicilNo;
     }
 
     public String getVergiDairesi() {

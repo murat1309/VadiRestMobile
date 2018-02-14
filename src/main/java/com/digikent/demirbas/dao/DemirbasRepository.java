@@ -2,25 +2,13 @@ package com.digikent.demirbas.dao;
 
 import com.digikent.demirbas.dto.DemirbasDTO;
 import com.digikent.demirbas.dto.DemirbasHareketDTO;
-import com.vadi.digikent.base.util.FileUtil;
-import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
-import org.apache.commons.collections.list.TypedList;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.hibernate.*;
-import org.keycloak.common.util.UriUtils;
-import org.keycloak.util.JsonSerialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
 

@@ -1,8 +1,5 @@
 package com.digikent.basvuruyonetimi.dto;
 
-
-import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
-
 /**
  * Created by Serkan on 5/20/16.
  */

@@ -3,6 +3,7 @@ package com.digikent;
 import com.digikent.config.Constants;
 import com.digikent.config.JHipsterProperties;
 
+import com.vadi.smartkent.datamodel.domains.paydas.PI1Paydas;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,13 @@ import java.util.Collection;
 @ComponentScan(basePackages = {"com.vadi.digikent.*","com.digikent.*", "tr.com.vadi.*"}, excludeFilters={
 		@ComponentScan.Filter(type = FilterType.ASPECTJ, pattern = "com.vadi.digikent.dao.*")
 } )
-@EntityScan(basePackages = {"com.vadi.smartkent.datamodel.*", "com.digikent.*"})
+@EntityScan(basePackages = {
+        "com.vadi.smartkent.datamodel.domains.base.*",
+        "com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.*",
+        "com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.*",
+        "com.vadi.smartkent.datamodel.domains.portal.pr1.*",
+        "com.digikent.*",
+})
 @EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 @EnableConfigurationProperties({ JHipsterProperties.class })
 public class Application {

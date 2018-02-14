@@ -6,22 +6,23 @@ import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
 import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
-import com.digikent.denetimyonetimi.dto.velocity.*;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import org.hibernate.SessionFactory;
+import org.hibernate.procedure.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class DenetimService {
     @Inject
     DenetimRepository denetimRepository;
 
-    public Boolean saveDenetim(DenetimRequest denetimRequest) {
+    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
         return denetimRepository.saveDenetim(denetimRequest);
     }
 
@@ -62,45 +63,90 @@ public class DenetimService {
         return denetimRepository.findMahalleListByCurrentBelediye();
     }
 
-    public String createVelocityTemplate() {
+    public List<DenetimTuruDTO> getDenetimTuruDTOList() {
+        return denetimRepository.getDenetimTuruDTOList();
+    }
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+    public List<TespitGrubuDTO> getTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
+        return denetimRepository.findTespitGrubuDTOListByDenetimTuruId(denetimTuruId);
+    }
 
-        ve.init();
-        Template t = ve.getTemplate("templates/template.vm", "UTF-8");
-        VelocityContext vc = new VelocityContext();
+    public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
+        List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
+        List<SecenekTuruDTO> secenekTuruDTOList = denetimRepository.findSecenekDTOListByTespitGrubuId(tespitGrubuId);
 
-        UserDTO userDTO = new UserDTO("Ahmet", "Korkmaz", "12345678901", "+90 212 123 4567");
-        vc.put("userDTO", userDTO);
+        return groupingTespitAndSecenekTuru(tespitDTOList, secenekTuruDTOList);
+    }
 
-        DocumentDTO documentDTO = new DocumentDTO(new Date(), "147852369");
-        vc.put("documentDTO", documentDTO);
+    public List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
 
-        LocationDTO locationDTO = new LocationDTO("Batı", "Aydınlı", "Bahar", "36", "12", "23", "44");
-        vc.put("locationDTO", locationDTO);
-
-        List<InformationDTO> informationDTOs = new ArrayList<InformationDTO>();
-        for (int i = 0; i < 2; i++) {
-            informationDTOs.add(new InformationDTO("sample " + i, "value " + i,
-                    "description description descriptiondescriptiondescription descriptiondescription descriptiondescription" + i));
+        for (TespitDTO tespitDTO : tespitDTOList) {
+            if (tespitDTO.getSecenekTuru().equals("CHECKBOX")) {
+                for (SecenekTuruDTO secenekTuruDTO : secenekTuruDTOList) {
+                    if (tespitDTO.getId().longValue() == secenekTuruDTO.getTespitId().longValue()) {
+                        tespitDTO.getSecenekTuruDTOList().add(secenekTuruDTO);
+                    }
+                }
+            }
         }
-        vc.put("informationDTOs", informationDTOs);
 
-        List<TespitDTO> tespitDTOs = new ArrayList<TespitDTO>();
-        for (int i = 0; i < 3; i++) {
-            tespitDTOs.add(new TespitDTO("sample " + i, "value " + i, "dayanak Kanunu " + i, "dayanak Maddesi " + i, "ceza tutarı " + i,
-                    "description description descriptiondescriptiondescription descriptiondescription descriptiondescription" + i));
+        return tespitDTOList;
+    }
+
+
+    public List<DenetimIsletmeDTO> getIsletmeDTOListByPaydasId(Long paydasId) {
+        return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
+    }
+
+    public UtilDenetimSaveDTO savePaydasAllInformation(DenetimPaydasDTO denetimPaydasDTO) {
+        //paydas kayit edilecek
+        UtilDenetimSaveDTO utilDenetimSaveDTO = savePaydas(denetimPaydasDTO);
+        if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
+            //adresleri kayıt edilecek
+            saveAdres(denetimPaydasDTO,utilDenetimSaveDTO.getRecordId());
+            //telefonlar kayıt edilecek
+            saveTelefon(denetimPaydasDTO.getTelefonCep(),denetimPaydasDTO.getTelefonIs(),utilDenetimSaveDTO.getRecordId());
         }
-        vc.put("tespitDTOs", tespitDTOs);
+        return utilDenetimSaveDTO;
+    }
 
+    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO  = denetimRepository.savePaydas(denetimPaydasDTO);
+        return utilDenetimSaveDTO;
+    }
 
+    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId) {
+        return denetimRepository.saveAdres(denetimPaydasDTO,paydasId);
+    }
 
-        StringWriter sw = new StringWriter();
-        t.merge(vc, sw);
-        System.out.println(sw);
+    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId) {
+        return denetimRepository.saveTelefon(telefonCep,telefonIs, paydasId);
+    }
 
-        return sw.toString();
+    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = denetimRepository.saveIsletme(denetimIsletmeDTO);
+        if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
+            UtilDenetimSaveDTO utilDenetimSaveDTOAdres = saveIsletmeAdresi(denetimIsletmeDTO,utilDenetimSaveDTO.getRecordId());
+            if (utilDenetimSaveDTOAdres.getSaved() && utilDenetimSaveDTOAdres.getRecordId() != null) {
+                updateIsletme(utilDenetimSaveDTO.getRecordId(),utilDenetimSaveDTOAdres.getRecordId());
+            }
+        }
+        return utilDenetimSaveDTO;
+    }
+
+    private void updateIsletme(Long isletmeId, Long isletmeAdresId) {
+        denetimRepository.updateIsletme(isletmeId,isletmeAdresId);
+    }
+
+    private UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
+        return denetimRepository.saveIsletmeAdresi(denetimIsletmeDTO,isletmeId);
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
+        return denetimRepository.saveDenetimTespit(denetimTespitRequest);
+    }
+
+    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
+        return denetimRepository.saveTespitler(tespitlerRequest);
     }
 }
