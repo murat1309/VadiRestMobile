@@ -1,9 +1,11 @@
 package com.digikent.surecyonetimi.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import com.digikent.surecyonetimi.dto.*;
-import com.digikent.surecyonetimi.service.SurecYonetimiService;
-import oracle.sql.TIMESTAMP;
+import com.digikent.surecyonetimi.dto.basvurudetay.*;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruRequestDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
 import org.hibernate.annotations.Nationalized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.hibernate.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.core.env.Environment;
-import tr.com.ega.em;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;

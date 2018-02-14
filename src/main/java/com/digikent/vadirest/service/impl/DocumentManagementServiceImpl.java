@@ -28,7 +28,6 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate){
 		return documentManagementDAO.getEBYS(type,persid, rolid, startDate, endDate);
 	}
-
 	public List<EBYSDetail> getEBYSAddition(long documentId){
 		return documentManagementDAO.getEBYSAddition(documentId);
 	}

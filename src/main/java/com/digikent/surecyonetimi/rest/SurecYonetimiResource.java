@@ -1,14 +1,16 @@
 package com.digikent.surecyonetimi.rest;
 
 import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
-import com.digikent.surecyonetimi.dto.*;
+import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguRequestDTO;
+import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguResponseDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
 import com.digikent.surecyonetimi.service.SurecYonetimiService;
-import org.mortbay.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -102,7 +104,7 @@ public class SurecYonetimiResource {
     @RequestMapping(method = POST, value = "/imar", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<ImarSurecDTO>> getList(@RequestBody ImarRequestDTO imarRequestDTO) {
-        LOG.debug("REST request to get surec parameters");
+        LOG.debug("REST request to get imar surec parameters");
         List<ImarSurecDTO> results = surecYonetimiRepository.getSurecListBySelected(imarRequestDTO);
         return new ResponseEntity<List<ImarSurecDTO>>(results, OK);
     }
