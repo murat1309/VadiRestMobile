@@ -15,6 +15,7 @@ public class DenetimRequest implements Serializable{
     private DenetimTebligatAdresi denetimTebligatAdresi;
     private DenetimOlayYeriAdresi denetimOlayYeriAdresi;
     private Long isletmeId;
+    private Long bdntDenetimId;
 
     public DenetimPaydasDTO getDenetimPaydasDTO() {
         return denetimPaydasDTO;
@@ -46,5 +47,13 @@ public class DenetimRequest implements Serializable{
 
     public void setIsletmeId(Long isletmeId) {
         this.isletmeId = isletmeId;
+    }
+
+    public Long getBdntDenetimId() {
+        return bdntDenetimId;
+    }
+
+    public void setBdntDenetimId(Long bdntDenetimId) {
+        this.bdntDenetimId = bdntDenetimId;
     }
 }

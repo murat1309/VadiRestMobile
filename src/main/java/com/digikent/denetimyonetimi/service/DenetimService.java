@@ -151,6 +151,7 @@ public class DenetimService {
                 for (SecenekTuruDTO secenekTuruDTO : secenekTuruDTOList) {
                     if (tespitDTO.getId().longValue() == secenekTuruDTO.getTespitId().longValue()) {
                         tespitDTO.getSecenekTuruDTOList().add(secenekTuruDTO);
+                        break;
                     }
                 }
             }

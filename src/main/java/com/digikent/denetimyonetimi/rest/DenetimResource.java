@@ -76,16 +76,17 @@ public class DenetimResource {
 
     /*
         Olay yeri adresi girildikten sonra denetim kaydı oluşturuluyor
+        eğer denetimId bilgisi null gelmezse, güncellenecek demektir.
     */
     @RequestMapping(value = "/save/denetim", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetim(@RequestBody DenetimRequest denetimRequest) {
-        LOG.debug("Denetim kayıt. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
+        LOG.debug("Denetim kayit/guncelleme. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveDenetim(denetimRequest);
-        LOG.debug("denetim kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("denetim kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
