@@ -38,6 +38,7 @@ public class XAuthTokenFilter extends GenericFilterBean {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             String authToken = httpServletRequest.getHeader(XAUTH_TOKEN_HEADER_NAME);
+            System.out.println("GİRDİ");
             if (StringUtils.hasText(authToken)) {
                 /*String username = this.tokenProvider.getUserNameFromToken(authToken);
                 UserDetails details = this.detailsService.loadUserByUsername(username);

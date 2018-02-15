@@ -12,7 +12,8 @@ public class TespitDTO implements Serializable {
     private Long id;
     private Long sirasi;
     private Long ekSure;
-    private Long lsm2KanunId;
+    private KanunDTO kanunDTO;
+    private TespitTarifeDTO tespitTarifeDTO;
     private String kayitOzelIsmi;
     private String secenekTuru;
     private String aksiyon;
@@ -20,6 +21,23 @@ public class TespitDTO implements Serializable {
     private String izahat;
     private String tanim;
     private List<SecenekTuruDTO> secenekTuruDTOList = new ArrayList<>();
+
+    public TespitDTO() {
+    }
+
+    public TespitDTO(Long id, Long sirasi, Long ekSure, KanunDTO kanunDTO, String kayitOzelIsmi, String secenekTuru, String aksiyon, String ekSureVerilebilirMi, String izahat, String tanim, List<SecenekTuruDTO> secenekTuruDTOList) {
+        this.id = id;
+        this.sirasi = sirasi;
+        this.ekSure = ekSure;
+        this.kanunDTO = kanunDTO;
+        this.kayitOzelIsmi = kayitOzelIsmi;
+        this.secenekTuru = secenekTuru;
+        this.aksiyon = aksiyon;
+        this.ekSureVerilebilirMi = ekSureVerilebilirMi;
+        this.izahat = izahat;
+        this.tanim = tanim;
+        this.secenekTuruDTOList = secenekTuruDTOList;
+    }
 
     public Long getId() {
         return id;
@@ -45,12 +63,12 @@ public class TespitDTO implements Serializable {
         this.ekSure = ekSure;
     }
 
-    public Long getLsm2KanunId() {
-        return lsm2KanunId;
+    public KanunDTO getKanunDTO() {
+        return kanunDTO;
     }
 
-    public void setLsm2KanunId(Long lsm2KanunId) {
-        this.lsm2KanunId = lsm2KanunId;
+    public void setKanunDTO(KanunDTO kanunDTO) {
+        this.kanunDTO = kanunDTO;
     }
 
     public String getKayitOzelIsmi() {
@@ -107,5 +125,13 @@ public class TespitDTO implements Serializable {
 
     public void setSecenekTuruDTOList(List<SecenekTuruDTO> secenekTuruDTOList) {
         this.secenekTuruDTOList = secenekTuruDTOList;
+    }
+
+    public TespitTarifeDTO getTespitTarifeDTO() {
+        return tespitTarifeDTO;
+    }
+
+    public void setTespitTarifeDTO(TespitTarifeDTO tespitTarifeDTO) {
+        this.tespitTarifeDTO = tespitTarifeDTO;
     }
 }

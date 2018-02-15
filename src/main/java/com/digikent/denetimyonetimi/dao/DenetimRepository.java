@@ -22,10 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Kadir on 26.01.2018.
@@ -50,9 +47,13 @@ public class DenetimRepository {
             bdntDenetim.setVsynRoleTeamId(null);
             if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("K")) {
                 bdntDenetim.setBislIsletmeId(denetimRequest.getIsletmeId());
+                //işletme için I, paydaş için P
+                bdntDenetim.setDenetimTarafTipi("I");
             } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("S")) {
                 bdntDenetim.setTcKimlikNo(denetimRequest.getDenetimPaydasDTO().getTcKimlikNo());
                 bdntDenetim.setBislIsletmeId(null);
+                //işletme için I, paydaş için P
+                bdntDenetim.setDenetimTarafTipi("P");
             }
 
             //olay yeri adresi
@@ -82,8 +83,7 @@ public class DenetimRepository {
             bdntDenetim.setCrDate(new Date());
             bdntDenetim.setDeleteFlag("H");
             bdntDenetim.setIsActive(true);
-            //TODO burayı tam olarak öğren
-            bdntDenetim.setDenetimTarafTipi("I");
+
 
             Session session = sessionFactory.openSession();
             Transaction tx = null;
@@ -423,8 +423,11 @@ public class DenetimRepository {
                     secenekTuruDTO.setTespitId(tespitId.longValue());
                 if (sirasi != null)
                     secenekTuruDTO.setSirasi(sirasi.longValue());
-                if (degeri != null)
+                if (degeri != null) {
                     secenekTuruDTO.setDegeri(degeri);
+                    secenekTuruDTO.setLabel(degeri);
+                    secenekTuruDTO.setValue(degeri);
+                }
 
                 secenekTuruDTOList.add(secenekTuruDTO);
             }
@@ -833,4 +836,28 @@ public class DenetimRepository {
             return utilDenetimSaveDTO;
         }
     }
+
+    public List<LDNTTespit> findTespitListByTespitGrubuId(Long tespitGrubuId) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(LDNTTespit.class);
+        criteria.add(Restrictions.eq("isActive", true));
+        criteria.add(Restrictions.eq("tespitGrubuId", tespitGrubuId));
+        //Object[] objects = new Object[] { 1l };
+        //criteria.add(Restrictions.in("tespitGrubuId", objects));
+        List<LDNTTespit> list = criteria.list();
+        return list;
+    }
+
+    public List<LDNTTespitTarife> findTespitTarifeListByTespitIdList(List<Long> tespitIdList) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(LDNTTespitTarife.class);
+        criteria.add(Restrictions.eq("isActive", true));
+        Object[] obj = new Object[] {};
+        ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+        temp.addAll(tespitIdList);
+        criteria.add(Restrictions.in("ldntTespitId", temp.toArray()));
+        List<LDNTTespitTarife> list = criteria.list();
+        return list;
+    }
+
 }

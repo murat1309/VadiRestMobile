@@ -1,5 +1,7 @@
 package com.digikent.denetimyonetimi.dto.tespit;
 
+import com.digikent.denetimyonetimi.dto.util.UtilRadioButtonFormat;
+
 import java.io.Serializable;
 
 /**
@@ -11,6 +13,8 @@ public class SecenekTuruDTO implements Serializable {
     private Long sirasi;
     private String degeri;
     private Long tespitId;
+    private String label;
+    private String value;
 
     public Long getId() {
         return id;
@@ -42,5 +46,21 @@ public class SecenekTuruDTO implements Serializable {
 
     public void setTespitId(Long tespitId) {
         this.tespitId = tespitId;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

@@ -10,11 +10,11 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.tespit.SecenekTuruDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
+import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
+import com.digikent.denetimyonetimi.entity.LDNTTespit;
+import com.digikent.denetimyonetimi.entity.LDNTTespitTarife;
+import com.digikent.denetimyonetimi.entity.LSM2Kanun;
 import org.hibernate.SessionFactory;
 import org.hibernate.procedure.internal.Util;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,10 +73,75 @@ public class DenetimService {
     }
 
     public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
-        List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
-        List<SecenekTuruDTO> secenekTuruDTOList = denetimRepository.findSecenekDTOListByTespitGrubuId(tespitGrubuId);
+        //List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
+        List<SecenekTuruDTO> secenekTuruDTOList = null;
+        List<TespitTarifeDTO> tespitTarifeDTOList = null;
 
-        return groupingTespitAndSecenekTuru(tespitDTOList, secenekTuruDTOList);
+        List<LDNTTespit> tespitList = denetimRepository.findTespitListByTespitGrubuId(tespitGrubuId);
+        List<TespitDTO> tespitDTOList = ldntTespitToListTespitDTOList(tespitList);
+        if (tespitDTOList != null) {
+            secenekTuruDTOList = denetimRepository.findSecenekDTOListByTespitGrubuId(tespitGrubuId);
+            tespitTarifeDTOList = getTespitTarifeDTOList(tespitDTOList);
+            tespitDTOList = groupingTespitAndTespitTarife(tespitDTOList, tespitTarifeDTOList);
+            return groupingTespitAndSecenekTuru(tespitDTOList, secenekTuruDTOList);
+        }
+        return tespitDTOList;
+    }
+
+    private List<TespitTarifeDTO> getTespitTarifeDTOList(List<TespitDTO> tespitDTOList) {
+        List<LDNTTespitTarife> ldntTespitTarifeList = null;
+        List<Long> tespitIdList = new ArrayList<>();
+        for (TespitDTO tespitDTO:tespitDTOList) {
+            tespitIdList.add(tespitDTO.getId());
+        }
+        ldntTespitTarifeList = denetimRepository.findTespitTarifeListByTespitIdList(tespitIdList);
+
+        return ldntTespitTarifeToTespitTarifeDTO(ldntTespitTarifeList);
+    }
+
+    private List<TespitTarifeDTO> ldntTespitTarifeToTespitTarifeDTO(List<LDNTTespitTarife> ldntTespitTarifeList) {
+        List<TespitTarifeDTO> tespitTarifeDTOList = new ArrayList<>();
+        for (LDNTTespitTarife ldnTespitTarife:ldntTespitTarifeList) {
+            TespitTarifeDTO tespitTarifeDTO = new TespitTarifeDTO();
+            tespitTarifeDTO.setId(ldnTespitTarife.getID());
+            tespitTarifeDTO.setAltLimitTutari(ldnTespitTarife.getAltLimitTutari());
+            tespitTarifeDTO.setUstLimitTutari(ldnTespitTarife.getUstLimitTutari());
+            tespitTarifeDTO.setTespitId(ldnTespitTarife.getLdntTespitId());
+
+            tespitTarifeDTOList.add(tespitTarifeDTO);
+        }
+        return tespitTarifeDTOList;
+    }
+
+    public TespitDTO ldntTespitToTespitDTO(LDNTTespit ldntTespit) {
+
+        TespitDTO tespitDTO = new TespitDTO();
+
+        tespitDTO.setId((ldntTespit.getID() != null ? ldntTespit.getID().longValue() : null));
+        tespitDTO.setKanunDTO(lsm2KanunTolsm2KanunDTO(ldntTespit.getLsm2Kanun()));
+        tespitDTO.setTanim(ldntTespit.getTanim());
+        tespitDTO.setKayitOzelIsmi(ldntTespit.getKayitOzelIsmi());
+        tespitDTO.setIzahat(ldntTespit.getIzahat());
+        tespitDTO.setAksiyon(ldntTespit.getAksiyon());
+        tespitDTO.setSecenekTuru(ldntTespit.getSecenekTuru());
+        tespitDTO.setEkSureVerilebilirMi(ldntTespit.getEkSureVerilebilirMi());
+        tespitDTO.setEkSure((ldntTespit.getEkSure() != null ? ldntTespit.getEkSure().longValue() : null));
+        tespitDTO.setSirasi((ldntTespit.getSirasi() != null ? ldntTespit.getSirasi().longValue() : null));
+
+        return tespitDTO;
+    }
+
+    public List<TespitDTO> ldntTespitToListTespitDTOList(List<LDNTTespit> ldntTespitList) {
+        List<TespitDTO> tespitDTOList = new ArrayList<>();
+        for (LDNTTespit ldntTespit:ldntTespitList) {
+            TespitDTO tespitDTO = ldntTespitToTespitDTO(ldntTespit);
+            tespitDTOList.add(tespitDTO);
+        }
+        return tespitDTOList;
+    }
+
+    private KanunDTO lsm2KanunTolsm2KanunDTO(LSM2Kanun lsm2Kanun) {
+        return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi());
     }
 
     public List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
@@ -93,6 +159,20 @@ public class DenetimService {
         return tespitDTOList;
     }
 
+    private List<TespitDTO> groupingTespitAndTespitTarife(List<TespitDTO> tespitDTOList, List<TespitTarifeDTO> tespitTarifeDTOList) {
+        for (TespitDTO tespitDTO : tespitDTOList) {
+            for (TespitTarifeDTO tespitTarifeDTO : tespitTarifeDTOList) {
+                if (tespitDTO.getId() != null && tespitTarifeDTO.getTespitId() != null) {
+                    if (tespitDTO.getId().longValue() == tespitTarifeDTO.getTespitId().longValue()) {
+                        tespitDTO.setTespitTarifeDTO(tespitTarifeDTO);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return tespitDTOList;
+    }
 
     public List<DenetimIsletmeDTO> getIsletmeDTOListByPaydasId(Long paydasId) {
         return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
@@ -149,4 +229,6 @@ public class DenetimService {
     public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
         return denetimRepository.saveTespitler(tespitlerRequest);
     }
+
+
 }
