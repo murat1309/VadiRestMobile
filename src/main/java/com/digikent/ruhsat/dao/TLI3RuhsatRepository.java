@@ -29,15 +29,26 @@ public class TLI3RuhsatRepository {
     @Autowired
     TLI3RuhsatService ruhsatService;
 
-    public List<TLI3RuhsatDTO> getRuhsatByPaydasNo(TLI3RuhsatDTO tli3RuhsatDTO) {
-        String additionSQL = "and r.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
+    public List<TLI3RuhsatDTO> getRuhsatInfo(TLI3RuhsatDTO tli3RuhsatDTO, String startDate, String endDate) {
+        String additionSQL = "AND R.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        if(tli3RuhsatDTO.getMpi1PaydasId() != null){
+            additionSQL = additionSQL + " AND R.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
+        }
+        if(tli3RuhsatDTO.getFirmaAdı() != null && !tli3RuhsatDTO.getFirmaAdı().equalsIgnoreCase("")){
+            additionSQL = additionSQL + " AND (ISYERIUNVANI LIKE '%" + tli3RuhsatDTO.getIsyeriUnvani().replace('i','İ') + "%' OR B.SORGUADI LIKE '%" + tli3RuhsatDTO.getFirmaAdı().replace('i','İ') + "%')";
+        }
         return ruhsatService.getRuhsatDTOListRunSQL(additionSQL);
     }
-
-    public List<RuhsatDurumuDTO> getRuhsatBasvuruByPaydasNo(Long paydasId) {
-        return ruhsatService.getRuhsatBasvuruDTOList(paydasId);
+    public List<RuhsatDurumuDTO> getRuhsatBasvuruDurumu(TLI3RuhsatDTO tli3RuhsatDTO, String startDate, String endDate) {
+        String additionSQL = " AND TLI3RUHSAT.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        if(tli3RuhsatDTO.getMpi1PaydasId() != null){
+            additionSQL = additionSQL + " AND ELI1RUHSATDOSYA.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
+        }
+        if(tli3RuhsatDTO.getFirmaAdı() != null && !tli3RuhsatDTO.getFirmaAdı().equalsIgnoreCase("")){
+            additionSQL = additionSQL + " AND (TLI3RUHSAT.ISYERIUNVANI LIKE '%" + tli3RuhsatDTO.getIsyeriUnvani().replace('i','İ') + "%' OR MPI1PAYDAS.SORGUADI LIKE '%" + tli3RuhsatDTO.getFirmaAdı().replace('i','İ') + "%')";
+        }
+        return ruhsatService.getRuhsatBasvuruDTOList(tli3RuhsatDTO, additionSQL);
     }
-
     //barcodeId = id
     public List<TLI3RuhsatDTO> getRuhsatByBarcodeId(TLI3RuhsatDTO tli3RuhsatDTO) {
         String additionSQL = "and r.ID=" + tli3RuhsatDTO.getId();

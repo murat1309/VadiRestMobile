@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -96,7 +97,7 @@ public class TLI3RuhsatService {
                 "and y.DRE1MAHALLE_ID=m.id ";
     }
 
-    public String getRuhsatDurumuSQL(Long paydasId) {
+    public String getRuhsatDurumuSQL() {
         String sql = "SELECT ELI1RUHSATDOSYA.ID,\n" +
                 "       ELI1RUHSATDOSYA.EIN1GELIRGRUBU_ID,\n" +
                 "       ELI1RUHSATDOSYA.DDM1ISAKISI_ID,\n" +
@@ -149,6 +150,7 @@ public class TLI3RuhsatService {
                 "       MPI1PAYDAS.YISTELEFONU,\n" +
                 "       MPI1PAYDAS.YCEPTELEFONU,\n" +
                 "       MPI1PAYDAS.YFAKSTELEFONU,\n" +
+                "       MPI1PAYDAS.SORGUADI,\n" +
                 "       ELI1RUHSATDOSYA.GLI1FALIYET_ID,\n" +
                 "       (SELECT TANIM\n" +
                 "          FROM GLI1FALIYET\n" +
@@ -185,28 +187,32 @@ public class TLI3RuhsatService {
                 "       (SELECT TANIM\n" +
                 "          FROM GLI1FALIYET\n" +
                 "         WHERE ID = ELI1RUHSATDOSYA.GLI1FALIYET_ISYERI) AS ISYERIANAFAALIYET,\n" +
-                "       ISYERISINIFI,\n" +
+                "       ELI1RUHSATDOSYA.ISYERISINIFI,\n" +
                 "       ELI1RUHSATDOSYA.FAALIYETKULLANIMALANI,\n" +
                 "       ELI1RUHSATDOSYA.TALIFAALIYETKULLANIMALANI,\n" +
                 "       ELI1RUHSATDOSYA.SOZLESMEBITISTARIHI,\n" +
-                "       ALI1DOSYADURUMU_ID,\n" +
-                "       BLOKNUMARASI\n" +
-                "  FROM ELI1RUHSATDOSYA, MPI1PAYDAS\n" +
-                "   WHERE ELI1RUHSATDOSYA.MPI1PAYDAS_ID = MPI1PAYDAS.ID and ELI1RUHSATDOSYA.ID>0\n" +
-                " AND EIN1GELIRGRUBU_ID = (SELECT ID FROM EIN1GELIRGRUBU WHERE TURU='IKTISAT') " +
-                "   AND MPI1PAYDAS.ID=" + paydasId;
+                "       ELI1RUHSATDOSYA.ALI1DOSYADURUMU_ID,\n" +
+                "       ELI1RUHSATDOSYA.BLOKNUMARASI,\n" +
+                "       TLI3RUHSAT.RUHSATTARIHI,\n" +
+                "       TLI3RUHSAT.ISYERIUNVANI\n" +
+                "       FROM ELI1RUHSATDOSYA, MPI1PAYDAS, TLI3RUHSAT\n" +
+                "       WHERE ELI1RUHSATDOSYA.MPI1PAYDAS_ID = MPI1PAYDAS.ID\n" +
+                "       AND ELI1RUHSATDOSYA.ID = TLI3RUHSAT.ELI1RUHSATDOSYA_ID\n" +
+                "       AND ELI1RUHSATDOSYA.ID>0\n" +
+                "       AND ELI1RUHSATDOSYA.EIN1GELIRGRUBU_ID = (SELECT ID FROM EIN1GELIRGRUBU WHERE TURU='IKTISAT')" ;
         return sql;
     }
-
     public List<TLI3RuhsatDTO> getRuhsatDTOListRunSQL(String additionSQL) {
         String sql = addWhereCondition(additionSQL);
         List<Object> objectList = runRuhsatSQL(sql);
         return convertRuhsatToRuhsatDTOList(objectList);
     }
-
-    public List<RuhsatDurumuDTO> getRuhsatBasvuruDTOList(Long paydasNo) {
+    public String addConditionsToRuhsatDurum(String additionSql){
+        return getRuhsatDurumuSQL() + additionSql;
+    }
+    public List<RuhsatDurumuDTO> getRuhsatBasvuruDTOList(TLI3RuhsatDTO tli3RuhsatDTO, String additionSql) {
         List<Object> list = new ArrayList<>();
-        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(getRuhsatDurumuSQL(paydasNo));
+        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(addConditionsToRuhsatDurum(additionSql));
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         list = query.list();
 
@@ -227,8 +233,8 @@ public class TLI3RuhsatService {
             String ruhsatTuru = (String) map.get("RUHSATTURU");
             String ruhsatDurumu = (String) map.get("DOSYADURUMU");
 
-            if(paydasNo != null)
-                ruhsatDurumuDTO.setPaydasId(paydasNo.longValue());
+            if(tli3RuhsatDTO.getMpi1PaydasId() != null)
+                ruhsatDurumuDTO.setPaydasId(tli3RuhsatDTO.getMpi1PaydasId().longValue());
             if(yili != null)
                 ruhsatDurumuDTO.setYili(yili.longValue());
             if(kullanimAlani != null)
@@ -254,7 +260,6 @@ public class TLI3RuhsatService {
 
             ruhsatDurumuDTOList.add(ruhsatDurumuDTO);
         }
-
         return ruhsatDurumuDTOList;
     }
 

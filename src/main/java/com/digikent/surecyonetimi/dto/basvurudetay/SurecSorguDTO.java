@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto;
+package com.digikent.surecyonetimi.dto.basvurudetay;
 import java.util.*;
 
 /**
