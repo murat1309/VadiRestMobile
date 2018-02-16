@@ -260,13 +260,13 @@ public class DenetimResource {
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<UtilDenetimSaveDTO> saveIsletme(@RequestBody DenetimTespitRequest denetimTespitRequest) {
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimID="+denetimTespitRequest.getDenetimId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
+    public ResponseEntity<UtilDenetimSaveDTO> saveDenetimTespit(@RequestBody DenetimTespitRequest denetimTespitRequest) {
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak denetimID="+denetimTespitRequest.getDenetimId());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveDenetimTespit(denetimTespitRequest);
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimTespitID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }

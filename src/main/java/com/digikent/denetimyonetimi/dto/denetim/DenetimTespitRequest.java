@@ -10,6 +10,7 @@ public class DenetimTespitRequest implements Serializable {
     private Long denetimId;
     private Long denetimTuruId;
     private Long tespitGrubuId;
+    private Long denetimTespitId;
 
     public Long getDenetimId() {
         return denetimId;
@@ -33,5 +34,13 @@ public class DenetimTespitRequest implements Serializable {
 
     public void setTespitGrubuId(Long tespitGrubuId) {
         this.tespitGrubuId = tespitGrubuId;
+    }
+
+    public Long getDenetimTespitId() {
+        return denetimTespitId;
+    }
+
+    public void setDenetimTespitId(Long denetimTespitId) {
+        this.denetimTespitId = denetimTespitId;
     }
 }

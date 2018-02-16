@@ -770,28 +770,43 @@ public class DenetimRepository {
 
     public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        BDNTDenetimTespit bdntDenetimTespit = null;
+        Session session = sessionFactory.openSession();
+        session.getTransaction().begin();
 
         try {
-            BDNTDenetimTespit bdntDenetimTespit = new BDNTDenetimTespit();
-            bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
-            bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
-            bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
-            bdntDenetimTespit.setBdntDenetimTespitLineList(null);
-            //TODO buranın doğru şeylerle setlenmesi lazım
-            bdntDenetimTespit.setDenetimAksiyonu("TUTANAK");
-            bdntDenetimTespit.setIzahat(null);
-            bdntDenetimTespit.setVerilenSure(null);
-            bdntDenetimTespit.setCrDate(new Date());
-            bdntDenetimTespit.setDeleteFlag("H");
-            bdntDenetimTespit.setIsActive(true);
-            bdntDenetimTespit.setCrUser(1l);
+            if (denetimTespitRequest.getDenetimTespitId() != null) {
+                Object o = session.get(BDNTDenetimTespit.class,denetimTespitRequest.getDenetimTespitId());
+                bdntDenetimTespit = (BDNTDenetimTespit)o;
 
-            Session session = sessionFactory.openSession();
-            session.getTransaction().begin();
-            Object o = session.save(bdntDenetimTespit);
-            session.getTransaction().commit();
-            LOG.debug("bdntDenetimTespit eklendi. bdntDenetimTespitID = " + (Long)o);
-            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+                bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
+                bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+
+                session.update(bdntDenetimTespit);
+                session.getTransaction().commit();
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTespitRequest.getDenetimTespitId());
+            } else {
+                 new BDNTDenetimTespit();
+                bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
+                bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
+                bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+                bdntDenetimTespit.setBdntDenetimTespitLineList(null);
+                //TODO buranın doğru şeylerle setlenmesi lazım
+                bdntDenetimTespit.setDenetimAksiyonu("TUTANAK");
+                bdntDenetimTespit.setIzahat(null);
+                bdntDenetimTespit.setVerilenSure(null);
+                bdntDenetimTespit.setCrDate(new Date());
+                bdntDenetimTespit.setDeleteFlag("H");
+                bdntDenetimTespit.setIsActive(true);
+                bdntDenetimTespit.setCrUser(1l);
+
+                Object o = session.save(bdntDenetimTespit);
+                session.getTransaction().commit();
+                LOG.debug("bdntDenetimTespit eklendi. bdntDenetimTespitID = " + (Long)o);
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
+            }
+
+
         } catch (Exception ex) {
             LOG.debug("bdntDenetimTespit kayit esnasinda bir hata olustu");
             LOG.debug("HATA MESAJI = " + ex.getMessage());

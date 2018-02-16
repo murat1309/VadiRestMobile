@@ -86,7 +86,7 @@ public class DenetimService {
         LOG.debug("searching getTespitGrubuDTOListByDenetimTuruId");
         return denetimRepository.findTespitGrubuDTOListByDenetimTuruId(denetimTuruId);
     }
-    @Cacheable(value="denetim", key = "#root.methodName.toString() + #tespitGrubuId ")
+    //@Cacheable(value="denetim", key = "#root.methodName.toString() + #tespitGrubuId ")
     public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
         //List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
         LOG.debug("searching getTespitDTOListByTespitGrubuId");
@@ -167,7 +167,6 @@ public class DenetimService {
                 for (SecenekTuruDTO secenekTuruDTO : secenekTuruDTOList) {
                     if (tespitDTO.getId().longValue() == secenekTuruDTO.getTespitId().longValue()) {
                         tespitDTO.getSecenekTuruDTOList().add(secenekTuruDTO);
-                        break;
                     }
                 }
             }
