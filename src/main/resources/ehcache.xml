@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  dynamicConfig="true"
+  monitoring="autodetect"
+  updateCheck="true"
+  xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd">
+
+  <cache
+    name="sokaklar"
+    maxElementsInMemory="1000"
+    memoryStoreEvictionPolicy="LRU"
+    overflowToDisk="false"
+    timeToIdleSeconds="0"
+    timeToLiveSeconds="3600"/>
+
+  <cache
+    name="mahalleler"
+    maxElementsInMemory="1000"
+    memoryStoreEvictionPolicy="LRU"
+    overflowToDisk="false"
+    timeToIdleSeconds="0"
+    timeToLiveSeconds="3600"/>
+
+  <cache
+    name="belediyeler"
+    eternal="true"
+    maxElementsInMemory="1000"
+    overflowToDisk="true"/>
+
+  <cache
+    name="denetim"
+    maxElementsInMemory="1000"
+    memoryStoreEvictionPolicy="LRU"
+    overflowToDisk="false"
+    timeToIdleSeconds="0"
+    timeToLiveSeconds="3600"/>
+
+  </ehcache>

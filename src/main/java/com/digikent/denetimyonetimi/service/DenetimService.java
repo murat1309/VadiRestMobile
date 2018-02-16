@@ -16,10 +16,10 @@ import com.digikent.denetimyonetimi.entity.LDNTTespit;
 import com.digikent.denetimyonetimi.entity.LDNTTespitTarife;
 import com.digikent.denetimyonetimi.entity.LSM2Kanun;
 import org.hibernate.SessionFactory;
-import org.hibernate.procedure.internal.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * Created by Kadir on 26.01.2018.
+ * Updated by Erkan on 15.02.2018 -- added cache support
  */
 @Service
 public class DenetimService {
@@ -44,36 +45,51 @@ public class DenetimService {
         return denetimRepository.saveDenetim(denetimRequest);
     }
 
+    @Cacheable(value = "sokaklar", key = "#root.methodName.toString() + #belediyeId")
     public List<MahalleSokakDTO> getMahalleSokakListByBelediyeId(Long belediyeId) {
+        LOG.debug("searching getMahalleSokakListByBelediyeId");
         return denetimRepository.findMahalleAndSokakListByBelediyeId(belediyeId);
     }
 
+    @Cacheable(value="belediyeler", key = "#root.methodName")
     public List<BelediyeDTO> getBelediyeList() {
+        LOG.debug("searching getBelediyeList");
         return denetimRepository.findBelediyeList();
     }
 
+    @Cacheable(value="mahalleler", key = "#belediyeId")
     public List<MahalleDTO> getMahalleByBelediyeId(Long belediyeId) {
+        LOG.debug("searching getMahalleByBelediyeId");
         return denetimRepository.findMahalleListByBelediyeId(belediyeId);
     }
 
+    @Cacheable(value = "sokaklar", key = "#mahalleId")
     public List<SokakDTO> getSokakByMahalleId(Long mahalleId) {
+        LOG.debug("searching getSokakByMahalleId");
         return denetimRepository.findSokakListByMahalleId(mahalleId);
     }
 
+    @Cacheable(value="mahalleler", key = "#root.methodName.toString()")
     public List<MahalleDTO> getMahalleListByCurrentBelediye() {
+        LOG.debug("searching getMahalleListByCurrentBelediye");
         return denetimRepository.findMahalleListByCurrentBelediye();
     }
 
+    @Cacheable(value="denetim", key = "#root.methodName.toString()")
     public List<DenetimTuruDTO> getDenetimTuruDTOList() {
+        LOG.debug("searching getDenetimTuruDTOList");
         return denetimRepository.getDenetimTuruDTOList();
     }
 
+    @Cacheable(value="denetim", key = "#root.methodName.toString() + #denetimTuruId ")
     public List<TespitGrubuDTO> getTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
+        LOG.debug("searching getTespitGrubuDTOListByDenetimTuruId");
         return denetimRepository.findTespitGrubuDTOListByDenetimTuruId(denetimTuruId);
     }
-
+    @Cacheable(value="denetim", key = "#root.methodName.toString() + #tespitGrubuId ")
     public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
         //List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
+        LOG.debug("searching getTespitDTOListByTespitGrubuId");
         List<SecenekTuruDTO> secenekTuruDTOList = null;
         List<TespitTarifeDTO> tespitTarifeDTOList = null;
 
@@ -113,7 +129,7 @@ public class DenetimService {
         return tespitTarifeDTOList;
     }
 
-    public TespitDTO ldntTespitToTespitDTO(LDNTTespit ldntTespit) {
+    private TespitDTO ldntTespitToTespitDTO(LDNTTespit ldntTespit) {
 
         TespitDTO tespitDTO = new TespitDTO();
 
@@ -131,7 +147,7 @@ public class DenetimService {
         return tespitDTO;
     }
 
-    public List<TespitDTO> ldntTespitToListTespitDTOList(List<LDNTTespit> ldntTespitList) {
+    private List<TespitDTO> ldntTespitToListTespitDTOList(List<LDNTTespit> ldntTespitList) {
         List<TespitDTO> tespitDTOList = new ArrayList<>();
         for (LDNTTespit ldntTespit:ldntTespitList) {
             TespitDTO tespitDTO = ldntTespitToTespitDTO(ldntTespit);
@@ -144,7 +160,7 @@ public class DenetimService {
         return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi());
     }
 
-    public List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
+    private List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
 
         for (TespitDTO tespitDTO : tespitDTOList) {
             if (tespitDTO.getSecenekTuru().equals("CHECKBOX")) {
