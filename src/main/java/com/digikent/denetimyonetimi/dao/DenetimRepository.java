@@ -45,7 +45,7 @@ public class DenetimRepository {
 
         try {
             if (denetimRequest.getBdntDenetimId() != null) {
-                LOG.debug("Denetim Guncellemesi paydas ID = " + denetimRequest.getDenetimPaydasDTO().getPaydasNo() + " BdntDenetimId=" + denetimRequest.getBdntDenetimId());
+                LOG.debug("Denetim Guncellemesi paydasID=" + denetimRequest.getDenetimPaydasDTO().getPaydasNo() + " BdntDenetimId=" + denetimRequest.getBdntDenetimId());
                 Object o = session.get(BDNTDenetim.class,denetimRequest.getBdntDenetimId());
                 bdntDenetim = (BDNTDenetim)o;
                 bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim);
