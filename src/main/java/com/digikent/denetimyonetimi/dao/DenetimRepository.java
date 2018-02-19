@@ -786,7 +786,7 @@ public class DenetimRepository {
                 session.getTransaction().commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTespitRequest.getDenetimTespitId());
             } else {
-                 new BDNTDenetimTespit();
+                bdntDenetimTespit = new BDNTDenetimTespit();
                 bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
                 bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
                 bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
@@ -825,9 +825,38 @@ public class DenetimRepository {
             Object o = session.get(BDNTDenetimTespit.class,tespitlerRequest.getDenetimTespitId());
             BDNTDenetimTespit bdntDenetimTespitDB = (BDNTDenetimTespit)o;
 
-            if (bdntDenetimTespitDB != null) {
+            if (bdntDenetimTespitDB != null && bdntDenetimTespitDB.getBdntDenetimTespitLineList().size() > 0) {
+                //güncelleme
+                for (BDNTDenetimTespitLine bdntDenetimTespitLine:bdntDenetimTespitDB.getBdntDenetimTespitLineList()) {
+                    for (TespitSaveDTO tespitSaveDTO: tespitlerRequest.getTespitSaveDTOList()) {
+                        if (bdntDenetimTespitLine.getTespitId() == tespitSaveDTO.getTespitId()) {
+                            bdntDenetimTespitLine.setTespitId(tespitSaveDTO.getTespitId());
+                            bdntDenetimTespitLine.setTutari(tespitSaveDTO.getTutari());
+                            bdntDenetimTespitLine.setStringValue(tespitSaveDTO.getTespitCevap().getStringValue());
+                            bdntDenetimTespitLine.setNumberValue(tespitSaveDTO.getTespitCevap().getNumberValue());
+                            bdntDenetimTespitLine.setTextValue(tespitSaveDTO.getTespitCevap().getTextValue());
+                            //date value
+                            if (tespitSaveDTO.getTespitCevap().getDateValue() != null) {
+                                SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                                Date date = formatter.parse(tespitSaveDTO.getTespitCevap().getDateValue());
+                                bdntDenetimTespitLine.setDateValue(date);
+                            } else {
+                                bdntDenetimTespitLine.setDateValue(null);
+                            }
+                        }
+                    }
+                }
+                session.saveOrUpdate(bdntDenetimTespitDB);
+                session.getTransaction().commit();
+                LOG.debug("bdntDenetimTespit guncellendi. bdntDenetimTespitID = " + bdntDenetimTespitDB.getID());
+                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitLineList.size());
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
+
+            } else if (bdntDenetimTespitDB != null && bdntDenetimTespitDB.getBdntDenetimTespitLineList().size() == 0){
+                //yeni kayit
                 for (TespitSaveDTO tespitSaveDTO: tespitlerRequest.getTespitSaveDTOList()) {
                     BDNTDenetimTespitLine bdntDenetimTespitLine = new BDNTDenetimTespitLine();
+                    bdntDenetimTespitLine.setID(tespitSaveDTO.getTespitId());
                     bdntDenetimTespitLine.setBdntDenetimTespit(bdntDenetimTespitDB);
                     bdntDenetimTespitLine.setTespitId(tespitSaveDTO.getTespitId());
                     bdntDenetimTespitLine.setTutari(tespitSaveDTO.getTutari());

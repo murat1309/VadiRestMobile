@@ -279,7 +279,7 @@ public class DenetimResource {
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveTespitler(@RequestBody TespitlerRequest tespitlerRequest) {
-        LOG.debug("tespitler kayit islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
+        LOG.debug("tespitler kayit/guncelleme islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
         LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
