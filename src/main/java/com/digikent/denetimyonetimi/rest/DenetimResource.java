@@ -156,20 +156,6 @@ public class DenetimResource {
     }
 
     /*
-        Denetim raporunu getirir
-    */
-    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<ReportResponse> createDenetimReport() {
-        LOG.debug("/create/report REST request");
-
-        String htmlContent = reportService.createDenetimReport();
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
-
-        return new ResponseEntity<ReportResponse>(reportResponse, OK);
-    }
-
-    /*
         Denetim türlerini getirir
      */
     @RequestMapping(value = "/list/denetimturu", method = RequestMethod.GET)
@@ -287,7 +273,35 @@ public class DenetimResource {
     }
 
 
+    /*
+        Denetim raporunu getirir
+    */
+    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<ReportResponse> createDenetimReport() {
+        LOG.debug("/create/report REST request");
 
+        //TODO düzenle
+        String htmlContent = reportService.createDenetimReport();
+        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
+        LOG.debug("created report / END charachterSize=" + htmlContent.length());
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
+    }
+
+    /*
+    Denetim raporunu getirir
+*/
+    @RequestMapping(value = "/create/report/{denetimtespitid}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<ReportResponse> createDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
+        LOG.debug("/create/report REST request");
+
+        //TODO düzenle
+        String htmlContent = reportService.createCezaDenetimReport(denetimTespitId);
+        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
+
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
+    }
 
 
 

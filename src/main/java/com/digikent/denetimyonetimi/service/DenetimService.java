@@ -88,7 +88,7 @@ public class DenetimService {
     }
     //@Cacheable(value="denetim", key = "#root.methodName.toString() + #tespitGrubuId ")
     public List<TespitDTO> getTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
-        //List<TespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
+        //List<ReportTespitDTO> tespitDTOList = denetimRepository.findTespitDTOListByTespitGrubuId(tespitGrubuId);
         LOG.debug("searching getTespitDTOListByTespitGrubuId");
         List<SecenekTuruDTO> secenekTuruDTOList = null;
         List<TespitTarifeDTO> tespitTarifeDTOList = null;

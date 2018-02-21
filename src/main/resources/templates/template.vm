@@ -201,6 +201,29 @@
         </div>
     </div>
 
+    <div class="table m">
+        <div class="title"> » Taraflar</div>
+        <div class="row header">
+            <div class="cell">Türü</div>
+            <div class="cell">Adı Soyadı</div>
+            <div class="cell">Ünvanı</div>
+            <div class="cell">TC Kimlik No</div>
+            <div class="cell">İmza</div>
+        </div>
+
+        #foreach( $location in $locations )
+            <div class="row">
+                <div class="cell">$type</div>
+                <div class="cell">$name $surname</div>
+                <div class="cell">$title</div>
+                <div class="cell">$tckn</div>
+                <div class="cell">$sign</div>
+            </div>
+        #end
+
+
+    </div>
+
     <!-- 		<div style="width: 25%; float: right;"> -->
     <!-- 			<div>Tarih</div> -->
     <!-- 			<div>$date</div> -->
@@ -259,61 +282,30 @@
 
     <div class="table m">
         <div class="title"> » Tespitler</div>
-        #foreach( $tespitDTO in $tespitDTOs )
+        #foreach( $tespitDTO in $reportTespitDTOs )
             <div class="row">
                 <div class="cell" style="width: 50%">
                     <div class="innertable">
                         <div class="row">
                             <div class="cell b">Açıklamalar</div>
-                            <div class="cell">$tespitDTO.aciklamamalar</div>
+                            <div class="cell">$tespitDTO.tespitAciklamasi</div>
                         </div>
                         <div class="row">
-                            <div class="cell b">Değer</div>
-                            <div class="cell">$tespitDTO.deger</div>
+                            <div class="cell b">Açıklama</div>
+                            <div class="cell">$tespitDTO.aciklama</div>
                         </div>
                         <div class="row">
                             <div class="cell b">Dayanak Kanunu</div>
                             <div class="cell">$tespitDTO.dayanakKanunu</div>
                         </div>
                         <div class="row">
-                            <div class="cell b">Dayanak Maddesi</div>
-                            <div class="cell">$tespitDTO.dayanakMaddesi</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Ceza Tutarı</div>
-                            <div class="cell">$tespitDTO.cezaTutarı</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Açıklama</div>
-                            <div class="cell">$tespitDTO.aciklama</div>
+                            <div class="cell b">Değer</div>
+                            <div class="cell">$tespitDTO.deger</div>
                         </div>
                     </div>
                 </div>
             </div>
         #end
-    </div>
-
-    <div class="table m">
-        <div class="title"> » Taraflar</div>
-        <div class="row header">
-            <div class="cell">Türü</div>
-            <div class="cell">Adı Soyadı</div>
-            <div class="cell">Ünvanı</div>
-            <div class="cell">TC Kimlik No</div>
-            <div class="cell">İmza</div>
-        </div>
-
-        #foreach( $location in $locations )
-            <div class="row">
-                <div class="cell">$type</div>
-                <div class="cell">$name $surname</div>
-                <div class="cell">$title</div>
-                <div class="cell">$tckn</div>
-                <div class="cell">$sign</div>
-            </div>
-        #end
-
-
     </div>
 
 </div>

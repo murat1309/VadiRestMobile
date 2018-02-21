@@ -1,30 +1,28 @@
 package com.digikent.denetimyonetimi.dto.velocity;
 
-public class TespitDTO {
-  private String aciklamamalar;
+public class ReportTespitDTO {
+  private String tespitAciklamasi;
   private String deger;
   private String dayanakKanunu;
-  private String dayanakMaddesi;
-  private String cezaTutari;
   private String aciklama;
 
+  public ReportTespitDTO() {
+  }
 
-  public TespitDTO(String aciklamamalar, String deger, String dayanakKanunu, String dayanakMaddesi, String cezaTutari, String aciklama) {
+  public ReportTespitDTO(String tespitAciklamasi, String deger, String dayanakKanunu, String dayanakMaddesi, String aciklama) {
     super();
-    this.aciklamamalar = aciklamamalar;
+    this.tespitAciklamasi = tespitAciklamasi;
     this.deger = deger;
     this.dayanakKanunu = dayanakKanunu;
-    this.dayanakMaddesi = dayanakMaddesi;
-    this.cezaTutari = cezaTutari;
     this.aciklama = aciklama;
   }
 
-  public String getAciklamamalar() {
-    return aciklamamalar;
+  public String getTespitAciklamasi() {
+    return tespitAciklamasi;
   }
 
-  public void setAciklamamalar(String aciklamamalar) {
-    this.aciklamamalar = aciklamamalar;
+  public void setTespitAciklamasi(String tespitAciklamasi) {
+    this.tespitAciklamasi = tespitAciklamasi;
   }
 
   public String getDeger() {
@@ -41,22 +39,6 @@ public class TespitDTO {
 
   public void setDayanakKanunu(String dayanakKanunu) {
     this.dayanakKanunu = dayanakKanunu;
-  }
-
-  public String getDayanakMaddesi() {
-    return dayanakMaddesi;
-  }
-
-  public void setDayanakMaddesi(String dayanakMaddesi) {
-    this.dayanakMaddesi = dayanakMaddesi;
-  }
-
-  public String getCezaTutari() {
-    return cezaTutari;
-  }
-
-  public void setCezaTutari(String cezaTutari) {
-    this.cezaTutari = cezaTutari;
   }
 
   public String getAciklama() {

@@ -13,6 +13,7 @@ import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.mesajlasma.dto.ErrorDTO;
+import org.apache.commons.collections.map.HashedMap;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ public class DenetimRepository {
                 tx.commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimRequest.getBdntDenetimId());
             } else {
+                bdntDenetim = new BDNTDenetim();
                 LOG.debug("Denetim Kaydi paydas ID = " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
                 bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim);
                 Object o = session.save(bdntDenetim);
@@ -849,14 +851,14 @@ public class DenetimRepository {
                 session.saveOrUpdate(bdntDenetimTespitDB);
                 session.getTransaction().commit();
                 LOG.debug("bdntDenetimTespit guncellendi. bdntDenetimTespitID = " + bdntDenetimTespitDB.getID());
-                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitLineList.size());
+                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitDB.getBdntDenetimTespitLineList().size());
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
 
             } else if (bdntDenetimTespitDB != null && bdntDenetimTespitDB.getBdntDenetimTespitLineList().size() == 0){
                 //yeni kayit
                 for (TespitSaveDTO tespitSaveDTO: tespitlerRequest.getTespitSaveDTOList()) {
                     BDNTDenetimTespitLine bdntDenetimTespitLine = new BDNTDenetimTespitLine();
-                    bdntDenetimTespitLine.setID(tespitSaveDTO.getTespitId());
+                    //bdntDenetimTespitLine.setID(tespitSaveDTO.getTespitId());
                     bdntDenetimTespitLine.setBdntDenetimTespit(bdntDenetimTespitDB);
                     bdntDenetimTespitLine.setTespitId(tespitSaveDTO.getTespitId());
                     bdntDenetimTespitLine.setTutari(tespitSaveDTO.getTutari());
@@ -876,14 +878,14 @@ public class DenetimRepository {
                     } else {
                         bdntDenetimTespitLine.setDateValue(null);
                     }
-
-                    bdntDenetimTespitLineList.add(bdntDenetimTespitLine);
+                    bdntDenetimTespitDB.getBdntDenetimTespitLineList().add(bdntDenetimTespitLine);
+                    //bdntDenetimTespitLineList.add(bdntDenetimTespitLine);
                 }
-                bdntDenetimTespitDB.setBdntDenetimTespitLineList(bdntDenetimTespitLineList);
+                //bdntDenetimTespitDB.setBdntDenetimTespitLineList(bdntDenetimTespitLineList);
                 session.saveOrUpdate(bdntDenetimTespitDB);
                 session.getTransaction().commit();
                 LOG.debug("bdntDenetimTespit guncellendi. bdntDenetimTespitID = " + bdntDenetimTespitDB.getID());
-                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitLineList.size());
+                LOG.debug("bdntTespitLine'lar eklendi. Adet="+bdntDenetimTespitDB.getBdntDenetimTespitLineList().size());
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
             } else {
                 LOG.debug("HATA = bdntDenetimTespit database den null geldi. Bu yuzden tespit kayitlari olusturulamadi");
@@ -921,4 +923,31 @@ public class DenetimRepository {
         return list;
     }
 
+    public BDNTDenetimTespit findDenetimTespitById(Long denetimTespitId) {
+        Session session = sessionFactory.openSession();
+        session.getTransaction().begin();
+        Object o = session.get(BDNTDenetimTespit.class,denetimTespitId);
+        BDNTDenetimTespit bdntDenetimTespitDB = (BDNTDenetimTespit)o;
+
+        return bdntDenetimTespitDB;
+    }
+
+    public Map<Long,LDNTTespit> findTespitMapByTespitIdList(List<Long> tespitIdList) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(LDNTTespit.class);
+        criteria.add(Restrictions.eq("isActive", true));
+        Object[] obj = new Object[] {};
+        ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+        temp.addAll(tespitIdList);
+        criteria.add(Restrictions.in("id", temp.toArray()));
+        List<LDNTTespit> list = criteria.list();
+
+        Map<Long,LDNTTespit> tespitMap = new HashedMap();
+
+        for (LDNTTespit ldntTespit: list) {
+            tespitMap.put(ldntTespit.getID(),ldntTespit);
+        }
+
+        return tespitMap;
+    }
 }

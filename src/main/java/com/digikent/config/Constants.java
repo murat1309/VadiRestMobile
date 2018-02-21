@@ -26,6 +26,20 @@ public final class Constants {
     public static final long RUHSAT_BASVURU_DURUM = 2;
     public static final long MESSAGE_SYSTEM_USER_ID = -1;
     public static final String ERROR_MESSAGE_PAYDAS_MIN_CHARACHTER_SIZE = "Filtreleme yetersiz";
+    public static final String DENETIM_AKSIYON_TYPE_CEZA = "CEZA";
+    public static final String DENETIM_AKSIYON_TYPE_TUTANAK = "TUTANAK";
+    public static final String DENETIM_AKSIYON_TYPE_EKSURE = "EKSURE";
+    public static final String DENETIM_AKSIYON_TYPE_KAPAMA = "KAPAMA";
+
+    public static final String TESPIT_AKSIYON_TYPE_CEZA = "CEZA";
+    public static final String TESPIT_AKSIYON_TYPE_TUTANAK = "TUTANAK";
+    public static final String TESPIT_AKSIYON_TYPE_EKBILGI = "EKBILGI";
+
+    public static final String TESPIT_SECENEK_TURU_CHECHBOX = "CHECKBOX";
+    public static final String TESPIT_SECENEK_TURU_TEXT = "TEXT";
+    public static final String TESPIT_SECENEK_TURU_DATE = "DATE";
+    public static final String TESPIT_SECENEK_TURU_NUMBER = "NUMBER";
+
 
 
     private Constants() {
