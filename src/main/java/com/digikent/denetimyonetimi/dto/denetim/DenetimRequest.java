@@ -58,4 +58,12 @@ public class DenetimRequest implements Serializable{
     public void setBdntDenetimId(Long bdntDenetimId) {
         this.bdntDenetimId = bdntDenetimId;
     }
+
+    public DenetimTarafDTO getDenetimTarafDTO() {
+        return denetimTarafDTO;
+    }
+
+    public void setDenetimTarafDTO(DenetimTarafDTO denetimTarafDTO) {
+        this.denetimTarafDTO = denetimTarafDTO;
+    }
 }

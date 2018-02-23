@@ -75,7 +75,7 @@ public class DenetimRepository {
         bdntDenetim.setMpi1PaydasId(denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
-        bdntDenetim.setVsynRoleTeamId(null);
+        bdntDenetim.setVsynRoleTeamId(denetimRequest.getDenetimTarafDTO().getRoleTeamId());
         if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("K")) {
             bdntDenetim.setBislIsletmeId(denetimRequest.getIsletmeId());
             //işletme için I, paydaş için P
