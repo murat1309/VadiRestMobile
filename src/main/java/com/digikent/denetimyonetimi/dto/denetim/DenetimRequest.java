@@ -3,6 +3,7 @@ package com.digikent.denetimyonetimi.dto.denetim;
 import com.digikent.denetimyonetimi.dto.adres.DenetimOlayYeriAdresi;
 import com.digikent.denetimyonetimi.dto.adres.DenetimTebligatAdresi;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 
 import java.io.Serializable;
 
@@ -14,6 +15,7 @@ public class DenetimRequest implements Serializable{
     private DenetimPaydasDTO denetimPaydasDTO;
     private DenetimTebligatAdresi denetimTebligatAdresi;
     private DenetimOlayYeriAdresi denetimOlayYeriAdresi;
+    private DenetimTarafDTO denetimTarafDTO;
     private Long isletmeId;
     private Long bdntDenetimId;
 
