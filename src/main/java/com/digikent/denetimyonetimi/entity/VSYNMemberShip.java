@@ -1,7 +1,8 @@
 package com.digikent.denetimyonetimi.entity;
 
 import com.digikent.domain.BaseEntity;
-import com.digikent.general.entity.FSM1Users;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,11 +25,12 @@ public class VSYNMemberShip extends BaseEntity implements Serializable {
     @JoinColumn(name="PARENT_ID")
     private VSYNRoleTeam vsynRoleTeam;
 
-/*    @OneToOne
+    @NotFound(action = NotFoundAction.IGNORE)
+    @OneToOne
     @JoinColumn(name="CHILD_ID")
-    private FSM1Users fsm1Users;*/
-    @Column(name = "CHILD_ID")
-    private Long fsm1UsersId;
+    private FSM1Users fsm1Users = new FSM1Users();
+    /*@Column(name = "CHILD_ID")
+    private Long fsm1UsersId;*/
 
     @Column(name = "PARENTOBJECTNAME")
     private String parentObjectName;
@@ -58,12 +60,12 @@ public class VSYNMemberShip extends BaseEntity implements Serializable {
         this.vsynRoleTeam = vsynRoleTeam;
     }
 
-    public Long getFsm1UsersId() {
-        return fsm1UsersId;
+    public FSM1Users getFsm1Users() {
+        return fsm1Users;
     }
 
-    public void setFsm1UsersId(Long fsm1UsersId) {
-        this.fsm1UsersId = fsm1UsersId;
+    public void setFsm1Users(FSM1Users fsm1Users) {
+        this.fsm1Users = fsm1Users;
     }
 
     public String getParentObjectName() {

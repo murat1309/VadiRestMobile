@@ -1,5 +1,7 @@
 package com.digikent.denetimyonetimi.dto.takim;
 
+import com.digikent.general.dto.Fsm1UserDTO;
+
 import java.io.Serializable;
 
 /**
@@ -9,7 +11,7 @@ public class VsynMemberShipDTO implements Serializable {
 
     private Long id;
     private VsynRoleTeamDTO vsynRoleTeamDTO;
-    private Long fsm1UsersId;
+    private Fsm1UserDTO fsm1UserDTO;
     private String parentObjectName;
     private String childObjectName;
     private String parentName;
@@ -31,12 +33,12 @@ public class VsynMemberShipDTO implements Serializable {
         this.vsynRoleTeamDTO = vsynRoleTeamDTO;
     }
 
-    public Long getFsm1UsersId() {
-        return fsm1UsersId;
+    public Fsm1UserDTO getFsm1UserDTO() {
+        return fsm1UserDTO;
     }
 
-    public void setFsm1UsersId(Long fsm1UsersId) {
-        this.fsm1UsersId = fsm1UsersId;
+    public void setFsm1UserDTO(Fsm1UserDTO fsm1UserDTO) {
+        this.fsm1UserDTO = fsm1UserDTO;
     }
 
     public String getParentObjectName() {

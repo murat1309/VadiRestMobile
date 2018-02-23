@@ -7,6 +7,7 @@ import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
@@ -949,5 +950,62 @@ public class DenetimRepository {
         }
 
         return tespitMap;
+    }
+
+    public List<DenetimTespitDTO> getDenetimTespitListByTespitId(Long denetimId) {
+        //TODO medetten sql gelecek
+
+        List<DenetimTespitDTO> denetimTespitDTOList = new ArrayList<>();
+
+        String sql = "SELECT ID, " +
+                " LDNTDENETIMTURU_ID AS DENETIMTURUID," +
+                " (SELECT TANIM FROM LDNTDENETIMTURU WHERE BDNTDENETIMTESPIT.LDNTDENETIMTURU_ID = LDNTDENETIMTURU.ID) DENETIMTURUTANIM,\n" +
+                " LDNTTESPITGRUBU_ID AS TESPITGRUBUID," +
+                " (SELECT TANIM FROM LDNTTESPITGRUBU WHERE LDNTTESPITGRUBU.ID = BDNTDENETIMTESPIT.LDNTTESPITGRUBU_ID) TESPITGRUBUTANIM,\n" +
+                " (SELECT VSYNROLETEAM_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID) AS VSYNROLETEAM_ID\n" +
+                " FROM BDNTDENETIMTESPIT\n" +
+                " WHERE BDNTDENETIMTESPIT.ISACTIVE = 'E' AND BDNTDENETIMTESPIT.BDNTDENETIM_ID = " + denetimId;
+
+        List<Object> list = new ArrayList<Object>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+        list = query.list();
+
+        for(Object o : list){
+            Map map = (Map) o;
+            BigDecimal id = (BigDecimal) map.get("ID");
+            BigDecimal denetimTuruId = (BigDecimal) map.get("DENETIMTURUID");
+            String denetimTuruTanim = (String) map.get("DENETIMTURUTANIM");
+            BigDecimal tespitGrubuId = (BigDecimal) map.get("TESPITGRUBUID");
+            String tespitGrubuTanim = (String) map.get("TESPITGRUBUTANIM");
+            BigDecimal roleTeamId = (BigDecimal) map.get("VSYNROLETEAM_ID");
+
+            DenetimTespitDTO denetimTespitDTO = new DenetimTespitDTO();
+
+            if(id != null)
+                denetimTespitDTO.setId(id.longValue());
+
+            if(denetimTuruId != null)
+                denetimTespitDTO.setDenetimTuruId(denetimTuruId.longValue());
+
+            if(tespitGrubuId != null)
+                denetimTespitDTO.setTespitGrubuId(tespitGrubuId.longValue());
+
+            if(roleTeamId != null)
+                denetimTespitDTO.setRoleTeamId(roleTeamId.longValue());
+
+            if(denetimTuruTanim != null)
+                denetimTespitDTO.setDenetimTuruAdi(denetimTuruTanim);
+            if(tespitGrubuTanim != null)
+                denetimTespitDTO.setTespitGrubuAdi(tespitGrubuTanim);
+
+            denetimTespitDTO.setDenetimId(denetimId);
+
+            denetimTespitDTOList.add(denetimTespitDTO);
+        }
+
+        return denetimTespitDTOList;
     }
 }

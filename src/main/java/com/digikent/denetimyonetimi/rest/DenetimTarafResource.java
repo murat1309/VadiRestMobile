@@ -27,8 +27,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @RestController
 //@PreAuthorize("hasRole('ROLE_USER')")
-@RequestMapping("/denetim/team")
-public class DenetimTeamResource {
+@RequestMapping("/denetim/taraf")
+public class DenetimTarafResource {
     private final Logger LOG = LoggerFactory.getLogger(DenetimResource.class);
 
     @Autowired
@@ -37,21 +37,17 @@ public class DenetimTeamResource {
     /*
         taraflar bilgisi denetim kaydına eklenecek
     */
-    @RequestMapping(value = "/list/currentuser", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<TeamResponse> getPaydasListByCriteria(@RequestBody TeamRequest teamRequest) {
-        LOG.debug("Takim bilgileri isteniyor. current userID="+teamRequest.getUserId());
+    public ResponseEntity<ErrorDTO> getPaydasListByCriteria(@RequestBody TeamRequest teamRequest) {
+        LOG.debug("Taraf bilgileri kayit edilecek");
+        ErrorDTO errorDTO = new ErrorDTO();
 
-        TeamResponse teamResponse = new TeamResponse();
-        List<VsynRoleTeamDTO> vsynRoleTeamDTOList = null;
-        vsynRoleTeamDTOList = teamService.getTeamByUserId(teamRequest.getUserId());
 
-        teamResponse.setVsynRoleTeamDTOList(vsynRoleTeamDTOList);
-        teamResponse.setErrorDTO(new ErrorDTO(false,null));
 
-        return new ResponseEntity<TeamResponse>(teamResponse, OK);
+        return new ResponseEntity<ErrorDTO>(errorDTO, OK);
     }
 
 }

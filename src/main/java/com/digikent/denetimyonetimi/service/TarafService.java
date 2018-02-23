@@ -1,7 +1,13 @@
 package com.digikent.denetimyonetimi.service;
 
+import org.springframework.stereotype.Service;
+
 /**
- * Created by Serkan on 23.02.2018.
+ * Created by Kadir on 23.02.2018.
  */
+@Service
 public class TarafService {
+
+
+
 }

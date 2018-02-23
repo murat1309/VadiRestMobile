@@ -5,6 +5,8 @@ import com.digikent.denetimyonetimi.entity.VSYNMemberShip;
 import com.digikent.denetimyonetimi.entity.VSYNRoleTeam;
 import com.digikent.general.dao.TeamRepository;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
+import com.digikent.general.dto.Fsm1UserDTO;
+import com.digikent.denetimyonetimi.entity.FSM1Users;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,22 +68,35 @@ public class TeamService {
     private List<VsynMemberShipDTO> convertVsynMemberShipDTOList(List<VSYNMemberShip> vsnyMemberShips) {
         List<VsynMemberShipDTO> vsynMemberShipDTOList = new ArrayList<>();
         for (VSYNMemberShip vsynMemberShip:vsnyMemberShips) {
-            VsynMemberShipDTO vsnyMemberShipDTO = convertVsynMemberShipDTO(vsynMemberShip);
-            vsynMemberShipDTOList.add(vsnyMemberShipDTO);
+            if (vsynMemberShip.getFsm1Users() != null) {
+                VsynMemberShipDTO vsnyMemberShipDTO = convertVsynMemberShipDTO(vsynMemberShip);
+                vsynMemberShipDTOList.add(vsnyMemberShipDTO);
+            }
         }
         return vsynMemberShipDTOList;
     }
 
+    private Fsm1UserDTO convertFsm1UsersDTO(FSM1Users fsm1Users) {
+        Fsm1UserDTO fsm1UserDTO = new Fsm1UserDTO();
+        if (fsm1Users != null) {
+            fsm1UserDTO.setId(fsm1Users.getID());
+            fsm1UserDTO.setAdi(fsm1Users.getFirstName());
+            fsm1UserDTO.setSoyadi(fsm1Users.getLastName());
+        }
+        return fsm1UserDTO;
+    }
+
     private VsynMemberShipDTO convertVsynMemberShipDTO(VSYNMemberShip vsnyMemberShip) {
         VsynMemberShipDTO vsynMemberShipDTO = new VsynMemberShipDTO();
-        vsynMemberShipDTO.setId(vsnyMemberShip.getID());
-        vsynMemberShipDTO.setChildName(vsnyMemberShip.getChildName());
-        vsynMemberShipDTO.setChildObjectName(vsnyMemberShip.getChildObjectName());
-        vsynMemberShipDTO.setFsm1UsersId(vsnyMemberShip.getFsm1UsersId());
-        vsynMemberShipDTO.setParentName(vsnyMemberShip.getParentName());
-        vsynMemberShipDTO.setParentObjectName(vsnyMemberShip.getParentObjectName());
-        vsynMemberShipDTO.setVsynRoleTeamDTO(new VsynRoleTeamDTO(vsnyMemberShip.getVsynRoleTeam().getID(),vsnyMemberShip.getVsynRoleTeam().getRolName(),vsnyMemberShip.getVsynRoleTeam().getRoleType()));
-
+        if (vsynMemberShipDTO != null) {
+            vsynMemberShipDTO.setId(vsnyMemberShip.getID());
+            vsynMemberShipDTO.setChildName(vsnyMemberShip.getChildName());
+            vsynMemberShipDTO.setChildObjectName(vsnyMemberShip.getChildObjectName());
+            vsynMemberShipDTO.setFsm1UserDTO(convertFsm1UsersDTO(vsnyMemberShip.getFsm1Users()));
+            vsynMemberShipDTO.setParentName(vsnyMemberShip.getParentName());
+            vsynMemberShipDTO.setParentObjectName(vsnyMemberShip.getParentObjectName());
+            vsynMemberShipDTO.setVsynRoleTeamDTO(new VsynRoleTeamDTO(vsnyMemberShip.getVsynRoleTeam().getID(),vsnyMemberShip.getVsynRoleTeam().getRolName(),vsnyMemberShip.getVsynRoleTeam().getRoleType()));
+        }
         return vsynMemberShipDTO;
     }
 }

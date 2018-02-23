@@ -2,6 +2,7 @@ package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
@@ -77,7 +78,7 @@ public class DenetimResource {
     }
 
     /*
-        Olay yeri adresi girildikten sonra denetim kaydı oluşturuluyor
+        taraflar bilgisi girildikten  sonra denetim kaydı oluşturuluyor
         eğer denetimId bilgisi null gelmezse, güncellenecek demektir.
     */
     @RequestMapping(value = "/save/denetim", method = RequestMethod.POST)
@@ -270,6 +271,18 @@ public class DenetimResource {
         utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
         LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
+    /*
+        denetime ait denetimtespit kayıtlarını getirir
+    */
+    @RequestMapping(value = "/list/denetimtespit/{denetimId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimTespitDTO>> getDenetimTespitByDenetimId(@PathVariable("denetimId") Long denetimId) {
+        LOG.debug("REST denetimtespitler geitirilecek. denetimID= " + denetimId);
+        List<DenetimTespitDTO> denetimTespitDTOList = null;
+        denetimTespitDTOList = denetimService.getDenetimTespitByDenetimId(denetimId);
+        return new ResponseEntity<List<DenetimTespitDTO>>(denetimTespitDTOList, OK);
     }
 
 

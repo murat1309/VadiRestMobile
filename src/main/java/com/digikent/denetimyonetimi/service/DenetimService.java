@@ -8,10 +8,12 @@ import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
+import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
 import com.digikent.denetimyonetimi.entity.LDNTTespit;
 import com.digikent.denetimyonetimi.entity.LDNTTespitTarife;
 import com.digikent.denetimyonetimi.entity.LSM2Kanun;
@@ -247,4 +249,7 @@ public class DenetimService {
     }
 
 
+    public List<DenetimTespitDTO> getDenetimTespitByDenetimId(Long denetimId) {
+        return denetimRepository.getDenetimTespitListByTespitId(denetimId);
+    }
 }
