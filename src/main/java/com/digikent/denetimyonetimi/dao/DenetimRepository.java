@@ -2,6 +2,7 @@ package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.adres.*;
+import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
@@ -1118,5 +1119,52 @@ public class DenetimRepository {
             }
         }
         return ilDTOList;
+    }
+
+    public List<DenetimDTO> findAllDenetim() {
+        List<DenetimDTO> denetimDTOList = new ArrayList<>();
+        String sql = "SELECT \n" +
+                "ID,DENETIMTARIHI,\n" +
+                "(SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) AS PAYDASADI,\n" +
+                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
+                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
+                "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
+                "FROM BDNTDENETIM";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                DenetimDTO denetimDTO = new DenetimDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                Date denetimTarihi = (Date) map.get("DENETIMTARIHI");
+                String paydasAdi = (String) map.get("PAYDASADI");
+                String olayYeriIlceAdi = (String) map.get("ILCEADI");
+                String olayYeriMahalleAdi = (String) map.get("MAHALLEADI");
+                String takimAdi = (String) map.get("TAKIMADI");
+
+                if(id != null)
+                    denetimDTO.setId(id.longValue());
+                if(denetimTarihi != null)
+                    denetimDTO.setDenetimTarihi(denetimTarihi);
+                if(paydasAdi != null)
+                    denetimDTO.setPaydasAdi(paydasAdi);
+                if(olayYeriIlceAdi != null)
+                    denetimDTO.setOlayYeriMahalle(olayYeriIlceAdi);
+                if(olayYeriMahalleAdi != null)
+                    denetimDTO.setPaydasAdi(olayYeriMahalleAdi);
+                if(takimAdi != null)
+                    denetimDTO.setTakimAdi(takimAdi);
+
+                denetimDTOList.add(denetimDTO);
+            }
+        }
+        return denetimDTOList;
     }
 }

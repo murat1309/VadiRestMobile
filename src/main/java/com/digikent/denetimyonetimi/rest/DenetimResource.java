@@ -288,10 +288,22 @@ public class DenetimResource {
     @RequestMapping(value = "/list/denetimtespit/{denetimId}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<List<DenetimTespitDTO>> getDenetimTespitByDenetimId(@PathVariable("denetimId") Long denetimId) {
-        LOG.debug("REST denetimtespitler geitirilecek. denetimID= " + denetimId);
+        LOG.debug("REST denetimtespitler getirilecek. denetimID= " + denetimId);
         List<DenetimTespitDTO> denetimTespitDTOList = null;
         denetimTespitDTOList = denetimService.getDenetimTespitByDenetimId(denetimId);
         return new ResponseEntity<List<DenetimTespitDTO>>(denetimTespitDTOList, OK);
+    }
+
+    /*
+        denetime ait denetimtespit kayıtlarını getirir
+    */
+    @RequestMapping(value = "/list/denetimler", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimDTO>> getDenetimList() {
+        LOG.debug("REST denetimler geitirilecek");
+        List<DenetimDTO> denetimDTOList = null;
+        denetimDTOList = denetimService.getDenetimList();
+        return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
     }
 
 
