@@ -1,51 +1,40 @@
 package com.digikent.denetimyonetimi.dto.velocity;
 
 public class UserDTO {
-  private String name;
-  private String surname;
-  private String tckn;
-  private String phone;
+  private String adiSoyadi;
+  private Long tckn;
+  private String gorevi;
+  private String tarafTuru;
 
-
-  public UserDTO(String name, String surname, String tckn, String phone) {
-    super();
-    this.name = name;
-    this.surname = surname;
-    this.tckn = tckn;
-    this.phone = phone;
+  public String getAdiSoyadi() {
+    return adiSoyadi;
   }
 
-  public String getName() {
-    return name;
+  public void setAdiSoyadi(String adiSoyadi) {
+    this.adiSoyadi = adiSoyadi;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getSurname() {
-    return surname;
-  }
-
-  public void setSurname(String surname) {
-    this.surname = surname;
-  }
-
-  public String getTckn() {
+  public Long getTckn() {
     return tckn;
   }
 
-  public void setTckn(String tckn) {
+  public void setTckn(Long tckn) {
     this.tckn = tckn;
   }
 
-  public String getPhone() {
-    return phone;
+  public String getGorevi() {
+    return gorevi;
   }
 
-  public void setPhone(String phone) {
-    this.phone = phone;
+  public void setGorevi(String gorevi) {
+    this.gorevi = gorevi;
   }
 
+  public String getTarafTuru() {
+    return tarafTuru;
+  }
 
+  public void setTarafTuru(String tarafTuru) {
+    this.tarafTuru = tarafTuru;
+  }
 }

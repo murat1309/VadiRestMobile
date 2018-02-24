@@ -11,10 +11,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
-import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
-import com.digikent.denetimyonetimi.entity.LDNTTespit;
-import com.digikent.denetimyonetimi.entity.LDNTTespitTarife;
-import com.digikent.denetimyonetimi.entity.LSM2Kanun;
+import com.digikent.denetimyonetimi.entity.*;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,7 +261,34 @@ public class DenetimService {
         return denetimRepository.findIlList();
     }
 
+    public DenetimDTO getDenetimById(Long id) {
+        String sql = getDenetimlerGeneralSql();
+        sql = sql + " WHERE ID="+id;
+        List<DenetimDTO> denetimDTOList = denetimRepository.findDenetimListBySql(sql);
+        if (denetimDTOList != null) {
+            return denetimDTOList.get(0);
+        } else {
+            return null;
+        }
+    }
+
     public List<DenetimDTO> getDenetimList() {
-        return denetimRepository.findAllDenetim();
+        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql());
+    }
+
+    public String getDenetimlerGeneralSql() {
+        String sql = "SELECT \n" +
+                "ID,DENETIMTARIHI,SITEADI_OLAYYERI,BLOKNO_OLAYYERI,KAPINOSAYI_OLAYYERI,KAPINOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DAIRENOHARF_OLAYYERI,\n" +
+                "(SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) AS PAYDASADI,\n" +
+                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
+                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
+                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI,\n" +
+                "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
+                "FROM BDNTDENETIM";
+        return sql;
+    }
+
+    public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimId(Long denetimId) {
+        return denetimRepository.findDenetimTespitTarafListByDenetimId(denetimId);
     }
 }

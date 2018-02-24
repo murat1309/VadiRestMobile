@@ -1121,15 +1121,8 @@ public class DenetimRepository {
         return ilDTOList;
     }
 
-    public List<DenetimDTO> findAllDenetim() {
+    public List<DenetimDTO> findDenetimListBySql(String sql) {
         List<DenetimDTO> denetimDTOList = new ArrayList<>();
-        String sql = "SELECT \n" +
-                "ID,DENETIMTARIHI,\n" +
-                "(SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) AS PAYDASADI,\n" +
-                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
-                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
-                "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
-                "FROM BDNTDENETIM";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -1147,7 +1140,14 @@ public class DenetimRepository {
                 String paydasAdi = (String) map.get("PAYDASADI");
                 String olayYeriIlceAdi = (String) map.get("ILCEADI");
                 String olayYeriMahalleAdi = (String) map.get("MAHALLEADI");
+                String olayYeriSokakAdi = (String) map.get("SOKAKADI");
                 String takimAdi = (String) map.get("TAKIMADI");
+                String olayYeriSiteAdi = (String) map.get("SITEADI_OLAYYERI");
+                String olayYeriBlokNo = (String) map.get("BLOKNO_OLAYYERI");
+                String olayYeriKapiNoHarf = (String) map.get("KAPINOHARF_OLAYYERI");
+                String olayYeriDaireNoHarf = (String) map.get("DAIRENOHARF_OLAYYERI");
+                BigDecimal olayYeriKapiNoSayi = (BigDecimal) map.get("KAPINOSAYI_OLAYYERI");
+                BigDecimal olayYeriDaireNoSayi = (BigDecimal) map.get("DAIRENOSAYI_OLAYYERI");
 
                 if(id != null)
                     denetimDTO.setId(id.longValue());
@@ -1156,15 +1156,37 @@ public class DenetimRepository {
                 if(paydasAdi != null)
                     denetimDTO.setPaydasAdi(paydasAdi);
                 if(olayYeriIlceAdi != null)
-                    denetimDTO.setOlayYeriMahalle(olayYeriIlceAdi);
+                    denetimDTO.setOlayYeriIlce(olayYeriIlceAdi);
                 if(olayYeriMahalleAdi != null)
-                    denetimDTO.setPaydasAdi(olayYeriMahalleAdi);
+                    denetimDTO.setOlayYeriMahalle(olayYeriMahalleAdi);
+                if(olayYeriSokakAdi != null)
+                    denetimDTO.setOlayYeriSokak(olayYeriSokakAdi);
                 if(takimAdi != null)
                     denetimDTO.setTakimAdi(takimAdi);
+                if(olayYeriSiteAdi != null)
+                    denetimDTO.setOlayYeriSiteAdi(olayYeriSiteAdi);
+                if(olayYeriBlokNo != null)
+                    denetimDTO.setOlayYeriBlokNo(olayYeriBlokNo);
+                if(olayYeriKapiNoHarf != null)
+                    denetimDTO.setOlayYeriKapiNoHarf(olayYeriKapiNoHarf);
+                if(olayYeriDaireNoHarf != null)
+                    denetimDTO.setOlayYeriDaireNoHarf(olayYeriDaireNoHarf);
+                if(olayYeriKapiNoSayi != null)
+                    denetimDTO.setOlayYeriKapiNoSayi(olayYeriKapiNoSayi.longValue());
+                if(olayYeriDaireNoSayi != null)
+                    denetimDTO.setOlayYeriDaireNoSayi(olayYeriDaireNoSayi.longValue());
 
                 denetimDTOList.add(denetimDTO);
             }
         }
         return denetimDTOList;
+    }
+
+    public List<BDNTDenetimTespitTaraf> findDenetimTespitTarafListByDenetimId(Long denetimId) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(BDNTDenetimTespitTaraf.class);
+        criteria.add(Restrictions.eq("bdntDenetimId", denetimId));
+        List<BDNTDenetimTespitTaraf> list = criteria.list();
+        return list;
     }
 }

@@ -323,8 +323,8 @@ public class DenetimResource {
     }
 
     /*
-    Denetim raporunu getirir
-*/
+        Denetim raporunu getirir
+    */
     @RequestMapping(value = "/create/report/{denetimtespitid}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<ReportResponse> createDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {

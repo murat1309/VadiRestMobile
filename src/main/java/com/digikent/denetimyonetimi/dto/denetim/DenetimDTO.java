@@ -13,6 +13,13 @@ public class DenetimDTO {
     private String takimAdi;
     private String olayYeriIlce;
     private String olayYeriMahalle;
+    private String olayYeriSokak;
+    private String olayYeriSiteAdi;
+    private String olayYeriBlokNo;
+    private String olayYeriKapiNoHarf;
+    private String olayYeriDaireNoHarf;
+    private Long olayYeriKapiNoSayi;
+    private Long olayYeriDaireNoSayi;
 
     public Long getId() {
         return id;
@@ -60,5 +67,61 @@ public class DenetimDTO {
 
     public void setOlayYeriMahalle(String olayYeriMahalle) {
         this.olayYeriMahalle = olayYeriMahalle;
+    }
+
+    public String getOlayYeriSiteAdi() {
+        return olayYeriSiteAdi;
+    }
+
+    public void setOlayYeriSiteAdi(String olayYeriSiteAdi) {
+        this.olayYeriSiteAdi = olayYeriSiteAdi;
+    }
+
+    public String getOlayYeriBlokNo() {
+        return olayYeriBlokNo;
+    }
+
+    public void setOlayYeriBlokNo(String olayYeriBlokNo) {
+        this.olayYeriBlokNo = olayYeriBlokNo;
+    }
+
+    public String getOlayYeriKapiNoHarf() {
+        return olayYeriKapiNoHarf;
+    }
+
+    public void setOlayYeriKapiNoHarf(String olayYeriKapiNoHarf) {
+        this.olayYeriKapiNoHarf = olayYeriKapiNoHarf;
+    }
+
+    public String getOlayYeriDaireNoHarf() {
+        return olayYeriDaireNoHarf;
+    }
+
+    public void setOlayYeriDaireNoHarf(String olayYeriDaireNoHarf) {
+        this.olayYeriDaireNoHarf = olayYeriDaireNoHarf;
+    }
+
+    public Long getOlayYeriKapiNoSayi() {
+        return olayYeriKapiNoSayi;
+    }
+
+    public void setOlayYeriKapiNoSayi(Long olayYeriKapiNoSayi) {
+        this.olayYeriKapiNoSayi = olayYeriKapiNoSayi;
+    }
+
+    public Long getOlayYeriDaireNoSayi() {
+        return olayYeriDaireNoSayi;
+    }
+
+    public void setOlayYeriDaireNoSayi(Long olayYeriDaireNoSayi) {
+        this.olayYeriDaireNoSayi = olayYeriDaireNoSayi;
+    }
+
+    public String getOlayYeriSokak() {
+        return olayYeriSokak;
+    }
+
+    public void setOlayYeriSokak(String olayYeriSokak) {
+        this.olayYeriSokak = olayYeriSokak;
     }
 }

@@ -3,21 +3,21 @@ package com.digikent.denetimyonetimi.dto.velocity;
 import java.util.Date;
 
 public class DocumentDTO {
-  private Date date;
+  private String dateString;
   private String number;
 
-  public DocumentDTO(Date date, String number) {
+  public DocumentDTO(String dateString, String number) {
     super();
-    this.date = date;
+    this.dateString = dateString;
     this.number = number;
   }
 
-  public Date getDate() {
-    return date;
+  public String getDateString() {
+    return dateString;
   }
 
-  public void setDate(Date date) {
-    this.date = date;
+  public void setDateString(String dateString) {
+    this.dateString = dateString;
   }
 
   public String getNumber() {
