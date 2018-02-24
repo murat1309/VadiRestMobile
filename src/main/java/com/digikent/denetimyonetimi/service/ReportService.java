@@ -90,6 +90,9 @@ public class ReportService {
         Template t = ve.getTemplate("templates/template.vm", "UTF-8");
         VelocityContext vc = new VelocityContext();
 
+        DocumentDTO documentDTO = new DocumentDTO(new Date(), "147852369");
+        vc.put("documentDTO", documentDTO);
+
         BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(denetimTespitId);
         vc.put("reportTespitDTOs", getTespitReportData(bdntDenetimTespit));
 

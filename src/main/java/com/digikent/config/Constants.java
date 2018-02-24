@@ -40,6 +40,13 @@ public final class Constants {
     public static final String TESPIT_SECENEK_TURU_DATE = "DATE";
     public static final String TESPIT_SECENEK_TURU_NUMBER = "NUMBER";
 
+    public static final String DENETIM_TARAF_TURU_BELEDIYE = "B";
+    public static final String DENETIM_TARAF_TURU_PAYDAS = "P";
+    public static final String DENETIM_TARAF_TURU_DIGER = "D";
+
+    public static final String DENETIM_TARAF_PAYDAS_GOREV = "PAYDASGOREV";
+    public static final String DENETIM_TARAF_MEMUR_GOREV = "MEMURGOREV";
+
 
 
     private Constants() {

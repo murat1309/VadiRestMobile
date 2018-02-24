@@ -47,9 +47,12 @@ public class DenetimService {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest);
         //denetim taraf objelerini setle
-        if (utilDenetimSaveDTO.getSaved()) {
-            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest.getDenetimTarafDTO());
+        if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() != null) {
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false);
+        } else if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() == null) {
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true);
         }
+
         return utilDenetimSaveDTO;
     }
 

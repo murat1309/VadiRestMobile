@@ -1,5 +1,6 @@
 package com.digikent.denetimyonetimi.dao;
 
+import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
 import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
@@ -10,10 +11,12 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
+import com.digikent.general.service.TeamService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
 import org.hibernate.*;
@@ -37,6 +40,9 @@ public class DenetimRepository {
 
     @Autowired
     SessionFactory sessionFactory;
+
+    @Autowired
+    TeamService teamService;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
 
@@ -170,7 +176,7 @@ public class DenetimRepository {
 
     public List<BelediyeDTO> findBelediyeList() {
         List<BelediyeDTO> belediyeDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND TURU='I' AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
+        String sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -201,7 +207,7 @@ public class DenetimRepository {
 
     public List<MahalleDTO> findMahalleListByBelediyeId(Long belediyeId) {
         List<MahalleDTO> mahalleDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM, RRE1ILCE_ID FROM DRE1MAHALLE WHERE RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM, RRE1ILCE_ID FROM DRE1MAHALLE WHERE ID > 0 AND RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -233,7 +239,7 @@ public class DenetimRepository {
 
     public List<SokakDTO> findSokakListByMahalleId(Long mahalleId) {
         List<SokakDTO> sokakDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE ID > 0 AND DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -1014,10 +1020,77 @@ public class DenetimRepository {
         return denetimTespitDTOList;
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimTarafDTO denetimTarafDTO) {
+    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimRequest denetimRequest,Long denetimId, Boolean isSaved) {
 
+        //TODO isSave değerine göre güncelleme yapması iin gerekli çalışmanın yapılması lazım
 
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
 
-        return null;
+        try {
+            Session session = sessionFactory.openSession();
+            session.getTransaction().begin();
+
+            DenetimTarafDTO denetimTarafDTO = denetimRequest.getDenetimTarafDTO();
+
+            LOG.debug("DenetimTespitTaraf kayitlari olusturulacak");
+            LOG.debug("ekipID="+denetimId);
+            LOG.debug("ekipteki memur sayisi="+denetimTarafDTO.getMemberShipDTOList().size());
+            //belediye memur tarafı
+            for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
+                BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
+                bdntDenetimTespitTaraf.setAdi(item.getFsm1UserDTO().getAdi());
+                bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
+                //TODO görevi alanını doğru setle, fsm1usersdaki karşılığını öğren
+                bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_MEMUR_GOREV);
+                bdntDenetimTespitTaraf.setIhr1PersonelId(item.getFsm1UserDTO().getIhr1PersonelId());
+                bdntDenetimTespitTaraf.setSoyadi(item.getFsm1UserDTO().getSoyadi());
+                //TODO taraftürü alanını doğru setle
+                bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
+                bdntDenetimTespitTaraf.setIzahat(null);
+                bdntDenetimTespitTaraf.setCrDate(new Date());
+                bdntDenetimTespitTaraf.setCrUser(0l);
+                bdntDenetimTespitTaraf.setUpdUser(0l);
+                bdntDenetimTespitTaraf.setDeleteFlag("H");
+                bdntDenetimTespitTaraf.setIsActive(true);
+
+                session.save(bdntDenetimTespitTaraf);
+            }
+            LOG.debug("Memur taraf kayitlari olusturuldu");
+
+            LOG.debug("paydas taraf kaydi olusturulacak. paydasID="+denetimRequest.getDenetimPaydasDTO().getPaydasNo());
+            //paydaş
+            if (denetimRequest.getDenetimPaydasDTO() != null) {
+                DenetimPaydasDTO item = denetimRequest.getDenetimPaydasDTO();
+                BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
+                bdntDenetimTespitTaraf.setAdi(item.getAdi());
+                bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
+                //TODO görevi alanını doğru setle, paydaş için karşılığını öğren
+                bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_PAYDAS_GOREV);
+                bdntDenetimTespitTaraf.setIhr1PersonelId(null);
+                bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
+                //TODO taraftürü alanını doğru setle
+                bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
+                bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());
+                bdntDenetimTespitTaraf.setMpi1PaydasId(item.getPaydasNo());
+                bdntDenetimTespitTaraf.setCrDate(new Date());
+                bdntDenetimTespitTaraf.setCrUser(0l);
+                bdntDenetimTespitTaraf.setUpdUser(0l);
+                bdntDenetimTespitTaraf.setDeleteFlag("H");
+                bdntDenetimTespitTaraf.setIsActive(true);
+
+                session.save(bdntDenetimTespitTaraf);
+                session.getTransaction().commit();
+                LOG.debug("Paydas taraf kaydi olusturuldu. paydasID="+item.getPaydasNo());
+            } else {
+                LOG.debug("PAYDAS gelmedigi icin paydas kaydi olusturulamadi");
+            }
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimRequest.getBdntDenetimId());
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetimTespitTaraf kaydı esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        }
+
+        return utilDenetimSaveDTO;
     }
 }

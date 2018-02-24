@@ -76,7 +76,7 @@ public class TeamService {
         return vsynMemberShipDTOList;
     }
 
-    private Fsm1UserDTO convertFsm1UsersDTO(FSM1Users fsm1Users) {
+    public Fsm1UserDTO convertFsm1UsersDTO(FSM1Users fsm1Users) {
         Fsm1UserDTO fsm1UserDTO = new Fsm1UserDTO();
         if (fsm1Users != null) {
             fsm1UserDTO.setId(fsm1Users.getID());
@@ -86,6 +86,19 @@ public class TeamService {
             fsm1UserDTO.setIkyPersonelId(fsm1Users.getIkyPersonelId());
         }
         return fsm1UserDTO;
+    }
+
+    public FSM1Users convertFsm1Users(Fsm1UserDTO fsm1UserDTO) {
+
+        FSM1Users fsm1Users = new FSM1Users();
+        if (fsm1Users != null) {
+            fsm1Users.setFirstName(fsm1UserDTO.getAdi());
+            fsm1Users.setLastName(fsm1UserDTO.getSoyadi());
+            fsm1Users.setIhr1PersonelId(fsm1UserDTO.getIhr1PersonelId());
+            fsm1Users.setIkyPersonelId(fsm1UserDTO.getIkyPersonelId());
+        }
+
+        return fsm1Users;
     }
 
     private VsynMemberShipDTO convertVsynMemberShipDTO(VSYNMemberShip vsnyMemberShip) {
