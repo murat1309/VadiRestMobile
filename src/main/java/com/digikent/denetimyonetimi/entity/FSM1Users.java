@@ -27,6 +27,9 @@ public class FSM1Users extends BaseEntity implements Serializable {
     @Column(name = "IKY_PERSONEL_ID")
     private Long ikyPersonelId;
 
+    @Column(name = "IHR1PERSONEL_ID")
+    private Long ihr1PersonelId;
+
     public Long getID() {
         return ID;
     }
@@ -57,5 +60,13 @@ public class FSM1Users extends BaseEntity implements Serializable {
 
     public void setIkyPersonelId(Long ikyPersonelId) {
         this.ikyPersonelId = ikyPersonelId;
+    }
+
+    public Long getIhr1PersonelId() {
+        return ihr1PersonelId;
+    }
+
+    public void setIhr1PersonelId(Long ihr1PersonelId) {
+        this.ihr1PersonelId = ihr1PersonelId;
     }
 }

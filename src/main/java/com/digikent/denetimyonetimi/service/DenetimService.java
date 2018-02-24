@@ -44,7 +44,13 @@ public class DenetimService {
     DenetimRepository denetimRepository;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
-        return denetimRepository.saveDenetim(denetimRequest);
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest);
+        //denetim taraf objelerini setle
+        if (utilDenetimSaveDTO.getSaved()) {
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest.getDenetimTarafDTO());
+        }
+        return utilDenetimSaveDTO;
     }
 
     @Cacheable(value = "sokaklar", key = "#root.methodName.toString() + #belediyeId")

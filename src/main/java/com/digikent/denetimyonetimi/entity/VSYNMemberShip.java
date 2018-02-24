@@ -21,7 +21,7 @@ public class VSYNMemberShip extends BaseEntity implements Serializable {
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="PARENT_ID")
     private VSYNRoleTeam vsynRoleTeam;
 

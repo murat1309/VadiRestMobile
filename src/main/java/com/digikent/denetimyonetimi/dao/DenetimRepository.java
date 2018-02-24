@@ -10,6 +10,7 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
@@ -75,7 +76,6 @@ public class DenetimRepository {
         bdntDenetim.setMpi1PaydasId(denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
-        bdntDenetim.setVsynRoleTeamId(denetimRequest.getDenetimTarafDTO().getRoleTeamId());
         if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("K")) {
             bdntDenetim.setBislIsletmeId(denetimRequest.getIsletmeId());
             //işletme için I, paydaş için P
@@ -109,6 +109,11 @@ public class DenetimRepository {
         bdntDenetim.setDre1MahalleTebligat(denetimRequest.getDenetimTebligatAdresi().getDre1MahalleTebligat());
         bdntDenetim.setRre1ilceTebligat(denetimRequest.getDenetimTebligatAdresi().getRre1ilceTebligat());
         bdntDenetim.setSre1SokakTebligat(denetimRequest.getDenetimTebligatAdresi().getSre1SokakTebligat());
+
+        //role team
+        VSYNRoleTeam vsynRoleTeam = new VSYNRoleTeam();
+        vsynRoleTeam.setID(denetimRequest.getDenetimTarafDTO().getRoleTeamId());
+        bdntDenetim.setVsynRoleTeam(vsynRoleTeam);
 
         if (bdntDenetim.getCrUser() == null)
             bdntDenetim.setCrUser(1l);
@@ -1007,5 +1012,12 @@ public class DenetimRepository {
         }
 
         return denetimTespitDTOList;
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimTarafDTO denetimTarafDTO) {
+
+
+
+        return null;
     }
 }

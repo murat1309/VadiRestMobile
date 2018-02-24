@@ -82,6 +82,8 @@ public class TeamService {
             fsm1UserDTO.setId(fsm1Users.getID());
             fsm1UserDTO.setAdi(fsm1Users.getFirstName());
             fsm1UserDTO.setSoyadi(fsm1Users.getLastName());
+            fsm1UserDTO.setIhr1PersonelId(fsm1Users.getIhr1PersonelId());
+            fsm1UserDTO.setIkyPersonelId(fsm1Users.getIkyPersonelId());
         }
         return fsm1UserDTO;
     }

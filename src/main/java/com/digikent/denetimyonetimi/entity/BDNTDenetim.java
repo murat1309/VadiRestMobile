@@ -112,8 +112,12 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @Column(name = "DAIRENOSAYI_TEBLIGAT")
     private Long daireNoSayiTebligat;
 
-    @Column(name = "VSYNROLETEAM_ID")
-    private Long vsynRoleTeamId;
+    /*@Column(name = "VSYNROLETEAM_ID")
+    private Long vsynRoleTeamId;*/
+    @OneToOne
+    @JoinColumn(name = "VSYNROLETEAM_ID")
+    private VSYNRoleTeam vsynRoleTeam;
+
 
     public Long getID() {
         return ID;
@@ -363,11 +367,11 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
         this.daireNoSayiTebligat = daireNoSayiTebligat;
     }
 
-    public Long getVsynRoleTeamId() {
-        return vsynRoleTeamId;
+    public VSYNRoleTeam getVsynRoleTeam() {
+        return vsynRoleTeam;
     }
 
-    public void setVsynRoleTeamId(Long vsynRoleTeamId) {
-        this.vsynRoleTeamId = vsynRoleTeamId;
+    public void setVsynRoleTeam(VSYNRoleTeam vsynRoleTeam) {
+        this.vsynRoleTeam = vsynRoleTeam;
     }
 }
