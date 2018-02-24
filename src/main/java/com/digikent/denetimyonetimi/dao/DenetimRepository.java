@@ -1,10 +1,7 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
-import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
+import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
@@ -1092,5 +1089,34 @@ public class DenetimRepository {
         }
 
         return utilDenetimSaveDTO;
+    }
+
+    public List<IlDTO> findIlList() {
+        List<IlDTO> ilDTOList = new ArrayList<>();
+        String sql = "SELECT ID, TANIM FROM PRE1IL WHERE ID > 0 AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                IlDTO ilDTO = new IlDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+
+                if(id != null)
+                    ilDTO.setId(id.longValue());
+                if(tanim != null)
+                    ilDTO.setTanim(tanim);
+
+                ilDTOList.add(ilDTO);
+            }
+        }
+        return ilDTOList;
     }
 }

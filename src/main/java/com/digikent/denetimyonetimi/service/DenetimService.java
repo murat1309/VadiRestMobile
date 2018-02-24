@@ -1,10 +1,7 @@
 package com.digikent.denetimyonetimi.service;
 
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
-import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
-import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
+import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
@@ -260,5 +257,9 @@ public class DenetimService {
 
     public List<DenetimTespitDTO> getDenetimTespitByDenetimId(Long denetimId) {
         return denetimRepository.getDenetimTespitListByTespitId(denetimId);
+    }
+    @Cacheable(value = "iller", key = "#root.methodName.toString()")
+    public List<IlDTO> getIlList() {
+        return denetimRepository.findIlList();
     }
 }

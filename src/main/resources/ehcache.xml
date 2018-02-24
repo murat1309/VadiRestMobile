@@ -22,6 +22,14 @@
     timeToLiveSeconds="3600"/>
 
   <cache
+    name="iller"
+    maxElementsInMemory="1000"
+    memoryStoreEvictionPolicy="LRU"
+    overflowToDisk="false"
+    timeToIdleSeconds="0"
+    timeToLiveSeconds="3600"/>
+
+  <cache
     name="belediyeler"
     eternal="true"
     maxElementsInMemory="1000"

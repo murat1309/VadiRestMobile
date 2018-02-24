@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
@@ -13,10 +14,6 @@ import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
 import com.digikent.denetimyonetimi.service.ReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
-import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
-import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
@@ -117,6 +114,18 @@ public class DenetimResource {
         List<MahalleDTO> mahalleDTOs = denetimService.getMahalleByBelediyeId(belediyeId);
 
         return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
+    }
+
+    /*
+        il bilgilerini getirir
+    */
+    @RequestMapping(value = "/list/il", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<IlDTO>> getIlList() {
+        LOG.debug("/il iller getirilecek");
+        List<IlDTO> ilDTOs = denetimService.getIlList();
+
+        return new ResponseEntity<List<IlDTO>>(ilDTOs, OK);
     }
 
     /*
