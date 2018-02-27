@@ -1,5 +1,6 @@
 package com.digikent.denetimyonetimi.service;
 
+import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
@@ -9,6 +10,7 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -290,5 +293,9 @@ public class DenetimService {
 
     public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimId(Long denetimId) {
         return denetimRepository.findDenetimTespitTarafListByDenetimId(denetimId);
+    }
+
+    public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimIdAndTarafTuru(Long denetimId, String tarafTuru) {
+        return denetimRepository.findDenetimTespitTarafListByDenetimIdAndTarafTuru(denetimId,tarafTuru);
     }
 }

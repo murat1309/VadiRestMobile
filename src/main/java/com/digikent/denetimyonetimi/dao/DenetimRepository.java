@@ -51,6 +51,7 @@ public class DenetimRepository {
         BDNTDenetim bdntDenetim = null;
 
         try {
+            //daha önce bir denetimtespştId objesi oluşturulmuşsa güncelleme yapması gerekir.
             if (denetimRequest.getBdntDenetimId() != null) {
                 LOG.debug("Denetim Guncellemesi paydasID=" + denetimRequest.getDenetimPaydasDTO().getPaydasNo() + " BdntDenetimId=" + denetimRequest.getBdntDenetimId());
                 Object o = session.get(BDNTDenetim.class,denetimRequest.getBdntDenetimId());
@@ -1018,7 +1019,7 @@ public class DenetimRepository {
         return denetimTespitDTOList;
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimRequest denetimRequest,Long denetimId, Boolean isSaved) {
+    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimRequest denetimRequest,Long denetimId, Boolean isSave) {
 
         //TODO isSave değerine göre güncelleme yapması iin gerekli çalışmanın yapılması lazım
 
@@ -1027,62 +1028,76 @@ public class DenetimRepository {
         try {
             Session session = sessionFactory.openSession();
             session.getTransaction().begin();
-
             DenetimTarafDTO denetimTarafDTO = denetimRequest.getDenetimTarafDTO();
 
-            LOG.debug("DenetimTespitTaraf kayitlari olusturulacak");
-            LOG.debug("ekipID="+denetimId);
-            LOG.debug("ekipteki memur sayisi="+denetimTarafDTO.getMemberShipDTOList().size());
-            //belediye memur tarafı
-            for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
-                BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
-                bdntDenetimTespitTaraf.setAdi(item.getFsm1UserDTO().getAdi());
-                bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
-                //TODO görevi alanını doğru setle, fsm1usersdaki karşılığını öğren
-                bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_MEMUR_GOREV);
-                bdntDenetimTespitTaraf.setIhr1PersonelId(item.getFsm1UserDTO().getIhr1PersonelId());
-                bdntDenetimTespitTaraf.setSoyadi(item.getFsm1UserDTO().getSoyadi());
-                //TODO taraftürü alanını doğru setle
-                bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
-                bdntDenetimTespitTaraf.setIzahat(null);
-                bdntDenetimTespitTaraf.setCrDate(new Date());
-                bdntDenetimTespitTaraf.setCrUser(0l);
-                bdntDenetimTespitTaraf.setUpdUser(0l);
-                bdntDenetimTespitTaraf.setDeleteFlag("H");
-                bdntDenetimTespitTaraf.setIsActive(true);
+            if (!isSave) {
+                LOG.debug("denetim taraflarda guncelleme yapilacak. isSave="+ isSave);
+                List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = findDenetimTespitTarafListByDenetimIdAndTarafTuru(denetimId, Constants.DENETIM_TARAF_TURU_BELEDIYE);
 
-                session.save(bdntDenetimTespitTaraf);
-            }
-            LOG.debug("Memur taraf kayitlari olusturuldu");
+                for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
+                    Boolean isExist = false;
+                    for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
+                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelId() != null){
+                            if (bdntDenetimTespitTaraf.getIhr1PersonelId().longValue() == item.getFsm1UserDTO().getIhr1PersonelId().longValue()) {
+                                isExist = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!isExist) {
+                        //demek ki sonradan taraflardan kaldırıldı bu memur
+                        LOG.debug("sonradan taraf kaldirilan memur. denetimTarafID="+bdntDenetimTespitTaraf.getID());
+                        bdntDenetimTespitTaraf.setIsActive(false);
+                        session.update(bdntDenetimTespitTaraf);
+                    }
+                }
 
-            LOG.debug("paydas taraf kaydi olusturulacak. paydasID="+denetimRequest.getDenetimPaydasDTO().getPaydasNo());
-            //paydaş
-            if (denetimRequest.getDenetimPaydasDTO() != null) {
-                DenetimPaydasDTO item = denetimRequest.getDenetimPaydasDTO();
-                BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
-                bdntDenetimTespitTaraf.setAdi(item.getAdi());
-                bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
-                //TODO görevi alanını doğru setle, paydaş için karşılığını öğren
-                bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_PAYDAS_GOREV);
-                bdntDenetimTespitTaraf.setIhr1PersonelId(null);
-                bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
-                //TODO taraftürü alanını doğru setle
-                bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
-                bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());
-                bdntDenetimTespitTaraf.setMpi1PaydasId(item.getPaydasNo());
-                bdntDenetimTespitTaraf.setCrDate(new Date());
-                bdntDenetimTespitTaraf.setCrUser(0l);
-                bdntDenetimTespitTaraf.setUpdUser(0l);
-                bdntDenetimTespitTaraf.setDeleteFlag("H");
-                bdntDenetimTespitTaraf.setIsActive(true);
+                for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
+                    Boolean isExist = false;
+                    for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
+                        if (item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelId() != null && bdntDenetimTespitTaraf.getIhr1PersonelId() != null) {
+                            if (item.getFsm1UserDTO().getIhr1PersonelId().longValue() == bdntDenetimTespitTaraf.getIhr1PersonelId().longValue()) {
+                                isExist = true;
+                                break;
+                            }
+                        }
 
-                session.save(bdntDenetimTespitTaraf);
-                session.getTransaction().commit();
-                LOG.debug("Paydas taraf kaydi olusturuldu. paydasID="+item.getPaydasNo());
+                    }
+                    if (!isExist) {
+                        //demek ki yeni bir memur eklendi
+                        LOG.debug("sonradan taraf listesine eklenen memur. ihr1PersonelId="+item.getFsm1UserDTO().getIhr1PersonelId());
+                        BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId);
+                        session.save(bdntDenetimTespitTaraf);
+                    }
+                }
+                LOG.debug("taraf guncelleme islemleri sona erdi. denetimID="+denetimId);
+
             } else {
-                LOG.debug("PAYDAS gelmedigi icin paydas kaydi olusturulamadi");
+                LOG.debug("DenetimTespitTaraf kayitlari olusturulacak");
+                LOG.debug("ekipID="+denetimId);
+                LOG.debug("ekipteki memur sayisi="+denetimTarafDTO.getMemberShipDTOList().size());
+                //belediye memur tarafı
+                for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
+                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId);
+                    session.save(bdntDenetimTespitTaraf);
+                }
+                LOG.debug("Memur taraf kayitlari olusturuldu");
+
+                LOG.debug("paydas taraf kaydi olusturulacak. paydasID="+denetimRequest.getDenetimPaydasDTO().getPaydasNo());
+                //paydaş
+                if (denetimRequest.getDenetimPaydasDTO() != null) {
+                    DenetimPaydasDTO item = denetimRequest.getDenetimPaydasDTO();
+                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByPaydas(item,denetimId);
+                    session.save(bdntDenetimTespitTaraf);
+                    LOG.debug("Paydas taraf kaydi olusturuldu. paydasID="+item.getPaydasNo());
+                } else {
+                    LOG.debug("PAYDAS gelmedigi icin paydas kaydi olusturulamadi");
+                }
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimRequest.getBdntDenetimId());
             }
-            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimRequest.getBdntDenetimId());
+            session.getTransaction().commit();
+
+
         } catch (Exception ex) {
             LOG.debug("bdntDenetimTespitTaraf kaydı esnasinda bir hata olustu");
             LOG.debug("HATA MESAJI = " + ex.getMessage());
@@ -1182,11 +1197,63 @@ public class DenetimRepository {
         return denetimDTOList;
     }
 
+    public List<BDNTDenetimTespitTaraf> findDenetimTespitTarafListByDenetimIdAndTarafTuru(Long denetimId, String tarafTuru) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(BDNTDenetimTespitTaraf.class);
+        criteria.add(Restrictions.eq("bdntDenetimId", denetimId));
+        criteria.add(Restrictions.eq("isActive", true));
+        criteria.add(Restrictions.eq("tarafTuru", tarafTuru));
+        List<BDNTDenetimTespitTaraf> list = criteria.list();
+        return list;
+    }
+
     public List<BDNTDenetimTespitTaraf> findDenetimTespitTarafListByDenetimId(Long denetimId) {
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(BDNTDenetimTespitTaraf.class);
         criteria.add(Restrictions.eq("bdntDenetimId", denetimId));
+        criteria.add(Restrictions.eq("isActive", true));
         List<BDNTDenetimTespitTaraf> list = criteria.list();
         return list;
+    }
+
+    public BDNTDenetimTespitTaraf createDenetimTespitTarafByMemur(VsynMemberShipDTO vsynMemberShipDTO, Long denetimId) {
+        BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
+        bdntDenetimTespitTaraf.setAdi(vsynMemberShipDTO.getFsm1UserDTO().getAdi());
+        bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
+        //TODO görevi alanını doğru setle, fsm1usersdaki karşılığını öğren
+        bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_MEMUR_GOREV);
+        bdntDenetimTespitTaraf.setIhr1PersonelId(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelId());
+        bdntDenetimTespitTaraf.setSoyadi(vsynMemberShipDTO.getFsm1UserDTO().getSoyadi());
+        //TODO taraftürü alanını doğru setle
+        bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
+        bdntDenetimTespitTaraf.setIzahat(null);
+        bdntDenetimTespitTaraf.setCrDate(new Date());
+        bdntDenetimTespitTaraf.setCrUser(0l);
+        bdntDenetimTespitTaraf.setUpdUser(0l);
+        bdntDenetimTespitTaraf.setDeleteFlag("H");
+        bdntDenetimTespitTaraf.setIsActive(true);
+
+        return bdntDenetimTespitTaraf;
+    }
+
+    public BDNTDenetimTespitTaraf createDenetimTespitTarafByPaydas(DenetimPaydasDTO item, Long denetimId) {
+        BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
+        bdntDenetimTespitTaraf.setAdi(item.getAdi());
+        bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
+        //TODO görevi alanını doğru setle, paydaş için karşılığını öğren
+        bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_PAYDAS_GOREV);
+        bdntDenetimTespitTaraf.setIhr1PersonelId(null);
+        bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
+        //TODO taraftürü alanını doğru setle
+        bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
+        bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());
+        bdntDenetimTespitTaraf.setMpi1PaydasId(item.getPaydasNo());
+        bdntDenetimTespitTaraf.setCrDate(new Date());
+        bdntDenetimTespitTaraf.setCrUser(0l);
+        bdntDenetimTespitTaraf.setUpdUser(0l);
+        bdntDenetimTespitTaraf.setDeleteFlag("H");
+        bdntDenetimTespitTaraf.setIsActive(true);
+
+        return bdntDenetimTespitTaraf;
     }
 }
