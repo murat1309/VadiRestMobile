@@ -3,9 +3,11 @@ package com.digikent.surecyonetimi.rest;
 import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
 import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguRequestDTO;
 import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguResponseDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruDTO;
 import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
 import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
+import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimDTO;
+import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimRequestDTO;
 import com.digikent.surecyonetimi.service.SurecYonetimiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +67,7 @@ public class SurecYonetimiResource {
     public SurecSorguResponseDTO getSurecInfoBySorguNo(@RequestBody SurecSorguRequestDTO surecSorguRequestDTO) {
 
         SurecSorguResponseDTO surecSorguResponseDTO;
-
         LOG.debug("Gelen Surec Sorgu No: " + surecSorguRequestDTO.getSorguNo());
-
         surecSorguResponseDTO = surecYonetimiService.getSurecInfoBySorguNo(surecSorguRequestDTO);
 
         return surecSorguResponseDTO;
@@ -94,18 +94,26 @@ public class SurecYonetimiResource {
 
         return surecSorguResponseDTO;
     }
-    @RequestMapping(method = GET, value = "/basvuruturu", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = POST, value = "/basvuruturu", produces = APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<List<ImarBasvuruTuruDTO>> getBasvuruTuru() {
-        LOG.debug("REST request to get basvuru turu checkbox list");
-        List<ImarBasvuruTuruDTO> results = surecYonetimiRepository.getBasvuruTuruList();
-        return new ResponseEntity<List<ImarBasvuruTuruDTO>>(results, OK);
+    public ResponseEntity<List<BasvuruTuruDTO>> getBasvuruTuru(@RequestBody String tabName) {
+        LOG.debug("REST request to get basvuruTuru checkbox list for imar or yapidenetim");
+        List<BasvuruTuruDTO> results = surecYonetimiRepository.getBasvuruTuruList(tabName);
+        return new ResponseEntity<List<BasvuruTuruDTO>>(results, OK);
     }
     @RequestMapping(method = POST, value = "/imar", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<ImarSurecDTO>> getList(@RequestBody ImarRequestDTO imarRequestDTO) {
         LOG.debug("REST request to get imar surec parameters");
-        List<ImarSurecDTO> results = surecYonetimiRepository.getSurecListBySelected(imarRequestDTO);
+        List<ImarSurecDTO> results = surecYonetimiRepository.getImarSurecList(imarRequestDTO);
         return new ResponseEntity<List<ImarSurecDTO>>(results, OK);
     }
+    @RequestMapping(method = POST, value = "/yapidenetim", produces = APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<List<YapiDenetimDTO>> getList(@RequestBody YapiDenetimRequestDTO yapiDenetimRequestDTO) {
+        LOG.debug("REST request to get yapi denetim surec parameters");
+        List<YapiDenetimDTO> results = surecYonetimiRepository.getDenetimSurecList(yapiDenetimRequestDTO);
+        return new ResponseEntity<List<YapiDenetimDTO>>(results, OK);
+    }
+
 }

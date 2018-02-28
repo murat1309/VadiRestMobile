@@ -4,17 +4,17 @@ import java.util.List;
 
 public class ImarRequestDTO {
 
-    private List<ImarBasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList;
+    private List<BasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList;
     private ImarSurecRequestDTO imarSurecRequestDTO;
 
     public ImarRequestDTO() {
     }
 
-    public List<ImarBasvuruTuruRequestDTO> getImarBasvuruTuruRequestDTOList() {
+    public List<BasvuruTuruRequestDTO> getImarBasvuruTuruRequestDTOList() {
         return imarBasvuruTuruRequestDTOList;
     }
 
-    public void setImarBasvuruTuruRequestDTOList(List<ImarBasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList) {
+    public void setImarBasvuruTuruRequestDTOList(List<BasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList) {
         this.imarBasvuruTuruRequestDTOList = imarBasvuruTuruRequestDTOList;
     }
 

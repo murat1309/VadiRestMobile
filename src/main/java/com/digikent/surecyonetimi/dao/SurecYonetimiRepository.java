@@ -2,10 +2,12 @@ package com.digikent.surecyonetimi.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.surecyonetimi.dto.basvurudetay.*;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruRequestDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruDTO;
+import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruRequestDTO;
 import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
 import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
+import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimDTO;
+import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimRequestDTO;
 import org.hibernate.annotations.Nationalized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +67,6 @@ public class SurecYonetimiRepository {
                          " AND C.BPD_INSTANCE_ID = '" + surecSorguRequestDTO.getSorguNo() + "' " +
                          " order by date2 asc ";
 
-
-
             List list = new ArrayList<>();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query = session.createSQLQuery(sql);
@@ -120,7 +120,7 @@ public class SurecYonetimiRepository {
         try {
             String schemaName = env.getProperty("bpmSchema");
 
-            String sql = "SELECT TO_CHAR(INSTANCE_NAME) AS IZAHAT FROM " + schemaName + ".LSW_BPD_INSTANCE WHERE BPD_INSTANCE_ıd="+ surecSorguRequestDTO.getSorguNo();
+            String sql = "SELECT TO_CHAR(INSTANCE_NAME) AS IZAHAT FROM " + schemaName + ".LSW_BPD_INSTANCE WHERE BPD_INSTANCE_ID="+ surecSorguRequestDTO.getSorguNo();
 
             List list = new ArrayList<>();
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -146,55 +146,59 @@ public class SurecYonetimiRepository {
             errorDTO.setErrorMessage("Bir hata meydana geldi.");
             errorDTO.setError(true);
             surecSorguResponseDTO.setErrorDTO(errorDTO);
-
         }
-
         return surecSorguResponseDTO;
+    }
+    public String returnTableName(String sorguNo){
+        String tableName = "";
+        String sql = "SELECT TABLENAME FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID =" + sorguNo;
+
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        for(Object o : list) {
+            Map map = (Map) o;
+            tableName = (String) map.get("TABLENAME");
+            if(tableName != null)
+                break;
+        }
+        return tableName;
     }
     public SurecSorguResponseDTO getSurecCommentBySorguNo(SurecSorguRequestDTO surecSorguRequestDTO) {
 
         SurecSorguResponseDTO surecSorguResponseDTO = new SurecSorguResponseDTO();
         SurecCommentDTO surecCommentDTO = new SurecCommentDTO();
         List<SurecCommentDTO> surecCommentDTOList = new ArrayList<>();
-
         ErrorDTO errorDTO = new ErrorDTO();
 
         try {
-            String tableName = new String();
-            String sql = "SELECT TABLENAME FROM vbpmdigikent where processinstanceid =" + surecSorguRequestDTO.getSorguNo();
-
+            String sql = "";
             List list = new ArrayList<>();
+            if(surecSorguRequestDTO.getTabName().equalsIgnoreCase("imar")) {
+                String tableName = returnTableName(surecSorguRequestDTO.getSorguNo());
+                if (tableName.equalsIgnoreCase("ELI1RUHSATDOSYA")) {
+                    sql = "SELECT KULLANICIACIKLAMA FROM ELI1RUHSATDOSYA WHERE VBPMPROCESSINSTANCE_ID ='" + surecSorguRequestDTO.getSorguNo() + "'";
+                } else {
+                    sql = "SELECT KULLANICIACIKLAMA FROM VIMRBASVURU WHERE VBPMPROCESSINSTANCE_ID ='" + surecSorguRequestDTO.getSorguNo() + "'";
+                }
+            }else if(surecSorguRequestDTO.getTabName().equalsIgnoreCase("yapidenetim")){
+                sql = "SELECT KULLANICIACIKLAMA FROM VYDEBASVURU WHERE VBPMPROCESSINSTANCE_ID = '" + surecSorguRequestDTO.getSorguNo() + "'";
+            }
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
             list = query.list();
-            for(Object o : list) {
-                Map map = (Map) o;
-
-                tableName = (String) map.get("TABLENAME");
-
-                if(tableName != null)
-                   break;
-            }
-            if(tableName.equalsIgnoreCase("ELI1RUHSATDOSYA")){
-                sql = "select kullaniciaciklama from eli1ruhsatdosya where vbpmprocessinstance_id ='" + surecSorguRequestDTO.getSorguNo() + "'";
-            }else{
-                sql = "select kullaniciaciklama from vimrbasvuru where vbpmprocessinstance_id ='" + surecSorguRequestDTO.getSorguNo() + "'";
-            }
-
-            query = session.createSQLQuery(sql);
-            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-            list = query.list();
 
             for(Object o : list) {
                 Map map = (Map) o;
-
                 String kullaniciYorum = clob2Str((Clob) map.get("KULLANICIACIKLAMA"));
 
                 if(kullaniciYorum != null && !kullaniciYorum.trim().equals(""))
                     surecCommentDTO.setKullaniciYorum(kullaniciYorum);
             }
-
             errorDTO.setErrorMessage(null);
             errorDTO.setError(false);
             surecSorguResponseDTO.setErrorDTO(errorDTO);
@@ -225,36 +229,29 @@ public class SurecYonetimiRepository {
         ErrorDTO errorDTO = new ErrorDTO();
 
         try {
-
-            String tableName = new String();
-            String sql = "SELECT TABLENAME FROM vbpmdigikent where processinstanceid =" + surecSorguRequestDTO.getSorguNo();
-
+            String sql = "";
             List list = new ArrayList<>();
+            if(surecSorguRequestDTO.getTabName().equalsIgnoreCase("imar")) {
+                String tableName = returnTableName(surecSorguRequestDTO.getSorguNo());
+                if (tableName.equalsIgnoreCase("VIMRBASVURU")) {
+                    sql = "SELECT BT.TANIM AS BELGE_ADI, V.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM VIMRBASVURUBELGE V " +
+                            "JOIN TIMRBASVURUTURUBELGE BTB ON BTB.ID = V.TIMRBASVURUTURUBELGE_ID " +
+                            "JOIN TIMRBELGETURU BT ON BT.ID = BTB.TIMRBELGETURU_ID " +
+                            "WHERE V.VIMRBASVURU_ID = " +
+                            "(SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID ='" + surecSorguRequestDTO.getSorguNo() + "')";
+                } else {
+                    sql = "SELECT C.BELGEADI AS BELGE_ADI, H.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM HLI1DOSYABELGELER H "
+                            + "JOIN CLI1BELGETURU C ON C.ID = H.CLI1BELGETURU_ID "
+                            + "WHERE ELI1RUHSATDOSYA_ID=(SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID='" + surecSorguRequestDTO.getSorguNo() + "')";
+                }
+            }else if(surecSorguRequestDTO.getTabName().equalsIgnoreCase("yapidenetim")){
+                sql = "SELECT TYDEBELGETURU.TANIM AS BELGE_ADI, VYDEBASVURUBELGE.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI " +
+                        "FROM VYDEBASVURUBELGE, TYDEBELGETURU, VYDEBASVURU WHERE VYDEBASVURUBELGE.TYDEBELGETURU_ID = TYDEBELGETURU.ID " +
+                        "AND VYDEBASVURUBELGE.VYDEBASVURU_ID = VYDEBASVURU.ID " +
+                        "AND VYDEBASVURU.VBPMPROCESSINSTANCE_ID='"+ surecSorguRequestDTO.getSorguNo() + "'";
+            }
             Session session = sessionFactory.withOptions().interceptor(null).openSession();
             SQLQuery query = session.createSQLQuery(sql);
-            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-            list = query.list();
-            for(Object o : list) {
-                Map map = (Map) o;
-
-                tableName = (String) map.get("TABLENAME");
-
-                if(tableName != null)
-                    break;
-            }
-            if(tableName.equalsIgnoreCase("VIMRBASVURU")){
-                sql = "SELECT BT.TANIM AS BELGE_ADI, V.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM VIMRBASVURUBELGE V " +
-                        "JOIN TIMRBASVURUTURUBELGE BTB ON BTB.ID = V.TIMRBASVURUTURUBELGE_ID " +
-                        "JOIN TIMRBELGETURU BT ON BT.ID = BTB.TIMRBELGETURU_ID " +
-                        "WHERE V.VIMRBASVURU_ID = " +
-                        "(SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID ='" + surecSorguRequestDTO.getSorguNo() + "')";
-            }else{
-                sql = "SELECT C.BELGEADI AS BELGE_ADI, H.EBYSDOCUMENT_ID AS DOKUMAN_NUMARASI FROM HLI1DOSYABELGELER H "
-                        + "JOIN CLI1BELGETURU C ON C.ID = H.CLI1BELGETURU_ID "
-                        + "WHERE ELI1RUHSATDOSYA_ID=(select ANAHTARALAN from vbpmdigikent where processinstanceid='" + surecSorguRequestDTO.getSorguNo() + "')";
-            }
-
-            query = session.createSQLQuery(sql);
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
             list = query.list();
 
@@ -263,7 +260,6 @@ public class SurecYonetimiRepository {
 
                 String belgeAdi = (String) map.get("BELGE_ADI");
                 BigDecimal documentId = (BigDecimal) map.get("DOKUMAN_NUMARASI");
-
                 SurecDocumentDTO surecDocumentDTO = new SurecDocumentDTO();
 
                 if(belgeAdi != null)
@@ -288,34 +284,38 @@ public class SurecYonetimiRepository {
         return surecSorguResponseDTO;
     }
 
-    public List<ImarBasvuruTuruDTO> getBasvuruTuruList() {
+    public List<BasvuruTuruDTO> getBasvuruTuruList(String tabName) {
 
-        String sql = "SELECT ID, TANIM FROM TIMRBASVURUTURU WHERE ISACTIVE = 'E'";
-
+        String sql = "";
+        if(tabName.equals("imar")){
+            sql = "SELECT ID, TANIM FROM TIMRBASVURUTURU WHERE ISACTIVE = 'E'";
+        }else if(tabName.equals("yapidenetim")){
+            sql = "SELECT ID, TANIM FROM TYDESEVIYETURU WHERE ISACTIVE = 'E'";
+        }
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
-        SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
+        SQLQuery query =session.createSQLQuery(sql);
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         list = query.list();
 
-        List<ImarBasvuruTuruDTO> basvuruTuruDTOList = new ArrayList<>();
+        List<BasvuruTuruDTO> basvuruTuruDTOList = new ArrayList<>();
         for (Object o: list) {
             Map map = (Map)o;
             BigDecimal id = (BigDecimal)map.get("ID");
             String tanim = (String)map.get("TANIM");
-            ImarBasvuruTuruDTO imarBasvuruTuruDTO =  new ImarBasvuruTuruDTO();
+            BasvuruTuruDTO basvuruTuruDTO =  new BasvuruTuruDTO();
 
             if(id != null)
-                imarBasvuruTuruDTO.setId(id.longValue());
+                basvuruTuruDTO.setId(id.longValue());
 
             if(tanim != null)
-                imarBasvuruTuruDTO.setTanim(tanim);
+                basvuruTuruDTO.setTanim(tanim);
 
-            basvuruTuruDTOList.add(imarBasvuruTuruDTO);
+            basvuruTuruDTOList.add(basvuruTuruDTO);
         }
         return basvuruTuruDTOList;
     }
-    public List<ImarSurecDTO> getSurecListBySelected(ImarRequestDTO imarRequestDTO) {
+    public List<ImarSurecDTO> getImarSurecList(ImarRequestDTO imarRequestDTO) {
 
         List<ImarSurecDTO> imarSurecDTOList = new ArrayList<>();
 
@@ -336,14 +336,14 @@ public class SurecYonetimiRepository {
         if(imarRequestDTO.getImarSurecRequestDTO().getAdaNo() != null && !imarRequestDTO.getImarSurecRequestDTO().getAdaNo().equalsIgnoreCase(""))
             sql = sql + " AND ADANO = '" + imarRequestDTO.getImarSurecRequestDTO().getAdaNo() + "'";
         if(imarRequestDTO.getImarSurecRequestDTO().getSurecNo() != null)
-            sql = sql + " AND VIMRBASVURU.ID = (SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE PROCESSINSTANCEID = " + imarRequestDTO.getImarSurecRequestDTO().getSurecNo() + ")";
+            sql = sql + " AND VIMRBASVURU.ID = (SELECT ANAHTARALAN FROM VBPMDIGIKENT WHERE TABLENAME = 'VIMRBASVURU' AND PROCESSINSTANCEID = " + imarRequestDTO.getImarSurecRequestDTO().getSurecNo() + ")";
         if(imarRequestDTO.getImarSurecRequestDTO().getPaydasNo() != null)
             sql = sql + " AND MPI1PAYDAS_ID = " + imarRequestDTO.getImarSurecRequestDTO().getPaydasNo();
         if(imarRequestDTO.getImarSurecRequestDTO().getTcNo() != null)
             sql = sql + " AND MPI1PAYDAS.TCKIMLIKNO = " + imarRequestDTO.getImarSurecRequestDTO().getTcNo();
 
         List<Long> basvuruturulist = new ArrayList<>();
-        for (ImarBasvuruTuruRequestDTO item : imarRequestDTO.getImarBasvuruTuruRequestDTOList()) {
+        for (BasvuruTuruRequestDTO item : imarRequestDTO.getImarBasvuruTuruRequestDTOList()) {
             basvuruturulist.add(item.getValue());
         }
         sql = sql + " AND TIMRBASVURUTURU_ID IN (:basvuruturulist) ORDER BY VBPMDIGIKENT.PROCESSINSTANCEID ASC";
@@ -393,5 +393,99 @@ public class SurecYonetimiRepository {
             imarSurecDTOList.add(imarSurecDTO);
         }
         return imarSurecDTOList;
+    }
+
+    public List<YapiDenetimDTO> getDenetimSurecList(YapiDenetimRequestDTO yapiDenetimRequestDTO) {
+
+        List<YapiDenetimDTO> yapiDenetimDTOList = new ArrayList<>();
+        String sql = "SELECT VYDEBASVURU.VBPMPROCESSINSTANCE_ID, VYDEBASVURU.MPI1PAYDAS_ID, TYDESEVIYETURU.TANIM, " +
+                "(SELECT TANIM FROM DRE1MAHALLE WHERE DRE1MAHALLE.ID = VIMRYAPIRUHSATI.DRE1MAHALLE_ID) AS MAHALLEADI, " +
+                "(SELECT ADI || ' ' || SOYADI from MPI1PAYDAS WHERE MPI1PAYDAS.ID = VYDEBASVURU.MPI1PAYDAS_ID) AS PAYDASADSOYAD, " +
+                "(SELECT ADI || ' ' || SOYADI from MPI1PAYDAS WHERE MPI1PAYDAS.ID = VYDEBASVURU.MPI1PAYDAS_VEKIL) AS VEKILADSOYAD, " +
+                "(SELECT ADI || ' ' || SOYADI from IHR1PERSONEL WHERE IHR1PERSONEL.ID = VYDEBASVURU.IHR1PERSONEL_RAPORTOR) AS RAPORTOR, " +
+                "(SELECT TANIM FROM TYDEBASVURUDURUMU WHERE TYDEBASVURUDURUMU.ID = VYDEBASVURU.TYDEBASVURUDURUMU_ID) AS BASVURUDURUMU, " +
+                "VIMRYAPIRUHSATI.ADANO, " +
+                "VIMRYAPIRUHSATI.PAFTANO, " +
+                "VIMRYAPIRUHSATI.PARSELNO, " +
+                "VIMRYAPIRUHSATI.YIBFREF, " +
+                "MPI1PAYDAS.TCKIMLIKNO FROM VYDEBASVURU, VIMRYAPIRUHSATI, TYDESEVIYETURU, MPI1PAYDAS WHERE " +
+                "VYDEBASVURU.VIMRYAPIRUHSATI_ID = VIMRYAPIRUHSATI.ID AND " +
+                "VYDEBASVURU.TYDESEVIYETURU_ID = TYDESEVIYETURU.ID AND " +
+                "VYDEBASVURU.MPI1PAYDAS_ID = MPI1PAYDAS.ID";
+
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getPaftaNo() != null && !yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getPaftaNo().equalsIgnoreCase(""))
+            sql = sql + " AND PAFTANO = '" + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getPaftaNo() + "'";
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getParselNo() != null && !yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getParselNo().equalsIgnoreCase(""))
+            sql = sql + " AND PARSELNO = '" + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getParselNo() + "'";
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getAdaNo() != null && !yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getAdaNo().equalsIgnoreCase(""))
+            sql = sql + " AND ADANO = '" + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getAdaNo() + "'";
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getYibf() != null && !yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getYibf().equalsIgnoreCase(""))
+            sql = sql + " AND YIBFREF = '" + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getYibf() + "'";
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getSurecNo() != null && !yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getSurecNo().equalsIgnoreCase(""))
+            sql = sql + " AND VBPMPROCESSINSTANCE_ID = '" + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getSurecNo() + "'";
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getPaydasNo() != null)
+            sql = sql + " AND MPI1PAYDAS_ID = " + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getPaydasNo();
+        if(yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getTcNo() != null)
+            sql = sql + " AND TCKIMLIKNO = " + yapiDenetimRequestDTO.getDenetimParametersRequestDTO().getTcNo();
+
+        List<Long> basvuruturulist = new ArrayList<>();
+        for (BasvuruTuruRequestDTO item : yapiDenetimRequestDTO.getYapiDenetimBasvuruTuruRequestDTOList()) {
+            basvuruturulist.add(item.getValue());
+        }
+        sql = sql + " AND VYDEBASVURU.TYDESEVIYETURU_ID IN (:basvuruturulist)";
+
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query =session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        query.setParameterList("basvuruturulist", basvuruturulist);
+        list = query.list();
+
+        for(Object o : list) {
+            Map map = (Map) o;
+            String adaNo = (String) map.get("ADANO");
+            String paftaNo = (String) map.get("PAFTANO");
+            String parselNo = (String) map.get("PARSELNO");
+            String mahalleAdı = (String) map.get("MAHALLEADI");
+            String yibf = (String) map.get("YIBFREF");
+            String surecNo = (String) map.get("VBPMPROCESSINSTANCE_ID");
+            String basvuruDurumu = (String) map.get("BASVURUDURUMU");
+            String paydasAdSoyad = (String) map.get("PAYDASADSOYAD");
+            String vekilAdSoyad = (String) map.get("VEKILADSOYAD");
+            String basvuruTuru = (String) map.get("TANIM");
+            String raportor = (String) map.get("RAPORTOR");
+            BigDecimal paydasNo = (BigDecimal) map.get("MPI1PAYDAS_ID");
+
+            YapiDenetimDTO yapiDenetimDTO = new YapiDenetimDTO();
+
+            if (adaNo != null)
+                yapiDenetimDTO.setAdaNo(adaNo);
+            if (paftaNo != null)
+                yapiDenetimDTO.setPaftaNo(paftaNo);
+            if (parselNo != null)
+                yapiDenetimDTO.setParselNo(parselNo);
+            if(mahalleAdı != null)
+                yapiDenetimDTO.setMahalleAdı(mahalleAdı);
+            if(yibf != null)
+                yapiDenetimDTO.setYibf(yibf);
+            if (surecNo != null)
+                yapiDenetimDTO.setSurecNo(surecNo);
+            if (basvuruDurumu != null)
+                yapiDenetimDTO.setBasvuruDurumu(basvuruDurumu);
+            if (paydasAdSoyad != null)
+                yapiDenetimDTO.setPaydasAdSoyad(paydasAdSoyad);
+            if(vekilAdSoyad != null)
+                yapiDenetimDTO.setVekilAdSoyad(vekilAdSoyad);
+            if (basvuruTuru != null)
+                yapiDenetimDTO.setBasvuruTuru(basvuruTuru);
+            if(raportor != null)
+                yapiDenetimDTO.setRaportor(raportor);
+            if (paydasNo != null)
+                yapiDenetimDTO.setPaydasNo(paydasNo.longValue());
+
+            yapiDenetimDTOList.add(yapiDenetimDTO);
+        }
+        return yapiDenetimDTOList;
+
     }
 }

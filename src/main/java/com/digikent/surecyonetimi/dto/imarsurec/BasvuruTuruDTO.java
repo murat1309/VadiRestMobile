@@ -3,7 +3,7 @@ package com.digikent.surecyonetimi.dto.imarsurec;
 
 
 
-public class ImarBasvuruTuruDTO {
+public class BasvuruTuruDTO {
 
     private Long id;
     private String tanim;

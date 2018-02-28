@@ -87,7 +87,7 @@ public class TLI3RuhsatService {
                 " and r.DRE1MAHALLE_ID=m.ID" +
                 " and r.SRE1SOKAK_ID=s.ID" +
                 " and r.SLI1RUHSATTURU_ID=t.id " +
-                "   AND SLI1RUHSATTURU_ID IN (SELECT B.SLI1RUHSATTURU_ID " +
+                "   AND r.SLI1RUHSATTURU_ID IN (SELECT B.SLI1RUHSATTURU_ID " +
                 "                                     FROM OLI1RUHSATTIPI A, " +
                 "                                          PLI1RUHSATTIPILINE B " +
                 "                                    WHERE     A.ID = B.OLI1RUHSATTIPI_ID " +
