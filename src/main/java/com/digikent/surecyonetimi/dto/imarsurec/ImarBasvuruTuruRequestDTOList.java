@@ -1,18 +1,16 @@
 package com.digikent.surecyonetimi.dto.imarsurec;
 
 
-import com.digikent.surecyonetimi.dto.imarsurec.ImarBasvuruTuruRequestDTO;
-
 import java.util.List;
 
 public class ImarBasvuruTuruRequestDTOList {
 
-    private List<ImarBasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList;
+    private List<BasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList;
 
-    public List<ImarBasvuruTuruRequestDTO> getImarBasvuruTuruRequestDTOList() {
+    public List<BasvuruTuruRequestDTO> getImarBasvuruTuruRequestDTOList() {
         return imarBasvuruTuruRequestDTOList;
     }
-    public void setImarBasvuruTuruRequestDTOList(List<ImarBasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList) {
+    public void setImarBasvuruTuruRequestDTOList(List<BasvuruTuruRequestDTO> imarBasvuruTuruRequestDTOList) {
         this.imarBasvuruTuruRequestDTOList = imarBasvuruTuruRequestDTOList;
     }
 }

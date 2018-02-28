@@ -2,7 +2,7 @@ package com.digikent.surecyonetimi.dto.imarsurec;
 
 
 
-public class ImarBasvuruTuruRequestDTO {
+public class BasvuruTuruRequestDTO {
 
     private Long value;
     private String label;
