@@ -27,8 +27,11 @@ public class FSM1Users extends BaseEntity implements Serializable {
     @Column(name = "IKY_PERSONEL_ID")
     private Long ikyPersonelId;
 
-    @Column(name = "IHR1PERSONEL_ID")
-    private Long ihr1PersonelId;
+    /*@Column(name = "IHR1PERSONEL_ID")
+    private Long ihr1PersonelId;*/
+    @OneToOne
+    @JoinColumn(name="IHR1PERSONEL_ID")
+    private IHR1Personel ihr1Personel = new IHR1Personel();
 
     public Long getID() {
         return ID;
@@ -62,11 +65,11 @@ public class FSM1Users extends BaseEntity implements Serializable {
         this.ikyPersonelId = ikyPersonelId;
     }
 
-    public Long getIhr1PersonelId() {
-        return ihr1PersonelId;
+    public IHR1Personel getIhr1Personel() {
+        return ihr1Personel;
     }
 
-    public void setIhr1PersonelId(Long ihr1PersonelId) {
-        this.ihr1PersonelId = ihr1PersonelId;
+    public void setIhr1Personel(IHR1Personel ihr1Personel) {
+        this.ihr1Personel = ihr1Personel;
     }
 }

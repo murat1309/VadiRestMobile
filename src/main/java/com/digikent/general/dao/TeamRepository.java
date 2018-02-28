@@ -34,7 +34,9 @@ public class TeamRepository {
     * */
     public List<VSYNMemberShip> findVSNYMemberShipListByUserId(Long userId) {
 
-        FSM1Users fsm1Users = findFsm1UsersById(userId);
+        //FSM1Users fsm1Users = findFsm1UsersById(userId);
+        FSM1Users fsm1Users = new FSM1Users();
+        fsm1Users.setID(userId);
 
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(VSYNMemberShip.class);

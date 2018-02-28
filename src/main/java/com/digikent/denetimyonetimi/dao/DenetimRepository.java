@@ -1037,8 +1037,8 @@ public class DenetimRepository {
                 for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
                     Boolean isExist = false;
                     for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
-                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelId() != null){
-                            if (bdntDenetimTespitTaraf.getIhr1PersonelId().longValue() == item.getFsm1UserDTO().getIhr1PersonelId().longValue()) {
+                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null){
+                            if (bdntDenetimTespitTaraf.getIhr1PersonelId().longValue() == item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue()) {
                                 isExist = true;
                                 break;
                             }
@@ -1055,8 +1055,8 @@ public class DenetimRepository {
                 for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
                     Boolean isExist = false;
                     for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
-                        if (item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelId() != null && bdntDenetimTespitTaraf.getIhr1PersonelId() != null) {
-                            if (item.getFsm1UserDTO().getIhr1PersonelId().longValue() == bdntDenetimTespitTaraf.getIhr1PersonelId().longValue()) {
+                        if (item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null && bdntDenetimTespitTaraf.getIhr1PersonelId() != null) {
+                            if (item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue() == bdntDenetimTespitTaraf.getIhr1PersonelId().longValue()) {
                                 isExist = true;
                                 break;
                             }
@@ -1065,7 +1065,7 @@ public class DenetimRepository {
                     }
                     if (!isExist) {
                         //demek ki yeni bir memur eklendi
-                        LOG.debug("sonradan taraf listesine eklenen memur. ihr1PersonelId="+item.getFsm1UserDTO().getIhr1PersonelId());
+                        LOG.debug("sonradan taraf listesine eklenen memur. ihr1PersonelId="+item.getFsm1UserDTO().getIhr1PersonelDTO().getId());
                         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId);
                         session.save(bdntDenetimTespitTaraf);
                     }
@@ -1222,7 +1222,7 @@ public class DenetimRepository {
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
         //TODO görevi alanını doğru setle, fsm1usersdaki karşılığını öğren
         bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_MEMUR_GOREV);
-        bdntDenetimTespitTaraf.setIhr1PersonelId(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelId());
+        bdntDenetimTespitTaraf.setIhr1PersonelId(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getId());
         bdntDenetimTespitTaraf.setSoyadi(vsynMemberShipDTO.getFsm1UserDTO().getSoyadi());
         //TODO taraftürü alanını doğru setle
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);

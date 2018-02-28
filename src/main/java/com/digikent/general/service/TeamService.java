@@ -1,12 +1,12 @@
 package com.digikent.general.service;
 
 import com.digikent.denetimyonetimi.dto.takim.VsynRoleTeamDTO;
-import com.digikent.denetimyonetimi.entity.VSYNMemberShip;
-import com.digikent.denetimyonetimi.entity.VSYNRoleTeam;
+import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.general.dao.TeamRepository;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.general.dto.Fsm1UserDTO;
-import com.digikent.denetimyonetimi.entity.FSM1Users;
+import com.digikent.general.dto.Ihr1PersonelDTO;
+import com.digikent.general.dto.Lhr1GorevTuruDTO;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +82,7 @@ public class TeamService {
             fsm1UserDTO.setId(fsm1Users.getID());
             fsm1UserDTO.setAdi(fsm1Users.getFirstName());
             fsm1UserDTO.setSoyadi(fsm1Users.getLastName());
-            fsm1UserDTO.setIhr1PersonelId(fsm1Users.getIhr1PersonelId());
+            fsm1UserDTO.setIhr1PersonelDTO(convertIhr1PersonelDTO(fsm1Users.getIhr1Personel()));
             fsm1UserDTO.setIkyPersonelId(fsm1Users.getIkyPersonelId());
         }
         return fsm1UserDTO;
@@ -94,11 +94,54 @@ public class TeamService {
         if (fsm1Users != null) {
             fsm1Users.setFirstName(fsm1UserDTO.getAdi());
             fsm1Users.setLastName(fsm1UserDTO.getSoyadi());
-            fsm1Users.setIhr1PersonelId(fsm1UserDTO.getIhr1PersonelId());
+            fsm1Users.setIhr1Personel(convertIhr1Personel(fsm1UserDTO.getIhr1PersonelDTO()));
             fsm1Users.setIkyPersonelId(fsm1UserDTO.getIkyPersonelId());
         }
 
         return fsm1Users;
+    }
+
+    public Ihr1PersonelDTO convertIhr1PersonelDTO(IHR1Personel ihr1Personel) {
+
+        Ihr1PersonelDTO ihr1PersonelDTO = new Ihr1PersonelDTO();
+        if (ihr1Personel != null) {
+            ihr1PersonelDTO.setId(ihr1Personel.getID());
+            ihr1PersonelDTO.setAdi(ihr1Personel.getAdi());
+            ihr1PersonelDTO.setSoyadi(ihr1Personel.getSoyadi());
+            ihr1PersonelDTO.setLhr1GorevTuruDTO(convertLhrGorevTuruDTO(ihr1Personel.getLhr1GorevTuru()));
+        }
+
+        return ihr1PersonelDTO;
+    }
+
+    public IHR1Personel convertIhr1Personel(Ihr1PersonelDTO ihr1PersonelDTO) {
+        IHR1Personel ihr1Personel = new IHR1Personel();
+        if (ihr1PersonelDTO != null) {
+            ihr1Personel.setID(ihr1PersonelDTO.getId());
+            ihr1Personel.setAdi(ihr1PersonelDTO.getAdi());
+            ihr1Personel.setSoyadi(ihr1PersonelDTO.getSoyadi());
+            ihr1Personel.setLhr1GorevTuru(convertLhrGorevTuru(ihr1PersonelDTO.getLhr1GorevTuruDTO()));
+        }
+        return ihr1Personel;
+    }
+
+    private Lhr1GorevTuruDTO convertLhrGorevTuruDTO(LHR1GorevTuru lhrGorevTuru) {
+        Lhr1GorevTuruDTO lhrGorevTuruDTO = new Lhr1GorevTuruDTO();
+        if (lhrGorevTuru != null) {
+            lhrGorevTuruDTO.setId(lhrGorevTuru.getID());
+            lhrGorevTuruDTO.setTanim(lhrGorevTuru.getTanim());
+        }
+
+        return lhrGorevTuruDTO;
+    }
+
+    public LHR1GorevTuru convertLhrGorevTuru(Lhr1GorevTuruDTO lhrGorevTuruDTO) {
+        LHR1GorevTuru lhr1GorevTuru = new LHR1GorevTuru();
+        if (lhrGorevTuruDTO != null) {
+            lhr1GorevTuru.setID(lhrGorevTuruDTO.getId());
+            lhr1GorevTuru.setTanim(lhrGorevTuruDTO.getTanim());
+        }
+        return lhr1GorevTuru;
     }
 
     private VsynMemberShipDTO convertVsynMemberShipDTO(VSYNMemberShip vsnyMemberShip) {

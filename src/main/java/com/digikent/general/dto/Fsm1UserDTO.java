@@ -8,7 +8,8 @@ public class Fsm1UserDTO {
     private Long id;
     private String adi;
     private String soyadi;
-    private Long ihr1PersonelId;
+    //private Long ihr1PersonelId;
+    private Ihr1PersonelDTO ihr1PersonelDTO;
     private Long ikyPersonelId;
 
     public Long getId() {
@@ -35,19 +36,19 @@ public class Fsm1UserDTO {
         this.soyadi = soyadi;
     }
 
-    public Long getIhr1PersonelId() {
-        return ihr1PersonelId;
-    }
-
-    public void setIhr1PersonelId(Long ihr1PersonelId) {
-        this.ihr1PersonelId = ihr1PersonelId;
-    }
-
     public Long getIkyPersonelId() {
         return ikyPersonelId;
     }
 
     public void setIkyPersonelId(Long ikyPersonelId) {
         this.ikyPersonelId = ikyPersonelId;
+    }
+
+    public Ihr1PersonelDTO getIhr1PersonelDTO() {
+        return ihr1PersonelDTO;
+    }
+
+    public void setIhr1PersonelDTO(Ihr1PersonelDTO ihr1PersonelDTO) {
+        this.ihr1PersonelDTO = ihr1PersonelDTO;
     }
 }
