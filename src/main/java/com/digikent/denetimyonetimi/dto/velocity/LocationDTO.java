@@ -1,81 +1,62 @@
 package com.digikent.denetimyonetimi.dto.velocity;
 
 public class LocationDTO {
-  private String mahalle;
-  private String cadde;
-  private String sokak;
-  private String no;
-  private String ada;
-  private String pafta;
-  private String parsel;
 
-  public LocationDTO(String mahalle, String cadde, String sokak, String no, String ada, String pafta, String parsel) {
-    super();
-    this.mahalle = mahalle;
-    this.cadde = cadde;
-    this.sokak = sokak;
-    this.no = no;
-    this.ada = ada;
-    this.pafta = pafta;
-    this.parsel = parsel;
+  private String ilceAdi;
+  private String mahalleAdi;
+  private String sokakAdi;
+  private String daireBilgisi;
+  private String kapiBilgisi;
+  private String tamAdres;
+
+  public LocationDTO() {
   }
 
-  public String getMahalle() {
-    return mahalle;
+  public String getIlceAdi() {
+    return ilceAdi;
   }
 
-  public void setMahalle(String mahalle) {
-    this.mahalle = mahalle;
+  public void setIlceAdi(String ilceAdi) {
+    this.ilceAdi = ilceAdi;
   }
 
-  public String getCadde() {
-    return cadde;
+  public String getMahalleAdi() {
+    return mahalleAdi;
   }
 
-  public void setCadde(String cadde) {
-    this.cadde = cadde;
+  public void setMahalleAdi(String mahalleAdi) {
+    this.mahalleAdi = mahalleAdi;
   }
 
-  public String getSokak() {
-    return sokak;
+  public String getSokakAdi() {
+    return sokakAdi;
   }
 
-  public void setSokak(String sokak) {
-    this.sokak = sokak;
+  public void setSokakAdi(String sokakAdi) {
+    this.sokakAdi = sokakAdi;
   }
 
-  public String getNo() {
-    return no;
+  public String getDaireBilgisi() {
+    return daireBilgisi;
   }
 
-  public void setNo(String no) {
-    this.no = no;
+  public void setDaireBilgisi(String daireBilgisi) {
+    this.daireBilgisi = daireBilgisi;
   }
 
-  public String getAda() {
-    return ada;
+  public String getKapiBilgisi() {
+    return kapiBilgisi;
   }
 
-  public void setAda(String ada) {
-    this.ada = ada;
+  public void setKapiBilgisi(String kapiBilgisi) {
+    this.kapiBilgisi = kapiBilgisi;
   }
 
-  public String getPafta() {
-    return pafta;
+  public String getTamAdres() {
+    return tamAdres;
   }
 
-  public void setPafta(String pafta) {
-    this.pafta = pafta;
+  public void setTamAdres(String tamAdres) {
+    this.tamAdres = tamAdres;
   }
-
-  public String getParsel() {
-    return parsel;
-  }
-
-  public void setParsel(String parsel) {
-    this.parsel = parsel;
-  }
-
-
-
 }

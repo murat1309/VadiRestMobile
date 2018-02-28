@@ -30,6 +30,7 @@ public class DenetimPaydasDTO implements Serializable {
     private Long dre1MahalleId;
     private Long sre1SokakId;
     private Long rre1IlceId;
+    private Long pre1IlId;
     private Long tcKimlikNo;
     private Long telefonCep;
     private Long telefonIs;
@@ -267,5 +268,13 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setSiteAdi(String siteAdi) {
         this.siteAdi = siteAdi;
+    }
+
+    public Long getPre1IlId() {
+        return pre1IlId;
+    }
+
+    public void setPre1IlId(Long pre1IlId) {
+        this.pre1IlId = pre1IlId;
     }
 }

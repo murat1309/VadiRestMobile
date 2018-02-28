@@ -182,7 +182,7 @@
             <div class="cell">Tutanak/Döküman No</div>
         </div>
         <div class="row">
-            <div class="cell">$date.format("dd-MM-yyyy", $documentDTO.date)</div>
+            <div class="cell">$documentDTO.dateString</div>
             <div class="cell">$documentDTO.number</div>
         </div>
     </div>
@@ -190,15 +190,40 @@
     <div class="table m">
         <div class="title"> » Paydaş</div>
         <div class="row header">
+            <div class="cell">Taraf Türü</div>
             <div class="cell">Adı Soyadı</div>
             <div class="cell">TC Kimlik No</div>
             <div class="cell">Telefon</div>
+            <div class="cell">İmza</div>
         </div>
         <div class="row">
-            <div class="cell">$userDTO.name $userDTO.surname</div>
+            <div class="cell">$userDTO.tarafTuru</div>
+            <div class="cell">$userDTO.adiSoyadi</div>
             <div class="cell">$userDTO.tckn</div>
-            <div class="cell">$userDTO.phone</div>
+            <div class="cell">$userDTO.gorevi</div>
+            <div class="cell">  </div>
         </div>
+    </div>
+
+    <div class="table m">
+        <div class="title"> » Taraflar</div>
+        <div class="row header">
+            <div class="cell">Taraf Türü</div>
+            <div class="cell">Adı Soyadı</div>
+            <div class="cell">Görevi</div>
+            <div class="cell">İmza</div>
+        </div>
+
+        #foreach( $user in $belediyeUserDTOList )
+            <div class="row">
+                <div class="cell">$user.tarafTuru</div>
+                <div class="cell">$user.adiSoyadi</div>
+                <div class="cell">$user.gorevi</div>
+                <div class="cell">  </div>
+            </div>
+        #end
+
+
     </div>
 
     <!-- 		<div style="width: 25%; float: right;"> -->
@@ -212,23 +237,19 @@
     <div class="table m">
         <div class="title"> » Lokasyon</div>
         <div class="row header">
+            <div class="cell">İlçe</div>
             <div class="cell">Mahalle</div>
-            <div class="cell">Cadde</div>
             <div class="cell">Sokak</div>
-            <div class="cell">No</div>
-            <div class="cell">Ada</div>
-            <div class="cell">Pafta</div>
-            <div class="cell">Parsel</div>
+            <div class="cell">Daire</div>
+            <div class="cell">Kapı</div>
         </div>
 
         <div class="row">
-            <div class="cell">$locationDTO.mahalle</div>
-            <div class="cell">$locationDTO.cadde</div>
-            <div class="cell">$locationDTO.sokak</div>
-            <div class="cell">$locationDTO.no</div>
-            <div class="cell">$locationDTO.ada</div>
-            <div class="cell">$locationDTO.pafta</div>
-            <div class="cell">$locationDTO.parsel</div>
+            <div class="cell">$locationDTO.ilceAdi</div>
+            <div class="cell">$locationDTO.mahalleAdi</div>
+            <div class="cell">$locationDTO.sokakAdi</div>
+            <div class="cell">$locationDTO.daireBilgisi</div>
+            <div class="cell">$locationDTO.kapiBilgisi</div>
         </div>
 
     </div>
@@ -259,61 +280,30 @@
 
     <div class="table m">
         <div class="title"> » Tespitler</div>
-        #foreach( $tespitDTO in $tespitDTOs )
+        #foreach( $tespitDTO in $reportTespitDTOs )
             <div class="row">
                 <div class="cell" style="width: 50%">
                     <div class="innertable">
                         <div class="row">
                             <div class="cell b">Açıklamalar</div>
-                            <div class="cell">$tespitDTO.aciklamamalar</div>
+                            <div class="cell">$tespitDTO.tespitAciklamasi</div>
                         </div>
                         <div class="row">
-                            <div class="cell b">Değer</div>
-                            <div class="cell">$tespitDTO.deger</div>
+                            <div class="cell b">Açıklama</div>
+                            <div class="cell">$tespitDTO.aciklama</div>
                         </div>
                         <div class="row">
                             <div class="cell b">Dayanak Kanunu</div>
                             <div class="cell">$tespitDTO.dayanakKanunu</div>
                         </div>
                         <div class="row">
-                            <div class="cell b">Dayanak Maddesi</div>
-                            <div class="cell">$tespitDTO.dayanakMaddesi</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Ceza Tutarı</div>
-                            <div class="cell">$tespitDTO.cezaTutarı</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Açıklama</div>
-                            <div class="cell">$tespitDTO.aciklama</div>
+                            <div class="cell b">Değer</div>
+                            <div class="cell">$tespitDTO.deger</div>
                         </div>
                     </div>
                 </div>
             </div>
         #end
-    </div>
-
-    <div class="table m">
-        <div class="title"> » Taraflar</div>
-        <div class="row header">
-            <div class="cell">Türü</div>
-            <div class="cell">Adı Soyadı</div>
-            <div class="cell">Ünvanı</div>
-            <div class="cell">TC Kimlik No</div>
-            <div class="cell">İmza</div>
-        </div>
-
-        #foreach( $location in $locations )
-            <div class="row">
-                <div class="cell">$type</div>
-                <div class="cell">$name $surname</div>
-                <div class="cell">$title</div>
-                <div class="cell">$tckn</div>
-                <div class="cell">$sign</div>
-            </div>
-        #end
-
-
     </div>
 
 </div>

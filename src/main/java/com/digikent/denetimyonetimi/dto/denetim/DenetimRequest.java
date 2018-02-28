@@ -3,6 +3,7 @@ package com.digikent.denetimyonetimi.dto.denetim;
 import com.digikent.denetimyonetimi.dto.adres.DenetimOlayYeriAdresi;
 import com.digikent.denetimyonetimi.dto.adres.DenetimTebligatAdresi;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 
 import java.io.Serializable;
 
@@ -14,7 +15,9 @@ public class DenetimRequest implements Serializable{
     private DenetimPaydasDTO denetimPaydasDTO;
     private DenetimTebligatAdresi denetimTebligatAdresi;
     private DenetimOlayYeriAdresi denetimOlayYeriAdresi;
+    private DenetimTarafDTO denetimTarafDTO;
     private Long isletmeId;
+    private Long bdntDenetimId;
 
     public DenetimPaydasDTO getDenetimPaydasDTO() {
         return denetimPaydasDTO;
@@ -46,5 +49,21 @@ public class DenetimRequest implements Serializable{
 
     public void setIsletmeId(Long isletmeId) {
         this.isletmeId = isletmeId;
+    }
+
+    public Long getBdntDenetimId() {
+        return bdntDenetimId;
+    }
+
+    public void setBdntDenetimId(Long bdntDenetimId) {
+        this.bdntDenetimId = bdntDenetimId;
+    }
+
+    public DenetimTarafDTO getDenetimTarafDTO() {
+        return denetimTarafDTO;
+    }
+
+    public void setDenetimTarafDTO(DenetimTarafDTO denetimTarafDTO) {
+        this.denetimTarafDTO = denetimTarafDTO;
     }
 }

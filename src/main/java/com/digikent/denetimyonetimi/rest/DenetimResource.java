@@ -1,7 +1,9 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
@@ -12,10 +14,6 @@ import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
 import com.digikent.denetimyonetimi.service.ReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
-import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
-import com.digikent.denetimyonetimi.dto.adres.MahalleSokakDTO;
-import com.digikent.denetimyonetimi.dto.adres.SokakDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
@@ -24,6 +22,8 @@ import com.vadi.smartkent.datamodel.domains.paydas.PI1Paydas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -75,17 +75,18 @@ public class DenetimResource {
     }
 
     /*
-        Olay yeri adresi girildikten sonra denetim kaydı oluşturuluyor
+        taraflar bilgisi girildikten  sonra denetim kaydı oluşturuluyor
+        eğer denetimId bilgisi null gelmezse, güncellenecek demektir.
     */
     @RequestMapping(value = "/save/denetim", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetim(@RequestBody DenetimRequest denetimRequest) {
-        LOG.debug("Denetim kayıt. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
+        LOG.debug("Denetim kayit/guncelleme. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveDenetim(denetimRequest);
-        LOG.debug("denetim kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("denetim kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
@@ -113,6 +114,18 @@ public class DenetimResource {
         List<MahalleDTO> mahalleDTOs = denetimService.getMahalleByBelediyeId(belediyeId);
 
         return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
+    }
+
+    /*
+        il bilgilerini getirir
+    */
+    @RequestMapping(value = "/list/il", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<IlDTO>> getIlList() {
+        LOG.debug("/il iller getirilecek");
+        List<IlDTO> ilDTOs = denetimService.getIlList();
+
+        return new ResponseEntity<List<IlDTO>>(ilDTOs, OK);
     }
 
     /*
@@ -150,20 +163,6 @@ public class DenetimResource {
         List<BelediyeDTO> belediyeDTOList = denetimService.getBelediyeList();
 
         return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
-    }
-
-    /*
-        Denetim raporunu getirir
-    */
-    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<ReportResponse> createDenetimReport() {
-        LOG.debug("/create/report REST request");
-
-        String htmlContent = reportService.createDenetimReport();
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
-
-        return new ResponseEntity<ReportResponse>(reportResponse, OK);
     }
 
     /*
@@ -257,13 +256,13 @@ public class DenetimResource {
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<UtilDenetimSaveDTO> saveIsletme(@RequestBody DenetimTespitRequest denetimTespitRequest) {
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimID="+denetimTespitRequest.getDenetimId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
+    public ResponseEntity<UtilDenetimSaveDTO> saveDenetimTespit(@RequestBody DenetimTespitRequest denetimTespitRequest) {
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak denetimID="+denetimTespitRequest.getDenetimId());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveDenetimTespit(denetimTespitRequest);
-        LOG.debug("denetim - denetim türü - tespit grubu kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimTespitID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
@@ -276,15 +275,67 @@ public class DenetimResource {
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveTespitler(@RequestBody TespitlerRequest tespitlerRequest) {
-        LOG.debug("tespitler kayit islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
+        LOG.debug("tespitler kayit/guncelleme islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
         LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 
+    /*
+        denetime ait denetimtespit kayıtlarını getirir
+    */
+    @RequestMapping(value = "/list/denetimtespit/{denetimId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimTespitDTO>> getDenetimTespitByDenetimId(@PathVariable("denetimId") Long denetimId) {
+        LOG.debug("REST denetimtespitler getirilecek. denetimID= " + denetimId);
+        List<DenetimTespitDTO> denetimTespitDTOList = null;
+        denetimTespitDTOList = denetimService.getDenetimTespitByDenetimId(denetimId);
+        return new ResponseEntity<List<DenetimTespitDTO>>(denetimTespitDTOList, OK);
+    }
+
+    /*
+        denetime ait denetimtespit kayıtlarını getirir
+    */
+    @RequestMapping(value = "/list/denetimler", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<DenetimDTO>> getDenetimList() {
+        LOG.debug("REST denetimler geitirilecek");
+        List<DenetimDTO> denetimDTOList = null;
+        denetimDTOList = denetimService.getDenetimList();
+        return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
+    }
 
 
+    /*
+        Denetim raporunu getirir
+    */
+    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<ReportResponse> createDenetimReport() {
+        LOG.debug("/create/report REST request");
+
+        //TODO düzenle
+        String htmlContent = reportService.createDenetimReport();
+        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
+        LOG.debug("created report / END charachterSize=" + htmlContent.length());
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
+    }
+
+    /*
+        Denetim raporunu getirir
+    */
+    @RequestMapping(value = "/create/report/{denetimtespitid}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<ReportResponse> createDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
+        LOG.debug("/create/report REST request");
+
+        //TODO düzenle
+        String htmlContent = reportService.createCezaDenetimReport(denetimTespitId);
+        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
+
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
+    }
 
 
 
