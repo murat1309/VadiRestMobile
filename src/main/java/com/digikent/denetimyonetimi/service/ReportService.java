@@ -44,6 +44,9 @@ public class ReportService {
     @Autowired
     DenetimService denetimService;
 
+    @Autowired
+    TarafService tarafService;
+
     public String createDenetimReport() {
 
         /*VelocityEngine ve = new VelocityEngine();
@@ -88,32 +91,27 @@ public class ReportService {
         return "";
     }
 
+    /**
+     * Ceza raporu çıktısını html string objesi olarak döndürür
+     * @param denetimTespitId
+     * @return
+     */
     public String createCezaDenetimReport(Long denetimTespitId) {
 
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-
         ve.init();
         Template t = ve.getTemplate("templates/template.vm", "UTF-8");
         VelocityContext vc = new VelocityContext();
 
         BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(denetimTespitId);
         DenetimDTO denetimDTO = denetimService.getDenetimById(bdntDenetimTespit.getDenetimId());
-        List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = denetimService.getDenetimTarafListByDenetimId(bdntDenetimTespit.getDenetimId());
+        List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = tarafService.getDenetimTarafListByDenetimId(bdntDenetimTespit.getDenetimId());
         List<BelediyeUserDTO> belediyeUserDTOList = new ArrayList<>();
 
         denetimDTO.setOlayYeriDaireNoHarf((denetimDTO.getOlayYeriDaireNoHarf() == null ? "" : denetimDTO.getOlayYeriDaireNoHarf()));
         denetimDTO.setOlayYeriKapiNoHarf((denetimDTO.getOlayYeriKapiNoHarf() == null ? "" : denetimDTO.getOlayYeriKapiNoHarf()));
-
-        LocationDTO locationDTO = new LocationDTO();
-        locationDTO.getTamAdres();
-        locationDTO.setDaireBilgisi((denetimDTO.getOlayYeriDaireNoSayi() != null ? denetimDTO.getOlayYeriDaireNoSayi().toString() + "/" + denetimDTO.getOlayYeriDaireNoHarf() : denetimDTO.getOlayYeriDaireNoHarf()));
-        locationDTO.setKapiBilgisi((denetimDTO.getOlayYeriKapiNoSayi() != null ? denetimDTO.getOlayYeriKapiNoSayi().toString() + "/" + denetimDTO.getOlayYeriKapiNoHarf() : denetimDTO.getOlayYeriKapiNoHarf()));
-        locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce());
-        locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle());
-        locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak());
-        vc.put("locationDTO", locationDTO);
 
         for (BDNTDenetimTespitTaraf item: bdntDenetimTespitTarafList) {
             if (Constants.DENETIM_TARAF_TURU_PAYDAS.equalsIgnoreCase(item.getTarafTuru())) {
@@ -131,13 +129,10 @@ public class ReportService {
                 belediyeUserDTOList.add(belediyeUserDTO);
             }
         }
+
         vc.put("belediyeUserDTOList", belediyeUserDTOList);
-
-
-        DocumentDTO documentDTO = new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369");
-        vc.put("documentDTO", documentDTO);
-
-
+        vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
+        vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
         vc.put("reportTespitDTOs", getTespitReportData(bdntDenetimTespit));
 
         StringWriter sw = new StringWriter();
@@ -146,6 +141,30 @@ public class ReportService {
         return sw.toString();
     }
 
+    /**
+     * Rapor için Lokasyon bilgilerini döndürür
+     * @param denetimDTO
+     * @return
+     */
+    private LocationDTO getLocationReportDTOByDenetimDTO(DenetimDTO denetimDTO) {
+        LocationDTO locationDTO = new LocationDTO();
+        if (denetimDTO != null) {
+            locationDTO.getTamAdres();
+            locationDTO.setDaireBilgisi((denetimDTO.getOlayYeriDaireNoSayi() != null ? denetimDTO.getOlayYeriDaireNoSayi().toString() + "/" + denetimDTO.getOlayYeriDaireNoHarf() : denetimDTO.getOlayYeriDaireNoHarf()));
+            locationDTO.setKapiBilgisi((denetimDTO.getOlayYeriKapiNoSayi() != null ? denetimDTO.getOlayYeriKapiNoSayi().toString() + "/" + denetimDTO.getOlayYeriKapiNoHarf() : denetimDTO.getOlayYeriKapiNoHarf()));
+            locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce());
+            locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle());
+            locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak());
+        }
+
+        return locationDTO;
+    }
+
+    /**
+     * Rapor için denetim tespite ait denetimleri setlenmiş şekilde getirir
+     * @param bdntDenetimTespit
+     * @return
+     */
     public List<ReportTespitDTO> getTespitReportData(BDNTDenetimTespit bdntDenetimTespit) {
         List<Long> tespitIdList = new ArrayList<>();
         for (BDNTDenetimTespitLine tespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {

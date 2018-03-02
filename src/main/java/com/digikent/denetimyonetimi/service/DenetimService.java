@@ -54,36 +54,6 @@ public class DenetimService {
         return utilDenetimSaveDTO;
     }
 
-    @Cacheable(value = "sokaklar", key = "#root.methodName.toString() + #belediyeId")
-    public List<MahalleSokakDTO> getMahalleSokakListByBelediyeId(Long belediyeId) {
-        LOG.debug("searching getMahalleSokakListByBelediyeId");
-        return denetimRepository.findMahalleAndSokakListByBelediyeId(belediyeId);
-    }
-
-    @Cacheable(value="belediyeler", key = "#root.methodName")
-    public List<BelediyeDTO> getBelediyeList() {
-        LOG.debug("searching getBelediyeList");
-        return denetimRepository.findBelediyeList();
-    }
-
-    @Cacheable(value="mahalleler", key = "#belediyeId")
-    public List<MahalleDTO> getMahalleByBelediyeId(Long belediyeId) {
-        LOG.debug("searching getMahalleByBelediyeId");
-        return denetimRepository.findMahalleListByBelediyeId(belediyeId);
-    }
-
-    @Cacheable(value = "sokaklar", key = "#mahalleId")
-    public List<SokakDTO> getSokakByMahalleId(Long mahalleId) {
-        LOG.debug("searching getSokakByMahalleId");
-        return denetimRepository.findSokakListByMahalleId(mahalleId);
-    }
-
-    @Cacheable(value="mahalleler", key = "#root.methodName.toString()")
-    public List<MahalleDTO> getMahalleListByCurrentBelediye() {
-        LOG.debug("searching getMahalleListByCurrentBelediye");
-        return denetimRepository.findMahalleListByCurrentBelediye();
-    }
-
     @Cacheable(value="denetim", key = "#root.methodName.toString()")
     public List<DenetimTuruDTO> getDenetimTuruDTOList() {
         LOG.debug("searching getDenetimTuruDTOList");
@@ -166,7 +136,11 @@ public class DenetimService {
     }
 
     private KanunDTO lsm2KanunTolsm2KanunDTO(LSM2Kanun lsm2Kanun) {
-        return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi());
+        if (lsm2Kanun != null) {
+            return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi());
+        } else {
+            return null;
+        }
     }
 
     private List<TespitDTO> groupingTespitAndSecenekTuru(List<TespitDTO> tespitDTOList, List<SecenekTuruDTO> secenekTuruDTOList) {
@@ -255,10 +229,10 @@ public class DenetimService {
         return denetimRepository.saveTespitler(tespitlerRequest);
     }
 
-
     public List<DenetimTespitDTO> getDenetimTespitByDenetimId(Long denetimId) {
         return denetimRepository.getDenetimTespitListByTespitId(denetimId);
     }
+
     @Cacheable(value = "iller", key = "#root.methodName.toString()")
     public List<IlDTO> getIlList() {
         return denetimRepository.findIlList();
@@ -289,13 +263,5 @@ public class DenetimService {
                 "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
                 "FROM BDNTDENETIM";
         return sql;
-    }
-
-    public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimId(Long denetimId) {
-        return denetimRepository.findDenetimTespitTarafListByDenetimId(denetimId);
-    }
-
-    public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimIdAndTarafTuru(Long denetimId, String tarafTuru) {
-        return denetimRepository.findDenetimTespitTarafListByDenetimIdAndTarafTuru(denetimId,tarafTuru);
     }
 }

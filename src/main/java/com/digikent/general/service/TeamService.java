@@ -36,11 +36,14 @@ public class TeamService {
         for (VSYNMemberShip vsnyMemberShip:vsnyMemberShipList) {
             vsynRoleTeamList.add(vsnyMemberShip.getVsynRoleTeam());
         }
-        List<VSYNMemberShip> vsnyMemberShips = teamRepository.findVSNYMemberShipListByVSYNRoleTeamIdList(vsynRoleTeamList);
-        List<VsynMemberShipDTO> vsynMemberShipDTOList = convertVsynMemberShipDTOList(vsnyMemberShips);
+        if (vsnyMemberShipList != null && vsnyMemberShipList.size() > 0) {
+            List<VSYNMemberShip> vsnyMemberShips = teamRepository.findVSNYMemberShipListByVSYNRoleTeamIdList(vsynRoleTeamList);
+            List<VsynMemberShipDTO> vsynMemberShipDTOList = convertVsynMemberShipDTOList(vsnyMemberShips);
 
-        if (vsynMemberShipDTOList != null && vsynMemberShipDTOList.size() != 0) {
-            return groupingByVsynMemberShipDTOList(vsynMemberShipDTOList);
+            if (vsynMemberShipDTOList != null && vsynMemberShipDTOList.size() != 0) {
+                return groupingByVsynMemberShipDTOList(vsynMemberShipDTOList);
+            }
+
         }
 
         return null;
