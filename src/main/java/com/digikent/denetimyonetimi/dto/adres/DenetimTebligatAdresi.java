@@ -9,7 +9,7 @@ public class DenetimTebligatAdresi implements Serializable {
 
     private String siteAdiTebligat;
     private String blokNotebligat;
-    private String kapiHarfNoTebligat;
+    private String kapiNoHarfTebligat;
     private Long kapiNoSayiTebligat;
     private String daireNoHarfTebligat;
     private Long daireNoSayiTebligat;
@@ -34,12 +34,12 @@ public class DenetimTebligatAdresi implements Serializable {
         this.blokNotebligat = blokNotebligat;
     }
 
-    public String getKapiHarfNoTebligat() {
-        return kapiHarfNoTebligat;
+    public String getKapiNoHarfTebligat() {
+        return kapiNoHarfTebligat;
     }
 
-    public void setKapiHarfNoTebligat(String kapiHarfNoTebligat) {
-        this.kapiHarfNoTebligat = kapiHarfNoTebligat;
+    public void setKapiNoHarfTebligat(String kapiNoHarfTebligat) {
+        this.kapiNoHarfTebligat = kapiNoHarfTebligat;
     }
 
     public String getDaireNoHarfTebligat() {
