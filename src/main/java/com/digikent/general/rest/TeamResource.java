@@ -31,7 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 //@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/team")
 public class TeamResource {
-    private final Logger LOG = LoggerFactory.getLogger(DenetimResource.class);
+    private final Logger LOG = LoggerFactory.getLogger(TeamResource.class);
 
     @Autowired
     TeamService teamService;
@@ -50,9 +50,13 @@ public class TeamResource {
         List<VsynRoleTeamDTO> vsynRoleTeamDTOList = null;
         vsynRoleTeamDTOList = teamService.getTeamByUserId(teamRequest.getUserId());
 
-        teamResponse.setVsynRoleTeamDTOList(vsynRoleTeamDTOList);
-        teamResponse.setErrorDTO(new ErrorDTO(false,null));
+        if (vsynRoleTeamDTOList == null) {
+            teamResponse.setErrorDTO(new ErrorDTO(true,"takim bulunamadi"));
+        } else {
+            teamResponse.setErrorDTO(new ErrorDTO(false,null));
+        }
 
+        teamResponse.setVsynRoleTeamDTOList(vsynRoleTeamDTOList);
         return new ResponseEntity<TeamResponse>(teamResponse, OK);
     }
 

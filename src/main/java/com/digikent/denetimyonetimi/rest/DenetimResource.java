@@ -10,20 +10,16 @@ import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
-import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
+import com.digikent.denetimyonetimi.service.AddressService;
 import com.digikent.denetimyonetimi.service.ReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
-import com.documentum.xml.xpath.operations.Bool;
-import com.vadi.smartkent.datamodel.domains.paydas.PI1Paydas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +49,9 @@ public class DenetimResource {
 
     @Autowired
     ReportService reportService;
+
+    @Autowired
+    AddressService addressService;
 
     /*
         denetimyonetimi - paydas search by single filter
@@ -89,80 +88,6 @@ public class DenetimResource {
         LOG.debug("denetim kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
-    }
-
-    /*
-        Adres bilgilerini getirir
-    */
-    @RequestMapping(value = "/mahalle/sokak/{belediyeId}", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<MahalleSokakDTO>> getMahalleAndSokakList(@PathVariable("belediyeId") Long belediyeId) {
-        LOG.debug("/mahalle/sokak REST request to get mahalle-sokak List by belediye id = " + belediyeId);
-
-        List<MahalleSokakDTO> mahalleSokakDTOs = denetimService.getMahalleSokakListByBelediyeId(belediyeId);
-
-        return new ResponseEntity<List<MahalleSokakDTO>>(mahalleSokakDTOs, OK);
-    }
-
-    /*
-        İlçeye göre mahalleleri getirir
-    */
-    @RequestMapping(value = "/mahalle/{belediyeId}", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<MahalleDTO>> getMahalleList(@PathVariable("belediyeId") Long belediyeId) {
-        LOG.debug("/mahalle REST request to get mahalle List by belediye id = " + belediyeId);
-        List<MahalleDTO> mahalleDTOs = denetimService.getMahalleByBelediyeId(belediyeId);
-
-        return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
-    }
-
-    /*
-        il bilgilerini getirir
-    */
-    @RequestMapping(value = "/list/il", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<IlDTO>> getIlList() {
-        LOG.debug("/il iller getirilecek");
-        List<IlDTO> ilDTOs = denetimService.getIlList();
-
-        return new ResponseEntity<List<IlDTO>>(ilDTOs, OK);
-    }
-
-    /*
-        geçerli ilçeye ait mahalleleri getirir
-    */
-    @RequestMapping(value = "/mahalle", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<MahalleDTO>> getMahalleList() {
-        LOG.debug("/mahalle REST request to get current mahalle List = ");
-        List<MahalleDTO> mahalleDTOs = denetimService.getMahalleListByCurrentBelediye();
-
-        return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
-    }
-
-    /*
-        Mahalleye göre sokakları getirir
-    */
-    @RequestMapping(value = "/sokak/{mahalleId}", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<SokakDTO>> getSokakList(@PathVariable("mahalleId") Long mahalleId) {
-        LOG.debug("/mahalle REST request to get sokak List by mahalle id = " + mahalleId);
-        List<SokakDTO> sokakDTOs = denetimService.getSokakByMahalleId(mahalleId);
-
-        return new ResponseEntity<List<SokakDTO>>(sokakDTOs, OK);
-    }
-
-    /*
-        Geçerli ildeki belediye listesini getirir
-    */
-    @RequestMapping(value = "/belediyeler", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListCurrentCity() {
-        LOG.debug("/belediyeler REST request to get belediye list");
-
-        List<BelediyeDTO> belediyeDTOList = denetimService.getBelediyeList();
-
-        return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
     }
 
     /*
@@ -305,39 +230,6 @@ public class DenetimResource {
         denetimDTOList = denetimService.getDenetimList();
         return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
     }
-
-
-    /*
-        Denetim raporunu getirir
-    */
-    @RequestMapping(value = "/create/report", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<ReportResponse> createDenetimReport() {
-        LOG.debug("/create/report REST request");
-
-        //TODO düzenle
-        String htmlContent = reportService.createDenetimReport();
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
-        LOG.debug("created report / END charachterSize=" + htmlContent.length());
-        return new ResponseEntity<ReportResponse>(reportResponse, OK);
-    }
-
-    /*
-        Denetim raporunu getirir
-    */
-    @RequestMapping(value = "/create/report/{denetimtespitid}", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<ReportResponse> createDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
-        LOG.debug("/create/report REST request");
-
-        //TODO düzenle
-        String htmlContent = reportService.createCezaDenetimReport(denetimTespitId);
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
-
-        return new ResponseEntity<ReportResponse>(reportResponse, OK);
-    }
-
-
 
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)
     @Transactional

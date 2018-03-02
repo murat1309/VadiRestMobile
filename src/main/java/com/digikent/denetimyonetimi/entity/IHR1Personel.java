@@ -25,9 +25,6 @@ public class IHR1Personel extends BaseEntity implements Serializable {
     @JoinColumn(name="LHR1GOREVTURU_ID")
     private LHR1GorevTuru lhr1GorevTuru = new LHR1GorevTuru();
 
-    @Column(name = "TANIM")
-    private String tanim;
-
     @Column(name = "ADI")
     private String adi;
 
@@ -48,14 +45,6 @@ public class IHR1Personel extends BaseEntity implements Serializable {
 
     public void setLhr1GorevTuru(LHR1GorevTuru lhr1GorevTuru) {
         this.lhr1GorevTuru = lhr1GorevTuru;
-    }
-
-    public String getTanim() {
-        return tanim;
-    }
-
-    public void setTanim(String tanim) {
-        this.tanim = tanim;
     }
 
     public String getAdi() {
