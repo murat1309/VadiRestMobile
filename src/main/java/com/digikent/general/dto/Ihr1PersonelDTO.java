@@ -11,6 +11,7 @@ public class Ihr1PersonelDTO implements Serializable {
     private String adi;
     private String soyadi;
     private Lhr1GorevTuruDTO lhr1GorevTuruDTO;
+    private Long bsm2ServisGorev;
 
     public Long getId() {
         return id;
@@ -42,5 +43,13 @@ public class Ihr1PersonelDTO implements Serializable {
 
     public void setLhr1GorevTuruDTO(Lhr1GorevTuruDTO lhr1GorevTuruDTO) {
         this.lhr1GorevTuruDTO = lhr1GorevTuruDTO;
+    }
+
+    public Long getBsm2ServisGorev() {
+        return bsm2ServisGorev;
+    }
+
+    public void setBsm2ServisGorev(Long bsm2ServisGorev) {
+        this.bsm2ServisGorev = bsm2ServisGorev;
     }
 }

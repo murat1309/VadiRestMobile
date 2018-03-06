@@ -1,7 +1,6 @@
 package com.digikent.denetimyonetimi.service;
 
-import com.digikent.denetimyonetimi.dao.AddressRepository;
-import com.digikent.denetimyonetimi.dao.DenetimRepository;
+import com.digikent.denetimyonetimi.dao.DenetimAddressRepository;
 import com.digikent.denetimyonetimi.dto.adres.*;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ public class AddressService {
     SessionFactory sessionFactory;
 
     @Inject
-    AddressRepository addressRepository;
+    DenetimAddressRepository denetimAddressRepository;
 
     @Autowired
     DenetimService denetimService;
@@ -38,7 +37,7 @@ public class AddressService {
     @Cacheable(value = "sokaklar", key = "#root.methodName.toString() + #belediyeId")
     public List<MahalleSokakDTO> getMahalleSokakListByBelediyeId(Long belediyeId) {
         LOG.debug("searching getMahalleSokakListByBelediyeId");
-        return addressRepository.findMahalleAndSokakListByBelediyeId(belediyeId);
+        return denetimAddressRepository.findMahalleAndSokakListByBelediyeId(belediyeId);
     }
 
     /**
@@ -48,7 +47,7 @@ public class AddressService {
     @Cacheable(value="belediyeler", key = "#root.methodName")
     public List<BelediyeDTO> getBelediyeList() {
         LOG.debug("searching getBelediyeList");
-        return addressRepository.findBelediyeList();
+        return denetimAddressRepository.findBelediyeList();
     }
 
     /**
@@ -59,7 +58,7 @@ public class AddressService {
     @Cacheable(value="mahalleler", key = "#belediyeId")
     public List<MahalleDTO> getMahalleByBelediyeId(Long belediyeId) {
         LOG.debug("searching getMahalleByBelediyeId");
-        return addressRepository.findMahalleListByBelediyeId(belediyeId);
+        return denetimAddressRepository.findMahalleListByBelediyeId(belediyeId);
     }
 
     /**
@@ -70,7 +69,7 @@ public class AddressService {
     @Cacheable(value = "sokaklar", key = "#mahalleId")
     public List<SokakDTO> getSokakByMahalleId(Long mahalleId) {
         LOG.debug("searching getSokakByMahalleId");
-        return addressRepository.findSokakListByMahalleId(mahalleId);
+        return denetimAddressRepository.findSokakListByMahalleId(mahalleId);
     }
 
     /**
@@ -80,7 +79,7 @@ public class AddressService {
     @Cacheable(value="mahalleler", key = "#root.methodName.toString()")
     public List<MahalleDTO> getMahalleListByCurrentBelediye() {
         LOG.debug("searching getMahalleListByCurrentBelediye");
-        return addressRepository.findMahalleListByCurrentBelediye();
+        return denetimAddressRepository.findMahalleListByCurrentBelediye();
     }
 
     /**
@@ -89,7 +88,7 @@ public class AddressService {
      */
     @Cacheable(value = "iller", key = "#root.methodName.toString()")
     public List<IlDTO> getIlList() {
-        return addressRepository.findIlList();
+        return denetimAddressRepository.findIlList();
     }
 
 }

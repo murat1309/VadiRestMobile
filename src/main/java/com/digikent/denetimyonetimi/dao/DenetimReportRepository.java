@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
  * Created by Kadir on 6.02.2018.
  */
 @Repository
-public class ReportRepository {
+public class DenetimReportRepository {
 
-    private final Logger LOG = LoggerFactory.getLogger(ReportRepository.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimReportRepository.class);
 
     @Autowired
     SessionFactory sessionFactory;

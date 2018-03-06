@@ -1,7 +1,6 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.denetimyonetimi.dto.adres.*;
-import com.digikent.general.service.TeamService;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -20,9 +19,9 @@ import java.util.Map;
  * Created by Kadir on 5.03.2018.
  */
 @Repository
-public class AddressRepository {
+public class DenetimAddressRepository {
 
-    private final Logger LOG = LoggerFactory.getLogger(AddressRepository.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimAddressRepository.class);
 
     @Autowired
     SessionFactory sessionFactory;

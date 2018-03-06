@@ -1,25 +1,29 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.adres.IlDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
-import com.digikent.general.service.TeamService;
+import com.digikent.denetimyonetimi.entity.FSM1Users;
+import com.digikent.denetimyonetimi.entity.VSYNMemberShip;
+import com.digikent.denetimyonetimi.entity.VSYNRoleTeam;
+import com.digikent.general.dto.Fsm1UserDTO;
+import com.digikent.general.dto.Ihr1PersonelDTO;
+import com.digikent.general.dto.Lhr1GorevTuruDTO;
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Created by Kadir on 5.03.2018.
@@ -48,7 +52,7 @@ public class DenetimTarafRepository {
                 for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
                     Boolean isExist = false;
                     for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
-                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null){
+                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null){
                             if (bdntDenetimTespitTaraf.getIhr1PersonelId().longValue() == item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue()) {
                                 isExist = true;
                                 break;
@@ -178,4 +182,118 @@ public class DenetimTarafRepository {
         return list;
     }
 
+    /*
+* kullanıcının bulunduğu grupları bulur
+* */
+    public List<VSYNMemberShip> findVSNYMemberShipListByUserId(Long userId) {
+
+        //FSM1Users fsm1Users = findFsm1UsersById(userId);
+        FSM1Users fsm1Users = new FSM1Users();
+        fsm1Users.setID(userId);
+
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(VSYNMemberShip.class);
+        criteria.add(Restrictions.eq("childObjectName", "FSM1USERS"));
+        criteria.add(Restrictions.eq("parentObjectName", "VSYNROLETEAM"));
+        criteria.add(Restrictions.eq("isActive", true));
+        criteria.add(Restrictions.eq("fsm1Users", fsm1Users));
+
+        List<VSYNMemberShip> list = criteria.list();
+        //findVSNYMemberShipListByVSYNRoleTeamId(list.get(0).getVsynRoleTeam());
+        return list;
+    }
+
+    /*
+    * grupların içerisindeki kullanıcıları bulur
+    * */
+    public List<VSYNMemberShip> findVSNYMemberShipListByVSYNRoleTeamIdList(List<VSYNRoleTeam> vsynRoleTeamList) {
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(VSYNMemberShip.class);
+        criteria.add(Restrictions.eq("childObjectName", "FSM1USERS"));
+        criteria.add(Restrictions.eq("parentObjectName", "VSYNROLETEAM"));
+        criteria.add(Restrictions.eq("isActive", true));
+        Object[] obj = new Object[] {};
+        ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+        temp.addAll(vsynRoleTeamList);
+        criteria.add(Restrictions.in("vsynRoleTeam", temp.toArray()));
+        List<VSYNMemberShip> list = criteria.list();
+
+        return list;
+    }
+
+    public FSM1Users findFsm1UsersById(Long id) {
+        FSM1Users fsm1Users = null;
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        Criteria criteria = session.createCriteria(FSM1Users.class);
+        Object userObj = criteria.add(Restrictions.eq("ID", id)).uniqueResult();
+        fsm1Users = (FSM1Users)userObj;
+        return fsm1Users;
+    }
+
+    public List<Fsm1UserDTO> findFsm1UsersByUserServisGorev(String fsm1UsersUSERID) {
+        List<Fsm1UserDTO> fsm1UserDTOList = new ArrayList<>();
+        String sql = " SELECT A.FIRSTNAME, A.LASTNAME, A.ID AS FSM1USERS_ID,A.IKY_PERSONEL_ID,B.ID AS IHR1PERSONEL_ID, B.BSM2SERVIS_GOREV, B.ADI, B.SOYADI, C.ID AS LHR1GOREVTURU_ID, C.TANIM \n" +
+                " FROM FSM1USERS A,IHR1PERSONEL B, LHR1GOREVTURU C\n" +
+                " WHERE A.IKY_PERSONEL_ID = B.ID\n" +
+                " AND B.LHR1GOREVTURU_ID=C.ID\n" +
+                " AND B.PERSONELDURUMU='CALISAN'\n" +
+                " AND A.ACTIVE = 'E'\n" +
+                " AND A.IKY_PERSONEL_ID>0\n" +
+                " AND B.BSM2SERVIS_GOREV = (SELECT B.BSM2SERVIS_GOREV FROM FSM1USERS A,IHR1PERSONEL B WHERE A.USERID='"+ fsm1UsersUSERID +"' AND A.IKY_PERSONEL_ID = B.ID AND rownum = 1)";
+
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                Fsm1UserDTO fsm1UserDTO = new Fsm1UserDTO();
+                Ihr1PersonelDTO ihr1PersonelDTO = new Ihr1PersonelDTO();
+                Lhr1GorevTuruDTO lhr1GorevTuruDTO = new Lhr1GorevTuruDTO();
+
+                BigDecimal fsm1UsersId = (BigDecimal) map.get("FSM1USERS_ID");
+                BigDecimal ikyPersonelId = (BigDecimal) map.get("IKY_PERSONEL_ID");
+                String firstName = (String) map.get("FIRSTNAME");
+                String lastName = (String) map.get("LASTNAME");
+                BigDecimal ihrPersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+                BigDecimal bsm2ServisGorev = (BigDecimal) map.get("BSM2SERVIS_GOREV");
+                String adi = (String) map.get("ADI");
+                String soyadi = (String) map.get("SOYADI");
+                BigDecimal lhr1GorevTuruId = (BigDecimal) map.get("LHR1GOREVTURU_ID");
+                String tanim = (String) map.get("TANIM");
+
+                if(fsm1UsersId != null)
+                    fsm1UserDTO.setId(fsm1UsersId.longValue());
+                if(ikyPersonelId != null)
+                    fsm1UserDTO.setIkyPersonelId(ikyPersonelId.longValue());
+                if(ihrPersonelId != null)
+                    ihr1PersonelDTO.setId(ihrPersonelId.longValue());
+                if(lhr1GorevTuruId != null)
+                    lhr1GorevTuruDTO.setId(lhr1GorevTuruId.longValue());
+                if(bsm2ServisGorev != null)
+                    ihr1PersonelDTO.setBsm2ServisGorev(bsm2ServisGorev.longValue());
+                if(firstName != null)
+                    fsm1UserDTO.setAdi(firstName);
+                if(lastName != null)
+                    fsm1UserDTO.setSoyadi(lastName);
+                if(adi != null)
+                    ihr1PersonelDTO.setAdi(adi);
+                if(soyadi != null)
+                    ihr1PersonelDTO.setSoyadi(soyadi);
+                if(tanim != null)
+                    lhr1GorevTuruDTO.setTanim(tanim);
+
+                ihr1PersonelDTO.setLhr1GorevTuruDTO(lhr1GorevTuruDTO);
+                fsm1UserDTO.setIhr1PersonelDTO(ihr1PersonelDTO);
+
+                fsm1UserDTOList.add(fsm1UserDTO);
+            }
+        }
+        return fsm1UserDTOList;
+    }
 }

@@ -1,7 +1,5 @@
 package com.digikent.denetimyonetimi.dao;
 
-import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
@@ -9,12 +7,10 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
-import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
-import com.digikent.general.service.TeamService;
+import com.digikent.denetimyonetimi.service.TarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
 import org.hibernate.*;
@@ -40,7 +36,7 @@ public class DenetimRepository {
     SessionFactory sessionFactory;
 
     @Autowired
-    TeamService teamService;
+    TarafService tarafService;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
 

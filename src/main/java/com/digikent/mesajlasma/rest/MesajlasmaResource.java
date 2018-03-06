@@ -65,7 +65,7 @@ public class MesajlasmaResource {
      */
     @RequestMapping(value = "/users/{username}/", method = RequestMethod.GET)
     @Transactional
-    public ResponseEntity<List<MessageUserDTO>> getDemirbasDTOAndDemirbasHareket(@PathVariable("username") String username) {
+    public ResponseEntity<List<MessageUserDTO>> getUserListNotIncludeCurrentUser(@PathVariable("username") String username) {
         LOG.debug("REST request to get userList");
         List<MessageUserDTO> userDTOList = mesajlasmaRepository.getUserList(username);
 
