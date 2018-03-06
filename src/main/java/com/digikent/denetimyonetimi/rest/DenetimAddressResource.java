@@ -68,7 +68,7 @@ public class DenetimAddressResource {
     @Transactional
     public ResponseEntity<List<IlDTO>> getIlList() {
         LOG.debug("/il iller getirilecek");
-        List<IlDTO> ilDTOs = denetimService.getIlList();
+        List<IlDTO> ilDTOs = addressService.getIlList();
 
         return new ResponseEntity<List<IlDTO>>(ilDTOs, OK);
     }

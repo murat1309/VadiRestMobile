@@ -1,7 +1,6 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
@@ -193,21 +192,6 @@ public class DenetimResource {
     }
 
     /*
-        tespitler kaydedilir
-    */
-    @RequestMapping(value = "/save/tespitler", method = RequestMethod.POST)
-    @Produces(APPLICATION_JSON_VALUE)
-    @Consumes(APPLICATION_JSON_VALUE)
-    @Transactional
-    public ResponseEntity<UtilDenetimSaveDTO> saveTespitler(@RequestBody TespitlerRequest tespitlerRequest) {
-        LOG.debug("tespitler kayit/guncelleme islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
-        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
-        LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
-        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
-    }
-
-    /*
         denetime ait denetimtespit kayıtlarını getirir
     */
     @RequestMapping(value = "/list/denetimtespit/{denetimId}", method = RequestMethod.GET)
@@ -229,6 +213,21 @@ public class DenetimResource {
         List<DenetimDTO> denetimDTOList = null;
         denetimDTOList = denetimService.getDenetimList();
         return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
+    }
+
+    /*
+        tespitler kaydedilir
+    */
+    @RequestMapping(value = "/save/tespitler", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> saveTespits(@RequestBody TespitlerRequest tespitlerRequest) {
+        LOG.debug("tespitler kayit/guncelleme islemi yapilacak");
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
+        LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)

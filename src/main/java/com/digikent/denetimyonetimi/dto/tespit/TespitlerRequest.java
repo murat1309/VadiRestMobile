@@ -10,6 +10,7 @@ public class TespitlerRequest implements Serializable {
 
     private Long denetimTespitId;
     List<TespitSaveDTO> tespitSaveDTOList;
+    private Boolean isSave; //ilk kayitta true, güncelleme olursa false gelmesi bekleniyor.
 
     public Long getDenetimTespitId() {
         return denetimTespitId;
@@ -25,5 +26,13 @@ public class TespitlerRequest implements Serializable {
 
     public void setTespitSaveDTOList(List<TespitSaveDTO> tespitSaveDTOList) {
         this.tespitSaveDTOList = tespitSaveDTOList;
+    }
+
+    public Boolean getSave() {
+        return isSave;
+    }
+
+    public void setSave(Boolean save) {
+        isSave = save;
     }
 }

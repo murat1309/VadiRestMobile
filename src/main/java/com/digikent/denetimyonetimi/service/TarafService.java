@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.service;
 
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
+import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -23,17 +24,17 @@ public class TarafService {
     SessionFactory sessionFactory;
 
     @Inject
-    DenetimRepository denetimRepository;
+    DenetimTarafRepository denetimTarafRepository;
 
     @Autowired
     DenetimService denetimService;
 
     public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimId(Long denetimId) {
-        return denetimRepository.findDenetimTespitTarafListByDenetimId(denetimId);
+        return denetimTarafRepository.findDenetimTespitTarafListByDenetimId(denetimId);
     }
 
     public List<BDNTDenetimTespitTaraf> getDenetimTarafListByDenetimIdAndTarafTuru(Long denetimId, String tarafTuru) {
-        return denetimRepository.findDenetimTespitTarafListByDenetimIdAndTarafTuru(denetimId,tarafTuru);
+        return denetimTarafRepository.findDenetimTespitTarafListByDenetimIdAndTarafTuru(denetimId,tarafTuru);
     }
 
 }

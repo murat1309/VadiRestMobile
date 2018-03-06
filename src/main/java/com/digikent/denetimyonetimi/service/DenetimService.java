@@ -2,6 +2,7 @@ package com.digikent.denetimyonetimi.service;
 
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
+import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
 import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
@@ -39,6 +40,9 @@ public class DenetimService {
     SessionFactory sessionFactory;
 
     @Inject
+    DenetimTarafRepository denetimTarafRepository;
+
+    @Inject
     DenetimRepository denetimRepository;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
@@ -46,9 +50,9 @@ public class DenetimService {
         utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest);
         //denetim taraf objelerini setle
         if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() != null) {
-            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false);
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false);
         } else if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() == null) {
-            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true);
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true);
         }
 
         return utilDenetimSaveDTO;
@@ -226,16 +230,22 @@ public class DenetimService {
     }
 
     public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
-        return denetimRepository.saveTespitler(tespitlerRequest);
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        if (tespitlerRequest != null && tespitlerRequest.getSave() == false) {
+            //güncelleme yapılacak
+            LOG.debug("tespitler guncelleme islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
+            utilDenetimSaveDTO = denetimRepository.updateTespitler(tespitlerRequest);
+        } else {
+            //ilk kayit
+            LOG.debug("tespitler kayit islemi yapilacak");
+            utilDenetimSaveDTO = denetimRepository.saveTespitler(tespitlerRequest);
+        }
+
+        return utilDenetimSaveDTO;
     }
 
     public List<DenetimTespitDTO> getDenetimTespitByDenetimId(Long denetimId) {
         return denetimRepository.getDenetimTespitListByTespitId(denetimId);
-    }
-
-    @Cacheable(value = "iller", key = "#root.methodName.toString()")
-    public List<IlDTO> getIlList() {
-        return denetimRepository.findIlList();
     }
 
     public DenetimDTO getDenetimById(Long id) {
