@@ -10,7 +10,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
-import com.digikent.denetimyonetimi.service.TarafService;
+import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
 import org.hibernate.*;
@@ -36,7 +36,7 @@ public class DenetimRepository {
     SessionFactory sessionFactory;
 
     @Autowired
-    TarafService tarafService;
+    DenetimTarafService denetimTarafService;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
 
@@ -510,7 +510,7 @@ public class DenetimRepository {
             bpi1Adres.setRre1IlceId(denetimPaydasDTO.getRre1IlceId());
             bpi1Adres.setRre1SiteAdi(denetimPaydasDTO.getSiteAdi());
             bpi1Adres.setSre1SokakId(denetimPaydasDTO.getSre1SokakId());
-            bpi1Adres.setPre1IlId(0l);
+            bpi1Adres.setPre1IlId((denetimPaydasDTO.getPre1IlId() != null ? denetimPaydasDTO.getPre1IlId() : 0l));
             bpi1Adres.setDre1BagBolumId(0l);
             bpi1Adres.setCrDate(new Date());
             bpi1Adres.setCrUser(0l);
@@ -583,6 +583,7 @@ public class DenetimRepository {
             bislIsletmeAdres.setCrUser(1l);
             bislIsletmeAdres.setUpdUser(1l);
             bislIsletmeAdres.setDeleteFlag("H");
+            //TODO il bilgisi setlenmek zorunda
 
             Session session = sessionFactory.openSession();
             session.getTransaction().begin();

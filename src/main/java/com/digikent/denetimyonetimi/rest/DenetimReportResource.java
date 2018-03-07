@@ -1,10 +1,8 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
-import com.digikent.denetimyonetimi.service.AddressService;
 import com.digikent.denetimyonetimi.service.DenetimService;
-import com.digikent.denetimyonetimi.service.ReportService;
-import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
+import com.digikent.denetimyonetimi.service.DenetimReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,7 @@ public class DenetimReportResource {
     DenetimService denetimService;
 
     @Autowired
-    ReportService reportService;
+    DenetimReportService denetimReportService;
 
     /**
      * Ceza Denetim Raporunu getirir
@@ -44,7 +42,7 @@ public class DenetimReportResource {
         LOG.debug("/create/ceza REST request");
 
 
-        String htmlContent = reportService.createCezaDenetimReport(denetimTespitId);
+        String htmlContent = denetimReportService.createCezaDenetimReport(denetimTespitId);
         ReportResponse reportResponse = new ReportResponse(htmlContent,null);
 
         return new ResponseEntity<ReportResponse>(reportResponse, OK);
@@ -61,7 +59,7 @@ public class DenetimReportResource {
     public ResponseEntity<ReportResponse> createTutanakDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
         LOG.debug("/create/tutanak REST request");
 
-        String htmlContent = reportService.createCezaDenetimReport(denetimTespitId);
+        String htmlContent = denetimReportService.createCezaDenetimReport(denetimTespitId);
         ReportResponse reportResponse = new ReportResponse(htmlContent,null);
 
         return new ResponseEntity<ReportResponse>(reportResponse, OK);

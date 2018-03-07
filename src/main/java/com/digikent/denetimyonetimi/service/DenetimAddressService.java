@@ -16,9 +16,9 @@ import java.util.List;
  * Created by Kadir on 2.03.2018.
  */
 @Service
-public class AddressService {
+public class DenetimAddressService {
 
-    private final Logger LOG = LoggerFactory.getLogger(AddressService.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimAddressService.class);
 
     @Autowired
     SessionFactory sessionFactory;

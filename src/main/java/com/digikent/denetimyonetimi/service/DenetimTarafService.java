@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * Created by Kadir on 22.02.2018.
  */
 @Service
-public class TarafService {
-    private final Logger LOG = LoggerFactory.getLogger(TarafService.class);
+public class DenetimTarafService {
+    private final Logger LOG = LoggerFactory.getLogger(DenetimTarafService.class);
 
     @Autowired
     SessionFactory sessionFactory;

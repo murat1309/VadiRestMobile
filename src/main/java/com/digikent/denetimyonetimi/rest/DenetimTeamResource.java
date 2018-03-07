@@ -3,10 +3,8 @@ package com.digikent.denetimyonetimi.rest;
 import com.digikent.denetimyonetimi.dto.takim.TeamRequest;
 import com.digikent.denetimyonetimi.dto.takim.TeamResponse;
 import com.digikent.denetimyonetimi.dto.takim.VsynRoleTeamDTO;
-import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.PersonalUniqueRequest;
-import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
-import com.digikent.denetimyonetimi.service.TarafService;
+import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.general.dto.Fsm1UserDTO;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.slf4j.Logger;
@@ -37,7 +35,7 @@ public class DenetimTeamResource {
     private final Logger LOG = LoggerFactory.getLogger(DenetimTeamResource.class);
 
     @Autowired
-    TarafService tarafService;
+    DenetimTarafService denetimTarafService;
 
     /*
         aktif kullanıcının bulunduğu takim bilgilerini getirir
@@ -51,7 +49,7 @@ public class DenetimTeamResource {
 
         TeamResponse teamResponse = new TeamResponse();
         List<VsynRoleTeamDTO> vsynRoleTeamDTOList = null;
-        vsynRoleTeamDTOList = tarafService.getTeamByUserId(teamRequest.getUserId());
+        vsynRoleTeamDTOList = denetimTarafService.getTeamByUserId(teamRequest.getUserId());
 
         if (vsynRoleTeamDTOList == null) {
             teamResponse.setErrorDTO(new ErrorDTO(true,"takim bulunamadi"));
@@ -74,7 +72,7 @@ public class DenetimTeamResource {
         LOG.debug("denetim/team/list/otherusers");
         LOG.debug("mudurluk bilgisine göre kullanici listesi cekilecek");
         List<Fsm1UserDTO> fsm1UserDTOList = new ArrayList<>();
-        fsm1UserDTOList = tarafService.getPersonelListByCurrentUserService(personalUniqueRequest);
+        fsm1UserDTOList = denetimTarafService.getPersonelListByCurrentUserService(personalUniqueRequest);
         LOG.debug("Getirilen kullanici sayisi = " + (fsm1UserDTOList != null ? fsm1UserDTOList.size() : 0));
         return new ResponseEntity<List<Fsm1UserDTO>>(fsm1UserDTOList, OK);
     }

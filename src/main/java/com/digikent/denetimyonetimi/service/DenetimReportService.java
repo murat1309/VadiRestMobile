@@ -31,9 +31,9 @@ import java.util.Map;
  * Created by Kadir on 1.02.2018.
  */
 @Service
-public class ReportService {
+public class DenetimReportService {
 
-    private final Logger LOG = LoggerFactory.getLogger(ReportService.class);
+    private final Logger LOG = LoggerFactory.getLogger(DenetimReportService.class);
 
     @Autowired
     SessionFactory sessionFactory;
@@ -45,7 +45,7 @@ public class ReportService {
     DenetimService denetimService;
 
     @Autowired
-    TarafService tarafService;
+    DenetimTarafService denetimTarafService;
 
     public String createDenetimReport() {
 
@@ -107,7 +107,7 @@ public class ReportService {
 
         BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(denetimTespitId);
         DenetimDTO denetimDTO = denetimService.getDenetimById(bdntDenetimTespit.getDenetimId());
-        List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = tarafService.getDenetimTarafListByDenetimId(bdntDenetimTespit.getDenetimId());
+        List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = denetimTarafService.getDenetimTarafListByDenetimId(bdntDenetimTespit.getDenetimId());
         List<BelediyeUserDTO> belediyeUserDTOList = new ArrayList<>();
 
         denetimDTO.setOlayYeriDaireNoHarf((denetimDTO.getOlayYeriDaireNoHarf() == null ? "" : denetimDTO.getOlayYeriDaireNoHarf()));

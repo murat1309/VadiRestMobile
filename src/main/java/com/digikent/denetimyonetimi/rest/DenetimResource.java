@@ -9,8 +9,8 @@ import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
-import com.digikent.denetimyonetimi.service.AddressService;
-import com.digikent.denetimyonetimi.service.ReportService;
+import com.digikent.denetimyonetimi.service.DenetimAddressService;
+import com.digikent.denetimyonetimi.service.DenetimReportService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
@@ -47,10 +47,10 @@ public class DenetimResource {
     DenetimService denetimService;
 
     @Autowired
-    ReportService reportService;
+    DenetimReportService denetimReportService;
 
     @Autowired
-    AddressService addressService;
+    DenetimAddressService denetimAddressService;
 
     /*
         denetimyonetimi - paydas search by single filter
