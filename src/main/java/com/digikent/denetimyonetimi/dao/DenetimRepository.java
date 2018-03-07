@@ -715,11 +715,13 @@ public class DenetimRepository {
 
         List<DenetimTespitDTO> denetimTespitDTOList = new ArrayList<>();
 
-        String sql = "SELECT ID, " +
+        String sql = "SELECT ID, DENETIMAKSIYONU, " +
                 " LDNTDENETIMTURU_ID AS DENETIMTURUID," +
                 " (SELECT TANIM FROM LDNTDENETIMTURU WHERE BDNTDENETIMTESPIT.LDNTDENETIMTURU_ID = LDNTDENETIMTURU.ID) DENETIMTURUTANIM,\n" +
                 " LDNTTESPITGRUBU_ID AS TESPITGRUBUID," +
                 " (SELECT TANIM FROM LDNTTESPITGRUBU WHERE LDNTTESPITGRUBU.ID = BDNTDENETIMTESPIT.LDNTTESPITGRUBU_ID) TESPITGRUBUTANIM,\n" +
+                " (SELECT RNAME FROM VSYNROLETEAM WHERE ID= (SELECT VSYNROLETEAM_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID)) AS VSYNROLENAME, \n" +
+                " (SELECT ADI ||' '||SOYADI FROM MPI1PAYDAS WHERE ID= (SELECT MPI1PAYDAS_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID)) AS ADISOYADI, \n" +
                 " (SELECT VSYNROLETEAM_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID) AS VSYNROLETEAM_ID\n" +
                 " FROM BDNTDENETIMTESPIT\n" +
                 " WHERE BDNTDENETIMTESPIT.ISACTIVE = 'E' AND BDNTDENETIMTESPIT.BDNTDENETIM_ID = " + denetimId;
@@ -739,6 +741,9 @@ public class DenetimRepository {
             BigDecimal tespitGrubuId = (BigDecimal) map.get("TESPITGRUBUID");
             String tespitGrubuTanim = (String) map.get("TESPITGRUBUTANIM");
             BigDecimal roleTeamId = (BigDecimal) map.get("VSYNROLETEAM_ID");
+            String vsynRoleName = (String) map.get("VSYNROLENAME");
+            String denetimAksiyonu = (String) map.get("DENETIMAKSIYONU");
+            String adiSoyadi = (String) map.get("ADISOYADI");
 
             DenetimTespitDTO denetimTespitDTO = new DenetimTespitDTO();
 
@@ -756,8 +761,18 @@ public class DenetimRepository {
 
             if(denetimTuruTanim != null)
                 denetimTespitDTO.setDenetimTuruAdi(denetimTuruTanim);
+
             if(tespitGrubuTanim != null)
                 denetimTespitDTO.setTespitGrubuAdi(tespitGrubuTanim);
+
+            if(vsynRoleName != null)
+                denetimTespitDTO.setVsynRoleName(vsynRoleName);
+
+            if(denetimAksiyonu != null)
+                denetimTespitDTO.setDenetimAksiyonu(denetimAksiyonu);
+
+            if(adiSoyadi != null)
+                denetimTespitDTO.setPaydasAdiSoyadi(adiSoyadi);
 
             denetimTespitDTO.setDenetimId(denetimId);
 

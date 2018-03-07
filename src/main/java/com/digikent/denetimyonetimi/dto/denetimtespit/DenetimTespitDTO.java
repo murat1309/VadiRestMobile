@@ -12,6 +12,9 @@ public class DenetimTespitDTO {
     private Long tespitGrubuId;
     private String tespitGrubuAdi;
     private Long roleTeamId;
+    private String vsynRoleName;
+    private String denetimAksiyonu;
+    private String paydasAdiSoyadi;
 
     public Long getId() {
         return id;
@@ -67,5 +70,29 @@ public class DenetimTespitDTO {
 
     public void setRoleTeamId(Long roleTeamId) {
         this.roleTeamId = roleTeamId;
+    }
+
+    public String getVsynRoleName() {
+        return vsynRoleName;
+    }
+
+    public void setVsynRoleName(String vsynRoleName) {
+        this.vsynRoleName = vsynRoleName;
+    }
+
+    public String getDenetimAksiyonu() {
+        return denetimAksiyonu;
+    }
+
+    public void setDenetimAksiyonu(String denetimAksiyonu) {
+        this.denetimAksiyonu = denetimAksiyonu;
+    }
+
+    public String getPaydasAdiSoyadi() {
+        return paydasAdiSoyadi;
+    }
+
+    public void setPaydasAdiSoyadi(String paydasAdiSoyadi) {
+        this.paydasAdiSoyadi = paydasAdiSoyadi;
     }
 }
