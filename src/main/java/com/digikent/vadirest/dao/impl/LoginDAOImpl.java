@@ -26,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository("loginDao")
 @Transactional
-public class
-LoginDAOImpl implements LoginDAO {
+public class LoginDAOImpl implements LoginDAO {
 	
 	@Autowired
 	protected SessionFactory sessionFactory;

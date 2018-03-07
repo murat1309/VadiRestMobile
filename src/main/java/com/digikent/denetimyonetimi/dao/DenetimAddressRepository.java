@@ -69,9 +69,20 @@ public class DenetimAddressRepository {
         return mahalleSokakDTOList;
     }
 
-    public List<BelediyeDTO> findBelediyeList() {
+    /**
+     * ilId bilgisi null ise, geçerli ildeki belediyeleri döner
+     * ilId bilgisi nullden farklı ise ilId bilgisine göre ilçeleri döner
+     * @param ilId
+     * @return
+     */
+    public List<BelediyeDTO> findBelediyeList(Long ilId) {
         List<BelediyeDTO> belediyeDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
+        String sql = "";
+        if (ilId != null) {
+            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = " + ilId + " AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        } else {
+            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
+        }
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();

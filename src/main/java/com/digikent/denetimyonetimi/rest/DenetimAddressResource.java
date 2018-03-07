@@ -104,7 +104,19 @@ public class DenetimAddressResource {
     @Transactional
     public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListCurrentCity() {
         LOG.debug("/belediyeler REST request to get belediye list");
-        List<BelediyeDTO> belediyeDTOList = addressService.getBelediyeList();
+        List<BelediyeDTO> belediyeDTOList = addressService.getBelediyeList(null);
+
+        return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
+    }
+
+    /*
+        il Id bilgisine göre belediye listesini getirir
+    */
+    @RequestMapping(value = "/belediyeler/{ilId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListByIl(@PathVariable("ilId") Long ilId) {
+        LOG.debug("/belediyeler REST request to get belediye list. ilId="+ilId);
+        List<BelediyeDTO> belediyeDTOList = addressService.getBelediyeList(ilId);
 
         return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
     }

@@ -64,8 +64,8 @@ public class DenetimTeamResource {
     }
 
     /*
-    denetim takımına kullanıcı eklemek için, müdürlük bazlı kullanıcılar çekilir
-*/
+        denetim takımına kullanıcı eklemek için, müdürlük bazlı kullanıcılar çekilir
+    */
     @RequestMapping(value = "/list/otherusers", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)

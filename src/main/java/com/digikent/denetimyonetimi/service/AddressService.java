@@ -45,9 +45,9 @@ public class AddressService {
      * @return
      */
     @Cacheable(value="belediyeler", key = "#root.methodName")
-    public List<BelediyeDTO> getBelediyeList() {
+    public List<BelediyeDTO> getBelediyeList(Long ilId) {
         LOG.debug("searching getBelediyeList");
-        return denetimAddressRepository.findBelediyeList();
+        return denetimAddressRepository.findBelediyeList(ilId);
     }
 
     /**
