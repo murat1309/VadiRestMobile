@@ -1,10 +1,8 @@
 package com.digikent.denetimyonetimi.rest;
 
-import com.digikent.basvuruyonetimi.dto.DM1IsAkısıAdımDTO;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.service.DenetimDocumentService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +36,13 @@ public class DenetimDocumentController {
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetimPhoto (@PathVariable Long denetimtespitid, @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
         LOG.debug("REST / Denetim Tespiti icin fotograf yuklenecek");
-        LOG.debug("dokuman sayisi = " + uploadfiles.length);
+        LOG.debug("yuklenecek fotograf sayisi = " + uploadfiles.length);
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         try {
             for (int i=0; i<uploadfiles.length; i++) {
-                LOG.debug(i + ".ci foto kaydedilecek. Adi= " + uploadfiles[i].getName());
-                denetimDocumentService.saveDenetimPhotoToDocumentum("BDNTDENETIMTESPIT", denetimtespitid, uploadfiles[i].getBytes());
-                LOG.debug("Kayit gerceklesti. sirasi ve docName = " + i + uploadfiles[i].getName());
+                LOG.debug((i+1) + ".ci foto kaydedilecek. Adi= " + uploadfiles[i].getOriginalFilename());
+                utilDenetimSaveDTO = denetimDocumentService.saveDenetimPhotoToDocumentum("BDNTDENETIMTESPIT", denetimtespitid, uploadfiles[i].getBytes());
+                LOG.debug("Kayit gerceklesti. sirasi ve docName = " + (i+1) + " " + uploadfiles[i].getOriginalFilename());
             }
         } catch (Exception ex) {
             LOG.debug("HATA OLUSTU");

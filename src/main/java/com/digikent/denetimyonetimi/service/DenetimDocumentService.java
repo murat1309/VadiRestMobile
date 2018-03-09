@@ -31,8 +31,9 @@ public class DenetimDocumentService {
 
     public UtilDenetimSaveDTO saveDenetimPhotoToDocumentum(String tableName, Long denetimtespitid, byte[] bytes) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+
         try {
-            basvuruYonetimRepository.saveToDocumentum(tableName, denetimtespitid, bytes);
+            denetimDocumentRepository.saveToDocumentum(tableName, denetimtespitid, bytes);
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true, null, null);
         } catch (Exception e) {
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true,"Fotograf kaydedilirken bir hata olustu"),null);

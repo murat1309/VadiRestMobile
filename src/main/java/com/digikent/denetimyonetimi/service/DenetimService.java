@@ -261,7 +261,7 @@ public class DenetimService {
     }
 
     public List<DenetimDTO> getDenetimList() {
-        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql());
+        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql() + " ORDER BY ID DESC ");
     }
 
     public String getDenetimlerGeneralSql() {
@@ -272,7 +272,7 @@ public class DenetimService {
                 "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
                 "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI,\n" +
                 "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
-                "FROM BDNTDENETIM ORDER BY ID DESC";
+                "FROM BDNTDENETIM ";
         return sql;
     }
 }
