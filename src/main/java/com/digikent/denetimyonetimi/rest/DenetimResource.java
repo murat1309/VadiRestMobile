@@ -231,7 +231,7 @@ public class DenetimResource {
     }
 
     /*
-        tespitler kaydedilir
+        teblig bilgileri kaydedilir (denetimler sayfasında)
     */
     @RequestMapping(value = "/save/teblig", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
