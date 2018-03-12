@@ -37,6 +37,9 @@ public class DenetimPaydasDTO implements Serializable {
     private Long ticaretSicilNo;
     private String vergiDairesi;
     private String siteAdi;
+    private String firmaYetkiliAdi;
+    private String firmaYetkiliSoyadi;
+    private Long firmaYetkiliTC;
 
     public Long getPaydasNo() {
         return paydasNo;
@@ -276,5 +279,29 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setPre1IlId(Long pre1IlId) {
         this.pre1IlId = pre1IlId;
+    }
+
+    public String getFirmaYetkiliAdi() {
+        return firmaYetkiliAdi;
+    }
+
+    public void setFirmaYetkiliAdi(String firmaYetkiliAdi) {
+        this.firmaYetkiliAdi = firmaYetkiliAdi;
+    }
+
+    public String getFirmaYetkiliSoyadi() {
+        return firmaYetkiliSoyadi;
+    }
+
+    public void setFirmaYetkiliSoyadi(String firmaYetkiliSoyadi) {
+        this.firmaYetkiliSoyadi = firmaYetkiliSoyadi;
+    }
+
+    public Long getFirmaYetkiliTC() {
+        return firmaYetkiliTC;
+    }
+
+    public void setFirmaYetkiliTC(Long firmaYetkiliTC) {
+        this.firmaYetkiliTC = firmaYetkiliTC;
     }
 }

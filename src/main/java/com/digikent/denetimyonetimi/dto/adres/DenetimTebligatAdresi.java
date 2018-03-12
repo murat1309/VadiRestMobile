@@ -16,6 +16,7 @@ public class DenetimTebligatAdresi implements Serializable {
     private Long rre1ilceTebligat;
     private Long dre1MahalleTebligat;
     private Long sre1SokakTebligat;
+    private Long pre1IlTebligat;
 
 
     public String getSiteAdiTebligat() {
@@ -88,5 +89,13 @@ public class DenetimTebligatAdresi implements Serializable {
 
     public void setDaireNoSayiTebligat(Long daireNoSayiTebligat) {
         this.daireNoSayiTebligat = daireNoSayiTebligat;
+    }
+
+    public Long getPre1IlTebligat() {
+        return pre1IlTebligat;
+    }
+
+    public void setPre1IlTebligat(Long pre1IlTebligat) {
+        this.pre1IlTebligat = pre1IlTebligat;
     }
 }

@@ -1,15 +1,14 @@
 package com.digikent.denetimyonetimi.dao;
 
-import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
+import com.digikent.denetimyonetimi.enums.TebligSecenegi;
 import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
@@ -47,7 +46,7 @@ public class DenetimRepository {
         BDNTDenetim bdntDenetim = null;
 
         try {
-            //daha önce bir denetimtespştId objesi oluşturulmuşsa güncelleme yapması gerekir.
+            //daha önce bir denetimtespitId objesi oluşturulmuşsa güncelleme yapması gerekir.
             if (denetimRequest.getBdntDenetimId() != null) {
                 LOG.debug("Denetim Guncellemesi paydasID=" + denetimRequest.getDenetimPaydasDTO().getPaydasNo() + " BdntDenetimId=" + denetimRequest.getBdntDenetimId());
                 Object o = session.get(BDNTDenetim.class,denetimRequest.getBdntDenetimId());
@@ -77,11 +76,11 @@ public class DenetimRepository {
         bdntDenetim.setMpi1PaydasId(denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
-        if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("K")) {
+        if (denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_KURUM)) {
             bdntDenetim.setBislIsletmeId(denetimRequest.getIsletmeId());
             //işletme için I, paydaş için P
             bdntDenetim.setDenetimTarafTipi("I");
-        } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase("S")) {
+        } else if(denetimRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
             bdntDenetim.setTcKimlikNo(denetimRequest.getDenetimPaydasDTO().getTcKimlikNo());
             bdntDenetim.setBislIsletmeId(null);
             //işletme için I, paydaş için P
@@ -100,6 +99,7 @@ public class DenetimRepository {
         bdntDenetim.setKapiNoSayiOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getKapiNoSayiOlayYeri());
         bdntDenetim.setRre1IlceOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getRre1IlceOlayYeri());
         bdntDenetim.setSre1SokakOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getSre1SokakOlayYeri());
+        bdntDenetim.setPre1IlOlayYeri(denetimRequest.getDenetimOlayYeriAdresi().getPre1IlOlayYeri());
         //tebligat adresi
         bdntDenetim.setSiteAdiTebligat(denetimRequest.getDenetimTebligatAdresi().getSiteAdiTebligat());
         bdntDenetim.setDaireNoHarfTebligat(denetimRequest.getDenetimTebligatAdresi().getDaireNoHarfTebligat());
@@ -110,6 +110,7 @@ public class DenetimRepository {
         bdntDenetim.setDre1MahalleTebligat(denetimRequest.getDenetimTebligatAdresi().getDre1MahalleTebligat());
         bdntDenetim.setRre1ilceTebligat(denetimRequest.getDenetimTebligatAdresi().getRre1ilceTebligat());
         bdntDenetim.setSre1SokakTebligat(denetimRequest.getDenetimTebligatAdresi().getSre1SokakTebligat());
+        bdntDenetim.setPre1IlTebligat(denetimRequest.getDenetimTebligatAdresi().getPre1IlTebligat());
 
         //role team
         VSYNRoleTeam vsynRoleTeam = new VSYNRoleTeam();
@@ -363,7 +364,7 @@ public class DenetimRepository {
             Session session = sessionFactory.openSession();
             Transaction tx = null;
             tx = session.beginTransaction();
-            if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase("S") && denetimPaydasDTO.getTcKimlikNo() != null) {
+            if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS) && denetimPaydasDTO.getTcKimlikNo() != null) {
                 //şahıs paydaşı
                 //unique lik kontrolü
                 MPI1Paydas mpi1PaydasObj = null;
@@ -390,7 +391,7 @@ public class DenetimRepository {
                     tx.commit();
                     utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
                 }
-            } else if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase("K")) {
+            } else if (denetimPaydasDTO.getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_KURUM)) {
                 //Kurum paydaşı
                 MPI1Paydas mpi1Paydas = new MPI1Paydas();
                 mpi1Paydas.setKayitDurumu("A");
@@ -573,6 +574,7 @@ public class DenetimRepository {
             bislIsletmeAdres.setDre1MahalleId(denetimIsletmeDTO.getDre1MahalleId());
             bislIsletmeAdres.setKapiNoHarf(denetimIsletmeDTO.getKapiNoHarf());
             bislIsletmeAdres.setKapiNoSayi(denetimIsletmeDTO.getKapiNoSayi());
+            bislIsletmeAdres.setPre1IlId(denetimIsletmeDTO.getPre1IlId());
             bislIsletmeAdres.setRre1IlceId(denetimIsletmeDTO.getRre1IlceId());
             bislIsletmeAdres.setSiteAdi(denetimIsletmeDTO.getSiteAdi());
             bislIsletmeAdres.setSre1SokakId(denetimIsletmeDTO.getSre1SokakId());
@@ -583,7 +585,6 @@ public class DenetimRepository {
             bislIsletmeAdres.setCrUser(1l);
             bislIsletmeAdres.setUpdUser(1l);
             bislIsletmeAdres.setDeleteFlag("H");
-            //TODO il bilgisi setlenmek zorunda
 
             Session session = sessionFactory.openSession();
             session.getTransaction().begin();
@@ -960,6 +961,56 @@ public class DenetimRepository {
             LOG.debug("HATA MESAJI = " + ex.getMessage());
         } finally {
             return  bdntDenetimTespitLine;
+        }
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            tx = session.beginTransaction();
+            BDNTDenetim bdntDenetim = null;
+            Criteria criteria = session.createCriteria(BDNTDenetim.class);
+            criteria.add(Restrictions.eq("ID", denetimTebligRequest.getBdntDenetimId()));
+            Object denetimCriteria = criteria.uniqueResult();
+            bdntDenetim = (BDNTDenetim)denetimCriteria;
+            if (bdntDenetim != null) {
+                bdntDenetim.setTebligSecenegi(denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString());
+                if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null
+                        && denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString().equals(TebligSecenegi.DIGER.toString())) {
+                    bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
+                    bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
+                    bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
+                } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null
+                        && denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString().equals(TebligSecenegi.ILGILISI.toString())) {
+                    if (denetimTebligRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
+                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimPaydasDTO().getTcKimlikNo());
+                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimPaydasDTO().getAdi());
+                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimPaydasDTO().getSoyAdi());
+                    } else {
+                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliTC());
+                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliAdi());
+                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliSoyadi());
+                    }
+                } else {
+                    //IMTINA, PAYDASYOK durumları
+                    bdntDenetim.setTebligTC(null);
+                    bdntDenetim.setTebligAdi(null);
+                    bdntDenetim.setTebligSoyadi(null);
+                }
+                session.update(bdntDenetim);
+                tx.commit();
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTebligRequest.getBdntDenetimId());
+            } else {
+                utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,"bdntDenetimID bilgisi bos geldi, denetimID" + denetimTebligRequest.getBdntDenetimId()), null);
+            }
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetim Teblig guncellemesi esnasinda bir hata olustu");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        } finally {
+            return utilDenetimSaveDTO;
         }
     }
 }

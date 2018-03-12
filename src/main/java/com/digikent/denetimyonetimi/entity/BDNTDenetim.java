@@ -34,6 +34,9 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @Column(name = "TCKIMLIKNO")
     private Long tcKimlikNo;
 
+    @Column(name = "PRE1IL_OLAYYERI")
+    private Long pre1IlOlayYeri;
+
     @Column(name = "RRE1ILCE_OLAYYERI")
     private Long rre1IlceOlayYeri;
 
@@ -97,6 +100,9 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @Column(name = "DAIRENOSAYI_OLAYYERI")
     private Long daireNoSayiOlayYeri;
 
+    @Column(name = "PRE1IL_TEBLIGAT")
+    private Long pre1IlTebligat;
+
     @Column(name = "RRE1ILCE_TEBLIGAT")
     private Long rre1ilceTebligat;
 
@@ -117,6 +123,18 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "VSYNROLETEAM_ID")
     private VSYNRoleTeam vsynRoleTeam;
+
+    @Column(name = "TEBLIG_SECENEGI")
+    private String tebligSecenegi;
+
+    @Column(name = "TEBLIG_ADI")
+    private String tebligAdi;
+
+    @Column(name = "TEBLIG_SOYADI")
+    private String tebligSoyadi;
+
+    @Column(name = "TEBLIG_TC")
+    private Long tebligTC;
 
 
     public Long getID() {
@@ -373,5 +391,53 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
 
     public void setVsynRoleTeam(VSYNRoleTeam vsynRoleTeam) {
         this.vsynRoleTeam = vsynRoleTeam;
+    }
+
+    public Long getPre1IlOlayYeri() {
+        return pre1IlOlayYeri;
+    }
+
+    public void setPre1IlOlayYeri(Long pre1IlOlayYeri) {
+        this.pre1IlOlayYeri = pre1IlOlayYeri;
+    }
+
+    public Long getPre1IlTebligat() {
+        return pre1IlTebligat;
+    }
+
+    public void setPre1IlTebligat(Long pre1IlTebligat) {
+        this.pre1IlTebligat = pre1IlTebligat;
+    }
+
+    public String getTebligSecenegi() {
+        return tebligSecenegi;
+    }
+
+    public void setTebligSecenegi(String tebligSecenegi) {
+        this.tebligSecenegi = tebligSecenegi;
+    }
+
+    public String getTebligAdi() {
+        return tebligAdi;
+    }
+
+    public void setTebligAdi(String tebligAdi) {
+        this.tebligAdi = tebligAdi;
+    }
+
+    public String getTebligSoyadi() {
+        return tebligSoyadi;
+    }
+
+    public void setTebligSoyadi(String tebligSoyadi) {
+        this.tebligSoyadi = tebligSoyadi;
+    }
+
+    public Long getTebligTC() {
+        return tebligTC;
+    }
+
+    public void setTebligTC(Long tebligTC) {
+        this.tebligTC = tebligTC;
     }
 }

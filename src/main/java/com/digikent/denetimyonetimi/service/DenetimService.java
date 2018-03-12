@@ -4,10 +4,7 @@ import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
 import com.digikent.denetimyonetimi.dto.adres.*;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTespitRequest;
-import com.digikent.denetimyonetimi.dto.denetim.DenetimTuruDTO;
+import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
@@ -274,5 +271,9 @@ public class DenetimService {
                 "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
                 "FROM BDNTDENETIM ";
         return sql;
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
+        return denetimRepository.saveDenetimTeblig(denetimTebligRequest);
     }
 }

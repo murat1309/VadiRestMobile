@@ -21,6 +21,9 @@ public class BISLIsletmeAdres extends BaseEntity implements Serializable {
     @Column(name = "BISLISLETME_ID")
     private Long bislIsletmeId;
 
+    @Column(name = "PRE1IL_ID")
+    private Long pre1IlId;
+
     @Column(name = "RRE1ILCE_ID")
     private Long rre1IlceId;
 
@@ -222,5 +225,13 @@ public class BISLIsletmeAdres extends BaseEntity implements Serializable {
 
     public void setIletisimAdresiMi(String iletisimAdresiMi) {
         this.iletisimAdresiMi = iletisimAdresiMi;
+    }
+
+    public Long getPre1IlId() {
+        return pre1IlId;
+    }
+
+    public void setPre1IlId(Long pre1IlId) {
+        this.pre1IlId = pre1IlId;
     }
 }

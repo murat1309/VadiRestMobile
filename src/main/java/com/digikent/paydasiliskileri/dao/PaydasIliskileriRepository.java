@@ -1,5 +1,6 @@
 package com.digikent.paydasiliskileri.dao;
 
+import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.dto.*;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
@@ -342,6 +343,9 @@ public class PaydasIliskileriRepository {
                     BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
                     BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
                     BigDecimal pre1IlId = (BigDecimal) map.get("PRE1IL_ID");
+                    BigDecimal firmaYetkiliTCKimlikNo = (BigDecimal) map.get("FIRMAYETKILITCKIMLIKNO");
+                    String firmaYetkiliAdi = (String) map.get("FIRMAYETKILIADI");
+                    String firmaYetkiliSoyadi = (String) map.get("FIRMAYETKILISOYADI");
 
                     if(paydasNo != null)
                         denetimPaydasDTO.setPaydasNo(paydasNo.longValue());
@@ -353,11 +357,11 @@ public class PaydasIliskileriRepository {
                         denetimPaydasDTO.setTelefon(telNo);
                     if(kayitDurumu != null)
                         denetimPaydasDTO.setKayitDurumu(kayitDurumu);
-                    if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
+                    if(unvan != null)
                         denetimPaydasDTO.setUnvan(unvan);
                     if(paydasTuru != null)
                         denetimPaydasDTO.setPaydasTuru(paydasTuru);
-                    if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
+                    if(paydasTuru != null && paydasTuru.equalsIgnoreCase(Constants.PAYDAS_TURU_KURUM)) {
                         if(vergiNo != null)
                             denetimPaydasDTO.setVergiNo(vergiNo);
                         if(izahat != null)
@@ -365,6 +369,17 @@ public class PaydasIliskileriRepository {
                         if(tabelaAdi != null)
                             denetimPaydasDTO.setTabelaAdi(tabelaAdi);
                     }
+                    if(tcKimlikNo != null)
+                        denetimPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
+
+                    //firma yetkilisi
+                    if(firmaYetkiliTCKimlikNo != null)
+                        denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTCKimlikNo.longValue());
+                    if(firmaYetkiliAdi != null)
+                        denetimPaydasDTO.setFirmaYetkiliAdi(firmaYetkiliAdi);
+                    if(firmaYetkiliSoyadi != null)
+                        denetimPaydasDTO.setFirmaYetkiliSoyadi(firmaYetkiliSoyadi);
+
                     //adres
                     if(binaAdi != null)
                         denetimPaydasDTO.setBinaAdi(binaAdi);
@@ -394,8 +409,6 @@ public class PaydasIliskileriRepository {
                         denetimPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
                     if(pre1IlId != null)
                         denetimPaydasDTO.setPre1IlId(pre1IlId.longValue());
-                    if(tcKimlikNo != null)
-                        denetimPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
 
                     denetimPaydasResponseDTO.getResponseDenetimPaydasList().add(denetimPaydasDTO);
                 }

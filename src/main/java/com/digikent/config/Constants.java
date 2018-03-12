@@ -47,6 +47,9 @@ public final class Constants {
     public static final String DENETIM_TARAF_PAYDAS_GOREV = "PAYDASGOREV";
     public static final String DENETIM_TARAF_MEMUR_GOREV = "MEMURGOREV";
 
+    public static final String PAYDAS_TURU_SAHIS = "S";//şahıs
+    public static final String PAYDAS_TURU_KURUM = "K";//Kurum
+
 
 
     private Constants() {

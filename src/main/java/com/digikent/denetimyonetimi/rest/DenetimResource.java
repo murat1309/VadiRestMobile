@@ -230,6 +230,21 @@ public class DenetimResource {
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 
+    /*
+        tespitler kaydedilir
+    */
+    @RequestMapping(value = "/save/teblig", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> saveTespits(@RequestBody DenetimTebligRequest denetimTebligRequest) {
+        LOG.debug("denetim teblig bilgisi kaydedilecek. DenetimID="+denetimTebligRequest.getBdntDenetimId() + " tebligTuru =" +denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString());
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.saveDenetimTeblig(denetimTebligRequest);
+        LOG.debug("denetim teblig kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<Boolean> dene() {

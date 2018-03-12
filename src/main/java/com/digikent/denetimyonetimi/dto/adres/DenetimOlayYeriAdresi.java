@@ -20,6 +20,7 @@ public class DenetimOlayYeriAdresi {
     private String daireNoHarfOlayYeri;
     private Long kapiNoSayiOlayYeri;
     private Long daireNoSayiOlayYeri;
+    private Long pre1IlOlayYeri;
 
     public Long getRre1IlceOlayYeri() {
         return rre1IlceOlayYeri;
@@ -139,5 +140,13 @@ public class DenetimOlayYeriAdresi {
 
     public void setDaireNoSayiOlayYeri(Long daireNoSayiOlayYeri) {
         this.daireNoSayiOlayYeri = daireNoSayiOlayYeri;
+    }
+
+    public Long getPre1IlOlayYeri() {
+        return pre1IlOlayYeri;
+    }
+
+    public void setPre1IlOlayYeri(Long pre1IlOlayYeri) {
+        this.pre1IlOlayYeri = pre1IlOlayYeri;
     }
 }
