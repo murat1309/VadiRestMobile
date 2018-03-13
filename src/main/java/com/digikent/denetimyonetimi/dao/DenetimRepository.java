@@ -692,13 +692,13 @@ public class DenetimRepository {
         return bdntDenetimTespitDB;
     }
 
-    public Map<Long,LDNTTespit> findTespitMapByTespitIdList(List<Long> tespitIdList) {
+    public Map<Long,LDNTTespit> findTespitMapByTespitIdList(Set<Long> tespitIdSet) {
         Session session = sessionFactory.openSession();
         Criteria criteria = session.createCriteria(LDNTTespit.class);
         criteria.add(Restrictions.eq("isActive", true));
         Object[] obj = new Object[] {};
         ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
-        temp.addAll(tespitIdList);
+        temp.addAll(tespitIdSet);
         criteria.add(Restrictions.in("id", temp.toArray()));
         List<LDNTTespit> list = criteria.list();
 
