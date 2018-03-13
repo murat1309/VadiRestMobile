@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Kadir on 1.02.2018.
@@ -166,11 +163,14 @@ public class DenetimReportService {
      * @return
      */
     public List<ReportTespitDTO> getTespitReportData(BDNTDenetimTespit bdntDenetimTespit) {
-        List<Long> tespitIdList = new ArrayList<>();
+        //List<Long> tespitIdList = new ArrayList<>();
+        Set<Long> tespitIdSet = new HashSet<>();
         for (BDNTDenetimTespitLine tespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {
-            tespitIdList.add(tespitLine.getTespitId());
+            if (tespitLine.getIsActive()) {
+                tespitIdSet.add(tespitLine.getTespitId());
+            }
         }
-        Map<Long,LDNTTespit> tespitMap = denetimRepository.findTespitMapByTespitIdList(tespitIdList);
+        Map<Long,LDNTTespit> tespitMap = denetimRepository.findTespitMapByTespitIdList(tespitIdSet);
 
         List<ReportTespitDTO> reportTespitDTOs = new ArrayList<>();
         for (BDNTDenetimTespitLine denetimTespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {
@@ -178,7 +178,7 @@ public class DenetimReportService {
             if (ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_CEZA) || ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_EKBILGI) || ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_TUTANAK)) {
                 ReportTespitDTO reportTespitDTO = new ReportTespitDTO();
                 reportTespitDTO.setTespitAciklamasi(ldntTespit.getTanim());
-                reportTespitDTO.setAciklama((denetimTespitLine.getTextValue() == null ? "" : denetimTespitLine.getTextValue()));
+                reportTespitDTO.setAciklama(denetimTespitLine.getTextValue());
                 reportTespitDTO.setDayanakKanunu(ldntTespit.getLsm2Kanun().getTanim());
                 //tespit secenek türüne göre setleme yapılıyor
                 if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_CHECHBOX) && denetimTespitLine.getStringValue() != null) {

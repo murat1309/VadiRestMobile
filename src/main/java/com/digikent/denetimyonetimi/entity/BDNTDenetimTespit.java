@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.entity;
 
 import com.digikent.domain.BaseEntity;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,6 +40,7 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
     private String izahat;
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit")
+    @Where(clause = "isActive = 'E'")
     List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
 
     public Long getID() {
