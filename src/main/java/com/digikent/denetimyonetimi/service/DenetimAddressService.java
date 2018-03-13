@@ -44,7 +44,7 @@ public class DenetimAddressService {
      * mevcut belediyenin bulunduğu ildeki belediye listesini getirir
      * @return
      */
-    @Cacheable(value="belediyeler", key = "#root.methodName")
+    @Cacheable(value="belediyeler", key = "#ilId")
     public List<BelediyeDTO> getBelediyeList(Long ilId) {
         LOG.debug("searching getBelediyeList");
         return denetimAddressRepository.findBelediyeList(ilId);
