@@ -13,6 +13,7 @@ import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
 import org.hibernate.*;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -665,6 +666,7 @@ public class DenetimRepository {
         Criteria criteria = session.createCriteria(LDNTTespit.class);
         criteria.add(Restrictions.eq("isActive", true));
         criteria.add(Restrictions.eq("tespitGrubuId", tespitGrubuId));
+        criteria.addOrder(Order.asc("sirasi"));
         //Object[] objects = new Object[] { 1l };
         //criteria.add(Restrictions.in("tespitGrubuId", objects));
         List<LDNTTespit> list = criteria.list();
@@ -810,6 +812,10 @@ public class DenetimRepository {
                 String olayYeriDaireNoHarf = (String) map.get("DAIRENOHARF_OLAYYERI");
                 BigDecimal olayYeriKapiNoSayi = (BigDecimal) map.get("KAPINOSAYI_OLAYYERI");
                 BigDecimal olayYeriDaireNoSayi = (BigDecimal) map.get("DAIRENOSAYI_OLAYYERI");
+                String tebligSecenegi = (String) map.get("TEBLIG_SECENEGI");
+                String tebligAdi = (String) map.get("TEBLIG_ADI");
+                String tebligSoyadi = (String) map.get("TEBLIG_SOYADI");
+                BigDecimal tebligTCKimlikNo = (BigDecimal) map.get("TEBLIG_TC");
 
                 if(id != null)
                     denetimDTO.setId(id.longValue());
@@ -837,6 +843,14 @@ public class DenetimRepository {
                     denetimDTO.setOlayYeriKapiNoSayi(olayYeriKapiNoSayi.longValue());
                 if(olayYeriDaireNoSayi != null)
                     denetimDTO.setOlayYeriDaireNoSayi(olayYeriDaireNoSayi.longValue());
+                if(tebligSecenegi != null)
+                    denetimDTO.setTebligSecenegi(tebligSecenegi);
+                if(tebligAdi != null)
+                    denetimDTO.setTebligAdi(tebligAdi);
+                if(tebligSoyadi != null)
+                    denetimDTO.setTebligSoyadi(tebligSoyadi);
+                if(tebligTCKimlikNo != null)
+                    denetimDTO.setTebligTCKimlikNo(tebligTCKimlikNo.longValue());
 
                 denetimDTOList.add(denetimDTO);
             }

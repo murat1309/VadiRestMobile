@@ -20,6 +20,10 @@ public class DenetimDTO {
     private String olayYeriDaireNoHarf;
     private Long olayYeriKapiNoSayi;
     private Long olayYeriDaireNoSayi;
+    private String tebligSecenegi;
+    private String tebligAdi;
+    private String tebligSoyadi;
+    private Long tebligTCKimlikNo;
 
     public Long getId() {
         return id;
@@ -123,5 +127,37 @@ public class DenetimDTO {
 
     public void setOlayYeriSokak(String olayYeriSokak) {
         this.olayYeriSokak = olayYeriSokak;
+    }
+
+    public String getTebligSecenegi() {
+        return tebligSecenegi;
+    }
+
+    public void setTebligSecenegi(String tebligSecenegi) {
+        this.tebligSecenegi = tebligSecenegi;
+    }
+
+    public String getTebligAdi() {
+        return tebligAdi;
+    }
+
+    public void setTebligAdi(String tebligAdi) {
+        this.tebligAdi = tebligAdi;
+    }
+
+    public String getTebligSoyadi() {
+        return tebligSoyadi;
+    }
+
+    public void setTebligSoyadi(String tebligSoyadi) {
+        this.tebligSoyadi = tebligSoyadi;
+    }
+
+    public Long getTebligTCKimlikNo() {
+        return tebligTCKimlikNo;
+    }
+
+    public void setTebligTCKimlikNo(Long tebligTCKimlikNo) {
+        this.tebligTCKimlikNo = tebligTCKimlikNo;
     }
 }

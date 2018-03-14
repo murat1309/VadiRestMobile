@@ -135,11 +135,9 @@ public class DenetimTarafRepository {
         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
         bdntDenetimTespitTaraf.setAdi(vsynMemberShipDTO.getFsm1UserDTO().getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
-        //TODO görevi alanını doğru setle, fsm1usersdaki karşılığını öğren
-        bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_MEMUR_GOREV);
+        bdntDenetimTespitTaraf.setGorevi(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getLhr1GorevTuruDTO().getTanim());
         bdntDenetimTespitTaraf.setIhr1PersonelId(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getId());
         bdntDenetimTespitTaraf.setSoyadi(vsynMemberShipDTO.getFsm1UserDTO().getSoyadi());
-        //TODO taraftürü alanını doğru setle
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
         bdntDenetimTespitTaraf.setIzahat(null);
         bdntDenetimTespitTaraf.setCrDate(new Date());
@@ -155,11 +153,9 @@ public class DenetimTarafRepository {
         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
         bdntDenetimTespitTaraf.setAdi(item.getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
-        //TODO görevi alanını doğru setle, paydaş için karşılığını öğren
-        bdntDenetimTespitTaraf.setGorevi(Constants.DENETIM_TARAF_PAYDAS_GOREV);
+        bdntDenetimTespitTaraf.setGorevi(null);
         bdntDenetimTespitTaraf.setIhr1PersonelId(null);
         bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
-        //TODO taraftürü alanını doğru setle
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
         bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());
         bdntDenetimTespitTaraf.setMpi1PaydasId(item.getPaydasNo());

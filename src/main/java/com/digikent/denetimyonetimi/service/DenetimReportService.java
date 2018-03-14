@@ -3,6 +3,7 @@ package com.digikent.denetimyonetimi.service;
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.velocity.*;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitLine;
@@ -44,50 +45,6 @@ public class DenetimReportService {
     @Autowired
     DenetimTarafService denetimTarafService;
 
-    public String createDenetimReport() {
-
-        /*VelocityEngine ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-
-        ve.init();
-        Template t = ve.getTemplate("templates/template.vm", "UTF-8");
-        VelocityContext vc = new VelocityContext();
-
-        UserDTO userDTO = new UserDTO("Ahmet", "Korkmaz", "12345678901", "+90 212 123 4567");
-        vc.put("userDTO", userDTO);
-
-        DocumentDTO documentDTO = new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369");
-        vc.put("documentDTO", documentDTO);
-
-        LocationDTO locationDTO = new LocationDTO("Batı", "Aydınlı", "Bahar", "36", "12", "23", "44");
-        vc.put("locationDTO", locationDTO);
-
-        List<InformationDTO> informationDTOs = new ArrayList<InformationDTO>();
-        for (int i = 0; i < 2; i++) {
-            informationDTOs.add(new InformationDTO("Araç Marka " + i, "Audi " + i,
-                    "Ekipman eksikliği " + i));
-        }
-        vc.put("informationDTOs", informationDTOs);
-
-        List<ReportTespitDTO> reportTespitDTOs = new ArrayList<ReportTespitDTO>();
-        for (int i = 0; i < 2; i++) {
-            reportTespitDTOs.add(new ReportTespitDTO("Hileli olarak karışık veya standartlara aykırı mal satılması " + i, "50 " + i, " Sebze ve Meyveler ile Yeterli Arz ve Talep Derinliği Bulunan Diğer Malların Ticaretinin Düzenlenmesi Kanunu/Pazar yerleri Yönetmeliği " + i, "5957 " + i,
-                    "Mallara ilişkin künyenin ya da malın kalitesine standardına veya gıda güvenliğine ilişkin belgelerde bilerek değişiklik yapılması, bunların tahrif veya taklit edilmesi ya da bunlarda üçüncü şahısları yanıltıcı ifadelere yer verilmesi" + i));
-        }
-        vc.put("reportTespitDTOs", reportTespitDTOs);
-
-
-
-        StringWriter sw = new StringWriter();
-        t.merge(vc, sw);
-        //System.out.println(sw);*/
-
-        //return sw.toString();
-
-        return "";
-    }
-
     /**
      * Ceza raporu çıktısını html string objesi olarak döndürür
      * @param denetimTespitId
@@ -114,7 +71,6 @@ public class DenetimReportService {
             if (Constants.DENETIM_TARAF_TURU_PAYDAS.equalsIgnoreCase(item.getTarafTuru())) {
                 UserDTO userDTO = new UserDTO();
                 userDTO.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
-                userDTO.setGorevi(item.getGorevi());
                 userDTO.setTckn(item.getTcKimlikNo());
                 userDTO.setTarafTuru(item.getTarafTuru());
                 vc.put("userDTO", userDTO);
@@ -131,6 +87,7 @@ public class DenetimReportService {
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
         vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
         vc.put("reportTespitDTOs", getTespitReportData(bdntDenetimTespit));
+        vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
@@ -196,6 +153,14 @@ public class DenetimReportService {
             }
         }
         return reportTespitDTOs;
+    }
+
+    public TebligEdilenDTO getTebligBilgileri(DenetimDTO denetimDTO) {
+        TebligEdilenDTO tebligEdilenDTO = new TebligEdilenDTO();
+        tebligEdilenDTO.setAdi((denetimDTO.getTebligAdi() == null ? " " : denetimDTO.getTebligAdi()));
+        tebligEdilenDTO.setSoyadi((denetimDTO.getTebligSoyadi() == null ? " " : denetimDTO.getTebligSoyadi()));
+        tebligEdilenDTO.setTCKimlikNo((denetimDTO.getTebligTCKimlikNo() == null ? 0 : denetimDTO.getTebligTCKimlikNo()));
+        return tebligEdilenDTO;
     }
 
 

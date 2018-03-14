@@ -208,30 +208,6 @@
     </div>
 
     <div class="table m">
-        <div class="title"> » Ek Bilgiler</div>
-        #foreach( $informationDTO in $informationDTOs )
-            <div class="row">
-                <div class="cell" style="width: 50%">
-                    <div class="innertable">
-                        <div class="row">
-                            <div class="cell b">Ek Bilgi</div>
-                            <div class="cell">$informationDTO.info</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Değer</div>
-                            <div class="cell">$informationDTO.value</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Açıklama</div>
-                            <div class="cell">$informationDTO.description</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        #end
-    </div>
-
-    <div class="table m">
         <div class="title"> » Tespitler</div>
         #foreach( $tespitDTO in $reportTespitDTOs )
             <div class="row">
@@ -291,15 +267,11 @@
             <div class="cell">Taraf Türü</div>
             <div class="cell">Adı Soyadı</div>
             <div class="cell">TC Kimlik No</div>
-            <div class="cell">Telefon</div>
-            <div class="cell">İmza</div>
         </div>
         <div class="row">
             <div class="cell">$userDTO.tarafTuru</div>
             <div class="cell">$userDTO.adiSoyadi</div>
             <div class="cell">$userDTO.tckn</div>
-            <div class="cell">$userDTO.gorevi</div>
-            <div class="cell">  </div>
         </div>
     </div>
 
@@ -322,6 +294,22 @@
         #end
 
 
+    </div>
+
+    <div class="table m">
+        <div class="title"> » Tebliğ Bilgileri</div>
+        <div class="row header">
+            <div class="cell">Adı</div>
+            <div class="cell">Soyadı</div>
+            <div class="cell">TC Kimlik No</div>
+            <div class="cell">İmza</div>
+        </div>
+        <div class="row">
+            <div class="cell">$tebligEdilenBilgileri.adi</div>
+            <div class="cell">$tebligEdilenBilgileri.soyadi</div>
+            <div class="cell">$tebligEdilenBilgileri.TCKimlikNo</div>
+            <div class="cell"> </div>
+        </div>
     </div>
 
 </div>

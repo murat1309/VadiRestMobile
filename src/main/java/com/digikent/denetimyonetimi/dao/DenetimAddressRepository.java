@@ -79,9 +79,9 @@ public class DenetimAddressRepository {
         List<BelediyeDTO> belediyeDTOList = new ArrayList<>();
         String sql = "";
         if (ilId != null) {
-            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = " + ilId + " AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = " + ilId + " AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         } else {
-            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM ";
+            sql = "SELECT ID,TANIM FROM RRE1ILCE WHERE PRE1IL_ID = (SELECT PRE1IL_ID FROM NSM2PARAMETRE) AND ID > 0  AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish') ";
         }
         List list = new ArrayList<>();
 
@@ -113,7 +113,7 @@ public class DenetimAddressRepository {
 
     public List<MahalleDTO> findMahalleListByBelediyeId(Long belediyeId) {
         List<MahalleDTO> mahalleDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM, RRE1ILCE_ID FROM DRE1MAHALLE WHERE ID > 0 AND RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM, RRE1ILCE_ID FROM DRE1MAHALLE WHERE ID > 0 AND RRE1ILCE_ID=" + belediyeId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -145,7 +145,7 @@ public class DenetimAddressRepository {
 
     public List<SokakDTO> findSokakListByMahalleId(Long mahalleId) {
         List<SokakDTO> sokakDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE ID > 0 AND DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE ID > 0 AND DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -174,7 +174,7 @@ public class DenetimAddressRepository {
 
     public List<MahalleDTO> findMahalleListByCurrentBelediye() {
         List<MahalleDTO> mahalleDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM,RRE1ILCE_ID FROM DRE1MAHALLE WHERE RRE1ILCE_ID = (SELECT RRE1ILCE_ID FROM NSM2PARAMETRE) AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID,TANIM,RRE1ILCE_ID FROM DRE1MAHALLE WHERE RRE1ILCE_ID = (SELECT RRE1ILCE_ID FROM NSM2PARAMETRE) AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -206,7 +206,7 @@ public class DenetimAddressRepository {
 
     public List<IlDTO> findIlList() {
         List<IlDTO> ilDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM FROM PRE1IL WHERE ID > 0 AND NVL(ISACTIVE,'E') = 'E' ORDER BY TANIM";
+        String sql = "SELECT ID, TANIM FROM PRE1IL WHERE ID > 0 AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
