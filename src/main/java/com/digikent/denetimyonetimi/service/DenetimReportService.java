@@ -9,6 +9,8 @@ import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitLine;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
 import com.digikent.denetimyonetimi.entity.LDNTTespit;
+import com.digikent.general.util.UtilOperationSystem;
+import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -21,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -55,6 +60,7 @@ public class DenetimReportService {
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+        ve.setProperty("file.resource.loader.path", "/Users/Serkan/mobil-workspace/VadiRestMobile/src/main/resources/");
         ve.init();
         Template t = ve.getTemplate("templates/template.vm", "UTF-8");
         VelocityContext vc = new VelocityContext();
@@ -88,11 +94,35 @@ public class DenetimReportService {
         vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
         vc.put("reportTespitDTOs", getTespitReportData(bdntDenetimTespit));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
+        vc.put("logoBase64",getBase64String());
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
 
         return sw.toString();
+    }
+
+    /**
+     * DIGIKENT_PATH altındaki logonun base64 halini string olarak döndürür
+     * @return
+     */
+    private String getBase64String() {
+        String logoPath = System.getenv("DIGIKENT_PATH") + "\\logo\\logo.png";
+        if (!UtilOperationSystem.isWindows()) {
+            logoPath = System.getenv("DIGIKENT_PATH") + "/logo/logo.png";
+        }
+
+        File file = new File(logoPath);
+        FileInputStream fs = null;
+        String encodedFile = "";
+        try {
+            encodedFile = new String(Base64.getEncoder().encode(FileUtils.readFileToByteArray(file)));
+        } catch (IOException e) {
+            LOG.debug("Logo getirilirken bir hata olustu");
+            LOG.debug("Logo bulunamamis olabilir.");
+            e.printStackTrace();
+        }
+        return encodedFile;
     }
 
     /**

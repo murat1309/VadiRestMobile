@@ -170,11 +170,37 @@
         }
     }
 
+    .kolon1 {
+        float: left;
+        width: 30%;
+    }
+
+    .kolon2 {
+        float: left;
+        width: 70%;
+    }
+
+    .satir:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
 </style>
 
 <body>
 <div class="wrapper">
     <!-- style="width: 65%; float: left;" -->
+    <div class="satir">
+        <div class="kolon1">
+            <div class="logoHeader"><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64" /></a></td></div>
+        </div>
+        <div class="kolon2">
+            <h3>PENDIK BELEDIYESİ</h3>
+            <h3>CEZA TUTANAĞI</h3>
+        </div>
+    </div>
+
     <div class="table m">
         <div class="title">Tarih/Döküman Bilgileri</div>
         <div class="row header">
