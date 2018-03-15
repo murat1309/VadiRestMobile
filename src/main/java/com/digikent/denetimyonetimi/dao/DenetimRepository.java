@@ -203,7 +203,7 @@ public class DenetimRepository {
     public List<TespitDTO> findTespitDTOListByTespitGrubuId(Long tespitGrubuId) {
 
         List<TespitDTO> tespitDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM,SIRASI,KAYITOZELISMI,SECENEKTURU,AKSIYON,EKSUREVERILEBILIRMI,EKSURE,IZAHAT " +
+        String sql = "SELECT ID,TANIM,SIRASI,KAYITOZELISMI,SECENEKTURU,AKSIYON,EKSUREVERILEBILIRMI,EKSURE,IZAHAT,TUR " +
                 " FROM LDNTTESPIT WHERE ISACTIVE = 'E' AND LDNTTESPITGRUBU_ID = " + tespitGrubuId +
                 " ORDER BY ID ";
         List list = new ArrayList<>();
@@ -227,6 +227,7 @@ public class DenetimRepository {
                 String ekSureVerileblirMi = (String) map.get("EKSUREVERILEBILIRMI");
                 BigDecimal ekSure = (BigDecimal) map.get("EKSURE");
                 BigDecimal sirasi = (BigDecimal) map.get("SIRASI");
+                String tur = (String) map.get("TUR");
 
                 if(id != null)
                     tespitDTO.setId(id.longValue());
@@ -246,6 +247,8 @@ public class DenetimRepository {
                     tespitDTO.setEkSure(ekSure.longValue());
                 if(sirasi != null)
                     tespitDTO.setSirasi(sirasi.longValue());
+                if(tur != null)
+                    tespitDTO.setTur(tur);
 
                 tespitDTOList.add(tespitDTO);
             }
@@ -714,8 +717,6 @@ public class DenetimRepository {
     }
 
     public List<DenetimTespitDTO> getDenetimTespitListByTespitId(Long denetimId) {
-        //TODO medetten sql gelecek
-
         List<DenetimTespitDTO> denetimTespitDTOList = new ArrayList<>();
 
         String sql = "SELECT ID, DENETIMAKSIYONU, " +

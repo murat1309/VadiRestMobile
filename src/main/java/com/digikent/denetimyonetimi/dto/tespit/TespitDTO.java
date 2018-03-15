@@ -21,6 +21,7 @@ public class TespitDTO implements Serializable {
     private String izahat;
     private String tanim;
     private List<SecenekTuruDTO> secenekTuruDTOList = new ArrayList<>();
+    private String tur;
 
     public TespitDTO() {
     }
@@ -133,5 +134,13 @@ public class TespitDTO implements Serializable {
 
     public void setTespitTarifeDTO(TespitTarifeDTO tespitTarifeDTO) {
         this.tespitTarifeDTO = tespitTarifeDTO;
+    }
+
+    public String getTur() {
+        return tur;
+    }
+
+    public void setTur(String tur) {
+        this.tur = tur;
     }
 }

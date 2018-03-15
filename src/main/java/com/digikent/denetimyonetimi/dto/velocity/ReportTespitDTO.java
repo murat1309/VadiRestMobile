@@ -5,6 +5,7 @@ public class ReportTespitDTO {
   private String deger;
   private String dayanakKanunu;
   private String aciklama;
+  private String tur;
 
   public ReportTespitDTO() {
   }
@@ -47,5 +48,13 @@ public class ReportTespitDTO {
 
   public void setAciklama(String aciklama) {
     this.aciklama = aciklama;
+  }
+
+  public String getTur() {
+    return tur;
+  }
+
+  public void setTur(String tur) {
+    this.tur = tur;
   }
 }

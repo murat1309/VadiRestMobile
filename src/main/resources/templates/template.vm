@@ -193,7 +193,7 @@
     <!-- style="width: 65%; float: left;" -->
     <div class="satir">
         <div class="kolon1">
-            <div class="logoHeader"><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64" /></a></td></div>
+            <div class="logoHeader"><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
         </div>
         <div class="kolon2">
             <h3>PENDIK BELEDIYESİ</h3>

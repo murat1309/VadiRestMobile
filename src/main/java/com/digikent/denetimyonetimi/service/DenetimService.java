@@ -123,6 +123,7 @@ public class DenetimService {
         tespitDTO.setEkSureVerilebilirMi(ldntTespit.getEkSureVerilebilirMi());
         tespitDTO.setEkSure((ldntTespit.getEkSure() != null ? ldntTespit.getEkSure().longValue() : null));
         tespitDTO.setSirasi((ldntTespit.getSirasi() != null ? ldntTespit.getSirasi().longValue() : null));
+        tespitDTO.setTur(ldntTespit.getTur());
 
         return tespitDTO;
     }

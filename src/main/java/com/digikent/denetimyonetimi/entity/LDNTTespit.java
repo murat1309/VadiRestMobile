@@ -49,6 +49,9 @@ public class LDNTTespit extends BaseEntity implements Serializable {
     @Column(name = "IZAHAT")
     private String izahat;
 
+    @Column(name = "TUR")
+    private String tur;
+
     public Long getID() {
         return ID;
     }
@@ -135,5 +138,13 @@ public class LDNTTespit extends BaseEntity implements Serializable {
 
     public void setLsm2Kanun(LSM2Kanun lsm2Kanun) {
         this.lsm2Kanun = lsm2Kanun;
+    }
+
+    public String getTur() {
+        return tur;
+    }
+
+    public void setTur(String tur) {
+        this.tur = tur;
     }
 }
