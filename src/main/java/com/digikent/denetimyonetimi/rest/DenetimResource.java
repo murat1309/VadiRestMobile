@@ -3,6 +3,7 @@ package com.digikent.denetimyonetimi.rest;
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
@@ -53,7 +54,7 @@ public class DenetimResource {
     DenetimAddressService denetimAddressService;
 
     /*
-        denetimyonetimi - paydas search by single filter
+        kriterlere göre paydaş araması yapılır
     */
     @RequestMapping(value = "/paydas/search", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
@@ -242,6 +243,35 @@ public class DenetimResource {
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         utilDenetimSaveDTO = denetimService.saveDenetimTeblig(denetimTebligRequest);
         LOG.debug("denetim teblig kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
+    /*
+        kullanıcı denetim tespite başladıktan sonra geri dönüş yapmış,
+        denetimtespit pasife çekilecek
+    */
+    @RequestMapping(value = "/passive/denetimtespit/{denetimTespitId}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> passiveDenetimTespit(@PathVariable("denetimTespitId") Long denetimTespitId) {
+        LOG.debug("denetim tespit iptal edildi. pasife cekilecek. denetimTespitId="+denetimTespitId);
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.setPassiveDenetimTespit(denetimTespitId);
+        LOG.debug("denetim tespit iptal islemi sonucu="+utilDenetimSaveDTO.getSaved());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
+    /*
+        denetim tespit kararını kaydeder (denetimtespit güncelleniyor)
+    */
+    @RequestMapping(value = "/save/karar", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> saveDecide(@RequestBody DenetimTespitKararRequest denetimTespitKararRequest) {
+        LOG.debug("denetim tespit karar bilgisi kaydedilecek. denetimTespitId="+denetimTespitKararRequest.getDenetimTespitId());
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.saveDenetimTespitKarar(denetimTespitKararRequest);
+        LOG.debug("denetim tespit karar kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 

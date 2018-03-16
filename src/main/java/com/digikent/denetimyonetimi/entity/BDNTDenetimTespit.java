@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +39,18 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     @Column(name = "IZAHAT")
     private String izahat;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "SONRAKIDENETIMTARIHI")
+    private Date sonrakiDenetimTarihi = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "KAPAMABASLANGICTARIHI")
+    private Date kapamaBaslangicTarihi = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "KAPAMABITISTARIHI")
+    private Date kapamaBitisTarihi = new Date();
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit")
     @Where(clause = "isActive = 'E'")
@@ -105,5 +118,29 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setBdntDenetimTespitLineList(List<BDNTDenetimTespitLine> bdntDenetimTespitLineList) {
         this.bdntDenetimTespitLineList = bdntDenetimTespitLineList;
+    }
+
+    public Date getSonrakiDenetimTarihi() {
+        return sonrakiDenetimTarihi;
+    }
+
+    public void setSonrakiDenetimTarihi(Date sonrakiDenetimTarihi) {
+        this.sonrakiDenetimTarihi = sonrakiDenetimTarihi;
+    }
+
+    public Date getKapamaBaslangicTarihi() {
+        return kapamaBaslangicTarihi;
+    }
+
+    public void setKapamaBaslangicTarihi(Date kapamaBaslangicTarihi) {
+        this.kapamaBaslangicTarihi = kapamaBaslangicTarihi;
+    }
+
+    public Date getKapamaBitisTarihi() {
+        return kapamaBitisTarihi;
+    }
+
+    public void setKapamaBitisTarihi(Date kapamaBitisTarihi) {
+        this.kapamaBitisTarihi = kapamaBitisTarihi;
     }
 }

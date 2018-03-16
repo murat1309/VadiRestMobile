@@ -53,7 +53,6 @@ public final class Constants {
     public static final String PAYDAS_TURU_KURUM = "K";//Kurum
 
 
-
     private Constants() {
     }
 }

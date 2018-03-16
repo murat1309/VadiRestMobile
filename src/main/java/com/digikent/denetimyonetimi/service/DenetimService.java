@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
 import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
@@ -277,5 +278,13 @@ public class DenetimService {
 
     public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
         return denetimRepository.saveDenetimTeblig(denetimTebligRequest);
+    }
+
+    public UtilDenetimSaveDTO setPassiveDenetimTespit(Long denetimTespitId) {
+        return denetimRepository.setPassiveDenetimTespit(denetimTespitId);
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest) {
+        return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest);
     }
 }

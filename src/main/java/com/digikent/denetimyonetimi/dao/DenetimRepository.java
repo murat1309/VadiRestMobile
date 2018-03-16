@@ -3,6 +3,7 @@ package com.digikent.denetimyonetimi.dao;
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
@@ -730,7 +731,7 @@ public class DenetimRepository {
                 " (SELECT ADI ||' '||SOYADI FROM MPI1PAYDAS WHERE ID= (SELECT MPI1PAYDAS_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID)) AS ADISOYADI, \n" +
                 " (SELECT VSYNROLETEAM_ID FROM BDNTDENETIM WHERE BDNTDENETIM.ID = BDNTDENETIMTESPIT.BDNTDENETIM_ID) AS VSYNROLETEAM_ID\n" +
                 " FROM BDNTDENETIMTESPIT\n" +
-                " WHERE BDNTDENETIMTESPIT.ISACTIVE = 'E' AND BDNTDENETIMTESPIT.BDNTDENETIM_ID = " + denetimId;
+                " WHERE BDNTDENETIMTESPIT.ISACTIVE = 'E' AND DELETEFLAG='H' AND BDNTDENETIMTESPIT.BDNTDENETIM_ID = " + denetimId;
 
         List<Object> list = new ArrayList<Object>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -1029,5 +1030,60 @@ public class DenetimRepository {
         } finally {
             return utilDenetimSaveDTO;
         }
+    }
+
+    public UtilDenetimSaveDTO setPassiveDenetimTespit(Long denetimTespitId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+
+        try {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            tx = session.beginTransaction();
+            Object o = session.get(BDNTDenetimTespit.class,denetimTespitId);
+            BDNTDenetimTespit bdntDenetimTespit = (BDNTDenetimTespit)o;
+            bdntDenetimTespit.setIsActive(false);
+            bdntDenetimTespit.setDeleteFlag("E");
+            bdntDenetimTespit.setUpdDate(new Date());
+            //TODO user doğrusunu setle
+            bdntDenetimTespit.setUpdUser(0l);
+            session.update(bdntDenetimTespit);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
+            tx.commit();
+            session.close();
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetimTespit pasife cekilirken bir hata olustu. bdntDenetimTespit="+denetimTespitId);
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        }
+        return utilDenetimSaveDTO;
+    }
+
+    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+
+        try {
+            Session session = sessionFactory.openSession();
+            Transaction tx = null;
+            tx = session.beginTransaction();
+            Object o = session.get(BDNTDenetimTespit.class,denetimTespitKararRequest.getDenetimTespitId());
+            BDNTDenetimTespit bdntDenetimTespit = (BDNTDenetimTespit)o;
+            bdntDenetimTespit.setDenetimAksiyonu(denetimTespitKararRequest.getAksiyon().toString());
+            bdntDenetimTespit.setVerilenSure(denetimTespitKararRequest.getEkSure());
+            bdntDenetimTespit.setKapamaBaslangicTarihi(denetimTespitKararRequest.getKapamaBaslangicTarihi());
+            bdntDenetimTespit.setKapamaBitisTarihi(denetimTespitKararRequest.getKapamaBitisTarihi());
+            //TODO fiyatı setle
+            bdntDenetimTespit.setUpdDate(new Date());
+            //TODO user doğrusunu setle
+            bdntDenetimTespit.setUpdUser(0l);
+            session.update(bdntDenetimTespit);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
+            tx.commit();
+            session.close();
+        } catch (Exception ex) {
+            LOG.debug("bdntDenetimTespit karar kaydedilirken bir hata olustu. bdntDenetimTespit="+denetimTespitKararRequest.getDenetimTespitId());
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,ex.getMessage()), null);
+        }
+        return utilDenetimSaveDTO;
     }
 }
