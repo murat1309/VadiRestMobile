@@ -60,7 +60,6 @@ public class DenetimReportService {
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-        ve.setProperty("file.resource.loader.path", "/Users/Serkan/mobil-workspace/VadiRestMobile/src/main/resources/");
         ve.init();
         Template t = ve.getTemplate("templates/template.vm", "UTF-8");
         VelocityContext vc = new VelocityContext();
@@ -92,7 +91,8 @@ public class DenetimReportService {
         vc.put("belediyeUserDTOList", belediyeUserDTOList);
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
         vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
-        vc.put("reportTespitDTOs", getTespitReportData(bdntDenetimTespit));
+        vc.put("reportTespitDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_TESPIT));
+        vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
         vc.put("logoBase64",getBase64String());
 
@@ -149,7 +149,7 @@ public class DenetimReportService {
      * @param bdntDenetimTespit
      * @return
      */
-    public List<ReportTespitDTO> getTespitReportData(BDNTDenetimTespit bdntDenetimTespit) {
+    public List<ReportTespitDTO> getTespitReportDataByTespitTur(BDNTDenetimTespit bdntDenetimTespit, String tur) {
         //List<Long> tespitIdList = new ArrayList<>();
         Set<Long> tespitIdSet = new HashSet<>();
         for (BDNTDenetimTespitLine tespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {
@@ -162,7 +162,7 @@ public class DenetimReportService {
         List<ReportTespitDTO> reportTespitDTOs = new ArrayList<>();
         for (BDNTDenetimTespitLine denetimTespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {
             LDNTTespit ldntTespit = tespitMap.get(denetimTespitLine.getTespitId());
-            if (ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_CEZA) || ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_EKBILGI) || ldntTespit.getAksiyon().equalsIgnoreCase(Constants.TESPIT_AKSIYON_TYPE_TUTANAK)) {
+            if (tur != null && tur.equalsIgnoreCase(ldntTespit.getTur())) {
                 ReportTespitDTO reportTespitDTO = new ReportTespitDTO();
                 reportTespitDTO.setTespitAciklamasi(ldntTespit.getTanim());
                 reportTespitDTO.setAciklama(denetimTespitLine.getTextValue());

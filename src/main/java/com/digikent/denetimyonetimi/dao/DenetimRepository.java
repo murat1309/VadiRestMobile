@@ -669,7 +669,9 @@ public class DenetimRepository {
         Criteria criteria = session.createCriteria(LDNTTespit.class);
         criteria.add(Restrictions.eq("isActive", true));
         criteria.add(Restrictions.eq("tespitGrubuId", tespitGrubuId));
+        criteria.addOrder(Order.asc("tur"));
         criteria.addOrder(Order.asc("sirasi"));
+
         //Object[] objects = new Object[] { 1l };
         //criteria.add(Restrictions.in("tespitGrubuId", objects));
         List<LDNTTespit> list = criteria.list();

@@ -1,6 +1,8 @@
 package com.digikent.denetimyonetimi.entity;
 
 import com.digikent.domain.BaseEntity;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,6 +21,7 @@ public class LDNTTespit extends BaseEntity implements Serializable {
     private Long ID;
 
     @ManyToOne
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "LSM2KANUN_ID")
     private LSM2Kanun lsm2Kanun;
 

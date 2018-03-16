@@ -72,10 +72,11 @@ public class DenetimService {
         LOG.debug("searching getTespitDTOListByTespitGrubuId");
         List<SecenekTuruDTO> secenekTuruDTOList = null;
         List<TespitTarifeDTO> tespitTarifeDTOList = null;
+        List<TespitDTO> tespitDTOList = null;
 
         List<LDNTTespit> tespitList = denetimRepository.findTespitListByTespitGrubuId(tespitGrubuId);
-        List<TespitDTO> tespitDTOList = ldntTespitToListTespitDTOList(tespitList);
-        if (tespitDTOList != null) {
+        tespitDTOList = ldntTespitToListTespitDTOList(tespitList);
+        if (tespitDTOList != null && tespitDTOList.size() > 0) {
             secenekTuruDTOList = denetimRepository.findSecenekDTOListByTespitGrubuId(tespitGrubuId);
             tespitTarifeDTOList = getTespitTarifeDTOList(tespitDTOList);
             tespitDTOList = groupingTespitAndTespitTarife(tespitDTOList, tespitTarifeDTOList);

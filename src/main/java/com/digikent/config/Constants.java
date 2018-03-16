@@ -33,7 +33,9 @@ public final class Constants {
 
     public static final String TESPIT_AKSIYON_TYPE_CEZA = "CEZA";
     public static final String TESPIT_AKSIYON_TYPE_TUTANAK = "TUTANAK";
-    public static final String TESPIT_AKSIYON_TYPE_EKBILGI = "EKBILGI";
+
+    public static final String TESPIT_TUR_TESPIT = "TESPIT";
+    public static final String TESPIT_TUR_EKBILGI = "EKBILGI";
 
     public static final String TESPIT_SECENEK_TURU_CHECHBOX = "CHECKBOX";
     public static final String TESPIT_SECENEK_TURU_TEXT = "TEXT";

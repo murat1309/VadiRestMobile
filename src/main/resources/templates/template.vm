@@ -240,15 +240,9 @@
                 <div class="cell" style="width: 50%">
                     <div class="innertable">
                         <div class="row">
-                            <div class="cell b">Açıklamalar</div>
+                            <div class="cell b">Konu</div>
                             <div class="cell">$tespitDTO.tespitAciklamasi</div>
                         </div>
-                        #if ($tespitDTO.aciklama)
-                            <div class="row">
-                                <div class="cell b">Açıklama</div>
-                                <div class="cell">$tespitDTO.aciklama</div>
-                            </div>
-                        #end
                         <div class="row">
                             <div class="cell b">Dayanak Kanunu</div>
                             <div class="cell">$tespitDTO.dayanakKanunu</div>
@@ -257,6 +251,12 @@
                             <div class="cell b">Değer</div>
                             <div class="cell">$tespitDTO.deger</div>
                         </div>
+                        #if ($tespitDTO.aciklama)
+                            <div class="row">
+                                <div class="cell b">Açıklama</div>
+                                <div class="cell">$tespitDTO.aciklama</div>
+                            </div>
+                        #end
                     </div>
                 </div>
             </div>
@@ -264,28 +264,31 @@
     </div>
 
     <div class="table m">
-        <div class="title"> » Ek Bilgiler</div>
-        #foreach( $informationDTO in $informationDTOs )
+        <div class="title"> » Ek Bilgiler </div>
+        #foreach( $ekBilgiDTO in $reportEkBilgiDTOs )
             <div class="row">
                 <div class="cell" style="width: 50%">
                     <div class="innertable">
                         <div class="row">
-                            <div class="cell b">Ek Bilgi</div>
-                            <div class="cell">$informationDTO.info</div>
+                            <div class="cell b">Konu</div>
+                            <div class="cell">$ekBilgiDTO.tespitAciklamasi</div>
                         </div>
                         <div class="row">
                             <div class="cell b">Değer</div>
-                            <div class="cell">$informationDTO.value</div>
+                            <div class="cell">$ekBilgiDTO.deger</div>
                         </div>
-                        <div class="row">
-                            <div class="cell b">Açıklama</div>
-                            <div class="cell">$informationDTO.description</div>
-                        </div>
+                        #if ($ekBilgiDTO.aciklama)
+                            <div class="row">
+                                <div class="cell b">Açıklama</div>
+                                <div class="cell">$ekBilgiDTO.aciklama</div>
+                            </div>
+                        #end
                     </div>
                 </div>
             </div>
         #end
     </div>
+
 
     <div class="table m">
         <div class="title"> » Paydaş</div>
