@@ -625,6 +625,7 @@ public class DenetimRepository {
 
         try {
             if (denetimTespitRequest.getDenetimTespitId() != null) {
+                //denetimtespit te güncelleme yapacak
                 Object o = session.get(BDNTDenetimTespit.class,denetimTespitRequest.getDenetimTespitId());
                 bdntDenetimTespit = (BDNTDenetimTespit)o;
 
@@ -635,6 +636,7 @@ public class DenetimRepository {
                 session.getTransaction().commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTespitRequest.getDenetimTespitId());
             } else {
+                //yeni bir denetimtespit kaydı oluşturuluyor.
                 bdntDenetimTespit = new BDNTDenetimTespit();
                 bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
                 bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
@@ -1046,6 +1048,10 @@ public class DenetimRepository {
             bdntDenetimTespit.setUpdDate(new Date());
             //TODO user doğrusunu setle
             bdntDenetimTespit.setUpdUser(0l);
+            for (BDNTDenetimTespitLine denetimTespitLine: bdntDenetimTespit.getBdntDenetimTespitLineList()) {
+                denetimTespitLine.setIsActive(false);
+                denetimTespitLine.setDeleteFlag("E");
+            }
             session.update(bdntDenetimTespit);
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
             tx.commit();

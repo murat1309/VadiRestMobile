@@ -247,7 +247,7 @@ public class DenetimResource {
     }
 
     /*
-        kullanıcı denetim tespite başladıktan sonra geri dönüş yapmış,
+        kullanıcı denetim tespite başladıktan sonra ve tespit girişlerini kaydettikten sonra geri gönüş yapmak isterse,
         denetimtespit pasife çekilecek
     */
     @RequestMapping(value = "/passive/denetimtespit/{denetimTespitId}", method = RequestMethod.GET)
