@@ -7,6 +7,7 @@ import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitSearchRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
@@ -262,14 +263,30 @@ public class DenetimService {
         }
     }
 
-    public List<DenetimDTO> getDenetimList() {
-        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql() + " ORDER BY ID DESC ");
+    public List<DenetimDTO> getDenetimList(DenetimTespitSearchRequest denetimTespitSearchRequest) {
+        String endOfQuery = "WHERE ROWNUM <= 50 ";
+
+        //inputa kriter girilmişse sorguya eklenir
+        if (denetimTespitSearchRequest.getCriteria() != null)
+            endOfQuery = endOfQuery + " AND (MPI1PAYDAS_ID LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%'" +
+                    " OR TCKIMLIKNO LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%' " +
+                    " OR (SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%') ";
+
+        //tarih seçilmişse tarih kriteri sorguya eklenir
+        if (denetimTespitSearchRequest.getStartDate() != null && denetimTespitSearchRequest.getEndDate() != null) {
+            endOfQuery = endOfQuery + " AND CRDATE BETWEEN TO_DATE('" + denetimTespitSearchRequest.getStartDate() + "','dd-mm-yyyy') AND TO_DATE('" + denetimTespitSearchRequest.getEndDate() + "', 'dd-mm-yyyy') ";
+        }
+
+        endOfQuery = endOfQuery + " ORDER BY CRDATE DESC";
+
+        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql() + endOfQuery);
     }
 
     public String getDenetimlerGeneralSql() {
         String sql = "SELECT \n" +
                 "ID,DENETIMTARIHI,SITEADI_OLAYYERI,BLOKNO_OLAYYERI,KAPINOSAYI_OLAYYERI,KAPINOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DAIRENOHARF_OLAYYERI,TEBLIG_SECENEGI,TEBLIG_ADI,TEBLIG_SOYADI,TEBLIG_TC,  \n" +
                 "(SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) AS PAYDASADI,\n" +
+                "(SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) AS VERGINUMARASI,\n" +
                 "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
                 "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
                 "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI,\n" +

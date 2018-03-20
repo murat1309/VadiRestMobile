@@ -4,6 +4,7 @@ import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitSearchRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
@@ -205,14 +206,28 @@ public class DenetimResource {
     }
 
     /*
-        denetime ait denetimtespit kayıtlarını getirir
+        denetim kayıtlarını getirir
     */
     @RequestMapping(value = "/list/denetimler", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<List<DenetimDTO>> getDenetimList() {
         LOG.debug("REST denetimler geitirilecek");
         List<DenetimDTO> denetimDTOList = null;
-        denetimDTOList = denetimService.getDenetimList();
+        //denetimDTOList = denetimService.getDenetimList();
+        return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
+    }
+
+    /*
+        denetimleri kayıtlarını getirir
+    */
+    @RequestMapping(value = "/list/denetimler/criteria", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<List<DenetimDTO>> getDenetimListByCriteria(@RequestBody DenetimTespitSearchRequest denetimTespitSearchRequest) {
+        LOG.debug("REST denetimler geitirilecek");
+        List<DenetimDTO> denetimDTOList = null;
+        denetimDTOList = denetimService.getDenetimList(denetimTespitSearchRequest);
         return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
     }
 
@@ -247,7 +262,7 @@ public class DenetimResource {
     }
 
     /*
-        kullanıcı denetim tespite başladıktan sonra geri dönüş yapmış,
+        kullanıcı denetim tespite başladıktan sonra ve tespit girişlerini kaydettikten sonra geri gönüş yapmak isterse,
         denetimtespit pasife çekilecek
     */
     @RequestMapping(value = "/passive/denetimtespit/{denetimTespitId}", method = RequestMethod.GET)
