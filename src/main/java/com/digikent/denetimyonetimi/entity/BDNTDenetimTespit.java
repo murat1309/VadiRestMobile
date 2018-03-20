@@ -56,6 +56,9 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
     @Where(clause = "isActive = 'E'")
     List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
 
+    @Column(name = "CEZAMIKTARI")
+    private Long cezaMiktari;
+
     public Long getID() {
         return ID;
     }
@@ -142,5 +145,13 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setKapamaBitisTarihi(Date kapamaBitisTarihi) {
         this.kapamaBitisTarihi = kapamaBitisTarihi;
+    }
+
+    public Long getCezaMiktari() {
+        return cezaMiktari;
+    }
+
+    public void setCezaMiktari(Long cezaMiktari) {
+        this.cezaMiktari = cezaMiktari;
     }
 }

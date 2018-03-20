@@ -642,8 +642,8 @@ public class DenetimRepository {
                 bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
                 bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
                 bdntDenetimTespit.setBdntDenetimTespitLineList(null);
-                //TODO buranın doğru şeylerle setlenmesi lazım
-                bdntDenetimTespit.setDenetimAksiyonu("TUTANAK");
+                //bu aşamada karar verilmedi
+                bdntDenetimTespit.setDenetimAksiyonu(null);
                 bdntDenetimTespit.setIzahat(null);
                 bdntDenetimTespit.setVerilenSure(null);
                 bdntDenetimTespit.setCrDate(new Date());
@@ -1077,7 +1077,8 @@ public class DenetimRepository {
             bdntDenetimTespit.setVerilenSure(denetimTespitKararRequest.getEkSure());
             bdntDenetimTespit.setKapamaBaslangicTarihi(denetimTespitKararRequest.getKapamaBaslangicTarihi());
             bdntDenetimTespit.setKapamaBitisTarihi(denetimTespitKararRequest.getKapamaBitisTarihi());
-            //TODO fiyatı setle
+            bdntDenetimTespit.setCezaMiktari(denetimTespitKararRequest.getCezaMiktari());
+            bdntDenetimTespit.setDenetimAksiyonu(denetimTespitKararRequest.getAksiyon().toString());
             bdntDenetimTespit.setUpdDate(new Date());
             //TODO user doğrusunu setle
             bdntDenetimTespit.setUpdUser(0l);
