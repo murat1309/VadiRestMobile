@@ -17,6 +17,11 @@ public class DenetimTebligatAdresi implements Serializable {
     private Long dre1MahalleTebligat;
     private Long sre1SokakTebligat;
     private Long pre1IlTebligat;
+    private String rre1ilceTebligatAdi;
+    private String dre1MahalleTebligatAdi;
+    private String sre1SokakTebligatAdi;
+    private String pre1IlTebligatAdi;
+
 
 
     public String getSiteAdiTebligat() {
@@ -97,5 +102,37 @@ public class DenetimTebligatAdresi implements Serializable {
 
     public void setPre1IlTebligat(Long pre1IlTebligat) {
         this.pre1IlTebligat = pre1IlTebligat;
+    }
+
+    public String getRre1ilceTebligatAdi() {
+        return rre1ilceTebligatAdi;
+    }
+
+    public void setRre1ilceTebligatAdi(String rre1ilceTebligatAdi) {
+        this.rre1ilceTebligatAdi = rre1ilceTebligatAdi;
+    }
+
+    public String getDre1MahalleTebligatAdi() {
+        return dre1MahalleTebligatAdi;
+    }
+
+    public void setDre1MahalleTebligatAdi(String dre1MahalleTebligatAdi) {
+        this.dre1MahalleTebligatAdi = dre1MahalleTebligatAdi;
+    }
+
+    public String getSre1SokakTebligatAdi() {
+        return sre1SokakTebligatAdi;
+    }
+
+    public void setSre1SokakTebligatAdi(String sre1SokakTebligatAdi) {
+        this.sre1SokakTebligatAdi = sre1SokakTebligatAdi;
+    }
+
+    public String getPre1IlTebligatAdi() {
+        return pre1IlTebligatAdi;
+    }
+
+    public void setPre1IlTebligatAdi(String pre1IlTebligatAdi) {
+        this.pre1IlTebligatAdi = pre1IlTebligatAdi;
     }
 }

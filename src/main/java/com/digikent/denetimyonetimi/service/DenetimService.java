@@ -1,16 +1,13 @@
 package com.digikent.denetimyonetimi.service;
 
-import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
-import com.digikent.denetimyonetimi.dto.adres.*;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitSearchRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
-import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -284,7 +280,7 @@ public class DenetimService {
 
     public String getDenetimlerGeneralSql() {
         String sql = "SELECT \n" +
-                "ID,DENETIMTARIHI,SITEADI_OLAYYERI,BLOKNO_OLAYYERI,KAPINOSAYI_OLAYYERI,KAPINOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DAIRENOHARF_OLAYYERI,TEBLIG_SECENEGI,TEBLIG_ADI,TEBLIG_SOYADI,TEBLIG_TC,  \n" +
+                "ID,DENETIMTARIHI,SITEADI_OLAYYERI,BLOKNO_OLAYYERI,KAPINOSAYI_OLAYYERI,KAPINOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,MPI1PAYDAS_ID,DAIRENOHARF_OLAYYERI,TEBLIG_SECENEGI,TEBLIG_ADI,TEBLIG_SOYADI,TEBLIG_TC,  \n" +
                 "(SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) AS PAYDASADI,\n" +
                 "(SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) AS VERGINUMARASI,\n" +
                 "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
@@ -292,6 +288,84 @@ public class DenetimService {
                 "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI,\n" +
                 "(SELECT RNAME  from VSYNROLETEAM where ID=BDNTDENETIM.VSYNROLETEAM_ID AND rownum = 1) AS TAKIMADI\n" +
                 "FROM BDNTDENETIM ";
+        return sql;
+    }
+
+    public String getDenetimOlayYeriAdresiSql() {
+
+        String sql = "SELECT\n" +
+                "ADANO_OLAYYERI,BLOKNO_OLAYYERI,DAIRENOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DRE1BAGBOLUM_OLAYYERI,\n" +
+                "DRE1MAHALLE_OLAYYERI,ERE1YAPI_OLAYYERI,IRE1PARSEL_OLAYYERI,KAPINOHARF_OLAYYERI,\n" +
+                "KAPINOSAYI_OLAYYERI,PAFTANO_OLAYYERI,PARSELNO_OLAYYERI,PRE1IL_OLAYYERI,RRE1ILCE_OLAYYERI,\n" +
+                "SITEADI_OLAYYERI,SRE1SOKAK_OLAYYERI,\n" +
+                "(SELECT TANIM  from PRE1IL where ID=BDNTDENETIM.PRE1IL_OLAYYERI AND rownum = 1) AS ILADI,\n" +
+                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
+                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
+                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI\n" +
+                "FROM BDNTDENETIM WHERE ID";;
+
+        return sql;
+    }
+
+    public String getDenetimObjectSqlQueryString() {
+        String sql = "SELECT\n" +
+                "ADANO_OLAYYERI,BLOKNO_OLAYYERI,DAIRENOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DRE1BAGBOLUM_OLAYYERI,\n" +
+                "DRE1MAHALLE_OLAYYERI,ERE1YAPI_OLAYYERI,IRE1PARSEL_OLAYYERI,KAPINOHARF_OLAYYERI,\n" +
+                "KAPINOSAYI_OLAYYERI,PAFTANO_OLAYYERI,PARSELNO_OLAYYERI,PRE1IL_OLAYYERI,RRE1ILCE_OLAYYERI,\n" +
+                "SITEADI_OLAYYERI,SRE1SOKAK_OLAYYERI,\n" +
+                "(SELECT TANIM  from PRE1IL where ID=BDNTDENETIM.PRE1IL_OLAYYERI AND rownum = 1) AS OLAYIILADI,\n" +
+                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS OLAYILCEADI,\n" +
+                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS OLAYMAHALLEADI,\n" +
+                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS OLAYSOKAKADI,\n" +
+                "BLOKNO_TEBLIGAT,DAIRENOHARF_TEBLIGAT,DAIRENOSAYI_TEBLIGAT,DRE1MAHALLE_TEBLIGAT,KAPINOHARF_TEBLIGAT,KAPINOSAYI_TEBLIGAT,\n" +
+                "PRE1IL_TEBLIGAT,RRE1ILCE_TEBLIGAT,SITEADI_TEBLIGAT,SRE1SOKAK_TEBLIGAT,\n" +
+                "(SELECT TANIM  from PRE1IL where ID=BDNTDENETIM.PRE1IL_TEBLIGAT AND rownum = 1) AS TEBLIGATILADI,\n" +
+                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_TEBLIGAT AND rownum = 1) AS TEBLIGATILCEADI,\n" +
+                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_TEBLIGAT AND rownum = 1) AS TEBLIGATMAHALLEADI,\n" +
+                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_TEBLIGAT AND rownum = 1) AS TEBLIGATSOKAKADI,\n" +
+                "TEBLIG_ADI,TEBLIG_SECENEGI,TEBLIG_SOYADI,TEBLIG_TC\n" +
+                "FROM BDNTDENETIM WHERE ID = ";;
+
+        return sql;
+    }
+
+//                "paydasNo": 1289644,
+//                "adi": "medet",
+//                "soyAdi": "can",
+//                "unvan": null,
+//                "vergiNo": null,
+//                "telefon": "[ İş:1234568565] ",
+//                "paydasTuru": "S",
+//                "tabelaAdi": null,
+//                "izahat": null,
+//                "kayitDurumu": "A",
+//                "binaAdi": "-",
+//                "kapiNo": "-",
+//                "ilceAdi": "-",
+//                "kapiNoSayi": 2,
+//                "kapiNoHarf": "-",
+//                "daireNoHarf": "-",
+//                "daireNoSayi": 3,
+//                "katSayi": null,
+//                "katHarf": "-",
+//                "blokNo": "1",
+//                "dre1MahalleId": 80010,
+//                "sre1SokakId": 124389,
+//                "rre1IlceId": 10114,
+//                "pre1IlId": 0,
+//                "tcKimlikNo": 12345678903,
+//                "telefonCep": null,
+//                "telefonIs": null,
+//                "ticaretSicilNo": null,
+//                "vergiDairesi": null,
+//                "siteAdi": null,
+//                "firmaYetkiliAdi": null,
+//                "firmaYetkiliSoyadi": null,
+//                "firmaYetkiliTC": null
+
+    public String getDenetimObjectPaydasInfoSqlQueryString() {
+        String sql = "SELECT ADI,SOYADI,TELEFONNUMARASI,UNVAN FROM MPI1PAYDAS WHERE MPI1PAYDAS.ID = ";
+
         return sql;
     }
 
@@ -305,5 +379,11 @@ public class DenetimService {
 
     public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest) {
         return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest);
+    }
+
+    public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO) {
+
+
+        return denetimRepository.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO, getDenetimObjectSqlQueryString(), getDenetimObjectPaydasInfoSqlQueryString());
     }
 }

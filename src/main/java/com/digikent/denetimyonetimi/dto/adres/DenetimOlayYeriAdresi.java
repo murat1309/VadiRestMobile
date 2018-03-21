@@ -21,6 +21,10 @@ public class DenetimOlayYeriAdresi {
     private Long kapiNoSayiOlayYeri;
     private Long daireNoSayiOlayYeri;
     private Long pre1IlOlayYeri;
+    private String pre1IlOlayYeriAdi;
+    private String rre1IlceOlayYeriAdi;
+    private String dre1MahalleOlayYeriAdi;
+    private String sre1SokakOlayYeriAdi;
 
     public Long getRre1IlceOlayYeri() {
         return rre1IlceOlayYeri;
@@ -148,5 +152,37 @@ public class DenetimOlayYeriAdresi {
 
     public void setPre1IlOlayYeri(Long pre1IlOlayYeri) {
         this.pre1IlOlayYeri = pre1IlOlayYeri;
+    }
+
+    public String getPre1IlOlayYeriAdi() {
+        return pre1IlOlayYeriAdi;
+    }
+
+    public void setPre1IlOlayYeriAdi(String pre1IlOlayYeriAdi) {
+        this.pre1IlOlayYeriAdi = pre1IlOlayYeriAdi;
+    }
+
+    public String getRre1IlceOlayYeriAdi() {
+        return rre1IlceOlayYeriAdi;
+    }
+
+    public void setRre1IlceOlayYeriAdi(String rre1IlceOlayYeriAdi) {
+        this.rre1IlceOlayYeriAdi = rre1IlceOlayYeriAdi;
+    }
+
+    public String getDre1MahalleOlayYeriAdi() {
+        return dre1MahalleOlayYeriAdi;
+    }
+
+    public void setDre1MahalleOlayYeriAdi(String dre1MahalleOlayYeriAdi) {
+        this.dre1MahalleOlayYeriAdi = dre1MahalleOlayYeriAdi;
+    }
+
+    public String getSre1SokakOlayYeriAdi() {
+        return sre1SokakOlayYeriAdi;
+    }
+
+    public void setSre1SokakOlayYeriAdi(String sre1SokakOlayYeriAdi) {
+        this.sre1SokakOlayYeriAdi = sre1SokakOlayYeriAdi;
     }
 }

@@ -24,6 +24,7 @@ public class DenetimDTO {
     private String tebligAdi;
     private String tebligSoyadi;
     private Long tebligTCKimlikNo;
+    private Long paydasId;
 
     public Long getId() {
         return id;
@@ -159,5 +160,13 @@ public class DenetimDTO {
 
     public void setTebligTCKimlikNo(Long tebligTCKimlikNo) {
         this.tebligTCKimlikNo = tebligTCKimlikNo;
+    }
+
+    public Long getPaydasId() {
+        return paydasId;
+    }
+
+    public void setPaydasId(Long paydasId) {
+        this.paydasId = paydasId;
     }
 }

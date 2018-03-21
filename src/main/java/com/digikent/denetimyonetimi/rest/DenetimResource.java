@@ -297,4 +297,20 @@ public class DenetimResource {
         return new ResponseEntity<Boolean>(true, OK);
     }
 
+    @RequestMapping(value = "/get/denetimobject", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<DenetimObjectDTO> getDenetimObjectByDenetimAndDenetimTespitId(@RequestBody DenetimObjectRequestDTO denetimObjectRequestDTO) {
+
+        LOG.debug("Rest request to get denetim object with denetim id : " + denetimObjectRequestDTO.getDenetimId());
+        LOG.debug("Rest request to get denetim object with denetim tespit id : " + denetimObjectRequestDTO.getDenetimTespitId());
+        LOG.debug("Rest request to get denetim object with paydas  id : " + denetimObjectRequestDTO.getPaydasId());
+        DenetimObjectDTO denetimObjectDTO;
+
+        denetimObjectDTO = denetimService.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO);
+
+        return new ResponseEntity<DenetimObjectDTO>(denetimObjectDTO, OK);
+    }
+
 }
