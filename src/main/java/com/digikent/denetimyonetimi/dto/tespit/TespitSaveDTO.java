@@ -12,6 +12,7 @@ public class TespitSaveDTO implements Serializable {
     private String secenekTuru;
     private TespitCevapDTO tespitCevap;
     private Long tutari;
+    private Boolean isCezaSelected;
 
     public Long getTespitId() {
         return tespitId;
@@ -51,5 +52,13 @@ public class TespitSaveDTO implements Serializable {
 
     public void setTutari(Long tutari) {
         this.tutari = tutari;
+    }
+
+    public Boolean getCezaSelected() {
+        return isCezaSelected;
+    }
+
+    public void setCezaSelected(Boolean cezaSelected) {
+        isCezaSelected = cezaSelected;
     }
 }

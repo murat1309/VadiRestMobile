@@ -234,33 +234,17 @@
     </div>
 
     <div class="table m">
-        <div class="title"> » Tespitler</div>
-        #foreach( $tespitDTO in $reportTespitDTOs )
-            <div class="row">
-                <div class="cell" style="width: 50%">
-                    <div class="innertable">
-                        <div class="row">
-                            <div class="cell b">Konu</div>
-                            <div class="cell">$tespitDTO.tespitAciklamasi</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Dayanak Kanunu</div>
-                            <div class="cell">$tespitDTO.dayanakKanunu</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Değer</div>
-                            <div class="cell">$tespitDTO.deger</div>
-                        </div>
-                        #if ($tespitDTO.aciklama)
-                            <div class="row">
-                                <div class="cell b">Açıklama</div>
-                                <div class="cell">$tespitDTO.aciklama</div>
-                            </div>
-                        #end
-                    </div>
-                </div>
-            </div>
-        #end
+        <div class="title"> » Paydaş</div>
+        <div class="row header">
+            <div class="cell">Taraf Türü</div>
+            <div class="cell">Adı Soyadı</div>
+            <div class="cell">TC Kimlik No</div>
+        </div>
+        <div class="row">
+            <div class="cell">$userDTO.tarafTuru</div>
+            <div class="cell">$userDTO.adiSoyadi</div>
+            <div class="cell">$userDTO.tckn</div>
+        </div>
     </div>
 
     <div class="table m">
@@ -289,19 +273,34 @@
         #end
     </div>
 
-
     <div class="table m">
-        <div class="title"> » Paydaş</div>
-        <div class="row header">
-            <div class="cell">Taraf Türü</div>
-            <div class="cell">Adı Soyadı</div>
-            <div class="cell">TC Kimlik No</div>
-        </div>
-        <div class="row">
-            <div class="cell">$userDTO.tarafTuru</div>
-            <div class="cell">$userDTO.adiSoyadi</div>
-            <div class="cell">$userDTO.tckn</div>
-        </div>
+        <div class="title"> » Tespitler</div>
+        #foreach( $tespitDTO in $reportTespitDTOs )
+            <div class="row">
+                <div class="cell" style="width: 50%">
+                    <div class="innertable">
+                        <div class="row">
+                            <div class="cell b">Konu</div>
+                            <div class="cell">$tespitDTO.tespitAciklamasi</div>
+                        </div>
+                        <div class="row">
+                            <div class="cell b">Dayanak Kanunu</div>
+                            <div class="cell">$tespitDTO.dayanakKanunu</div>
+                        </div>
+                        <div class="row">
+                            <div class="cell b">Değer</div>
+                            <div class="cell">$tespitDTO.deger</div>
+                        </div>
+                        #if ($tespitDTO.aciklama)
+                            <div class="row">
+                                <div class="cell b">Açıklama</div>
+                                <div class="cell">$tespitDTO.aciklama</div>
+                            </div>
+                        #end
+                    </div>
+                </div>
+            </div>
+        #end
     </div>
 
     <div class="table m">

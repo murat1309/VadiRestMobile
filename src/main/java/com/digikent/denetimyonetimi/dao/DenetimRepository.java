@@ -12,6 +12,7 @@ import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.denetimyonetimi.enums.TebligSecenegi;
+import com.digikent.denetimyonetimi.service.DenetimService;
 import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
@@ -28,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.digikent.denetimyonetimi.enums.TebligSecenegi.*;
+import static com.digikent.denetimyonetimi.service.DenetimService.getDenetimObjectAdresAndTebligSqlQuery;
+import static com.digikent.denetimyonetimi.service.DenetimService.getDenetimObjectPaydasInfoSqlQuery;
 
 /**
  * Created by Kadir on 26.01.2018.
@@ -647,7 +650,7 @@ public class DenetimRepository {
                 bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
                 bdntDenetimTespit.setBdntDenetimTespitLineList(null);
                 //bu aşamada karar verilmedi
-                bdntDenetimTespit.setDenetimAksiyonu("asd");
+                bdntDenetimTespit.setDenetimAksiyonu("BELIRSIZ");
                 bdntDenetimTespit.setIzahat(null);
                 bdntDenetimTespit.setVerilenSure(null);
                 bdntDenetimTespit.setCrDate(new Date());
@@ -1380,68 +1383,74 @@ public class DenetimRepository {
 
     }
 
-    public List getDenetimObjectBDNTDENETIMTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO, String sql) {
+    public List getDenetimObjectBDNTDENETIMTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO) {
 
         List list = new ArrayList<>();
-        sql+=denetimObjectRequestDTO.getDenetimId();
-        Session session = sessionFactory.withOptions().interceptor(null).openSession();
-        SQLQuery query = session.createSQLQuery(sql);
-        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-        list = query.list();
+        String sql = getDenetimObjectAdresAndTebligSqlQuery();
 
-        return list;
-    }
+        try {
+            sql+=denetimObjectRequestDTO.getDenetimId();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
 
-    public List getDenetimObjectMPI1PAYDASTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO, String sql) {
+            return list;
 
-        List list = new ArrayList<>();
-        sql+=denetimObjectRequestDTO.getPaydasId();
-        Session session = sessionFactory.withOptions().interceptor(null).openSession();
-        SQLQuery query = session.createSQLQuery(sql);
-        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-        list = query.list();
-
-        return list;
+        } catch (Exception e) {
+            LOG.debug("Denetim Objesi Adres ve Teblig Bilgileri Cekilirken Bir Hata Olustu. Hata mesaji = " + e.getMessage());
+            return list;
+        }
 
     }
 
+    public List getDenetimObjectMPI1PAYDASTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO) {
 
-    public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO, String sqlDenetimInfo, String sqlPaydasInfo) {
+        List list = new ArrayList<>();
+        String sql = getDenetimObjectPaydasInfoSqlQuery();
 
-        List listDenetimInfo;
+        try {
+            sql+=denetimObjectRequestDTO.getPaydasId();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            return list;
+        } catch (Exception e) {
+            LOG.debug("Denetim Objesi Paydas Info Cekilirken Bir Hata Olustu. hata mesaji = " + e.getMessage());
+            return list;
+        }
+    }
+
+
+    public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO) {
 
         DenetimObjectDTO denetimObjectDTO = new DenetimObjectDTO();
-        DenetimOlayYeriAdresi denetimOlayYeriAdresi;
-        DenetimTebligatAdresi denetimTebligatAdresi;
-        DenetimTebligDTO denetimTebligDTO;
-        DenetimPaydasDTO denetimPaydasDTO;
+        DenetimOlayYeriAdresi denetimOlayYeriAdresi = new DenetimOlayYeriAdresi();
+        DenetimTebligatAdresi denetimTebligatAdresi = new DenetimTebligatAdresi();
+        DenetimTebligDTO denetimTebligDTO = new DenetimTebligDTO();
+        DenetimPaydasDTO denetimPaydasDTO = new DenetimPaydasDTO();
 
-
-        listDenetimInfo = getDenetimObjectBDNTDENETIMTableContents(denetimObjectRequestDTO, sqlDenetimInfo);
+        List listDenetimInfo = getDenetimObjectBDNTDENETIMTableContents(denetimObjectRequestDTO);
         if(!listDenetimInfo.isEmpty()) {
-
             denetimOlayYeriAdresi = setDenetimObjectOlayYeriAdresi(listDenetimInfo);
             denetimTebligatAdresi = setDenetimObjectTebligatAdresi(listDenetimInfo);
             denetimTebligDTO = setDenetimObjectTebligInfo(listDenetimInfo);
-
-
-            denetimObjectDTO.setDenetimOlayYeriAdresi(denetimOlayYeriAdresi);
-            denetimObjectDTO.setDenetimTebligatAdresi(denetimTebligatAdresi);
-            denetimObjectDTO.setDenetimTebligDTO(denetimTebligDTO);
-
         }
 
-        List listPaydasInfo;
-        listPaydasInfo = getDenetimObjectMPI1PAYDASTableContents(denetimObjectRequestDTO, sqlPaydasInfo);
+        List listPaydasInfo = getDenetimObjectMPI1PAYDASTableContents(denetimObjectRequestDTO);
         if(!listPaydasInfo.isEmpty()) {
-
             denetimPaydasDTO = setDenetimObjectPaydasInfo(listPaydasInfo);
-            denetimObjectDTO.setDenetimPaydasDTO(denetimPaydasDTO);
         }
 
-
-
+        denetimObjectDTO.setDenetimOlayYeriAdresi(denetimOlayYeriAdresi);
+        denetimObjectDTO.setDenetimTebligatAdresi(denetimTebligatAdresi);
+        denetimObjectDTO.setDenetimTebligDTO(denetimTebligDTO);
+        denetimObjectDTO.setDenetimPaydasDTO(denetimPaydasDTO);
 
         return denetimObjectDTO;
     }
+
+
 }

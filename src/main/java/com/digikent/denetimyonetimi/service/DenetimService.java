@@ -307,7 +307,7 @@ public class DenetimService {
         return sql;
     }
 
-    public String getDenetimObjectSqlQueryString() {
+    public static String getDenetimObjectAdresAndTebligSqlQuery() {
         String sql = "SELECT\n" +
                 "ADANO_OLAYYERI,BLOKNO_OLAYYERI,DAIRENOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DRE1BAGBOLUM_OLAYYERI,\n" +
                 "DRE1MAHALLE_OLAYYERI,ERE1YAPI_OLAYYERI,IRE1PARSEL_OLAYYERI,KAPINOHARF_OLAYYERI,\n" +
@@ -329,45 +329,12 @@ public class DenetimService {
         return sql;
     }
 
-//                "paydasNo": 1289644,
-//                "adi": "medet",
-//                "soyAdi": "can",
-//                "unvan": null,
-//                "vergiNo": null,
-//                "telefon": "[ İş:1234568565] ",
-//                "paydasTuru": "S",
-//                "tabelaAdi": null,
-//                "izahat": null,
-//                "kayitDurumu": "A",
-//                "binaAdi": "-",
-//                "kapiNo": "-",
-//                "ilceAdi": "-",
-//                "kapiNoSayi": 2,
-//                "kapiNoHarf": "-",
-//                "daireNoHarf": "-",
-//                "daireNoSayi": 3,
-//                "katSayi": null,
-//                "katHarf": "-",
-//                "blokNo": "1",
-//                "dre1MahalleId": 80010,
-//                "sre1SokakId": 124389,
-//                "rre1IlceId": 10114,
-//                "pre1IlId": 0,
-//                "tcKimlikNo": 12345678903,
-//                "telefonCep": null,
-//                "telefonIs": null,
-//                "ticaretSicilNo": null,
-//                "vergiDairesi": null,
-//                "siteAdi": null,
-//                "firmaYetkiliAdi": null,
-//                "firmaYetkiliSoyadi": null,
-//                "firmaYetkiliTC": null
-
-    public String getDenetimObjectPaydasInfoSqlQueryString() {
+    public static String getDenetimObjectPaydasInfoSqlQuery() {
         String sql = "SELECT ADI,SOYADI,TELEFONNUMARASI,UNVAN FROM MPI1PAYDAS WHERE MPI1PAYDAS.ID = ";
 
         return sql;
     }
+
 
     public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
         return denetimRepository.saveDenetimTeblig(denetimTebligRequest);
@@ -384,6 +351,6 @@ public class DenetimService {
     public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO) {
 
 
-        return denetimRepository.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO, getDenetimObjectSqlQueryString(), getDenetimObjectPaydasInfoSqlQueryString());
+        return denetimRepository.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO);
     }
 }

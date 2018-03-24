@@ -153,7 +153,7 @@ public class DenetimTarafRepository {
         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
         bdntDenetimTespitTaraf.setAdi(item.getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
-        bdntDenetimTespitTaraf.setGorevi(null);
+        bdntDenetimTespitTaraf.setGorevi("PAYDAS");
         bdntDenetimTespitTaraf.setIhr1PersonelId(null);
         bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
