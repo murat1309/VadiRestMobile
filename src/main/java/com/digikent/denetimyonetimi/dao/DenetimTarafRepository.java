@@ -123,12 +123,16 @@ public class DenetimTarafRepository {
     }
 
     public List<BDNTDenetimTespitTaraf> findDenetimTespitTarafListByDenetimId(Long denetimId) {
-        Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(BDNTDenetimTespitTaraf.class);
-        criteria.add(Restrictions.eq("bdntDenetimId", denetimId));
-        criteria.add(Restrictions.eq("isActive", true));
-        List<BDNTDenetimTespitTaraf> list = criteria.list();
-        return list;
+        try {
+            Session session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(BDNTDenetimTespitTaraf.class);
+            criteria.add(Restrictions.eq("bdntDenetimId", denetimId));
+            criteria.add(Restrictions.eq("isActive", true));
+            List<BDNTDenetimTespitTaraf> list = criteria.list();
+            return list;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     public BDNTDenetimTespitTaraf createDenetimTespitTarafByMemur(VsynMemberShipDTO vsynMemberShipDTO, Long denetimId) {

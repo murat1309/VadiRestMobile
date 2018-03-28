@@ -3,13 +3,14 @@ package com.digikent.denetimyonetimi.service;
 import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
-import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.velocity.*;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitLine;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
 import com.digikent.denetimyonetimi.entity.LDNTTespit;
+import com.digikent.general.util.ErrorCode;
 import com.digikent.general.util.UtilOperationSystem;
+import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -24,9 +25,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -55,7 +53,9 @@ public class DenetimReportService {
      * @param denetimTespitId
      * @return
      */
-    public String createCezaDenetimReport(Long denetimTespitId) {
+    public ReportResponse createCezaDenetimReport(Long denetimTespitId) {
+
+        ReportResponse reportResponse = new ReportResponse();
 
         VelocityEngine ve = new VelocityEngine();
         ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -65,64 +65,111 @@ public class DenetimReportService {
         VelocityContext vc = new VelocityContext();
 
         BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(denetimTespitId);
+        if (bdntDenetimTespit == null)
+            return throwReportResponse(ErrorCode.ERROR_CODE_501,"denetimTespitId",denetimTespitId);
+
         DenetimDTO denetimDTO = denetimService.getDenetimById(bdntDenetimTespit.getDenetimId());
+        if (denetimDTO == null)
+            return throwReportResponse(ErrorCode.ERROR_CODE_502,"denetimID",bdntDenetimTespit.getDenetimId());
+
         List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList = denetimTarafService.getDenetimTarafListByDenetimId(bdntDenetimTespit.getDenetimId());
-        List<BelediyeUserDTO> belediyeUserDTOList = new ArrayList<>();
+        if (bdntDenetimTespitTarafList == null)
+            return throwReportResponse(ErrorCode.ERROR_CODE_503,"denetimID",bdntDenetimTespit.getDenetimId());
 
         denetimDTO.setOlayYeriDaireNoHarf((denetimDTO.getOlayYeriDaireNoHarf() == null ? "" : denetimDTO.getOlayYeriDaireNoHarf()));
         denetimDTO.setOlayYeriKapiNoHarf((denetimDTO.getOlayYeriKapiNoHarf() == null ? "" : denetimDTO.getOlayYeriKapiNoHarf()));
 
-        for (BDNTDenetimTespitTaraf item: bdntDenetimTespitTarafList) {
-            if (Constants.DENETIM_TARAF_TURU_PAYDAS.equalsIgnoreCase(item.getTarafTuru())) {
-                UserDTO userDTO = new UserDTO();
-                userDTO.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
-                userDTO.setTckn(item.getTcKimlikNo());
-                userDTO.setTarafTuru(item.getTarafTuru());
-                vc.put("userDTO", userDTO);
-            } else if (Constants.DENETIM_TARAF_TURU_BELEDIYE.equalsIgnoreCase(item.getTarafTuru())) {
-                BelediyeUserDTO belediyeUserDTO = new BelediyeUserDTO();
-                belediyeUserDTO.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
-                belediyeUserDTO.setGorevi(item.getGorevi());
-                belediyeUserDTO.setTarafTuru(item.getTarafTuru());
-                belediyeUserDTOList.add(belediyeUserDTO);
-            }
-        }
+        UserDTO paydas = getPaydasByDenetimTarafList(bdntDenetimTespitTarafList);
+        List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
 
-        vc.put("belediyeUserDTOList", belediyeUserDTOList);
+        vc.put("userDTO", paydas);
+        vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
         vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
         vc.put("reportTespitDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_TESPIT));
         vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
-        vc.put("logoBase64",getBase64String());
+        vc.put("logoBase64", getBase64StringLOGO());
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
+        reportResponse.setHtmlContent(sw.toString());
 
-        return sw.toString();
+        return reportResponse;
+    }
+
+    private List<BelediyeUserDTO> getBelediyeUserDTOListByDenetimTarafList(List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList) {
+        List<BelediyeUserDTO> belediyeUserDTOList = new ArrayList<>();
+        for (BDNTDenetimTespitTaraf item: bdntDenetimTespitTarafList) {
+            try {
+                if (Constants.DENETIM_TARAF_TURU_BELEDIYE.equalsIgnoreCase(item.getTarafTuru())) {
+                    BelediyeUserDTO belediyeUserDTO = new BelediyeUserDTO();
+                    belediyeUserDTO.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
+                    belediyeUserDTO.setGorevi((item.getGorevi() == null ? " " : item.getGorevi()));
+                    belediyeUserDTO.setTarafTuru((item.getTarafTuru() == null ? " " : item.getTarafTuru()));
+                    belediyeUserDTOList.add(belediyeUserDTO);
+                }
+            } catch (Exception ex) {
+                LOG.error("getBelediyeUserDTOListByDenetimTarafList() hata olustu.  ERROR=" + ex.getMessage());
+                return null;
+            }
+        }
+        return belediyeUserDTOList;
+    }
+
+    private UserDTO getPaydasByDenetimTarafList(List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList) {
+        UserDTO paydas = null;
+        try {
+            for (BDNTDenetimTespitTaraf item: bdntDenetimTespitTarafList) {
+                if (Constants.DENETIM_TARAF_TURU_PAYDAS.equalsIgnoreCase(item.getTarafTuru())) {
+                    paydas = new UserDTO();
+                    paydas.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
+                    paydas.setTckn(item.getTcKimlikNo());
+                    paydas.setTarafTuru(item.getTarafTuru());
+                    return paydas;
+                }
+            }
+        } catch (Exception ex) {
+            LOG.error("getPaydasByDenetimTarafList() hata olustu. ERROR="+ex.getMessage());
+            return null;
+        }
+        return paydas;
+    }
+
+    private ReportResponse throwReportResponse(String errorMessage,String variableId,Long id){
+        LOG.error(errorMessage + ". " + variableId + "=" +id);
+        ReportResponse reportResponse = new ReportResponse();
+        reportResponse.setErrorDTO(new ErrorDTO(true,errorMessage));
+        return reportResponse;
     }
 
     /**
      * DIGIKENT_PATH altındaki logonun base64 halini string olarak döndürür
      * @return
      */
-    private String getBase64String() {
-        String logoPath = System.getenv("DIGIKENT_PATH") + "\\logo\\logo.png";
-        if (!UtilOperationSystem.isWindows()) {
-            logoPath = System.getenv("DIGIKENT_PATH") + "/logo/logo.png";
+    private String getBase64StringLOGO() {
+        try {
+            String logoPath = System.getenv("DIGIKENT_PATH") + "\\logo\\logo.png";
+            if (!UtilOperationSystem.isWindows()) {
+                logoPath = System.getenv("DIGIKENT_PATH") + "/logo/logo.png";
+            }
+
+            File file = new File(logoPath);
+            FileInputStream fs = null;
+            String encodedFile = "";
+            try {
+                encodedFile = new String(Base64.getEncoder().encode(FileUtils.readFileToByteArray(file)));
+            } catch (IOException e) {
+                LOG.debug("Logo getirilirken bir hata olustu");
+                LOG.debug("Logo bulunamamis olabilir.");
+                e.printStackTrace();
+            }
+            return encodedFile;
+        } catch (Exception ex) {
+            LOG.error("getBase64StringLOGO() LOGO getirilirken hata olustu");
+            return null;
         }
 
-        File file = new File(logoPath);
-        FileInputStream fs = null;
-        String encodedFile = "";
-        try {
-            encodedFile = new String(Base64.getEncoder().encode(FileUtils.readFileToByteArray(file)));
-        } catch (IOException e) {
-            LOG.debug("Logo getirilirken bir hata olustu");
-            LOG.debug("Logo bulunamamis olabilir.");
-            e.printStackTrace();
-        }
-        return encodedFile;
     }
 
     /**
@@ -131,17 +178,23 @@ public class DenetimReportService {
      * @return
      */
     private LocationDTO getLocationReportDTOByDenetimDTO(DenetimDTO denetimDTO) {
-        LocationDTO locationDTO = new LocationDTO();
-        if (denetimDTO != null) {
-            locationDTO.getTamAdres();
-            locationDTO.setDaireBilgisi((denetimDTO.getOlayYeriDaireNoSayi() != null ? denetimDTO.getOlayYeriDaireNoSayi().toString() + "/" + denetimDTO.getOlayYeriDaireNoHarf() : denetimDTO.getOlayYeriDaireNoHarf()));
-            locationDTO.setKapiBilgisi((denetimDTO.getOlayYeriKapiNoSayi() != null ? denetimDTO.getOlayYeriKapiNoSayi().toString() + "/" + denetimDTO.getOlayYeriKapiNoHarf() : denetimDTO.getOlayYeriKapiNoHarf()));
-            locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce());
-            locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle());
-            locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak());
+        try {
+            LocationDTO locationDTO = new LocationDTO();
+            if (denetimDTO != null) {
+                locationDTO.getTamAdres();
+                locationDTO.setDaireBilgisi((denetimDTO.getOlayYeriDaireNoSayi() != null ? denetimDTO.getOlayYeriDaireNoSayi().toString() + "/" + denetimDTO.getOlayYeriDaireNoHarf() : denetimDTO.getOlayYeriDaireNoHarf()));
+                locationDTO.setKapiBilgisi((denetimDTO.getOlayYeriKapiNoSayi() != null ? denetimDTO.getOlayYeriKapiNoSayi().toString() + "/" + denetimDTO.getOlayYeriKapiNoHarf() : denetimDTO.getOlayYeriKapiNoHarf()));
+                locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce());
+                locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle());
+                locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak());
+            }
+
+            return locationDTO;
+        } catch (Exception ex) {
+            LOG.error("getLocationReportDTOByDenetimDTO() hata olustu. ERROR="+ex.getMessage());
+            return null;
         }
 
-        return locationDTO;
     }
 
     /**
@@ -158,40 +211,53 @@ public class DenetimReportService {
             }
         }
         Map<Long,LDNTTespit> tespitMap = denetimRepository.findTespitMapByTespitIdList(tespitIdSet);
+        if (tespitMap==null)
+            return null;
 
         List<ReportTespitDTO> reportTespitDTOs = new ArrayList<>();
         for (BDNTDenetimTespitLine denetimTespitLine:bdntDenetimTespit.getBdntDenetimTespitLineList()) {
-            LDNTTespit ldntTespit = tespitMap.get(denetimTespitLine.getTespitId());
-            if (tur != null && tur.equalsIgnoreCase(ldntTespit.getTur())) {
+            try {
+                LDNTTespit ldntTespit = tespitMap.get(denetimTespitLine.getTespitId());
                 ReportTespitDTO reportTespitDTO = new ReportTespitDTO();
-                reportTespitDTO.setTespitAciklamasi(ldntTespit.getTanim());
-                reportTespitDTO.setAciklama(denetimTespitLine.getTextValue());
-                reportTespitDTO.setDayanakKanunu(ldntTespit.getLsm2Kanun().getTanim());
-                reportTespitDTO.setTur(ldntTespit.getTur());
-                //tespit secenek türüne göre setleme yapılıyor
-                if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_CHECHBOX) && denetimTespitLine.getStringValue() != null) {
-                    reportTespitDTO.setDeger(denetimTespitLine.getStringValue());
-                } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_TEXT) && denetimTespitLine.getStringValue() != null) {
-                    reportTespitDTO.setDeger(denetimTespitLine.getStringValue());
-                } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_DATE) && denetimTespitLine.getDateValue() != null) {
-                    reportTespitDTO.setDeger(denetimTespitLine.getDateValue().toString());
-                } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_NUMBER) && denetimTespitLine.getNumberValue() != null) {
-                    reportTespitDTO.setDeger(denetimTespitLine.getNumberValue().toString());
-                } else {
-                    reportTespitDTO.setDeger(" ");
+                if (tur != null && tur.equalsIgnoreCase(ldntTespit.getTur())) {
+                    reportTespitDTO.setTespitAciklamasi(ldntTespit.getTanim());
+                    reportTespitDTO.setAciklama(denetimTespitLine.getTextValue());
+                    reportTespitDTO.setDayanakKanunu(ldntTespit.getLsm2Kanun().getTanim());
+                    reportTespitDTO.setTur(ldntTespit.getTur());
+                    //tespit secenek türüne göre setleme yapılıyor
+                    if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_CHECHBOX) && denetimTespitLine.getStringValue() != null) {
+                        reportTespitDTO.setDeger(denetimTespitLine.getStringValue());
+                    } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_TEXT) && denetimTespitLine.getStringValue() != null) {
+                        reportTespitDTO.setDeger(denetimTespitLine.getStringValue());
+                    } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_DATE) && denetimTespitLine.getDateValue() != null) {
+                        reportTespitDTO.setDeger(denetimTespitLine.getDateValue().toString());
+                    } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_NUMBER) && denetimTespitLine.getNumberValue() != null) {
+                        reportTespitDTO.setDeger(denetimTespitLine.getNumberValue().toString());
+                    } else {
+                        reportTespitDTO.setDeger(" ");
+                    }
+                    reportTespitDTOs.add(reportTespitDTO);
                 }
-                reportTespitDTOs.add(reportTespitDTO);
+            } catch (Exception ex) {
+                LOG.error("getTespitReportDataByTespitTur() setleme problemi yasandi. Pas gecilen tespitLineID=" + denetimTespitLine.getID());
+                LOG.error("HATA="+ex.getMessage());
             }
+
         }
         return reportTespitDTOs;
     }
 
     public TebligEdilenDTO getTebligBilgileri(DenetimDTO denetimDTO) {
-        TebligEdilenDTO tebligEdilenDTO = new TebligEdilenDTO();
-        tebligEdilenDTO.setAdi((denetimDTO.getTebligAdi() == null ? " " : denetimDTO.getTebligAdi()));
-        tebligEdilenDTO.setSoyadi((denetimDTO.getTebligSoyadi() == null ? " " : denetimDTO.getTebligSoyadi()));
-        tebligEdilenDTO.setTCKimlikNo((denetimDTO.getTebligTCKimlikNo() == null ? 0 : denetimDTO.getTebligTCKimlikNo()));
-        return tebligEdilenDTO;
+        try {
+            TebligEdilenDTO tebligEdilenDTO = new TebligEdilenDTO();
+            tebligEdilenDTO.setAdi((denetimDTO.getTebligAdi() == null ? " " : denetimDTO.getTebligAdi()));
+            tebligEdilenDTO.setSoyadi((denetimDTO.getTebligSoyadi() == null ? " " : denetimDTO.getTebligSoyadi()));
+            tebligEdilenDTO.setTCKimlikNo((denetimDTO.getTebligTCKimlikNo() == null ? 0 : denetimDTO.getTebligTCKimlikNo()));
+            return tebligEdilenDTO;
+        } catch (Exception ex) {
+            LOG.error("getTebligBilgileri() hata olustu. TebligTCNO="+denetimDTO.getTebligTCKimlikNo());
+            return null;
+        }
     }
 
 

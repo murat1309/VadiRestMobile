@@ -249,12 +249,17 @@ public class DenetimService {
     }
 
     public DenetimDTO getDenetimById(Long id) {
-        String sql = getDenetimlerGeneralSql();
-        sql = sql + " WHERE ID="+id;
-        List<DenetimDTO> denetimDTOList = denetimRepository.findDenetimListBySql(sql);
-        if (denetimDTOList != null) {
-            return denetimDTOList.get(0);
-        } else {
+        try {
+            String sql = getDenetimlerGeneralSql();
+            sql = sql + " WHERE ID="+id;
+            List<DenetimDTO> denetimDTOList = denetimRepository.findDenetimListBySql(sql);
+            if (denetimDTOList != null) {
+                return denetimDTOList.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception ex) {
+            LOG.error("getDenetimById() hata. denetimID="+id);
             return null;
         }
     }

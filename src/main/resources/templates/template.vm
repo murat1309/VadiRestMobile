@@ -2,7 +2,7 @@
 <style>
     body {
         font-family: "Helvetica Neue", Helvetica, Arial;
-        font-size: 10px;
+        font-size: 15px;
         /*  line-height: 12px; */
         font-weight: 400;
         color: #3b3b3b;
@@ -11,12 +11,7 @@
         /*  background: #2b2b2b; */
     }
 
-    @media screen and (max-width: 200px) {
-        body {
-            font-size: 16px;
-            line-height: 22px;
-        }
-    }
+
 
     /*.wrapper {
         margin: 0 auto;
@@ -35,11 +30,7 @@
         margin: 0 0 10px 0;
     }
 
-    @media screen and (max-width: 200px) {
-        .table {
-            display: block;
-        }
-    }
+
 
     .row {
         display: table-row;
@@ -51,7 +42,7 @@
     }
 
     .row.header {
-        font-weight: 900;
+        font-weight: 600;
         /*color: #ffffff;
       background: #ea6153;*/
     }
@@ -61,36 +52,10 @@
     }
 
     .row.blue {
-        background: #2980b9;
+        background: #ffffff;
     }
 
-    @media screen and (max-width: 200px) {
-        .row {
-            /*      padding: 14px 0 7px; */
-            display: block;
-        }
-        .row.header {
-            padding: 0;
-            height: 6px;
-        }
-        .row.header .cell {
-            display: none;
-        }
-        .row .cell {
-            margin-bottom: 10px;
-        }
-        .row .cell:before {
-            margin-bottom: 3px;
-            content: attr(data-title);
-            min-width: 98px;
-            font-size: 10px;
-            line-height: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #969696;
-            display: block;
-        }
-    }
+
 
     .cell {
         /*  padding: 3px 5px; */
@@ -98,21 +63,7 @@
         border: 1px solid #dadada;
     }
 
-    @media print {
-        .cell {
-            /*      padding: 3px 5px; */
-            display: table-cell;
-            border: 1px solid #eee;
-        }
-    }
 
-    @media screen and (max-width: 200px) {
-        .cell {
-            /*      padding: 2px 16px; */
-            display: block;
-            border: 1px solid #dadada;
-        }
-    }
 
     /* .table-header { */
     /*  padding: 10px; */
@@ -125,17 +76,14 @@
         display: table-caption;
         /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
         padding: 2px 5px;
-        font-weight: 900;
-        color: #ffffff;
-        background: #2980b9;
+        font-weight: 600;
+        color: #000000;
+        border: 2px solid;
+        background: #ffffff;
     }
-    @media print {
-        .title {
-            color: #000;
-        }
-    }
+
     .b {
-        font-weight: 900;
+        font-weight: 600;
     }
 
     .innertable{
@@ -163,12 +111,6 @@
         margin: 0;
     }
 
-    @media print {
-        html, body {
-            width: 115mm;
-            height: 297mm;
-        }
-    }
 
     .kolon1 {
         float: left;
@@ -196,7 +138,7 @@
             <div class="logoHeader"><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
         </div>
         <div class="kolon2">
-            <h3>PENDIK BELEDIYESİ</h3>
+            <h3>BAŞAKŞEHIR BELEDIYESİ</h3>
             <h3>CEZA TUTANAĞI</h3>
         </div>
     </div>
@@ -207,10 +149,12 @@
             <div class="cell">Tarih</div>
             <div class="cell">Tutanak/Döküman No</div>
         </div>
-        <div class="row">
-            <div class="cell">$documentDTO.dateString</div>
-            <div class="cell">$documentDTO.number</div>
-        </div>
+        #if ($documentDTO)
+            <div class="row">
+                <div class="cell">$documentDTO.dateString</div>
+                <div class="cell">$documentDTO.number</div>
+            </div>
+        #end
     </div>
 
     <div class="table m">
@@ -223,13 +167,15 @@
             <div class="cell">Kapı</div>
         </div>
 
-        <div class="row">
-            <div class="cell">$locationDTO.ilceAdi</div>
-            <div class="cell">$locationDTO.mahalleAdi</div>
-            <div class="cell">$locationDTO.sokakAdi</div>
-            <div class="cell">$locationDTO.daireBilgisi</div>
-            <div class="cell">$locationDTO.kapiBilgisi</div>
-        </div>
+        #if ($locationDTO)
+            <div class="row">
+                <div class="cell">$locationDTO.ilceAdi</div>
+                <div class="cell">$locationDTO.mahalleAdi</div>
+                <div class="cell">$locationDTO.sokakAdi</div>
+                <div class="cell">$locationDTO.daireBilgisi</div>
+                <div class="cell">$locationDTO.kapiBilgisi</div>
+            </div>
+        #end
 
     </div>
 
@@ -240,11 +186,13 @@
             <div class="cell">Adı Soyadı</div>
             <div class="cell">TC Kimlik No</div>
         </div>
-        <div class="row">
-            <div class="cell">$userDTO.tarafTuru</div>
-            <div class="cell">$userDTO.adiSoyadi</div>
-            <div class="cell">$userDTO.tckn</div>
-        </div>
+        #if ($userDTO)
+            <div class="row">
+                <div class="cell">$userDTO.tarafTuru</div>
+                <div class="cell">$userDTO.adiSoyadi</div>
+                <div class="cell">$userDTO.tckn</div>
+            </div>
+        #end
     </div>
 
     <div class="table m">
@@ -332,12 +280,14 @@
             <div class="cell">TC Kimlik No</div>
             <div class="cell">İmza</div>
         </div>
-        <div class="row">
-            <div class="cell">$tebligEdilenBilgileri.adi</div>
-            <div class="cell">$tebligEdilenBilgileri.soyadi</div>
-            <div class="cell">$tebligEdilenBilgileri.TCKimlikNo</div>
-            <div class="cell"> </div>
-        </div>
+        #if ($tebligEdilenBilgileri)
+            <div class="row">
+                <div class="cell">$tebligEdilenBilgileri.adi</div>
+                <div class="cell">$tebligEdilenBilgileri.soyadi</div>
+                <div class="cell">$tebligEdilenBilgileri.TCKimlikNo</div>
+                <div class="cell"> </div>
+            </div>
+        #end
     </div>
 
 </div>
