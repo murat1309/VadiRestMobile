@@ -102,6 +102,12 @@ public class DenetimTarafRepository {
                 //paydaş
                 if (denetimRequest.getDenetimPaydasDTO() != null) {
                     DenetimPaydasDTO item = denetimRequest.getDenetimPaydasDTO();
+                    if(item.getAdi() == null)
+                        item.setAdi(" ");
+                    if(item.getSoyAdi() == null)
+                        item.setSoyAdi(" ");
+
+
                     BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByPaydas(item,denetimId);
                     session.save(bdntDenetimTespitTaraf);
                     LOG.debug("Paydas taraf kaydi olusturuldu. paydasID="+item.getPaydasNo());

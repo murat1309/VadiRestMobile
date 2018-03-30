@@ -81,7 +81,7 @@ public class PaydasIliskileriManagementService {
         String query = "";
         DenetimPaydasResponseDTO denetimPaydasResponseDTO = null;
 
-        String baseQuery = "select ID,SORGUADI, TCKIMLIKNO, ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT,PAYDASTURU,TABELAADI,KAYITDURUMU, \n" +
+        String baseQuery = "select ID,SORGUADI, TCKIMLIKNO, ADI,SOYADI,UNVAN,VERGINUMARASI,PI1.F_TELEFONPAYDAS(MPI1PAYDAS.ID) as TELEFON,IZAHAT,PAYDASTURU,TABELAADI,KAYITDURUMU,\n" +
                 "(SELECT DRE1MAHALLE_ID  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS DRE1MAHALLE_ID,\n" +
                 "NVL((SELECT NVL(BINAADI,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS BINAADI,\n" +
                 "NVL((SELECT NVL(BLOKNO,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS BLOKNO,\n" +
@@ -97,12 +97,12 @@ public class PaydasIliskileriManagementService {
                 "(SELECT KATSAYI  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1) AS KATSAYI,\n" +
                 "(SELECT ADI from HPI1FIRMAYETKILI where MPI1PAYDAS_ID=MPI1PAYDAS.ID AND rownum = 1) AS FIRMAYETKILIADI,\n" +
                 "(SELECT SOYADI from HPI1FIRMAYETKILI where MPI1PAYDAS_ID=MPI1PAYDAS.ID AND rownum = 1) AS FIRMAYETKILISOYADI,\n" +
-                "(SELECT TCKIMLIKNO from HPI1FIRMAYETKILI where MPI1PAYDAS_ID=MPI1PAYDAS.ID AND rownum = 1) AS FIRMAYETKILITCKIMLIKNO,\n " +
-                "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KATHARF \n" +
-                "from MPI1PAYDAS  ";
+                "(SELECT TCKIMLIKNO from HPI1FIRMAYETKILI where MPI1PAYDAS_ID=MPI1PAYDAS.ID AND rownum = 1) AS FIRMAYETKILITCKIMLIKNO,\n" +
+                "NVL((SELECT NVL(KATHARF,'-')  from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E' AND rownum = 1),'-') AS KATHARF\n" +
+                "from MPI1PAYDAS where  ((PAYDASTURU = 'S' AND ADI IS NOT NULL AND SOYADI IS NOT NULL AND TCKIMLIKNO IS NOT NULL) OR (PAYDASTURU = 'K' AND UNVAN IS NOT NULL AND VERGINUMARASI IS NOT NULL)) AND ";
 
         if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
-            query = baseQuery + " where ROWNUM <= 20 AND (SORGUADI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
+            query = baseQuery + "  ROWNUM <= 20 AND (SORGUADI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
                     " OR VERGINUMARASI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
                     " OR TCKIMLIKNO LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%')";
         }

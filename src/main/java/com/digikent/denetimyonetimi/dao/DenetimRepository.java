@@ -1,8 +1,6 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.DenetimOlayYeriAdresi;
-import com.digikent.denetimyonetimi.dto.adres.DenetimTebligatAdresi;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
@@ -11,8 +9,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
-import com.digikent.denetimyonetimi.enums.TebligSecenegi;
-import com.digikent.denetimyonetimi.service.DenetimService;
+import com.digikent.denetimyonetimi.enums.DenetimTespitKararAksiyon;
 import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
@@ -29,8 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.digikent.denetimyonetimi.enums.TebligSecenegi.*;
-import static com.digikent.denetimyonetimi.service.DenetimService.getDenetimObjectAdresAndTebligSqlQuery;
-import static com.digikent.denetimyonetimi.service.DenetimService.getDenetimObjectPaydasInfoSqlQuery;
 
 /**
  * Created by Kadir on 26.01.2018.
@@ -650,7 +645,7 @@ public class DenetimRepository {
                 bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
                 bdntDenetimTespit.setBdntDenetimTespitLineList(null);
                 //bu aşamada karar verilmedi
-                bdntDenetimTespit.setDenetimAksiyonu("BELIRSIZ");
+                bdntDenetimTespit.setDenetimAksiyonu(DenetimTespitKararAksiyon.BELIRSIZ.toString());
                 bdntDenetimTespit.setIzahat(null);
                 bdntDenetimTespit.setVerilenSure(null);
                 bdntDenetimTespit.setCrDate(new Date());
@@ -1012,22 +1007,13 @@ public class DenetimRepository {
                     bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
                     bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
                     bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
-                } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null
-                        && denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString().equals(ILGILISI.toString())) {
+                } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null) {
+                    // ILGILISI - IMTINA - PAYDASYOK - > SAHIS || KURUM
                     if (denetimTebligRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
-                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimPaydasDTO().getTcKimlikNo());
-                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimPaydasDTO().getAdi());
-                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimPaydasDTO().getSoyAdi());
-                    } else {
-                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliTC());
-                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliAdi());
-                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimPaydasDTO().getFirmaYetkiliSoyadi());
+                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
+                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
+                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
                     }
-                } else {
-                    //IMTINA, PAYDASYOK durumları
-                    bdntDenetim.setTebligTC(null);
-                    bdntDenetim.setTebligAdi(null);
-                    bdntDenetim.setTebligSoyadi(null);
                 }
                 session.update(bdntDenetim);
                 tx.commit();
@@ -1104,353 +1090,6 @@ public class DenetimRepository {
         return utilDenetimSaveDTO;
     }
 
-    public DenetimOlayYeriAdresi setDenetimObjectOlayYeriAdresi(List list) {
-
-        DenetimOlayYeriAdresi denetimOlayYeriAdresi = new DenetimOlayYeriAdresi();
-
-
-        Object o = list.get(0);
-        Map map = (Map) o;
-
-        BigDecimal rre1IlceOlayYeri = (BigDecimal) map.get("RRE1ILCE_OLAYYERI");
-        BigDecimal dre1MahalleOlayYeri = (BigDecimal) map.get("DRE1MAHALLE_OLAYYERI");
-        BigDecimal sre1SokakOlayYeri = (BigDecimal) map.get("SRE1SOKAK_OLAYYERI");
-        BigDecimal ere1YapiOlayYeri = (BigDecimal) map.get("ERE1YAPI_OLAYYERI");
-        BigDecimal ire1ParselOlayYeri = (BigDecimal) map.get("PARSELNO_OLAYYERI");
-        BigDecimal dre1BagBolumOlayYeri = (BigDecimal) map.get("DRE1BAGBOLUM_OLAYYERI");
-        String paftaOlayYeri = (String) map.get("PAFTANO_OLAYYERI");
-        String adaNoOlayYeri = (String) map.get("ADANO_OLAYYERI");
-        String parselOlayYeri = (String) map.get("IRE1PARSEL_OLAYYERI");
-        String siteAdiOlayYeri = (String) map.get("SITEADI_OLAYYERI");
-        String blokNoOlayYeri = (String) map.get("BLOKNO_OLAYYERI");
-        String kapiNoHarfOlayYeri = (String) map.get("KAPINOHARF_OLAYYERI");
-        String daireNoHarfOlayYeri = (String) map.get("DAIRENOHARF_OLAYYERI");
-        BigDecimal kapiNoSayiOlayYeri = (BigDecimal) map.get("KAPINOSAYI_OLAYYERI");
-        BigDecimal daireNoSayiOlayYeri = (BigDecimal) map.get("DAIRENOSAYI_OLAYYERI");
-        BigDecimal pre1IlOlayYeri = (BigDecimal) map.get("PRE1IL_OLAYYERI");
-        String pre1IlOlayYeriAdi = (String) map.get("OLAYIILADI");
-        String rre1IlceOlayYeriAdi = (String) map.get("OLAYILCEADI");
-        String dre1MahalleOlayYeriAdi = (String) map.get("OLAYMAHALLEADI");
-        String sre1SokakOlayYeriAdi = (String) map.get("OLAYSOKAKADI");
-
-        if(rre1IlceOlayYeri != null)
-            denetimOlayYeriAdresi.setRre1IlceOlayYeri(rre1IlceOlayYeri.longValue());
-        if(dre1MahalleOlayYeri != null)
-            denetimOlayYeriAdresi.setDre1MahalleOlayYeri(dre1MahalleOlayYeri.longValue());
-        if(sre1SokakOlayYeri != null)
-            denetimOlayYeriAdresi.setSre1SokakOlayYeri(sre1SokakOlayYeri.longValue());
-        if(ere1YapiOlayYeri != null)
-            denetimOlayYeriAdresi.setEre1YapiOlayYeri(ere1YapiOlayYeri.longValue());
-        if(ire1ParselOlayYeri != null)
-            denetimOlayYeriAdresi.setIre1ParselOlayYeri(ire1ParselOlayYeri.longValue());
-        if(dre1BagBolumOlayYeri != null)
-            denetimOlayYeriAdresi.setDre1BagBolumOlayYeri(dre1BagBolumOlayYeri.longValue());
-        if (paftaOlayYeri != null) {
-            denetimOlayYeriAdresi.setPaftaOlayYeri(paftaOlayYeri);
-        }
-        if (adaNoOlayYeri != null) {
-            denetimOlayYeriAdresi.setAdaNoOlayYeri(adaNoOlayYeri);
-        }
-        if (siteAdiOlayYeri != null) {
-            denetimOlayYeriAdresi.setSiteAdiOlayYeri(siteAdiOlayYeri);
-        }
-        if (blokNoOlayYeri != null) {
-            denetimOlayYeriAdresi.setBlokNoOlayYeri(blokNoOlayYeri);
-        }
-        if (kapiNoHarfOlayYeri != null) {
-            denetimOlayYeriAdresi.setKapiNoHarfOlayYeri(kapiNoHarfOlayYeri);
-        }
-        if (daireNoHarfOlayYeri != null) {
-            denetimOlayYeriAdresi.setDaireNoHarfOlayYeri(daireNoHarfOlayYeri);
-        }
-        if (kapiNoSayiOlayYeri != null) {
-            denetimOlayYeriAdresi.setKapiNoSayiOlayYeri(kapiNoSayiOlayYeri.longValue());
-        }
-        if (daireNoSayiOlayYeri != null) {
-            denetimOlayYeriAdresi.setDaireNoSayiOlayYeri(daireNoSayiOlayYeri.longValue());
-        }
-        if (pre1IlOlayYeri != null) {
-            denetimOlayYeriAdresi.setPre1IlOlayYeri(pre1IlOlayYeri.longValue());
-        }
-        if (pre1IlOlayYeriAdi != null) {
-            denetimOlayYeriAdresi.setPre1IlOlayYeriAdi(pre1IlOlayYeriAdi);
-        }
-        if (rre1IlceOlayYeriAdi != null) {
-            denetimOlayYeriAdresi.setRre1IlceOlayYeriAdi(rre1IlceOlayYeriAdi);
-        }
-        if (dre1MahalleOlayYeriAdi != null) {
-            denetimOlayYeriAdresi.setDre1MahalleOlayYeriAdi(dre1MahalleOlayYeriAdi);
-        }
-        if (sre1SokakOlayYeriAdi != null) {
-            denetimOlayYeriAdresi.setSre1SokakOlayYeriAdi(sre1SokakOlayYeriAdi);
-        }
-
-
-
-        return denetimOlayYeriAdresi;
-    }
-
-
-    public DenetimTebligatAdresi setDenetimObjectTebligatAdresi(List list) {
-        DenetimTebligatAdresi denetimTebligatAdresi = new DenetimTebligatAdresi();
-
-        Object o = list.get(0);
-        Map map = (Map) o;
-
-        String siteAdiTebligat = (String) map.get("SITEADI_TEBLIGAT");
-        String blokNotebligat = (String) map.get("BLOKNO_TEBLIGAT");
-        String kapiNoHarfTebligat = (String) map.get("KAPINOHARF_TEBLIGAT");
-        BigDecimal kapiNoSayiTebligat = (BigDecimal) map.get("KAPINOSAYI_TEBLIGAT");
-        String daireNoHarfTebligat = (String) map.get("DAIRENOHARF_TEBLIGAT");
-        BigDecimal daireNoSayiTebligat = (BigDecimal) map.get("DAIRENOSAYI_TEBLIGAT");
-        BigDecimal rre1ilceTebligat = (BigDecimal) map.get("RRE1ILCE_TEBLIGAT");
-        BigDecimal dre1MahalleTebligat = (BigDecimal) map.get("DRE1MAHALLE_TEBLIGAT");
-        BigDecimal sre1SokakTebligat = (BigDecimal) map.get("SRE1SOKAK_TEBLIGAT");
-        BigDecimal pre1IlTebligat = (BigDecimal) map.get("PRE1IL_TEBLIGAT");
-        String rre1ilceTebligatAdi = (String) map.get("TEBLIGATILCEADI");
-        String dre1MahalleTebligatAdi = (String) map.get("TEBLIGATMAHALLEADI");
-        String sre1SokakTebligatAdi = (String) map.get("TEBLIGATSOKAKADI");
-        String pre1IlTebligatAdi = (String) map.get("TEBLIGATILADI");
-
-        if (siteAdiTebligat != null)
-            denetimTebligatAdresi.setSiteAdiTebligat(siteAdiTebligat);
-        if (blokNotebligat != null)
-            denetimTebligatAdresi.setBlokNotebligat(blokNotebligat);
-        if (kapiNoHarfTebligat != null)
-            denetimTebligatAdresi.setKapiNoHarfTebligat(kapiNoHarfTebligat);
-        if (kapiNoSayiTebligat != null)
-            denetimTebligatAdresi.setKapiNoSayiTebligat(kapiNoSayiTebligat.longValue());
-        if (daireNoHarfTebligat != null)
-            denetimTebligatAdresi.setDaireNoHarfTebligat(daireNoHarfTebligat);
-        if (daireNoSayiTebligat != null)
-            denetimTebligatAdresi.setDaireNoSayiTebligat(daireNoSayiTebligat.longValue());
-        if (rre1ilceTebligat != null)
-            denetimTebligatAdresi.setRre1ilceTebligat(rre1ilceTebligat.longValue());
-        if (dre1MahalleTebligat != null)
-            denetimTebligatAdresi.setDre1MahalleTebligat(dre1MahalleTebligat.longValue());
-        if (sre1SokakTebligat != null)
-            denetimTebligatAdresi.setSre1SokakTebligat(sre1SokakTebligat.longValue());
-        if (pre1IlTebligat != null)
-            denetimTebligatAdresi.setPre1IlTebligat(pre1IlTebligat.longValue());
-        if (rre1ilceTebligatAdi != null)
-            denetimTebligatAdresi.setRre1ilceTebligatAdi(rre1ilceTebligatAdi);
-        if (dre1MahalleTebligatAdi != null)
-            denetimTebligatAdresi.setDre1MahalleTebligatAdi(dre1MahalleTebligatAdi);
-        if (sre1SokakTebligatAdi != null)
-            denetimTebligatAdresi.setSre1SokakTebligatAdi(sre1SokakTebligatAdi);
-        if (pre1IlTebligatAdi != null)
-            denetimTebligatAdresi.setPre1IlTebligatAdi(pre1IlTebligatAdi);
-
-
-        return denetimTebligatAdresi;
-    }
-
-    public DenetimTebligDTO setDenetimObjectTebligInfo(List list) {
-
-        DenetimTebligDTO denetimTebligDTO = new DenetimTebligDTO();
-
-        Object o = list.get(0);
-        Map map = (Map) o;
-
-        String tebligSecenegi = (String) map.get("TEBLIG_SECENEGI");
-        String tebligAdi = (String) map.get("TEBLIG_ADI");
-        String tebligSoyadi = (String) map.get("TEBLIG_SOYADI");
-        BigDecimal tebligTC = (BigDecimal) map.get("TEBLIG_TC");
-
-        if (tebligSecenegi != null)
-            denetimTebligDTO.setTebligSecenegi(TebligSecenegi.valueOf(tebligSecenegi));
-        if (tebligAdi != null)
-            denetimTebligDTO.setTebligAdi(tebligAdi);
-        if (tebligSoyadi != null)
-            denetimTebligDTO.setTebligSoyadi(tebligSoyadi);
-        if (tebligTC != null)
-            denetimTebligDTO.setTebligTC(tebligTC.longValue());
-
-        return denetimTebligDTO;
-
-    }
-
-    public DenetimPaydasDTO setDenetimObjectPaydasInfo(List list) {
-
-        DenetimPaydasDTO denetimPaydasDTO = new DenetimPaydasDTO();
-
-        Object o = list.get(0);
-        Map map = (Map) o;
-
-        Long paydasNo = null;
-        String adi = (String) map.get("ADI");
-        String soyAdi = (String ) map.get("SOYADI");
-        String unvan = (String) map.get("UNVAN");
-        String vergiNo = null;
-        String telefon = (String) map.get("TELEFONNUMARASI");
-        String paydasTuru = null;
-        String tabelaAdi = null;
-        String izahat = null;
-        String kayitDurumu = null;
-        String binaAdi = null;
-        String kapiNo = null;
-        String ilceAdi = null;
-        Long kapiNoSayi = null;
-        String kapiNoHarf = null;
-        String daireNoHarf = null;
-        Long daireNoSayi = null;
-        Long katSayi = null;
-        String katHarf = null;
-        String blokNo = null;
-        Long dre1MahalleId = null;
-        Long sre1SokakId = null;
-        Long rre1IlceId = null;
-        Long pre1IlId = null;
-        Long tcKimlikNo = null;
-        Long telefonCep = null;
-        Long telefonIs = null;
-        Long ticaretSicilNo = null;
-        String vergiDairesi = null;
-        String siteAdi = null;
-        String firmaYetkiliAdi = null;
-        String firmaYetkiliSoyadi = null;
-        Long firmaYetkiliTC = null;
-
-        if (paydasNo != null)
-            denetimPaydasDTO.setPaydasNo(paydasNo);
-        if (adi != null)
-            denetimPaydasDTO.setAdi(adi);
-        if (soyAdi != null)
-            denetimPaydasDTO.setSoyAdi(soyAdi);
-        if (unvan != null)
-            denetimPaydasDTO.setUnvan(unvan);
-        if (vergiNo != null)
-            denetimPaydasDTO.setVergiNo(vergiNo);
-        if (telefon != null)
-            denetimPaydasDTO.setTelefon(telefon);
-        if (paydasTuru != null)
-            denetimPaydasDTO.setPaydasTuru(paydasTuru);
-        if (tabelaAdi != null)
-            denetimPaydasDTO.setTabelaAdi(tabelaAdi);
-        if (izahat != null)
-            denetimPaydasDTO.setIzahat(izahat);
-        if (kayitDurumu != null)
-            denetimPaydasDTO.setKayitDurumu(kayitDurumu);
-        if (binaAdi != null)
-            denetimPaydasDTO.setBinaAdi(binaAdi);
-        if (kapiNo != null)
-            denetimPaydasDTO.setKapiNo(kapiNo);
-        if (ilceAdi != null)
-            denetimPaydasDTO.setIlceAdi(ilceAdi);
-        if (kapiNoSayi != null)
-            denetimPaydasDTO.setKapiNoSayi(kapiNoSayi);
-        if (kapiNoHarf != null)
-            denetimPaydasDTO.setKapiNoHarf(kapiNoHarf);
-        if (daireNoHarf != null)
-            denetimPaydasDTO.setDaireNoHarf(daireNoHarf);
-        if (daireNoSayi != null)
-            denetimPaydasDTO.setDaireNoSayi(daireNoSayi);
-        if (katSayi != null)
-            denetimPaydasDTO.setKatSayi(katSayi);
-        if (katHarf != null)
-            denetimPaydasDTO.setKatHarf(katHarf);
-        if (blokNo != null)
-            denetimPaydasDTO.setBlokNo(blokNo);
-        if (dre1MahalleId != null)
-            denetimPaydasDTO.setDre1MahalleId(dre1MahalleId);
-        if (sre1SokakId != null)
-            denetimPaydasDTO.setSre1SokakId(sre1SokakId);
-        if (rre1IlceId != null)
-            denetimPaydasDTO.setRre1IlceId(rre1IlceId);
-        if (pre1IlId != null)
-            denetimPaydasDTO.setPre1IlId(pre1IlId);
-        if (tcKimlikNo != null)
-            denetimPaydasDTO.setTcKimlikNo(tcKimlikNo);
-        if (telefonCep != null)
-            denetimPaydasDTO.setTelefonCep(telefonCep);
-        if (telefonIs != null)
-            denetimPaydasDTO.setTelefonIs(telefonIs);
-        if (ticaretSicilNo != null)
-            denetimPaydasDTO.setTicaretSicilNo(ticaretSicilNo);
-        if (vergiDairesi != null)
-            denetimPaydasDTO.setVergiDairesi(vergiDairesi);
-        if (siteAdi != null)
-            denetimPaydasDTO.setSiteAdi(siteAdi);
-        if (firmaYetkiliAdi != null)
-            denetimPaydasDTO.setFirmaYetkiliAdi(firmaYetkiliAdi);
-        if (firmaYetkiliSoyadi != null)
-            denetimPaydasDTO.setFirmaYetkiliSoyadi(firmaYetkiliSoyadi);
-        if (firmaYetkiliTC != null)
-            denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTC);
-
-
-        return denetimPaydasDTO;
-
-    }
-
-    public List getDenetimObjectBDNTDENETIMTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO) {
-
-        List list = new ArrayList<>();
-        String sql = getDenetimObjectAdresAndTebligSqlQuery();
-
-        try {
-            sql+=denetimObjectRequestDTO.getDenetimId();
-            Session session = sessionFactory.withOptions().interceptor(null).openSession();
-            SQLQuery query = session.createSQLQuery(sql);
-            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-            list = query.list();
-
-            return list;
-
-        } catch (Exception e) {
-            LOG.debug("Denetim Objesi Adres ve Teblig Bilgileri Cekilirken Bir Hata Olustu. Hata mesaji = " + e.getMessage());
-            return list;
-        }
-
-    }
-
-    public List getDenetimObjectMPI1PAYDASTableContents(DenetimObjectRequestDTO denetimObjectRequestDTO) {
-
-        List list = new ArrayList<>();
-        String sql = getDenetimObjectPaydasInfoSqlQuery();
-
-        try {
-            sql+=denetimObjectRequestDTO.getPaydasId();
-            Session session = sessionFactory.withOptions().interceptor(null).openSession();
-            SQLQuery query = session.createSQLQuery(sql);
-            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-            list = query.list();
-
-            return list;
-        } catch (Exception e) {
-            LOG.debug("Denetim Objesi Paydas Info Cekilirken Bir Hata Olustu. hata mesaji = " + e.getMessage());
-            return list;
-        }
-    }
-
-
-    public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO) {
-
-        DenetimObjectDTO denetimObjectDTO = new DenetimObjectDTO();
-        DenetimOlayYeriAdresi denetimOlayYeriAdresi = new DenetimOlayYeriAdresi();
-        DenetimTebligatAdresi denetimTebligatAdresi = new DenetimTebligatAdresi();
-        DenetimTebligDTO denetimTebligDTO = new DenetimTebligDTO();
-        DenetimPaydasDTO denetimPaydasDTO = new DenetimPaydasDTO();
-
-        List listDenetimInfo = getDenetimObjectBDNTDENETIMTableContents(denetimObjectRequestDTO);
-        if(!listDenetimInfo.isEmpty()) {
-            denetimOlayYeriAdresi = setDenetimObjectOlayYeriAdresi(listDenetimInfo);
-            denetimTebligatAdresi = setDenetimObjectTebligatAdresi(listDenetimInfo);
-            denetimTebligDTO = setDenetimObjectTebligInfo(listDenetimInfo);
-        }
-
-        List listPaydasInfo = getDenetimObjectMPI1PAYDASTableContents(denetimObjectRequestDTO);
-        if(!listPaydasInfo.isEmpty()) {
-            denetimPaydasDTO = setDenetimObjectPaydasInfo(listPaydasInfo);
-        }
-
-        denetimObjectDTO.setDenetimOlayYeriAdresi(denetimOlayYeriAdresi);
-        denetimObjectDTO.setDenetimTebligatAdresi(denetimTebligatAdresi);
-        denetimObjectDTO.setDenetimTebligDTO(denetimTebligDTO);
-        denetimObjectDTO.setDenetimPaydasDTO(denetimPaydasDTO);
-
-        return denetimObjectDTO;
-    }
 
 
 }

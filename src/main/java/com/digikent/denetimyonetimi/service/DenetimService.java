@@ -302,39 +302,10 @@ public class DenetimService {
                 "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS ILCEADI,\n" +
                 "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS MAHALLEADI,\n" +
                 "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS SOKAKADI\n" +
-                "FROM BDNTDENETIM WHERE ID";;
+                "FROM BDNTDENETIM WHERE ID";
 
         return sql;
     }
-
-    public static String getDenetimObjectAdresAndTebligSqlQuery() {
-        String sql = "SELECT\n" +
-                "ADANO_OLAYYERI,BLOKNO_OLAYYERI,DAIRENOHARF_OLAYYERI,DAIRENOSAYI_OLAYYERI,DRE1BAGBOLUM_OLAYYERI,\n" +
-                "DRE1MAHALLE_OLAYYERI,ERE1YAPI_OLAYYERI,IRE1PARSEL_OLAYYERI,KAPINOHARF_OLAYYERI,\n" +
-                "KAPINOSAYI_OLAYYERI,PAFTANO_OLAYYERI,PARSELNO_OLAYYERI,PRE1IL_OLAYYERI,RRE1ILCE_OLAYYERI,\n" +
-                "SITEADI_OLAYYERI,SRE1SOKAK_OLAYYERI,\n" +
-                "(SELECT TANIM  from PRE1IL where ID=BDNTDENETIM.PRE1IL_OLAYYERI AND rownum = 1) AS OLAYIILADI,\n" +
-                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_OLAYYERI AND rownum = 1) AS OLAYILCEADI,\n" +
-                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_OLAYYERI AND rownum = 1) AS OLAYMAHALLEADI,\n" +
-                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_OLAYYERI AND rownum = 1) AS OLAYSOKAKADI,\n" +
-                "BLOKNO_TEBLIGAT,DAIRENOHARF_TEBLIGAT,DAIRENOSAYI_TEBLIGAT,DRE1MAHALLE_TEBLIGAT,KAPINOHARF_TEBLIGAT,KAPINOSAYI_TEBLIGAT,\n" +
-                "PRE1IL_TEBLIGAT,RRE1ILCE_TEBLIGAT,SITEADI_TEBLIGAT,SRE1SOKAK_TEBLIGAT,\n" +
-                "(SELECT TANIM  from PRE1IL where ID=BDNTDENETIM.PRE1IL_TEBLIGAT AND rownum = 1) AS TEBLIGATILADI,\n" +
-                "(SELECT TANIM  from RRE1ILCE where ID=BDNTDENETIM.RRE1ILCE_TEBLIGAT AND rownum = 1) AS TEBLIGATILCEADI,\n" +
-                "(SELECT TANIM  from DRE1MAHALLE where ID=BDNTDENETIM.DRE1MAHALLE_TEBLIGAT AND rownum = 1) AS TEBLIGATMAHALLEADI,\n" +
-                "(SELECT TANIM  from SRE1SOKAK where ID=BDNTDENETIM.SRE1SOKAK_TEBLIGAT AND rownum = 1) AS TEBLIGATSOKAKADI,\n" +
-                "TEBLIG_ADI,TEBLIG_SECENEGI,TEBLIG_SOYADI,TEBLIG_TC\n" +
-                "FROM BDNTDENETIM WHERE ID = ";;
-
-        return sql;
-    }
-
-    public static String getDenetimObjectPaydasInfoSqlQuery() {
-        String sql = "SELECT ADI,SOYADI,TELEFONNUMARASI,UNVAN FROM MPI1PAYDAS WHERE MPI1PAYDAS.ID = ";
-
-        return sql;
-    }
-
 
     public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
         return denetimRepository.saveDenetimTeblig(denetimTebligRequest);
@@ -348,9 +319,4 @@ public class DenetimService {
         return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest);
     }
 
-    public DenetimObjectDTO getDenetimObjectByDenetimAndDenetimTespitId(DenetimObjectRequestDTO denetimObjectRequestDTO) {
-
-
-        return denetimRepository.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO);
-    }
 }
