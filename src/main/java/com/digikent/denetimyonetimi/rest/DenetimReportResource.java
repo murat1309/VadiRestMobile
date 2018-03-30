@@ -39,28 +39,9 @@ public class DenetimReportResource {
     @RequestMapping(value = "/create/ceza/{denetimtespitid}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<ReportResponse> createCezaDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
-        LOG.debug("/create/ceza REST request");
-
-
-        String htmlContent = denetimReportService.createCezaDenetimReport(denetimTespitId);
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
-
-        return new ResponseEntity<ReportResponse>(reportResponse, OK);
-    }
-
-    /**
-     * Tutanak Denetim Raporunu getirir
-     * //TODO henüz ceza yada tutanak için ayrım yapılmadı
-     * @param denetimTespitId
-     * @return
-     */
-    @RequestMapping(value = "/create/tutanak/{denetimtespitid}", method = RequestMethod.GET)
-    @Transactional
-    public ResponseEntity<ReportResponse> createTutanakDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
-        LOG.debug("/create/tutanak REST request");
-
-        String htmlContent = denetimReportService.createCezaDenetimReport(denetimTespitId);
-        ReportResponse reportResponse = new ReportResponse(htmlContent,null);
+        LOG.debug("CEZA raporu hazirlanacak bdntDenetimTespitID="+denetimTespitId);
+        ReportResponse reportResponse = denetimReportService.createCezaDenetimReport(denetimTespitId);
+        //LOG.debug("CEZA raporu isError=" + reportResponse.getErrorDTO().getError());
 
         return new ResponseEntity<ReportResponse>(reportResponse, OK);
     }

@@ -1,5 +1,6 @@
 package com.digikent.config;
 
+import com.digikent.general.util.UtilOperationSystem;
 import com.vadi.digikent.base.util.FileUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,11 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        String digikentPath = System.getenv("DIGIKENT_PATH");
-        Properties userProp = FileUtil.getPropsFromFile(digikentPath
-                + "/services/users.properties");
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        String path = System.getenv("DIGIKENT_PATH") + "\\services\\users.properties";
+        if (!UtilOperationSystem.isWindows()) {
+            path = System.getenv("DIGIKENT_PATH") + "/services/users.properties";
+        }
+        Properties userProp = FileUtil.getPropsFromFile(path);
+
         Enumeration<Object> keys = userProp.keys();
         while (keys.hasMoreElements()) {
             String userName = (String) keys.nextElement();

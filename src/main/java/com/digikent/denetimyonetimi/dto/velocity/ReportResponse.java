@@ -12,6 +12,8 @@ public class ReportResponse implements Serializable {
     private String htmlContent;
     private ErrorDTO errorDTO;
 
+    public ReportResponse() {}
+
     public ReportResponse(String htmlContent, ErrorDTO errorDTO) {
         this.htmlContent = htmlContent;
         this.errorDTO = errorDTO;

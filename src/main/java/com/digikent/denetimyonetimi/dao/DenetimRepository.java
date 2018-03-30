@@ -705,22 +705,27 @@ public class DenetimRepository {
     }
 
     public Map<Long,LDNTTespit> findTespitMapByTespitIdList(Set<Long> tespitIdSet) {
-        Session session = sessionFactory.openSession();
-        Criteria criteria = session.createCriteria(LDNTTespit.class);
-        criteria.add(Restrictions.eq("isActive", true));
-        Object[] obj = new Object[] {};
-        ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
-        temp.addAll(tespitIdSet);
-        criteria.add(Restrictions.in("id", temp.toArray()));
-        List<LDNTTespit> list = criteria.list();
+        try {
+            Session session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(LDNTTespit.class);
+            //criteria.add(Restrictions.eq("isActive", true));
+            Object[] obj = new Object[] {};
+            ArrayList<Object> temp = new ArrayList<Object>(Arrays.asList(obj));
+            temp.addAll(tespitIdSet);
+            criteria.add(Restrictions.in("id", temp.toArray()));
+            List<LDNTTespit> list = criteria.list();
 
-        Map<Long,LDNTTespit> tespitMap = new HashedMap();
+            Map<Long,LDNTTespit> tespitMap = new HashedMap();
 
-        for (LDNTTespit ldntTespit: list) {
-            tespitMap.put(ldntTespit.getID(),ldntTespit);
+            for (LDNTTespit ldntTespit: list) {
+                tespitMap.put(ldntTespit.getID(),ldntTespit);
+            }
+
+            return (tespitMap.size() == 0 ? null : tespitMap);
+        } catch (Exception ex) {
+            LOG.error("findTespitMapByTespitIdList() hata olustu");
+            return null;
         }
-
-        return tespitMap;
     }
 
     public List<DenetimTespitDTO> getDenetimTespitListByTespitId(Long denetimId) {
