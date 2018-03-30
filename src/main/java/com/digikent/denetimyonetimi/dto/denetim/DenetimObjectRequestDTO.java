@@ -8,6 +8,7 @@ public class DenetimObjectRequestDTO {
     private Long denetimId;
     private Long paydasId;
     private Long denetimTespitId;
+    private Long tespitGrubuId;
 
     public DenetimObjectRequestDTO() {
     }
@@ -34,5 +35,13 @@ public class DenetimObjectRequestDTO {
 
     public void setDenetimTespitId(Long denetimTespitId) {
         this.denetimTespitId = denetimTespitId;
+    }
+
+    public Long getTespitGrubuId() {
+        return tespitGrubuId;
+    }
+
+    public void setTespitGrubuId(Long tespitGrubuId) {
+        this.tespitGrubuId = tespitGrubuId;
     }
 }

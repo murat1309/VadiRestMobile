@@ -7,6 +7,7 @@ public enum DenetimTespitKararAksiyon {
 
     CEZA,
     KAPAMA,
-    EKSURE
+    EKSURE,
+    BELIRSIZ,
 
 }
