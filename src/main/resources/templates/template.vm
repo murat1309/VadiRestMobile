@@ -2,43 +2,30 @@
 <style>
     body {
         font-family: "Helvetica Neue", Helvetica, Arial;
-        font-size: 15px;
+        font-size: 16px;
         /*  line-height: 12px; */
-        font-weight: 400;
+        font-weight: 500;
         color: #3b3b3b;
         -webkit-font-smoothing: antialiased;
         font-smoothing: antialiased;
         /*  background: #2b2b2b; */
     }
 
-
-
-    /*.wrapper {
-        margin: 0 auto;
-        padding: 40px;
-        max-width: 800px;
-    }*/
-
     .table {
         width: 100%;
         /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
         display: table;
-        border-collapse: collapse;
     }
 
     .m {
         margin: 0 0 10px 0;
     }
 
-
-
     .row {
         display: table-row;
-        background: #f6f6f6;
     }
 
     .row:nth-of-type(odd) {
-        background: #e9e9e9;
     }
 
     .row.header {
@@ -55,31 +42,28 @@
         background: #ffffff;
     }
 
-
-
     .cell {
         /*  padding: 3px 5px; */
         display: table-cell;
-        border: 1px solid #dadada;
+        padding: 0 0 0 5px;
+        /*border: 1px solid #dadada;*/
     }
 
+    .cell-ek {
+        /*  padding: 3px 5px; */
+        display: table-cell;
+        /*border: 1px solid #dadada;*/
+    }
 
-
-    /* .table-header { */
-    /*  padding: 10px; */
-    /*  font-weight: 900; */
-    /*  color: #ffffff; */
-    /*  background: #2980b9; */
-    /*  display: table-caption; */
-    /* } */
     .title {
         display: table-caption;
         /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
         padding: 2px 5px;
         font-weight: 600;
         color: #000000;
-        border: 2px solid;
+        /* border: 2px solid; */
         background: #ffffff;
+        border-bottom: solid 1px #000;
     }
 
     .b {
@@ -93,16 +77,13 @@
     .innertable .row {
         display: table-row;
         background-color: transparent;
-        border-bottom: 1px solid #dadada;
     }
     .innertable .cell {
         /*  padding: 3px 5px; */
         display: table-cell;
-        border: none;
     }
     .innertable .cell.b{
-        width: 25%;
-        border-right: 1px solid #dadada;
+        width: 10%;
         padding: 0 0 0 5px;
     }
 
@@ -111,21 +92,28 @@
         margin: 0;
     }
 
-
     .kolon1 {
         float: left;
-        width: 30%;
     }
 
     .kolon2 {
-        float: left;
-        width: 70%;
+        position: relative;
+        text-align: center;
+        padding-top: 20px;
     }
 
-    .satir:after {
-        content: "";
-        display: table;
-        clear: both;
+    .head {
+        border-bottom: solid 1px #000000;
+        border-right: solid 1px #000000;
+        border-left: solid 1px #000000;
+    }
+
+    .border-bottom {
+        border-bottom: solid 1px #000;
+    }
+
+    .row-height {
+        line-height: 40px;
     }
 
 </style>
@@ -135,16 +123,17 @@
     <!-- style="width: 65%; float: left;" -->
     <div class="satir">
         <div class="kolon1">
-            <div class="logoHeader"><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
+            <div class=""><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
         </div>
         <div class="kolon2">
-            <h3>BAŞAKŞEHIR BELEDIYESİ</h3>
-            <h3>CEZA TUTANAĞI</h3>
+            <h3> $ilAdi VALİLİĞİ $belediyeAdi KAYMAKAMLIĞI </h3>
+            <h3> $belediyeAdi BELEDİYE BAŞKANLIĞI </h3>
+            <h3> $tespitBaslik TUTANAĞI </h3>
         </div>
     </div>
 
-    <div class="table m">
-        <div class="title">Tarih/Döküman Bilgileri</div>
+    <div class="table m head">
+        <div class="title"> » Tarih/Döküman Bilgileri</div>
         <div class="row header">
             <div class="cell">Tarih</div>
             <div class="cell">Tutanak/Döküman No</div>
@@ -157,17 +146,19 @@
         #end
     </div>
 
-    <div class="table m">
+    <div class="table m head">
         <div class="title"> » Lokasyon</div>
-        <div class="row header">
-            <div class="cell">İlçe</div>
-            <div class="cell">Mahalle</div>
-            <div class="cell">Sokak</div>
-            <div class="cell">Daire</div>
-            <div class="cell">Kapı</div>
-        </div>
-
         #if ($locationDTO)
+
+            <div class="row header">
+                <div class="cell">İlçe</div>
+                <div class="cell">Mahalle</div>
+                <div class="cell">Sokak</div>
+                <div class="cell">Daire</div>
+                <div class="cell">Kapı</div>
+            </div>
+
+
             <div class="row">
                 <div class="cell">$locationDTO.ilceAdi</div>
                 <div class="cell">$locationDTO.mahalleAdi</div>
@@ -175,23 +166,27 @@
                 <div class="cell">$locationDTO.daireBilgisi</div>
                 <div class="cell">$locationDTO.kapiBilgisi</div>
             </div>
+
         #end
 
     </div>
 
-    <div class="table m">
+    <div class="table m head">
         <div class="title"> » Paydaş</div>
-        <div class="row header">
-            <div class="cell">Taraf Türü</div>
-            <div class="cell">Adı Soyadı</div>
-            <div class="cell">TC Kimlik No</div>
-        </div>
         #if ($userDTO)
+
+            <div class="row header">
+                <div class="cell">Taraf Türü</div>
+                <div class="cell">Adı Soyadı</div>
+                <div class="cell">TC Kimlik No</div>
+            </div>
+
             <div class="row">
                 <div class="cell">$userDTO.tarafTuru</div>
                 <div class="cell">$userDTO.adiSoyadi</div>
                 <div class="cell">$userDTO.tckn</div>
             </div>
+
         #end
     </div>
 
@@ -199,8 +194,8 @@
         <div class="title"> » Ek Bilgiler </div>
         #foreach( $ekBilgiDTO in $reportEkBilgiDTOs )
             <div class="row">
-                <div class="cell" style="width: 50%">
-                    <div class="innertable">
+                <div class="cell-ek" style="width: 50%">
+                    <div class="innertable head">
                         <div class="row">
                             <div class="cell b">Konu</div>
                             <div class="cell">$ekBilgiDTO.tespitAciklamasi</div>
@@ -226,13 +221,13 @@
         #foreach( $tespitDTO in $reportTespitDTOs )
             <div class="row">
                 <div class="cell" style="width: 50%">
-                    <div class="innertable">
+                    <div class="innertable head">
                         <div class="row">
                             <div class="cell b">Konu</div>
                             <div class="cell">$tespitDTO.tespitAciklamasi</div>
                         </div>
                         <div class="row">
-                            <div class="cell b">Dayanak Kanunu</div>
+                            <div class="cell b">Kanun</div>
                             <div class="cell">$tespitDTO.dayanakKanunu</div>
                         </div>
                         <div class="row">
@@ -251,47 +246,87 @@
         #end
     </div>
 
-    <div class="table m">
+    <div class="table m head">
         <div class="title"> » Taraflar</div>
         <div class="row header">
-            <div class="cell">Taraf Türü</div>
-            <div class="cell">Adı Soyadı</div>
-            <div class="cell">Görevi</div>
-            <div class="cell">İmza</div>
+            <div class="cell border-bottom">Taraf Türü</div>
+            <div class="cell border-bottom">Adı Soyadı</div>
+            <div class="cell border-bottom">Görevi</div>
+            <div class="cell border-bottom" style="width: 150px">İmza</div>
         </div>
 
         #foreach( $user in $belediyeUserDTOList )
             <div class="row">
-                <div class="cell">$user.tarafTuru</div>
-                <div class="cell">$user.adiSoyadi</div>
-                <div class="cell">$user.gorevi</div>
-                <div class="cell">  </div>
+                <div class="cell border-bottom row-height">$user.tarafTuru</div>
+                <div class="cell border-bottom row-height">$user.adiSoyadi</div>
+                <div class="cell border-bottom row-height">$user.gorevi</div>
+                <div class="cell border-bottom row-height" style="width: 150px">  </div>
+            </div>
+        #end
+    </div>
+
+    <div class="table m head">
+        <div class="title"> » Denetim Kararı </div>
+        #if ($karar.ceza)
+            <div class="row header">
+                <div class="cell"> Karar </div>
+                <div class="cell"> Ceza Miktarı </div>
+            </div>
+
+            <div class="row">
+                <div class="cell row-height">$karar.ceza.tipi</div>
+                <div class="cell row-height">$karar.ceza.miktar TL</div>
             </div>
         #end
 
+        #if ($karar.kapama)
+            <div class="row header">
+                <div class="cell"> Karar </div>
+                <div class="cell"> Başlangıç Tarihi </div>
+                <div class="cell"> Bitiş Tarihi </div>
+            </div>
 
+            <div class="row">
+                <div class="cell row-height">$karar.kapama.tipi</div>
+                <div class="cell row-height">$karar.kapama.baslangic</div>
+                <div class="cell row-height">$karar.kapama.bitis</div>
+            </div>
+        #end
+
+        #if ($karar.ekSure)
+            <div class="row header">
+                <div class="cell"> Karar </div>
+                <div class="cell"> Ceza Miktarı </div>
+            </div>
+
+            <div class="row">
+                <div class="cell row-height">$karar.ekSure.tipi</div>
+                <div class="cell row-height">$karar.ekSure.sure Gün</div>
+            </div>
+        #end
     </div>
 
-    <div class="table m">
+    <div class="table m head">
         <div class="title"> » Tebliğ Bilgileri</div>
-        <div class="row header">
-            <div class="cell">Adı</div>
-            <div class="cell">Soyadı</div>
-            <div class="cell">TC Kimlik No</div>
-            <div class="cell">İmza</div>
-        </div>
         #if ($tebligEdilenBilgileri)
-            <div class="row">
-                <div class="cell">$tebligEdilenBilgileri.adi</div>
-                <div class="cell">$tebligEdilenBilgileri.soyadi</div>
-                <div class="cell">$tebligEdilenBilgileri.TCKimlikNo</div>
-                <div class="cell"> </div>
+
+            <div class="row header">
+                <div class="cell">Adı</div>
+                <div class="cell">Soyadı</div>
+                <div class="cell">TC Kimlik No</div>
+                <div class="cell">İmza</div>
             </div>
+
+            <div class="row">
+                <div class="cell row-height">$tebligEdilenBilgileri.adi</div>
+                <div class="cell row-height">$tebligEdilenBilgileri.soyadi</div>
+                <div class="cell row-height">$tebligEdilenBilgileri.TCKimlikNo</div>
+                <div class="cell row-height"> </div>
+            </div>
+
         #end
     </div>
 
 </div>
 </body>
 </html>
-
-

@@ -1,6 +1,6 @@
 package com.digikent.denetimyonetimi.rest;
 
-import com.digikent.denetimyonetimi.dto.velocity.ReportResponse;
+import com.digikent.denetimyonetimi.dto.rapor.ReportResponse;
 import com.digikent.denetimyonetimi.service.DenetimService;
 import com.digikent.denetimyonetimi.service.DenetimReportService;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.digikent.denetimyonetimi.dto.velocity;
+package com.digikent.denetimyonetimi.dto.rapor;
 
 /**
  * Created by Kadir on 13.03.2018.

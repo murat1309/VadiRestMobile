@@ -173,7 +173,7 @@ public class DenetimRepository {
 
     public List<TespitGrubuDTO> findTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
         List<TespitGrubuDTO> tespitGrubuDTOList = new ArrayList<>();
-        String sql = "SELECT A.ID,A.TANIM,A.KAYITOZELISMI,A.IZAHAT FROM LDNTTESPITGRUBU A JOIN ADNTDENETIMTURUTESPITGRUBU B " +
+        String sql = "SELECT A.ID,A.TANIM,A.KAYITOZELISMI,A.IZAHAT,A.RAPORBASLIK FROM LDNTTESPITGRUBU A JOIN ADNTDENETIMTURUTESPITGRUBU B " +
                 " ON A.ISACTIVE='E' AND A.ID=B.LDNTTESPITGRUBU_ID AND B.LDNTDENETIMTURU_ID=" + denetimTuruId;
         List list = new ArrayList<>();
 
@@ -191,6 +191,7 @@ public class DenetimRepository {
                 String tanim = (String) map.get("TANIM");
                 String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
                 String izahat = (String) map.get("IZAHAT");
+                String raporBaslik = (String) map.get("RAPORBASLIK");
 
                 if(id != null)
                     tespitGrubuDTO.setId(id.longValue());
@@ -200,6 +201,8 @@ public class DenetimRepository {
                     tespitGrubuDTO.setKayitOzelIsmi(kayitOzelIsmi);
                 if(izahat != null)
                     tespitGrubuDTO.setIzahat(izahat);
+                if(raporBaslik != null)
+                    tespitGrubuDTO.setRaporBaslik(raporBaslik);
 
                 tespitGrubuDTOList.add(tespitGrubuDTO);
             }
@@ -1455,6 +1458,44 @@ public class DenetimRepository {
         denetimObjectDTO.setDenetimPaydasDTO(denetimPaydasDTO);
 
         return denetimObjectDTO;
+    }
+
+    public TespitGrubuDTO findTespitGrubuDTOById(Long tespitGrubuId) {
+        List<TespitGrubuDTO> tespitGrubuDTOList = new ArrayList<>();
+        String sql = "SELECT ID,TANIM,KAYITOZELISMI,IZAHAT,RAPORBASLIK FROM LDNTTESPITGRUBU WHERE ID=" + tespitGrubuId;
+        List list = new ArrayList<>();
+
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                TespitGrubuDTO tespitGrubuDTO = new TespitGrubuDTO();
+
+                BigDecimal id = (BigDecimal) map.get("ID");
+                String tanim = (String) map.get("TANIM");
+                String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
+                String izahat = (String) map.get("IZAHAT");
+                String raporBaslik = (String) map.get("RAPORBASLIK");
+
+                if(id != null)
+                    tespitGrubuDTO.setId(id.longValue());
+                if(tanim != null)
+                    tespitGrubuDTO.setTanim(tanim);
+                if(kayitOzelIsmi != null)
+                    tespitGrubuDTO.setKayitOzelIsmi(kayitOzelIsmi);
+                if(izahat != null)
+                    tespitGrubuDTO.setIzahat(izahat);
+                if(raporBaslik != null)
+                    tespitGrubuDTO.setRaporBaslik(raporBaslik);
+
+                tespitGrubuDTOList.add(tespitGrubuDTO);
+            }
+        }
+        return tespitGrubuDTOList.get(0);
     }
 
 

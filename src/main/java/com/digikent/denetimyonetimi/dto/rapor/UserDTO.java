@@ -1,4 +1,4 @@
-package com.digikent.denetimyonetimi.dto.velocity;
+package com.digikent.denetimyonetimi.dto.rapor;
 
 public class UserDTO {
   private String adiSoyadi;

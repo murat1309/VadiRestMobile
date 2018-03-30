@@ -11,6 +11,7 @@ public class TespitGrubuDTO implements Serializable {
     private String tanim;
     private String kayitOzelIsmi;
     private String izahat;
+    private String raporBaslik;
 
     public Long getId() {
         return id;
@@ -44,4 +45,11 @@ public class TespitGrubuDTO implements Serializable {
         this.izahat = izahat;
     }
 
+    public String getRaporBaslik() {
+        return raporBaslik;
+    }
+
+    public void setRaporBaslik(String raporBaslik) {
+        this.raporBaslik = raporBaslik;
+    }
 }

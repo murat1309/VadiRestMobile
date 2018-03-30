@@ -1,6 +1,4 @@
-package com.digikent.denetimyonetimi.dto.velocity;
-
-import java.util.Date;
+package com.digikent.denetimyonetimi.dto.rapor;
 
 public class DocumentDTO {
   private String dateString;

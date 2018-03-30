@@ -1,9 +1,11 @@
 package com.digikent.denetimyonetimi.service;
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dao.DenetimReportRepository;
 import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
-import com.digikent.denetimyonetimi.dto.velocity.*;
+import com.digikent.denetimyonetimi.dto.rapor.*;
+import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitLine;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
@@ -41,6 +43,9 @@ public class DenetimReportService {
 
     @Inject
     DenetimRepository denetimRepository;
+
+    @Inject
+    DenetimReportRepository denetimReportRepository;
 
     @Autowired
     DenetimService denetimService;
@@ -82,6 +87,9 @@ public class DenetimReportService {
         UserDTO paydas = getPaydasByDenetimTarafList(bdntDenetimTespitTarafList);
         List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
 
+        Nsm2Parametre nsm2Parametre = denetimReportRepository.getNSM2Parametre();
+        TespitGrubuDTO tespitGrubuDTO = denetimRepository.findTespitGrubuDTOById(bdntDenetimTespit.getTespitGrubuId());
+
         vc.put("userDTO", paydas);
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
@@ -90,6 +98,10 @@ public class DenetimReportService {
         vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
         vc.put("logoBase64", getBase64StringLOGO());
+        vc.put("belediyeAdi", (nsm2Parametre.getBelediyeAdi() == null ? "" : nsm2Parametre.getBelediyeAdi()));
+        vc.put("ilAdi", (nsm2Parametre.getIlAdi() == null ? "" : nsm2Parametre.getIlAdi()));
+        vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getTanim() : " "));
+
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
@@ -230,7 +242,7 @@ public class DenetimReportService {
                     } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_TEXT) && denetimTespitLine.getStringValue() != null) {
                         reportTespitDTO.setDeger(denetimTespitLine.getStringValue());
                     } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_DATE) && denetimTespitLine.getDateValue() != null) {
-                        reportTespitDTO.setDeger(denetimTespitLine.getDateValue().toString());
+                        reportTespitDTO.setDeger(new SimpleDateFormat("dd-MM-yyyy").format(denetimTespitLine.getDateValue()).toString());
                     } else if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_NUMBER) && denetimTespitLine.getNumberValue() != null) {
                         reportTespitDTO.setDeger(denetimTespitLine.getNumberValue().toString());
                     } else {
