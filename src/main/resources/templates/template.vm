@@ -87,6 +87,11 @@
         padding: 0 0 0 5px;
     }
 
+    .innertable .cell.c{
+        width: 25%;
+        padding: 0 0 0 5px;
+    }
+
     @page {
         size: A4;
         margin: 0;
@@ -188,6 +193,20 @@
             </div>
 
         #end
+
+        #if ($kurumDTO)
+
+            <div class="row header">
+                <div class="cell">Kurum Ünvanı</div>
+                <div class="cell">Vergi Numarası</div>
+            </div>
+
+            <div class="row">
+                <div class="cell">$kurumDTO.unvan</div>
+                <div class="cell">$kurumDTO.vergiNo</div>
+            </div>
+
+        #end
     </div>
 
     <div class="table m">
@@ -197,16 +216,12 @@
                 <div class="cell-ek" style="width: 50%">
                     <div class="innertable head">
                         <div class="row">
-                            <div class="cell b">Konu</div>
-                            <div class="cell">$ekBilgiDTO.tespitAciklamasi</div>
-                        </div>
-                        <div class="row">
-                            <div class="cell b">Değer</div>
+                            <div class="cell c">$ekBilgiDTO.tespitAciklamasi</div>
                             <div class="cell">$ekBilgiDTO.deger</div>
                         </div>
                         #if ($ekBilgiDTO.aciklama)
                             <div class="row">
-                                <div class="cell b">Açıklama</div>
+                                <div class="cell c">Açıklama</div>
                                 <div class="cell">$ekBilgiDTO.aciklama</div>
                             </div>
                         #end
@@ -274,8 +289,8 @@
             </div>
 
             <div class="row">
-                <div class="cell row-height">$karar.ceza.tipi</div>
-                <div class="cell row-height">$karar.ceza.miktar TL</div>
+                <div class="cell row-height">$karar.ceza</div>
+                <div class="cell row-height">$karar.cezaMiktari</div>
             </div>
         #end
 
@@ -287,9 +302,9 @@
             </div>
 
             <div class="row">
-                <div class="cell row-height">$karar.kapama.tipi</div>
-                <div class="cell row-height">$karar.kapama.baslangic</div>
-                <div class="cell row-height">$karar.kapama.bitis</div>
+                <div class="cell row-height">$karar.kapama</div>
+                <div class="cell row-height">$karar.kapamaBaslangicTarihi</div>
+                <div class="cell row-height">$karar.kapamaBitisTarihi</div>
             </div>
         #end
 
@@ -300,8 +315,18 @@
             </div>
 
             <div class="row">
-                <div class="cell row-height">$karar.ekSure.tipi</div>
-                <div class="cell row-height">$karar.ekSure.sure Gün</div>
+                <div class="cell row-height">$karar.ekSure</div>
+                <div class="cell row-height">$karar.ekSureZaman</div>
+            </div>
+        #end
+
+        #if ($karar.belirsiz)
+            <div class="row header">
+                <div class="cell"> Karar </div>
+            </div>
+
+            <div class="row">
+                <div class="cell row-height"> Karara bağlanmamıştır. </div>
             </div>
         #end
     </div>

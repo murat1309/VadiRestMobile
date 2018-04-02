@@ -7,10 +7,7 @@ import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
 import com.digikent.denetimyonetimi.dto.taraf.DenetimTarafDTO;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
-import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
-import com.digikent.denetimyonetimi.entity.FSM1Users;
-import com.digikent.denetimyonetimi.entity.VSYNMemberShip;
-import com.digikent.denetimyonetimi.entity.VSYNRoleTeam;
+import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.general.dto.Fsm1UserDTO;
 import com.digikent.general.dto.Ihr1PersonelDTO;
 import com.digikent.general.dto.Lhr1GorevTuruDTO;
@@ -301,5 +298,16 @@ public class DenetimTarafRepository {
             }
         }
         return fsm1UserDTOList;
+    }
+
+    public MPI1Paydas findMpi1PaydasById(Long id) {
+        MPI1Paydas mpi1Paydas = null;
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        Criteria criteria = session.createCriteria(MPI1Paydas.class);
+        Object userObj = criteria.add(Restrictions.eq("ID", id)).uniqueResult();
+        mpi1Paydas = (MPI1Paydas)userObj;
+        return mpi1Paydas;
     }
 }

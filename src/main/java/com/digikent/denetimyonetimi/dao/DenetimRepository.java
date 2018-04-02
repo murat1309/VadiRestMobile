@@ -833,6 +833,7 @@ public class DenetimRepository {
                 String tebligAdi = (String) map.get("TEBLIG_ADI");
                 String tebligSoyadi = (String) map.get("TEBLIG_SOYADI");
                 BigDecimal tebligTCKimlikNo = (BigDecimal) map.get("TEBLIG_TC");
+                String denetimTarafTipi = (String) map.get("DENETIMTARAFTIPI");
 
                 if(id != null)
                     denetimDTO.setId(id.longValue());
@@ -870,6 +871,8 @@ public class DenetimRepository {
                     denetimDTO.setTebligTCKimlikNo(tebligTCKimlikNo.longValue());
                 if(paydasId != null)
                     denetimDTO.setPaydasId(paydasId.longValue());
+                if(denetimTarafTipi != null)
+                    denetimDTO.setDenetimTarafTipi(denetimTarafTipi);
 
                 denetimDTOList.add(denetimDTO);
             }

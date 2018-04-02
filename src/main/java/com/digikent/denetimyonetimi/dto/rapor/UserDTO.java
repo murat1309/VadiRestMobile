@@ -1,9 +1,13 @@
 package com.digikent.denetimyonetimi.dto.rapor;
 
 public class UserDTO {
+  private String sahis;
   private String adiSoyadi;
-  private Long tckn;
+  private String tckn;
   private String tarafTuru;
+  private String kurum;
+  private String vergiNo;
+  private String unvan;
 
   public String getAdiSoyadi() {
     return adiSoyadi;
@@ -13,11 +17,11 @@ public class UserDTO {
     this.adiSoyadi = adiSoyadi;
   }
 
-  public Long getTckn() {
+  public String getTckn() {
     return tckn;
   }
 
-  public void setTckn(Long tckn) {
+  public void setTckn(String tckn) {
     this.tckn = tckn;
   }
 
@@ -27,5 +31,37 @@ public class UserDTO {
 
   public void setTarafTuru(String tarafTuru) {
     this.tarafTuru = tarafTuru;
+  }
+
+  public String getSahis() {
+    return sahis;
+  }
+
+  public void setSahis(String sahis) {
+    this.sahis = sahis;
+  }
+
+  public String getKurum() {
+    return kurum;
+  }
+
+  public void setKurum(String kurum) {
+    this.kurum = kurum;
+  }
+
+  public String getVergiNo() {
+    return vergiNo;
+  }
+
+  public void setVergiNo(String vergiNo) {
+    this.vergiNo = vergiNo;
+  }
+
+  public String getUnvan() {
+    return unvan;
+  }
+
+  public void setUnvan(String unvan) {
+    this.unvan = unvan;
   }
 }

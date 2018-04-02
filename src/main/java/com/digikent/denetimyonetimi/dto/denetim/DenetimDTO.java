@@ -25,6 +25,7 @@ public class DenetimDTO {
     private String tebligSoyadi;
     private Long tebligTCKimlikNo;
     private Long paydasId;
+    private String denetimTarafTipi;
 
     public Long getId() {
         return id;
@@ -168,5 +169,13 @@ public class DenetimDTO {
 
     public void setPaydasId(Long paydasId) {
         this.paydasId = paydasId;
+    }
+
+    public String getDenetimTarafTipi() {
+        return denetimTarafTipi;
+    }
+
+    public void setDenetimTarafTipi(String denetimTarafTipi) {
+        this.denetimTarafTipi = denetimTarafTipi;
     }
 }

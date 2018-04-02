@@ -6,10 +6,8 @@ import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
 import com.digikent.denetimyonetimi.dto.rapor.*;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
-import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
-import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitLine;
-import com.digikent.denetimyonetimi.entity.BDNTDenetimTespitTaraf;
-import com.digikent.denetimyonetimi.entity.LDNTTespit;
+import com.digikent.denetimyonetimi.entity.*;
+import com.digikent.denetimyonetimi.enums.DenetimTespitKararAksiyon;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.general.util.UtilOperationSystem;
 import com.digikent.mesajlasma.dto.ErrorDTO;
@@ -84,13 +82,18 @@ public class DenetimReportService {
         denetimDTO.setOlayYeriDaireNoHarf((denetimDTO.getOlayYeriDaireNoHarf() == null ? "" : denetimDTO.getOlayYeriDaireNoHarf()));
         denetimDTO.setOlayYeriKapiNoHarf((denetimDTO.getOlayYeriKapiNoHarf() == null ? "" : denetimDTO.getOlayYeriKapiNoHarf()));
 
-        UserDTO paydas = getPaydasByDenetimTarafList(bdntDenetimTespitTarafList);
-        List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
+        if (Constants.DENETIM_TARAFTIPI_SAHIS.equalsIgnoreCase(denetimDTO.getDenetimTarafTipi())) {
+            vc.put("userDTO", getSahisByDenetimTarafList(bdntDenetimTespitTarafList));
+        } else if (Constants.DENETIM_TARAFTIPI_KURUM.equalsIgnoreCase(denetimDTO.getDenetimTarafTipi())) {
+            vc.put("kurumDTO", getKurumPaydasInformation(denetimDTO.getPaydasId()));
+        }
 
+        List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
         Nsm2Parametre nsm2Parametre = denetimReportRepository.getNSM2Parametre();
         TespitGrubuDTO tespitGrubuDTO = denetimRepository.findTespitGrubuDTOById(bdntDenetimTespit.getTespitGrubuId());
+        ReportKararDTO reportKararDTO = getReportKararDTO(bdntDenetimTespit);
 
-        vc.put("userDTO", paydas);
+
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
         vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
@@ -100,7 +103,8 @@ public class DenetimReportService {
         vc.put("logoBase64", getBase64StringLOGO());
         vc.put("belediyeAdi", (nsm2Parametre.getBelediyeAdi() == null ? "" : nsm2Parametre.getBelediyeAdi()));
         vc.put("ilAdi", (nsm2Parametre.getIlAdi() == null ? "" : nsm2Parametre.getIlAdi()));
-        vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getTanim() : " "));
+        vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getKayitOzelIsmi() : " "));
+        vc.put("karar", getReportKararDTO(bdntDenetimTespit));
 
 
         StringWriter sw = new StringWriter();
@@ -108,6 +112,41 @@ public class DenetimReportService {
         reportResponse.setHtmlContent(sw.toString());
 
         return reportResponse;
+    }
+
+    private UserDTO getKurumPaydasInformation(Long paydasId) {
+        UserDTO userDTO = new UserDTO();
+        MPI1Paydas paydas = denetimTarafService.getMpi1PaydasById(paydasId);
+        userDTO.setKurum("KURUM");
+        userDTO.setUnvan((paydas.getUnvan() != null ? paydas.getUnvan() : "-"));
+        userDTO.setVergiNo((paydas.getVergiNumarasi() != null ? paydas.getVergiNumarasi() : "-"));
+
+        return userDTO;
+    }
+
+    private ReportKararDTO getReportKararDTO(BDNTDenetimTespit bdntDenetimTespit) {
+        ReportKararDTO reportKararDTO = new ReportKararDTO();
+        if (DenetimTespitKararAksiyon.CEZA.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
+            reportKararDTO.setCeza(DenetimTespitKararAksiyon.CEZA.toString());
+            reportKararDTO.setCezaMiktari((bdntDenetimTespit.getCezaMiktari() != null ? bdntDenetimTespit.getCezaMiktari().toString() + " TL" : "-"));
+        }
+
+        if (DenetimTespitKararAksiyon.KAPAMA.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
+            reportKararDTO.setKapama(DenetimTespitKararAksiyon.KAPAMA.toString());
+            reportKararDTO.setKapamaBaslangicTarihi((bdntDenetimTespit.getKapamaBaslangicTarihi() != null ? (new SimpleDateFormat("dd-MM-yyyy").format(bdntDenetimTespit.getKapamaBaslangicTarihi())) : "-"));
+            reportKararDTO.setKapamaBitisTarihi((bdntDenetimTespit.getKapamaBitisTarihi() != null ? (new SimpleDateFormat("dd-MM-yyyy").format(bdntDenetimTespit.getKapamaBitisTarihi())) : "-"));
+        }
+
+        if (DenetimTespitKararAksiyon.EKSURE.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
+            reportKararDTO.setEkSure(DenetimTespitKararAksiyon.EKSURE.toString());
+            reportKararDTO.setEkSureZaman((bdntDenetimTespit.getVerilenSure() != null ? bdntDenetimTespit.getVerilenSure() + " GÜN" : "-"));
+        }
+
+        if (DenetimTespitKararAksiyon.BELIRSIZ.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
+            reportKararDTO.setBelirsiz(DenetimTespitKararAksiyon.BELIRSIZ.toString());
+        }
+
+        return reportKararDTO;
     }
 
     private List<BelediyeUserDTO> getBelediyeUserDTOListByDenetimTarafList(List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList) {
@@ -129,20 +168,20 @@ public class DenetimReportService {
         return belediyeUserDTOList;
     }
 
-    private UserDTO getPaydasByDenetimTarafList(List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList) {
+    private UserDTO getSahisByDenetimTarafList(List<BDNTDenetimTespitTaraf> bdntDenetimTespitTarafList) {
         UserDTO paydas = null;
         try {
             for (BDNTDenetimTespitTaraf item: bdntDenetimTespitTarafList) {
                 if (Constants.DENETIM_TARAF_TURU_PAYDAS.equalsIgnoreCase(item.getTarafTuru())) {
                     paydas = new UserDTO();
-                    paydas.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
-                    paydas.setTckn(item.getTcKimlikNo());
-                    paydas.setTarafTuru(item.getTarafTuru());
+                    paydas.setAdiSoyadi((item.getAdi() != null && item.getSoyadi() != null) ? item.getAdi() + " " + item.getSoyadi() : "-");
+                    paydas.setTckn((item.getTcKimlikNo() != null ? item.getTcKimlikNo().toString() : "-"));
+                    paydas.setTarafTuru((item.getTarafTuru() != null ? item.getTarafTuru() : "-"));
                     return paydas;
                 }
             }
         } catch (Exception ex) {
-            LOG.error("getPaydasByDenetimTarafList() hata olustu. ERROR="+ex.getMessage());
+            LOG.error("getSahisByDenetimTarafList() hata olustu. ERROR="+ex.getMessage());
             return null;
         }
         return paydas;

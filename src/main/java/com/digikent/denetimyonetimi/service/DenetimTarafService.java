@@ -173,4 +173,8 @@ public class DenetimTarafService {
     public List<Fsm1UserDTO> getPersonelListByCurrentUserService(PersonalUniqueRequest personalUniqueRequest) {
         return denetimTarafRepository.findFsm1UsersByUserServisGorev(personalUniqueRequest.getFsm1UsersUSERID());
     }
+
+    public MPI1Paydas getMpi1PaydasById(Long id) {
+        return denetimTarafRepository.findMpi1PaydasById(id);
+    }
 }
