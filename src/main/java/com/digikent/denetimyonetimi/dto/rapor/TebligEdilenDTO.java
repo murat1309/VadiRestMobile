@@ -5,9 +5,12 @@ package com.digikent.denetimyonetimi.dto.rapor;
  */
 public class TebligEdilenDTO {
 
+    private String tebligSecenegi;
     private String adi;
     private String soyadi;
-    private Long TCKimlikNo;
+    private String TCKimlikNo;
+    private String imtina;
+    private String paydasYok;
 
     public String getAdi() {
         return adi;
@@ -25,11 +28,35 @@ public class TebligEdilenDTO {
         this.soyadi = soyadi;
     }
 
-    public Long getTCKimlikNo() {
+    public String getTCKimlikNo() {
         return TCKimlikNo;
     }
 
-    public void setTCKimlikNo(Long TCKimlikNo) {
+    public void setTCKimlikNo(String TCKimlikNo) {
         this.TCKimlikNo = TCKimlikNo;
+    }
+
+    public String getTebligSecenegi() {
+        return tebligSecenegi;
+    }
+
+    public void setTebligSecenegi(String tebligSecenegi) {
+        this.tebligSecenegi = tebligSecenegi;
+    }
+
+    public String getImtina() {
+        return imtina;
+    }
+
+    public void setImtina(String imtina) {
+        this.imtina = imtina;
+    }
+
+    public String getPaydasYok() {
+        return paydasYok;
+    }
+
+    public void setPaydasYok(String paydasYok) {
+        this.paydasYok = paydasYok;
     }
 }

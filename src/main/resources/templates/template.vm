@@ -346,8 +346,22 @@
                 <div class="cell row-height">$tebligEdilenBilgileri.adi</div>
                 <div class="cell row-height">$tebligEdilenBilgileri.soyadi</div>
                 <div class="cell row-height">$tebligEdilenBilgileri.TCKimlikNo</div>
-                <div class="cell row-height"> </div>
+
+                #if ($tebligEdilenBilgileri.imtina)
+                    <div class="cell row-height">$tebligEdilenBilgileri.imtina</div>
+                #end
+
+                #if ($tebligEdilenBilgileri.paydasYok)
+                    <div class="cell row-height">$tebligEdilenBilgileri.paydasYok</div>
+                #end
+
+                #if (!$tebligEdilenBilgileri.paydasYok && !$tebligEdilenBilgileri.imtine)
+                    <div class="cell row-height"> </div>
+                #end
+
             </div>
+
+
 
         #end
     </div>
