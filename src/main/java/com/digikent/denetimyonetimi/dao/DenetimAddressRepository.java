@@ -145,7 +145,10 @@ public class DenetimAddressRepository {
 
     public List<SokakDTO> findSokakListByMahalleId(Long mahalleId) {
         List<SokakDTO> sokakDTOList = new ArrayList<>();
-        String sql = "SELECT ID, TANIM FROM SRE1SOKAK WHERE ID > 0 AND DRE1MAHALLE_ID=" + mahalleId +" AND NVL(ISACTIVE,'E') = 'E' ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
+        String sql = "SELECT A.ID,A.TANIM FROM DRE1MAHALLESOKAK B INNER JOIN SRE1SOKAK A ON B.SRE1SOKAK_ID=A.ID \n" +
+                " WHERE B.DRE1MAHALLE_ID=" + mahalleId + " AND B.ID>0 AND A.ID>0 \n" +
+                " AND NVL(A.ISACTIVE,'E') = 'E' AND NVL(B.ISACTIVE,'E') = 'E' \n" +
+                " ORDER BY NLSSORT(TANIM, 'NLS_SORT=turkish')";
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
