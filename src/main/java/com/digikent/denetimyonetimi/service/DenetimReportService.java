@@ -8,6 +8,7 @@ import com.digikent.denetimyonetimi.dto.rapor.*;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.denetimyonetimi.enums.DenetimTespitKararAksiyon;
+import com.digikent.denetimyonetimi.enums.TebligSecenegi;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.general.util.UtilOperationSystem;
 import com.digikent.mesajlasma.dto.ErrorDTO;
@@ -301,9 +302,14 @@ public class DenetimReportService {
     public TebligEdilenDTO getTebligBilgileri(DenetimDTO denetimDTO) {
         try {
             TebligEdilenDTO tebligEdilenDTO = new TebligEdilenDTO();
-            tebligEdilenDTO.setAdi((denetimDTO.getTebligAdi() == null ? " " : denetimDTO.getTebligAdi()));
-            tebligEdilenDTO.setSoyadi((denetimDTO.getTebligSoyadi() == null ? " " : denetimDTO.getTebligSoyadi()));
-            tebligEdilenDTO.setTCKimlikNo((denetimDTO.getTebligTCKimlikNo() == null ? 0 : denetimDTO.getTebligTCKimlikNo()));
+            tebligEdilenDTO.setAdi((denetimDTO.getTebligAdi() == null ? "-" : denetimDTO.getTebligAdi()));
+            tebligEdilenDTO.setSoyadi((denetimDTO.getTebligSoyadi() == null ? "-" : denetimDTO.getTebligSoyadi()));
+            tebligEdilenDTO.setTCKimlikNo((denetimDTO.getTebligTCKimlikNo() == null ? "-" : denetimDTO.getTebligTCKimlikNo().toString()));
+            if (denetimDTO.getTebligSecenegi() != null && denetimDTO.getTebligSecenegi().toString().equalsIgnoreCase(TebligSecenegi.IMTINA.toString())) {
+                tebligEdilenDTO.setImtina("İmza atmaktan imtina etmiştir");
+            } else if (denetimDTO.getTebligSecenegi() != null && denetimDTO.getTebligSecenegi().toString().equalsIgnoreCase(TebligSecenegi.PAYDASYOK.toString())) {
+                tebligEdilenDTO.setImtina("Paydaş yerinde bulunamamıştır");
+            }
             return tebligEdilenDTO;
         } catch (Exception ex) {
             LOG.error("getTebligBilgileri() hata olustu. TebligTCNO="+denetimDTO.getTebligTCKimlikNo());

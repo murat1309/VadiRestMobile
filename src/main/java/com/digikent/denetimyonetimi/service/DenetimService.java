@@ -265,22 +265,22 @@ public class DenetimService {
     }
 
     public List<DenetimDTO> getDenetimList(DenetimTespitSearchRequest denetimTespitSearchRequest) {
-        String endOfQuery = "WHERE ROWNUM <= 50 ";
-
-        //inputa kriter girilmişse sorguya eklenir
-        if (denetimTespitSearchRequest.getCriteria() != null)
-            endOfQuery = endOfQuery + " AND (MPI1PAYDAS_ID LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%'" +
-                    " OR TCKIMLIKNO LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%' " +
-                    " OR (SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%') ";
+        String beginQuery = "SELECT * FROM (" + getDenetimlerGeneralSql();
+        String endOfQuery = " ) WHERE ROWNUM <= 50";
 
         //tarih seçilmişse tarih kriteri sorguya eklenir
         if (denetimTespitSearchRequest.getStartDate() != null && denetimTespitSearchRequest.getEndDate() != null) {
-            endOfQuery = endOfQuery + " AND CRDATE BETWEEN TO_DATE('" + denetimTespitSearchRequest.getStartDate() + "','dd-mm-yyyy') AND TO_DATE('" + denetimTespitSearchRequest.getEndDate() + "', 'dd-mm-yyyy') ";
+            beginQuery = beginQuery + " WHERE CRDATE BETWEEN TO_DATE('" + denetimTespitSearchRequest.getStartDate() + "','dd-mm-yyyy') AND TO_DATE('" + denetimTespitSearchRequest.getEndDate() + "', 'dd-mm-yyyy') ";
         }
 
-        endOfQuery = endOfQuery + " ORDER BY CRDATE DESC";
+        //inputa kriter girilmişse sorguya eklenir
+        if (denetimTespitSearchRequest.getCriteria() != null)
+            beginQuery = beginQuery + (denetimTespitSearchRequest.getStartDate() != null ? " AND " : " WHERE ") + " (MPI1PAYDAS_ID LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%'" +
+                    " OR TCKIMLIKNO LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%' " +
+                    " OR (SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%') ";
+        beginQuery = beginQuery + " ORDER BY CRDATE DESC";
 
-        return denetimRepository.findDenetimListBySql(getDenetimlerGeneralSql() + endOfQuery);
+        return denetimRepository.findDenetimListBySql(beginQuery + endOfQuery);
     }
 
     public String getDenetimlerGeneralSql() {
