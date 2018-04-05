@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dto.denetim.DenetimObjectDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimObjectRequestDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
+import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.service.DenetimOverviewService;
 import com.digikent.denetimyonetimi.service.DenetimReportService;
@@ -98,6 +99,18 @@ public class DenetimOverviewResource {
         UtilDenetimSaveDTO utilDenetimSaveDTO;
         utilDenetimSaveDTO = denetimOverviewService.updateDenetimKararBilgileriByDenetimId(denetimTespitKararRequest, denetimTespitId);
 
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
+    @RequestMapping(value = "/update/tespitgirisleri", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> updateDenetimTespitBilgileriByDenetimTespitId(@RequestBody TespitlerRequest tespitlerRequest) {
+        LOG.debug("tespit guncelleme islemi yapilacak");
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
+        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
+        LOG.debug("path=/update/tespitgirisleri : tespitlerin güncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 }

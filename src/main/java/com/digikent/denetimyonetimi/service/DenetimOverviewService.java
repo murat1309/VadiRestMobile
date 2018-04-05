@@ -87,7 +87,7 @@ public class DenetimOverviewService {
     public  static String getDenetimObjectTespitInfoSqlQuery(DenetimObjectRequestDTO denetimObjectRequestDTO) {
         String sql = "SELECT LDNTTESPIT_ID,STRINGVALUE,TEXTVALUE,NUMBERVALUE,DATEVALUE,TUTARI, " +
                 "(SELECT SECENEKTURU FROM LDNTTESPIT WHERE LDNTTESPIT.ID = BDNTDENETIMTESPITLINE.LDNTTESPIT_ID) AS SECENEKTURU " +
-                " FROM BDNTDENETIMTESPITLINE WHERE BDNTDENETIMTESPIT_ID = " + denetimObjectRequestDTO.getDenetimTespitId();
+                " FROM BDNTDENETIMTESPITLINE WHERE ISACTIVE = 'E' AND BDNTDENETIMTESPIT_ID = " + denetimObjectRequestDTO.getDenetimTespitId();
 
         return sql;
     }
