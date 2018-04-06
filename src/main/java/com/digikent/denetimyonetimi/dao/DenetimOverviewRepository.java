@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -392,7 +393,7 @@ public class DenetimOverviewRepository {
             if(numberValue != null)
                 tespitCevapDTO.setNumberValue(numberValue.longValue());
             if(dateValue != null)
-                tespitCevapDTO.setDateValue(String.format(dateValue.toString(), "DD-MM-YYYY"));
+                tespitCevapDTO.setDateValue(new SimpleDateFormat("dd-MM-yyyy").format(dateValue));
             if(tutari != null) {
                 tespitSaveDTO.setCezaSelected(true);
             } else {
