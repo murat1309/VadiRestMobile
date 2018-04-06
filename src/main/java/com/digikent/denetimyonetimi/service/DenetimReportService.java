@@ -92,19 +92,19 @@ public class DenetimReportService {
         List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
         Nsm2Parametre nsm2Parametre = denetimReportRepository.getNSM2Parametre();
         TespitGrubuDTO tespitGrubuDTO = denetimRepository.findTespitGrubuDTOById(bdntDenetimTespit.getTespitGrubuId());
-        ReportKararDTO reportKararDTO = getReportKararDTO(bdntDenetimTespit);
-
 
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
-        vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), "147852369"));
+        //TODO döküman no ayarlanmalı
+        vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), " "));
         vc.put("reportTespitDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_TESPIT));
         vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
         vc.put("logoBase64", getBase64StringLOGO());
         vc.put("belediyeAdi", (nsm2Parametre.getBelediyeAdi() == null ? "" : nsm2Parametre.getBelediyeAdi()));
         vc.put("ilAdi", (nsm2Parametre.getIlAdi() == null ? "" : nsm2Parametre.getIlAdi()));
-        vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getKayitOzelIsmi() : " "));
+        vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getRaporBaslik() : " "));
+        vc.put("tespitGrubuAciklama", (tespitGrubuDTO != null ? tespitGrubuDTO.getAltBilgi() : null));
         vc.put("karar", getReportKararDTO(bdntDenetimTespit));
 
 
@@ -296,6 +296,8 @@ public class DenetimReportService {
             }
 
         }
+        if (reportTespitDTOs.isEmpty())
+            return null;
         return reportTespitDTOs;
     }
 

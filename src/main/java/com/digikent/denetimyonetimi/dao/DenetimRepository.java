@@ -1104,7 +1104,7 @@ public class DenetimRepository {
 
     public TespitGrubuDTO findTespitGrubuDTOById(Long tespitGrubuId) {
         List<TespitGrubuDTO> tespitGrubuDTOList = new ArrayList<>();
-        String sql = "SELECT ID,TANIM,KAYITOZELISMI,IZAHAT,RAPORBASLIK FROM LDNTTESPITGRUBU WHERE ID=" + tespitGrubuId;
+        String sql = "SELECT ID,TANIM,KAYITOZELISMI,IZAHAT,RAPORBASLIK,ALTBILGI FROM LDNTTESPITGRUBU WHERE ID=" + tespitGrubuId;
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -1122,6 +1122,7 @@ public class DenetimRepository {
                 String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
                 String izahat = (String) map.get("IZAHAT");
                 String raporBaslik = (String) map.get("RAPORBASLIK");
+                String altBilgi = (String) map.get("ALTBILGI");
 
                 if(id != null)
                     tespitGrubuDTO.setId(id.longValue());
@@ -1133,6 +1134,8 @@ public class DenetimRepository {
                     tespitGrubuDTO.setIzahat(izahat);
                 if(raporBaslik != null)
                     tespitGrubuDTO.setRaporBaslik(raporBaslik);
+                if(altBilgi != null)
+                    tespitGrubuDTO.setAltBilgi(altBilgi);
 
                 tespitGrubuDTOList.add(tespitGrubuDTO);
             }
