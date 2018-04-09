@@ -236,5 +236,25 @@ public class DenetimAddressRepository {
         return ilDTOList;
     }
 
+    public String findBelediyeAdres() {
+        String sql = "SELECT NVL(SM2.F_PARAMETRE('BELEDIYE', 'ADRES'),'-') AS BELEDIYEADRES FROM DUAL";
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                String adres = (String) map.get("BELEDIYEADRES");
+
+                if(adres != null)
+                    return adres;
+            }
+        }
+        return null;
+    }
+
 
 }

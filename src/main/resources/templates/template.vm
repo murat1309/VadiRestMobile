@@ -411,6 +411,15 @@
         #end
     </div>
 
+    #if ($belediyeAdres)
+        <br>
+        <div class="row">
+            <div class="cell">Belediye Adresi : $belediyeAdres </div>
+        </div>
+    #end
+
+
+
 
 
 </div>

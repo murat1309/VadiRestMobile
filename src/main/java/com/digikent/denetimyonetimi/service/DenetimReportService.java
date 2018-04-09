@@ -52,6 +52,9 @@ public class DenetimReportService {
     @Autowired
     DenetimTarafService denetimTarafService;
 
+    @Autowired
+    DenetimAddressService denetimAddressService;
+
     /**
      * Ceza raporu çıktısını html string objesi olarak döndürür
      * @param denetimTespitId
@@ -106,6 +109,7 @@ public class DenetimReportService {
         vc.put("tespitBaslik", (tespitGrubuDTO != null ? tespitGrubuDTO.getRaporBaslik() : " "));
         vc.put("tespitGrubuAciklama", (tespitGrubuDTO != null ? tespitGrubuDTO.getAltBilgi() : null));
         vc.put("karar", getReportKararDTO(bdntDenetimTespit));
+        vc.put("belediyeAdres", (denetimAddressService.getBelediyeAdres()));
 
 
         StringWriter sw = new StringWriter();
