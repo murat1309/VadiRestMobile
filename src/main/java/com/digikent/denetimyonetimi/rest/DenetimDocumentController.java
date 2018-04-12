@@ -25,7 +25,6 @@ import static org.springframework.http.HttpStatus.OK;
  * Created by Kadir on 7.03.2018.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/denetim/document")
 public class DenetimDocumentController {
     private final Logger LOG = LoggerFactory.getLogger(DenetimDocumentController.class);
@@ -33,6 +32,7 @@ public class DenetimDocumentController {
     @Autowired
     DenetimDocumentService denetimDocumentService;
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/save/photo/{denetimtespitid}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetimPhoto (@PathVariable Long denetimtespitid, @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
