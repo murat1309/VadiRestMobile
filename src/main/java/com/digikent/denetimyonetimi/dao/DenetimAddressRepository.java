@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.denetimyonetimi.dto.adres.*;
+import com.digikent.security.SecurityUtils;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -8,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -37,6 +39,8 @@ public class DenetimAddressRepository {
         SQLQuery query = session.createSQLQuery(sql);
         query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         list = query.list();
+
+        User authenticatedUser = SecurityUtils.getAuthenticatedUser();
 
         List<MahalleSokakDTO> mahalleSokakDTOList = new ArrayList<>();
 
@@ -234,6 +238,26 @@ public class DenetimAddressRepository {
             }
         }
         return ilDTOList;
+    }
+
+    public String findBelediyeAdres() {
+        String sql = "SELECT NVL(SM2.F_PARAMETRE('BELEDIYE', 'ADRES'),'-') AS BELEDIYEADRES FROM DUAL";
+        List list = new ArrayList<>();
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                String adres = (String) map.get("BELEDIYEADRES");
+
+                if(adres != null)
+                    return adres;
+            }
+        }
+        return null;
     }
 
 

@@ -273,9 +273,13 @@ public class DenetimService {
             beginQuery = beginQuery + " WHERE CRDATE BETWEEN TO_DATE('" + denetimTespitSearchRequest.getStartDate() + "','dd-mm-yyyy') AND TO_DATE('" + denetimTespitSearchRequest.getEndDate() + "', 'dd-mm-yyyy') ";
         }
 
-        //inputa kriter girilmişse sorguya eklenir
+        //inputa kriter(paydasadı paydassoyadı isletme tabela adı) girilmişse sorguya eklenir
+        if (denetimTespitSearchRequest.getPaydasName() != null)
+            beginQuery = beginQuery + " AND  (SELECT RAPORADI from MPI1PAYDAS where MPI1PAYDAS.ID=BDNTDENETIM.MPI1PAYDAS_ID AND rownum = 1) LIKE '%" + denetimTespitSearchRequest.getPaydasName() + "%'";
+
+        //inputa kriter(vergino tcno paydasId) girilmişse sorguya eklenir
         if (denetimTespitSearchRequest.getCriteria() != null)
-            beginQuery = beginQuery + (denetimTespitSearchRequest.getStartDate() != null ? " AND " : " WHERE ") + " (MPI1PAYDAS_ID LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%'" +
+            beginQuery = beginQuery + " AND (MPI1PAYDAS_ID LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%'" +
                     " OR TCKIMLIKNO LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%' " +
                     " OR (SELECT VERGINUMARASI from BISLISLETME where BISLISLETME.ID=BDNTDENETIM.BISLISLETME_ID AND rownum = 1) LIKE '%" + denetimTespitSearchRequest.getCriteria() + "%') ";
         beginQuery = beginQuery + " ORDER BY CRDATE DESC";

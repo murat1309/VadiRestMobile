@@ -135,9 +135,9 @@
             <div class=""><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
         </div>
         <div class="kolon2">
-            <h3> $ilAdi VALİLİĞİ $belediyeAdi KAYMAKAMLIĞI </h3>
-            <h3> $belediyeAdi BELEDİYE BAŞKANLIĞI </h3>
-            <h3> $tespitBaslik TUTANAĞI </h3>
+            <h3> T.C. $belediyeAdi BELEDİYE BAŞKANLIĞI </h3>
+            <h3> ZABITA MÜDÜRLÜĞÜ </h3>
+            <h3> $tespitBaslik </h3>
         </div>
     </div>
 
@@ -220,28 +220,31 @@
     </br>
     </br>
 
+
     <div class="cerceve">
-        <div class="table m">
-            <div class="title"> » Ek Bilgiler </div>
-            #foreach( $ekBilgiDTO in $reportEkBilgiDTOs )
-                <div class="row">
-                    <div class="cell-ek" style="width: 50%">
-                        <div class="innertable head">
-                            <div class="row">
-                                <div class="cell c">$ekBilgiDTO.tespitAciklamasi</div>
-                                <div class="cell">$ekBilgiDTO.deger</div>
-                            </div>
-                            #if ($ekBilgiDTO.aciklama)
+        #if ($reportEkBilgiDTOs)
+            <div class="table m">
+                <div class="title"> » Ek Bilgiler </div>
+                #foreach( $ekBilgiDTO in $reportEkBilgiDTOs )
+                    <div class="row">
+                        <div class="cell-ek" style="width: 50%">
+                            <div class="innertable head">
                                 <div class="row">
-                                    <div class="cell c">Açıklama</div>
-                                    <div class="cell">$ekBilgiDTO.aciklama</div>
+                                    <div class="cell c">$ekBilgiDTO.tespitAciklamasi</div>
+                                    <div class="cell">$ekBilgiDTO.deger</div>
                                 </div>
-                            #end
+                                #if ($ekBilgiDTO.aciklama)
+                                    <div class="row">
+                                        <div class="cell c">Açıklama</div>
+                                        <div class="cell">$ekBilgiDTO.aciklama</div>
+                                    </div>
+                                #end
+                            </div>
                         </div>
                     </div>
-                </div>
-            #end
-        </div>
+                #end
+            </div>
+        #end
 
         #if ($reportTespitDTOs)
             <div class="table m">
@@ -374,7 +377,10 @@
                     <div class="cell row-height">$tebligEdilenBilgileri.adi</div>
                     <div class="cell row-height">$tebligEdilenBilgileri.soyadi</div>
                     <div class="cell row-height">$tebligEdilenBilgileri.TCKimlikNo</div>
+                    <div class="cell row-height"> </div>
+                </div>
 
+                <div class="row">
                     #if ($tebligEdilenBilgileri.imtina)
                         <div class="cell row-height">$tebligEdilenBilgileri.imtina</div>
                     #end
@@ -382,14 +388,7 @@
                     #if ($tebligEdilenBilgileri.paydasYok)
                         <div class="cell row-height">$tebligEdilenBilgileri.paydasYok</div>
                     #end
-
-                    #if (!$tebligEdilenBilgileri.paydasYok && !$tebligEdilenBilgileri.imtine)
-                        <div class="cell row-height"> </div>
-                    #end
-
                 </div>
-
-
 
             #end
         </div>
@@ -411,6 +410,15 @@
             </div>
         #end
     </div>
+
+    #if ($belediyeAdres)
+        <br>
+        <div class="row">
+            <div class="cell">Belediye Adresi : $belediyeAdres </div>
+        </div>
+    #end
+
+
 
 
 

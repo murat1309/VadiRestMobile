@@ -22,6 +22,9 @@ public class Person {
 	private String dosyaAdi;
 	private String dosyaTuru;
 	private byte[] icerik;
+	private String seflik;
+	private String iseBaslamaTarihi;
+	private String meslek;
 		
 	
 	
@@ -154,5 +157,28 @@ public class Person {
 	public void setDogumYeri(String dogumYeri) {
 		this.dogumYeri = dogumYeri;
 	}
-	
+
+	public String getSeflik() {
+		return seflik;
+	}
+
+	public void setSeflik(String seflik) {
+		this.seflik = seflik;
+	}
+
+	public String getIseBaslamaTarihi() {
+		return iseBaslamaTarihi;
+	}
+
+	public void setIseBaslamaTarihi(String iseBaslamaTarihi) {
+		this.iseBaslamaTarihi = iseBaslamaTarihi;
+	}
+
+	public String getMeslek() {
+		return meslek;
+	}
+
+	public void setMeslek(String meslek) {
+		this.meslek = meslek;
+	}
 }

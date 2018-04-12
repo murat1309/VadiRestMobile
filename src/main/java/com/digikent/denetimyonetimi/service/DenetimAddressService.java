@@ -91,4 +91,13 @@ public class DenetimAddressService {
         return denetimAddressRepository.findIlList();
     }
 
+    /**
+     * Geçerli tbelediye adresini getirir
+     * @return
+     */
+    @Cacheable(value = "belediyeadres", key = "#root.methodName.toString()")
+    public String getBelediyeAdres() {
+        return denetimAddressRepository.findBelediyeAdres();
+    }
+
 }

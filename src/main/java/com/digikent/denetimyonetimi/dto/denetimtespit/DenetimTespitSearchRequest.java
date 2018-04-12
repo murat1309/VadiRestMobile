@@ -11,6 +11,7 @@ public class DenetimTespitSearchRequest {
      * criteria değeri vergi no, paydaş no, tc no olabilir.
      */
     private Long criteria;
+    private String paydasName;
     private String startDate;
     private String endDate;
 
@@ -36,5 +37,13 @@ public class DenetimTespitSearchRequest {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public String getPaydasName() {
+        return paydasName;
+    }
+
+    public void setPaydasName(String paydasName) {
+        this.paydasName = paydasName;
     }
 }
