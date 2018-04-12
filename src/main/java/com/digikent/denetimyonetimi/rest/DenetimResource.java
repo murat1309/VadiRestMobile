@@ -19,10 +19,13 @@ import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasRequestDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import com.digikent.denetimyonetimi.service.DenetimService;
+import com.digikent.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +40,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * Created by Kadir on 25.01.2018.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/denetim")
 public class DenetimResource {
 
@@ -228,6 +231,9 @@ public class DenetimResource {
     @Transactional
     public ResponseEntity<List<DenetimDTO>> getDenetimListByCriteria(@RequestBody DenetimTespitSearchRequest denetimTespitSearchRequest) {
         LOG.debug("REST denetimler geitirilecek");
+        User authenticatedUser = SecurityUtils.getAuthenticatedUser();
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
+        User currentUser = SecurityUtils.getCurrentUser();
         List<DenetimDTO> denetimDTOList = null;
         denetimDTOList = denetimService.getDenetimList(denetimTespitSearchRequest);
         return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);

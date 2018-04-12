@@ -8,12 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -22,7 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
  * Created by Kadir on 2.03.2018.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/denetim/address")
 public class DenetimAddressResource {
 
@@ -36,6 +38,9 @@ public class DenetimAddressResource {
 
     @Autowired
     DenetimAddressService denetimAddressService;
+
+    @Autowired
+    HttpServletRequest request;
 
     /*
         Adres bilgilerini getirir
