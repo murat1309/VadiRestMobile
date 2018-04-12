@@ -11,6 +11,7 @@ public class DenetimTebligDTO {
     private String tebligAdi;
     private String tebligSoyadi;
     private Long tebligTC;
+    private String tebligIzahat;
 
     public TebligSecenegi getTebligSecenegi() {
         return tebligSecenegi;
@@ -42,5 +43,13 @@ public class DenetimTebligDTO {
 
     public void setTebligTC(Long tebligTC) {
         this.tebligTC = tebligTC;
+    }
+
+    public String getTebligIzahat() {
+        return tebligIzahat;
+    }
+
+    public void setTebligIzahat(String tebligIzahat) {
+        this.tebligIzahat = tebligIzahat;
     }
 }

@@ -199,6 +199,7 @@ public class DenetimOverviewRepository {
         String tebligAdi = (String) map.get("TEBLIG_ADI");
         String tebligSoyadi = (String) map.get("TEBLIG_SOYADI");
         BigDecimal tebligTC = (BigDecimal) map.get("TEBLIG_TC");
+        String tebligIzahat = (String) map.get("TEBLIGIZAHAT");
 
         if (tebligSecenegi != null)
             denetimTebligDTO.setTebligSecenegi(TebligSecenegi.valueOf(tebligSecenegi));
@@ -208,6 +209,8 @@ public class DenetimOverviewRepository {
             denetimTebligDTO.setTebligSoyadi(tebligSoyadi);
         if (tebligTC != null)
             denetimTebligDTO.setTebligTC(tebligTC.longValue());
+        if(tebligIzahat != null)
+            denetimTebligDTO.setTebligIzahat(tebligIzahat);
 
         return denetimTebligDTO;
 
@@ -586,12 +589,12 @@ public class DenetimOverviewRepository {
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
             list = query.list();
 
-            return list;
-
         } catch (Exception e) {
             LOG.debug("\"Denetim Objesi Karar Info Cekilirken Bir Hata Olustu. Hata Mesaj = " + e.getMessage());
-            return list;
         }
+
+        return list;
+
     }
 
 

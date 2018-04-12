@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.util.List;
@@ -55,6 +56,9 @@ public class DenetimResource {
     @Autowired
     DenetimAddressService denetimAddressService;
 
+    @Autowired
+    HttpServletRequest request;
+
     /*
         kriterlere göre paydaş araması yapılır
     */
@@ -64,7 +68,7 @@ public class DenetimResource {
     @Transactional
     public ResponseEntity<DenetimPaydasResponseDTO> getPaydasListByCriteria(@RequestBody DenetimPaydasRequestDTO denetimPaydasRequestDTO) {
         LOG.debug("Denetim - paydas/search Gelen Paydas Arama Kriteri : " + denetimPaydasRequestDTO.getFilter());
-
+        request.getHeader("UserId");
         DenetimPaydasResponseDTO denetimPaydasResponseDTO = null;
         if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
             denetimPaydasResponseDTO = paydasIliskileriManagementService.getPaydasInfoByDenetimFilter(denetimPaydasRequestDTO);

@@ -1018,12 +1018,14 @@ public class DenetimRepository {
                     bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
                     bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
                     bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
+                    bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
                 } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null) {
                     // ILGILISI - IMTINA - PAYDASYOK - > SAHIS || KURUM
                     if (denetimTebligRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
                         bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
                         bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
                         bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
+                        bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
                     }
                 }
                 session.update(bdntDenetim);

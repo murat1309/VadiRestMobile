@@ -1,9 +1,7 @@
 package com.digikent.ruhsat.web.rest;
 
-import com.digikent.config.Constants;
 import com.digikent.ruhsat.dao.TLI3RuhsatRepository;
 import com.digikent.ruhsat.dto.*;
-import com.digikent.sosyalyardim.dao.SY1DosyaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -68,14 +66,14 @@ public class TLI3RuhsatResource {
 
     @RequestMapping(method = POST, value = "/tli3Ruhsat/address", produces = APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<List<TLI3RuhsatDTO>> getRuhsatByAdres(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
+    public ResponseEntity<List<TLI3RuhsatDTO>> getRuhsatByAdres(@RequestBody RuhsatAdresSorguDTO ruhsatAdresSorguDTO) {
         LOG.debug("REST request to get ruhsat with adres");
         List<TLI3RuhsatDTO> results = null;
 
-        if (tli3RuhsatDTO.getBinaId() == null) {
-            results = repository.getRuhsatByAddressWithoutBina(tli3RuhsatDTO);
+        if (ruhsatAdresSorguDTO.getKapiValue() == null) {
+            results = repository.getRuhsatByAddressWithoutKapi(ruhsatAdresSorguDTO);
         } else {
-            results = repository.getRuhsatByAddressWithBina(tli3RuhsatDTO);
+            results = repository.getRuhsatByAddressWithKapi(ruhsatAdresSorguDTO);
         }
 
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
@@ -113,11 +111,11 @@ public class TLI3RuhsatResource {
         return new ResponseEntity<List<SRE1SokakDTO>>(results, OK);
     }
 
-    @RequestMapping(method = GET, value = "/tli3Ruhsat/bina/{sokakId}", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = GET, value = "/tli3Ruhsat/kapi/{sokakId}", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<ERE1YapiDTO>> getBinaByMahalleAndSokak(@PathVariable("sokakId") Long sokakId) {
-        LOG.debug("REST request to get all bina by sokakId = " + sokakId);
-        List<ERE1YapiDTO> results = repository.getBinaBySokakId(sokakId);
+        LOG.debug("REST request to get all kapi by sokakId = " + sokakId);
+        List<ERE1YapiDTO> results = repository.getKapiBySokakId(sokakId);
         return new ResponseEntity<List<ERE1YapiDTO>>(results, OK);
     }
 }

@@ -59,42 +59,153 @@ public class TLI3RuhsatService {
     }
 
     public String getRuhsatSQLWithERE1YAPI() {
-        return "select R.ID, r.RUHSATID,b.raporadi as ADSOYAD,ISYERIUNVANI," +
-                "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
-                "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
-                "(select TANIM from PRE1IL where id=(select PRE1IL_ID from RRE1ILCE where id=m.RRE1ILCE_ID))as adres2," +
-                "r.KULLANIMALANI," +
-                "dosya.DOSYAREFERANSNO," +
-                "y.ID as ERE1YAPI_ID," +
-                "r.YILI, " +
-                "r.ELI1RUHSATDOSYA_ID as DOSYANUMARASI, " +
-                "(SELECT TANIM FROM GLI1FALIYET WHERE ID=r.GLI1FALIYET_ISYERI) as ISYERIANAFAALIYET, " +
-                "(SELECT TANIM FROM ALI1ISLEMDURUMU WHERE ID=r.ALI1ISLEMDURUMU_ID) as RUHSATDURUMU,    " +
-                "(SELECT TANIM FROM ALI1ISYERIDURUMU WHERE ID=r.ALI1ISYERIDURUMU_ID) as ISYERIDURUMU,  " +
-                "(select F_UPPER(TANIM) from ISM2FALIYET where id=r.ISM2FALIYET_ID) KISALTMA ," +
-                "(LI1.F_RUHSAT_FALIYET_GETIR(r.id)) rhs_faliyet_adi," +
-                "(select TANIM from GLI1FALIYET where id=r.GLI1FALIYET_ISYERI) rhs_faliyet_isyeri_adi," +
-                "r.ACILISSAATI,r.KAPANISSAATI,R.MPI1PAYDAS_ID," +
-                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATBASKAN_YARDIMCISI') RUHSATBASKANYARDIMCISI," +
-                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATMUDURU') RUHSATMUDURU," +
-                "(SELECT ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = R.IHR1PERSONEL_MEMUR) MEMUR," +
-                "r.IZAHAT" +
-                ",t.KAYITOZELISMI AS RUHSATTURU" +
-                ",nvl(decode(r.isyerisinifi,'Y','','L','LUKS SINIF ','1','1. SINIF ','2','2. SINIF ','3','3. SINIF ',r.isyerisinifi),' ') as isyerisinifi2, nvl(dosya.PAFTANO,'-') as PAFTANO ,nvl(dosya.ADANO,'-') as ADANO,nvl(dosya.PARSELNO,'-') as PARSELNO" +
-                ",(select adi||' '|| soyadi from ihr1personel where id=(select SM2.F_Parametre('RUHSATYONETIMI','RUHSATSEFI') from dual)) as SEF" +
-                "  from TLI3RUHSAT r,MPI1PAYDAS b,DRE1MAHALLE m,SRE1SOKAK s,SLI1RUHSATTURU t,eli1ruhsatdosya dosya, ERE1YAPI y" +
-                " where  r.MPI1PAYDAS_ID=b.ID" +
-                " and r.DRE1MAHALLE_ID=m.ID" +
-                " and r.SRE1SOKAK_ID=s.ID" +
-                " and r.SLI1RUHSATTURU_ID=t.id " +
-                "   AND r.SLI1RUHSATTURU_ID IN (SELECT B.SLI1RUHSATTURU_ID " +
-                "                                     FROM OLI1RUHSATTIPI A, " +
-                "                                          PLI1RUHSATTIPILINE B " +
-                "                                    WHERE     A.ID = B.OLI1RUHSATTIPI_ID " +
-                "                                          AND A.KAYITOZELISMI = 'ISYERIRUHSAT') " +
-                "and r.ELI1RUHSATDOSYA_ID=dosya.ID(+) " +
-                "and r.sre1sokak_id=y.SRE1SOKAK_ID " +
-                "and y.DRE1MAHALLE_ID=m.id ";
+        return "SELECT\n" +
+                "R.ID,\n" +
+                "r.RUHSATID,\n" +
+                "b.raporadi AS ADSOYAD,\n" +
+                "R.ISYERIUNVANI,\n" +
+                "m.TANIM || ' ' ||(\n" +
+                "DECODE(( SELECT NVL( dre1mahalle.turu, 'M' ) FROM dre1mahalle WHERE id = m.id ), 'K', 'KÖYÜ', 'M', 'MAH.' )\n" +
+                ") AS adres1,\n" +
+                "s.TANIM || DECODE( r.DAIRENO, NULL, ' ', ' ' )|| DOSYA.BINAADI || ' NO:' || r.KAPINO || DECODE( r.DAIRENO, NULL, ' ', '/' )|| r.DAIRENO || ' ' ||(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "RRE1ILCE\n" +
+                "WHERE\n" +
+                "id = m.RRE1ILCE_ID\n" +
+                ")|| '/' ||(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "PRE1IL\n" +
+                "WHERE\n" +
+                "id =(\n" +
+                "SELECT\n" +
+                "PRE1IL_ID\n" +
+                "FROM\n" +
+                "RRE1ILCE\n" +
+                "WHERE\n" +
+                "id = m.RRE1ILCE_ID\n" +
+                ")\n" +
+                ") AS adres2,\n" +
+                "r.KULLANIMALANI,\n" +
+                "dosya.DOSYAREFERANSNO,\n" +
+                "D.ERE1YAPI_ID AS ERE1YAPI_ID,\n" +
+                "r.YILI,\n" +
+                "r.ELI1RUHSATDOSYA_ID AS DOSYANUMARASI,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "GLI1FALIYET\n" +
+                "WHERE\n" +
+                "ID = r.GLI1FALIYET_ISYERI\n" +
+                ") AS ISYERIANAFAALIYET,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "ALI1ISLEMDURUMU\n" +
+                "WHERE\n" +
+                "ID = r.ALI1ISLEMDURUMU_ID\n" +
+                ") AS RUHSATDURUMU,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "ALI1ISYERIDURUMU\n" +
+                "WHERE\n" +
+                "ID = r.ALI1ISYERIDURUMU_ID\n" +
+                ") AS ISYERIDURUMU,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "F_UPPER(TANIM)\n" +
+                "FROM\n" +
+                "ISM2FALIYET\n" +
+                "WHERE\n" +
+                "id = r.ISM2FALIYET_ID\n" +
+                ") KISALTMA,\n" +
+                "(\n" +
+                "LI1.F_RUHSAT_FALIYET_GETIR(r.id)\n" +
+                ") rhs_faliyet_adi,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "TANIM\n" +
+                "FROM\n" +
+                "GLI1FALIYET\n" +
+                "WHERE\n" +
+                "id = r.GLI1FALIYET_ISYERI\n" +
+                ") rhs_faliyet_isyeri_adi,\n" +
+                "r.ACILISSAATI,\n" +
+                "r.KAPANISSAATI,\n" +
+                "R.MPI1PAYDAS_ID,\n" +
+                "SM2.F_PARAMETRE(\n" +
+                "'RUHSATYONETIMI',\n" +
+                "'RUHSATBASKAN_YARDIMCISI'\n" +
+                ") RUHSATBASKANYARDIMCISI,\n" +
+                "SM2.F_PARAMETRE(\n" +
+                "'RUHSATYONETIMI',\n" +
+                "'RUHSATMUDURU'\n" +
+                ") RUHSATMUDURU,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "ADISOYADI\n" +
+                "FROM\n" +
+                "IHR1PERSONEL I\n" +
+                "WHERE\n" +
+                "I.ID = R.IHR1PERSONEL_MEMUR\n" +
+                ") MEMUR,\n" +
+                "r.IZAHAT,\n" +
+                "t.KAYITOZELISMI AS RUHSATTURU,\n" +
+                "NVL( DECODE( r.isyerisinifi, 'Y', '', 'L', 'LUKS SINIF ', '1', '1. SINIF ', '2', '2. SINIF ', '3', '3. SINIF ', r.isyerisinifi ), ' ' ) AS isyerisinifi2,\n" +
+                "NVL( dosya.PAFTANO, '-' ) AS PAFTANO,\n" +
+                "NVL( dosya.ADANO, '-' ) AS ADANO,\n" +
+                "NVL( dosya.PARSELNO, '-' ) AS PARSELNO,\n" +
+                "(\n" +
+                "SELECT\n" +
+                "adi || ' ' || soyadi\n" +
+                "FROM\n" +
+                "ihr1personel\n" +
+                "WHERE\n" +
+                "id =(\n" +
+                "SELECT\n" +
+                "SM2.F_Parametre(\n" +
+                "'RUHSATYONETIMI',\n" +
+                "'RUHSATSEFI'\n" +
+                ")\n" +
+                "FROM\n" +
+                "dual\n" +
+                ")\n" +
+                ") AS SEF\n" +
+                "FROM\n" +
+                "TLI3RUHSAT r,\n" +
+                "MPI1PAYDAS b,\n" +
+                "DRE1MAHALLE m,\n" +
+                "SRE1SOKAK s,\n" +
+                "SLI1RUHSATTURU t,\n" +
+                "ELI1RUHSATDOSYA dosya,\n" +
+                "DRE1BAGBOLUM D,\n" +
+                "FRE1KAPITAHSIS g\n" +
+                "WHERE\n" +
+                "r.MPI1PAYDAS_ID = b.ID\n" +
+                "AND r.DRE1MAHALLE_ID = m.ID\n" +
+                "AND r.SRE1SOKAK_ID = s.ID\n" +
+                "AND r.SLI1RUHSATTURU_ID = t.id\n" +
+                "AND R.DRE1BAGBOLUM_ID = D.ID\n" +
+                "AND r.SLI1RUHSATTURU_ID IN(\n" +
+                "SELECT\n" +
+                "B.SLI1RUHSATTURU_ID\n" +
+                "FROM\n" +
+                "OLI1RUHSATTIPI A,\n" +
+                "PLI1RUHSATTIPILINE B\n" +
+                "WHERE\n" +
+                "A.ID = B.OLI1RUHSATTIPI_ID\n" +
+                "AND A.KAYITOZELISMI = 'ISYERIRUHSAT'\n" +
+                ")\n" +
+                "AND r.ELI1RUHSATDOSYA_ID = dosya.ID(+)\n" +
+                "AND D.FRE1KAPITAHSIS_ID = g.ID\n" +
+                "AND s.ID = ";
     }
 
     public String getRuhsatDurumuSQL() {
@@ -415,7 +526,7 @@ public class TLI3RuhsatService {
     }
 
     public List<DRE1MahalleDTO> getMahalleList() {
-        String sql = "select ID,TANIM||' '||decode(TURU,'K','KÖYÜ','M','MAH.') as TANIM from DRE1MAHALLE where RRE1ILCE_id =(select RRE1ILCE_id from nsm2parametre) and ISACTIVE='E' order by TANIM";
+        String sql = "select ID,TANIM from DRE1MAHALLE where RRE1ILCE_id =(select RRE1ILCE_id from nsm2parametre) and ISACTIVE='E' order by TANIM";
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToDRE1MahalleDTO(objList);
     }
@@ -467,41 +578,30 @@ public class TLI3RuhsatService {
         return sokakDTOList;
     }
 
-    public List<ERE1YapiDTO> getBinaBySokakId(Long sokakId) {
-        //String sql = "SELECT ERE1YAPI_ID,(SELECT BINAADI FROM ERE1YAPI WHERE ID=ERE1YAPI_ID) AS BINA FROM FRE1KAPITAHSIS WHERE ERE1YAPI_ID != 0 and SRE1SOKAK_ID=" + sokakId +" group by ERE1YAPI_ID order by BINA";
-        String sql = "SELECT " +
-                " ERE1YAPI.ID," +
-                " ERE1YAPI.BINAADI " +
-                " FROM FRE1KAPITAHSIS,ERE1YAPI, SRE1SOKAK " +
-                " WHERE FRE1KAPITAHSIS.ERE1YAPI_ID = ERE1YAPI.ID " +
-                " AND (FRE1KAPITAHSIS.SRE1SOKAK_ID = SRE1SOKAK.ID) " +
-                " AND ERE1YAPI.ID > 0 " +
-                " AND SRE1SOKAK.ID = " + sokakId;
+    public List<ERE1YapiDTO> getKapiBySokakId(Long sokakId) {
+        String sql = "SELECT DISTINCT FRE1KAPITAHSIS.KAPINO\n" +
+                "FROM FRE1KAPITAHSIS,ERE1YAPI,SRE1SOKAK\n" +
+                "WHERE FRE1KAPITAHSIS.ERE1YAPI_ID = ERE1YAPI.ID\n" +
+                "AND (FRE1KAPITAHSIS.SRE1SOKAK_ID = SRE1SOKAK.ID)\n" +
+                "AND ERE1YAPI.ID > 0\n" +
+                "AND SRE1SOKAK.ID = " + sokakId;
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToERE1YapiDTO(objList);
     }
 
     public List<ERE1YapiDTO> convertObjectToERE1YapiDTO(List<Object> objList) {
-        List<ERE1YapiDTO> binaDTOList = new ArrayList<>();
+        List<ERE1YapiDTO> kapiDTOList = new ArrayList<>();
         for (Object item: objList) {
             Map map = (Map)item;
-            BigDecimal id = (BigDecimal)map.get("ID");
-            String tanim = (String)map.get("BINAADI");
-            ERE1YapiDTO binaDTO =  new ERE1YapiDTO();
-
-            if(id != null)
-                binaDTO.setId(id.longValue());
+            String tanim = (String)map.get("KAPINO");
+            ERE1YapiDTO kapiDTO =  new ERE1YapiDTO();
 
             if(tanim != null) {
-                binaDTO.setTanim(tanim);
-            } else {
-                binaDTO.setTanim("");
+                kapiDTO.setTanim(tanim);
+                kapiDTOList.add(kapiDTO);
             }
-
-
-            binaDTOList.add(binaDTO);
         }
-        return binaDTOList;
+        return kapiDTOList;
     }
 
 }
