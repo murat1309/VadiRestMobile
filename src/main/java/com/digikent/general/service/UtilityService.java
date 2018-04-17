@@ -2,15 +2,21 @@ package com.digikent.general.service;
 
 import com.digikent.general.dao.UtilityRepository;
 import com.digikent.general.dto.BelediyeParamResponseDTO;
+import com.digikent.general.dto.MobileExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 
 /**
- * Created by Medet on 4/9/2018.
+ * Created by Medet on 09/04/2018.
+ * Edited by Kadir on 16/04/2018.
  */
 @Service
 public class UtilityService {
+
+    private final Logger LOG = LoggerFactory.getLogger(UtilityService.class);
 
     @Inject
     UtilityRepository utilityRepository;
@@ -26,5 +32,12 @@ public class UtilityService {
     public BelediyeParamResponseDTO getBelediyeParams() {
 
         return utilityRepository.getBelediyeParams();
+    }
+
+    public void saveMobileExceptionHandlerLog(String message, String errorLine, String errorStack) {
+        LOG.error("mobil hata mesaji = " + message);
+        LOG.error("mobil hata bundle satiri = " + errorLine);
+        errorStack = errorStack.replaceAll("----","\n");
+        LOG.error("mobil bundle hata stack = " + errorStack);
     }
 }
