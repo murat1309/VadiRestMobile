@@ -3,8 +3,8 @@ package com.digikent.denetimyonetimi.rest;
 import com.digikent.denetimyonetimi.dto.rapor.ReportResponse;
 import com.digikent.denetimyonetimi.service.DenetimService;
 import com.digikent.denetimyonetimi.service.DenetimReportService;
+import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import net.sf.saxon.trans.Err;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,24 +46,29 @@ public class DenetimReportResource {
      */
 
     //TODO HEADER EKLENECEK ?
-    @RequestMapping(value = "/create/report/ceza/{denetimtespitid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/create/yenidenetim/{denetimtespitid}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<ReportResponse> createCezaDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
+        LOG.debug("Yeni Denetim/ rapor hazirlanacak bdntDenetimTespitID="+denetimTespitId);
         ReportResponse reportResponse = new ReportResponse();
+        reportResponse = denetimReportService.createNewDenetimReport(denetimTespitId);
 
-        LOG.debug("CEZA raporu hazirlanacak bdntDenetimTespitID="+denetimTespitId);
-
-        ErrorDTO errorDTO = denetimReportService.insertDenetimTespitReportIdentifier(denetimTespitId);
-        if(errorDTO.getError() == null) {
-            reportResponse = denetimReportService.createCezaDenetimReport(denetimTespitId);
-
-            return new ResponseEntity<ReportResponse>(reportResponse, OK);
-
-        }
-
-        reportResponse.setErrorDTO(errorDTO);
         return new ResponseEntity<ReportResponse>(reportResponse, OK);
 
+    }
+
+    @RequestMapping(value = "/create/view/{denetimtespitid}", method = RequestMethod.GET)
+    @Transactional
+    public ResponseEntity<ReportResponse> createReport(@PathVariable("denetimtespitid") Long denetimTespitId) {
+        LOG.debug("Denetim Goruntuleme / Rapor hazirlanacak bdntDenetimTespitID="+denetimTespitId);
+        ReportResponse reportResponse = null;
+        if (denetimReportService.isReportNoAlreadyExist(denetimTespitId)) {
+            reportResponse = denetimReportService.createDenetimReport(denetimTespitId);
+        } else {
+            reportResponse = new ReportResponse(null,new ErrorDTO(true, ErrorCode.ERROR_CODE_505));
+        }
+
+        return new ResponseEntity<ReportResponse>(reportResponse, OK);
     }
 
 }

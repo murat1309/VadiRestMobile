@@ -6,6 +6,7 @@ import com.digikent.denetimyonetimi.dao.DenetimRepository;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimDTO;
 import com.digikent.denetimyonetimi.dto.rapor.*;
 import com.digikent.denetimyonetimi.dto.tespit.TespitGrubuDTO;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.denetimyonetimi.enums.DenetimTespitKararAksiyon;
 import com.digikent.denetimyonetimi.enums.TebligSecenegi;
@@ -60,7 +61,7 @@ public class DenetimReportService {
      * @param denetimTespitId
      * @return
      */
-    public ReportResponse createCezaDenetimReport(Long denetimTespitId) {
+    public ReportResponse createDenetimReport(Long denetimTespitId) {
 
         ReportResponse reportResponse = new ReportResponse();
 
@@ -98,21 +99,17 @@ public class DenetimReportService {
 
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
-        //TODO döküman no ayarlanmalı
-        String raporNo;
-        String raporYil;
-        if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase("BELIRSIZ")) {
-            raporNo = " ";
-            raporYil = " ";
-        } else if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase("CEZA")) {
-            raporNo = bdntDenetimTespit.getCezaNo().toString();
-            raporYil = bdntDenetimTespit.getYil().toString();
-        } else {
-            raporNo = bdntDenetimTespit.getTutanakNo().toString();
-            raporYil = bdntDenetimTespit.getYil().toString();
-        }
-        vc.put("documentDTO", new DocumentDTO(raporYil, raporNo));
 
+        String raporNo;
+        if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase(DenetimTespitKararAksiyon.BELIRSIZ.toString())) {
+            raporNo = " ";
+        } else if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase(DenetimTespitKararAksiyon.CEZA.toString())) {
+            raporNo = (bdntDenetimTespit.getYil() != null ? bdntDenetimTespit.getYil().toString() : " ") + "/" + (bdntDenetimTespit.getCezaNo() != null ? bdntDenetimTespit.getCezaNo().toString() : " ");
+        } else {
+            raporNo = (bdntDenetimTespit.getYil() != null ? bdntDenetimTespit.getYil().toString() : " ") + "/" + (bdntDenetimTespit.getTutanakNo() != null ? bdntDenetimTespit.getTutanakNo().toString() : " ");
+        }
+
+        vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), raporNo));
         vc.put("reportTespitDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_TESPIT));
         vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
@@ -123,7 +120,6 @@ public class DenetimReportService {
         vc.put("tespitGrubuAciklama", (tespitGrubuDTO != null ? tespitGrubuDTO.getAltBilgi() : null));
         vc.put("karar", getReportKararDTO(bdntDenetimTespit));
         vc.put("belediyeAdres", (denetimAddressService.getBelediyeAdres()));
-
 
         StringWriter sw = new StringWriter();
         t.merge(vc, sw);
@@ -347,9 +343,27 @@ public class DenetimReportService {
             return "SELECT BDNTDENETIMTESPIT_TUTANAKNO.nextval FROM DUAL\n";
     }
 
-    public ErrorDTO insertDenetimTespitReportIdentifier(Long denetimTespitId) {
-        return denetimReportRepository.insertDenetimTespitReportIdentifier(denetimTespitId);
+    public Boolean isReportNoAlreadyExist(Long bdntDenetimTespitId) {
+        BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(bdntDenetimTespitId);
+        String aksiyon = bdntDenetimTespit.getDenetimAksiyonu();
+        Long tutanakNo = bdntDenetimTespit.getTutanakNo();
+        Long cezaNo = bdntDenetimTespit.getCezaNo();
+        Long yil = bdntDenetimTespit.getYil();
+        return yil != null && (cezaNo != null || tutanakNo != null);
+
     }
 
 
+    public ReportResponse createNewDenetimReport(Long denetimTespitId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        ReportResponse reportResponse = null;
+        if (!isReportNoAlreadyExist(denetimTespitId)) {
+            utilDenetimSaveDTO = denetimReportRepository.insertDenetimTespitReportIdentifier(denetimTespitId);
+        }
+        if (utilDenetimSaveDTO != null && !utilDenetimSaveDTO.getSaved()) {
+            reportResponse = new ReportResponse(null,new ErrorDTO(true, utilDenetimSaveDTO.getErrorDTO().getErrorMessage()));
+            return reportResponse;
+        }
+        return createDenetimReport(denetimTespitId);
+    }
 }
