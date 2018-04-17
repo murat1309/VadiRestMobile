@@ -33,6 +33,7 @@ public class DenetimDocumentController {
     @Autowired
     DenetimDocumentService denetimDocumentService;
 
+
     @RequestMapping(value = "/save/photo/{denetimtespitid}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetimPhoto (@PathVariable Long denetimtespitid, @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {

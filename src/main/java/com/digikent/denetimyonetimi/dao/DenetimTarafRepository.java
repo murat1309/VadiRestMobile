@@ -1,7 +1,6 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.IlDTO;
 import com.digikent.denetimyonetimi.dto.denetim.DenetimRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.takim.VsynMemberShipDTO;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -33,8 +33,8 @@ public class DenetimTarafRepository {
     @Autowired
     SessionFactory sessionFactory;
 
-    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimRequest denetimRequest, Long denetimId, Boolean isSave) {
-
+    public UtilDenetimSaveDTO saveDenetimTespitTaraf(DenetimRequest denetimRequest, Long denetimId, Boolean isSave, HttpServletRequest request) {
+        Long crUserId = (request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0);
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
 
         try {
@@ -60,6 +60,8 @@ public class DenetimTarafRepository {
                         //demek ki sonradan taraflardan kaldırıldı bu memur
                         LOG.debug("sonradan taraf kaldirilan memur. denetimTarafID="+bdntDenetimTespitTaraf.getID());
                         bdntDenetimTespitTaraf.setIsActive(false);
+                        bdntDenetimTespitTaraf.setUpdUser(crUserId);
+                        bdntDenetimTespitTaraf.setUpdDate(new Date());
                         session.update(bdntDenetimTespitTaraf);
                     }
                 }
@@ -78,7 +80,7 @@ public class DenetimTarafRepository {
                     if (!isExist) {
                         //demek ki yeni bir memur eklendi
                         LOG.debug("sonradan taraf listesine eklenen memur. ihr1PersonelId="+item.getFsm1UserDTO().getIhr1PersonelDTO().getId());
-                        BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId);
+                        BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId,crUserId);
                         session.save(bdntDenetimTespitTaraf);
                     }
                 }
@@ -90,7 +92,7 @@ public class DenetimTarafRepository {
                 LOG.debug("ekipteki memur sayisi="+denetimTarafDTO.getMemberShipDTOList().size());
                 //belediye memur tarafı
                 for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
-                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId);
+                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByMemur(item,denetimId, crUserId);
                     session.save(bdntDenetimTespitTaraf);
                 }
                 LOG.debug("Memur taraf kayitlari olusturuldu");
@@ -105,7 +107,7 @@ public class DenetimTarafRepository {
                         item.setSoyAdi(" ");
 
 
-                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByPaydas(item,denetimId);
+                    BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = createDenetimTespitTarafByPaydas(item,denetimId,crUserId);
                     session.save(bdntDenetimTespitTaraf);
                     LOG.debug("Paydas taraf kaydi olusturuldu. paydasID="+item.getPaydasNo());
                 } else {
@@ -138,7 +140,7 @@ public class DenetimTarafRepository {
         }
     }
 
-    public BDNTDenetimTespitTaraf createDenetimTespitTarafByMemur(VsynMemberShipDTO vsynMemberShipDTO, Long denetimId) {
+    public BDNTDenetimTespitTaraf createDenetimTespitTarafByMemur(VsynMemberShipDTO vsynMemberShipDTO, Long denetimId, Long crUserId) {
         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
         bdntDenetimTespitTaraf.setAdi(vsynMemberShipDTO.getFsm1UserDTO().getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
@@ -148,7 +150,7 @@ public class DenetimTarafRepository {
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
         bdntDenetimTespitTaraf.setIzahat(null);
         bdntDenetimTespitTaraf.setCrDate(new Date());
-        bdntDenetimTespitTaraf.setCrUser(0l);
+        bdntDenetimTespitTaraf.setCrUser(crUserId);
         bdntDenetimTespitTaraf.setUpdUser(0l);
         bdntDenetimTespitTaraf.setDeleteFlag("H");
         bdntDenetimTespitTaraf.setIsActive(true);
@@ -156,7 +158,7 @@ public class DenetimTarafRepository {
         return bdntDenetimTespitTaraf;
     }
 
-    public BDNTDenetimTespitTaraf createDenetimTespitTarafByPaydas(DenetimPaydasDTO item, Long denetimId) {
+    public BDNTDenetimTespitTaraf createDenetimTespitTarafByPaydas(DenetimPaydasDTO item, Long denetimId, Long crUserId) {
         BDNTDenetimTespitTaraf bdntDenetimTespitTaraf = new BDNTDenetimTespitTaraf();
         bdntDenetimTespitTaraf.setAdi(item.getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
@@ -167,7 +169,7 @@ public class DenetimTarafRepository {
         bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());
         bdntDenetimTespitTaraf.setMpi1PaydasId(item.getPaydasNo());
         bdntDenetimTespitTaraf.setCrDate(new Date());
-        bdntDenetimTespitTaraf.setCrUser(0l);
+        bdntDenetimTespitTaraf.setCrUser(crUserId);
         bdntDenetimTespitTaraf.setUpdUser(0l);
         bdntDenetimTespitTaraf.setDeleteFlag("H");
         bdntDenetimTespitTaraf.setIsActive(true);

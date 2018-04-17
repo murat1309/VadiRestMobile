@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,16 +41,16 @@ public class DenetimService {
     @Inject
     DenetimRepository denetimRepository;
 
-    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
-        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
-        utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest);
+    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest, HttpServletRequest request) {
+            UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest, request);
         //denetim taraf objelerini setle
         if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() != null) {
             LOG.debug("Denetim Güncellendi BdntDenetimId : " + denetimRequest.getBdntDenetimId());
-            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false);
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false, request);
         } else if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() == null) {
             LOG.debug("Denetim Oluşturuldu BdntDenetimId : " + denetimRequest.getBdntDenetimId());
-            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true);
+            UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true, request);
         }
 
         return utilDenetimSaveDTO;
@@ -180,65 +181,65 @@ public class DenetimService {
         return denetimRepository.findIsletmeDTOListByPaydasId(paydasId);
     }
 
-    public UtilDenetimSaveDTO savePaydasAllInformation(DenetimPaydasDTO denetimPaydasDTO) {
+    public UtilDenetimSaveDTO savePaydasAllInformation(DenetimPaydasDTO denetimPaydasDTO, HttpServletRequest request) {
         //paydas kayit edilecek
-        UtilDenetimSaveDTO utilDenetimSaveDTO = savePaydas(denetimPaydasDTO);
+        UtilDenetimSaveDTO utilDenetimSaveDTO = savePaydas(denetimPaydasDTO, request);
         if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
             //adresleri kayıt edilecek
-            saveAdres(denetimPaydasDTO,utilDenetimSaveDTO.getRecordId());
+            saveAdres(denetimPaydasDTO,utilDenetimSaveDTO.getRecordId(), request);
             //telefonlar kayıt edilecek
-            saveTelefon(denetimPaydasDTO.getTelefonCep(),denetimPaydasDTO.getTelefonIs(),utilDenetimSaveDTO.getRecordId());
+            saveTelefon(denetimPaydasDTO.getTelefonCep(),denetimPaydasDTO.getTelefonIs(),utilDenetimSaveDTO.getRecordId(), request);
         }
         return utilDenetimSaveDTO;
     }
 
-    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO) {
-        UtilDenetimSaveDTO utilDenetimSaveDTO  = denetimRepository.savePaydas(denetimPaydasDTO);
+    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO, HttpServletRequest request) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO  = denetimRepository.savePaydas(denetimPaydasDTO, request);
         return utilDenetimSaveDTO;
     }
 
-    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId) {
-        return denetimRepository.saveAdres(denetimPaydasDTO,paydasId);
+    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId, HttpServletRequest request) {
+        return denetimRepository.saveAdres(denetimPaydasDTO,paydasId, request);
     }
 
-    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId) {
-        return denetimRepository.saveTelefon(telefonCep,telefonIs, paydasId);
+    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId, HttpServletRequest request) {
+        return denetimRepository.saveTelefon(telefonCep,telefonIs, paydasId, request);
     }
 
-    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO) {
-        UtilDenetimSaveDTO utilDenetimSaveDTO = denetimRepository.saveIsletme(denetimIsletmeDTO);
+    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO, HttpServletRequest request) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = denetimRepository.saveIsletme(denetimIsletmeDTO, request);
         if (utilDenetimSaveDTO.getSaved() && utilDenetimSaveDTO.getRecordId() != null) {
             //işletme adresi kaydedilecek
-            UtilDenetimSaveDTO utilDenetimSaveDTOAdres = saveIsletmeAdresi(denetimIsletmeDTO,utilDenetimSaveDTO.getRecordId());
+            UtilDenetimSaveDTO utilDenetimSaveDTOAdres = saveIsletmeAdresi(denetimIsletmeDTO,utilDenetimSaveDTO.getRecordId(), request);
             if (utilDenetimSaveDTOAdres.getSaved() && utilDenetimSaveDTOAdres.getRecordId() != null) {
-                updateIsletme(utilDenetimSaveDTO.getRecordId(),utilDenetimSaveDTOAdres.getRecordId());
+                updateIsletme(utilDenetimSaveDTO.getRecordId(),utilDenetimSaveDTOAdres.getRecordId(), request);
             }
         }
         return utilDenetimSaveDTO;
     }
 
-    private void updateIsletme(Long isletmeId, Long isletmeAdresId) {
-        denetimRepository.updateIsletme(isletmeId,isletmeAdresId);
+    private void updateIsletme(Long isletmeId, Long isletmeAdresId, HttpServletRequest request) {
+        denetimRepository.updateIsletme(isletmeId,isletmeAdresId, request);
     }
 
-    private UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
-        return denetimRepository.saveIsletmeAdresi(denetimIsletmeDTO,isletmeId);
+    private UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId, HttpServletRequest request) {
+        return denetimRepository.saveIsletmeAdresi(denetimIsletmeDTO,isletmeId, request);
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
-        return denetimRepository.saveDenetimTespit(denetimTespitRequest);
+    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest, HttpServletRequest request) {
+        return denetimRepository.saveDenetimTespit(denetimTespitRequest, request);
     }
 
-    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
+    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest, HttpServletRequest request) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         if (tespitlerRequest != null && tespitlerRequest.getSave() == false) {
             //güncelleme yapılacak
             LOG.debug("tespitler guncelleme islemi yapilacak denetimTespitId="+tespitlerRequest.getDenetimTespitId());
-            utilDenetimSaveDTO = denetimRepository.updateTespitler(tespitlerRequest);
+            utilDenetimSaveDTO = denetimRepository.updateTespitler(tespitlerRequest, request);
         } else {
             //ilk kayit
             LOG.debug("tespitler kayit islemi yapilacak");
-            utilDenetimSaveDTO = denetimRepository.saveTespitler(tespitlerRequest);
+            utilDenetimSaveDTO = denetimRepository.saveTespitler(tespitlerRequest, request);
         }
 
         return utilDenetimSaveDTO;
@@ -316,16 +317,16 @@ public class DenetimService {
         return sql;
     }
 
-    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
-        return denetimRepository.saveDenetimTeblig(denetimTebligRequest);
+    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest, HttpServletRequest request) {
+        return denetimRepository.saveDenetimTeblig(denetimTebligRequest, request);
     }
 
     public UtilDenetimSaveDTO setPassiveDenetimTespit(Long denetimTespitId) {
         return denetimRepository.setPassiveDenetimTespit(denetimTespitId);
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest) {
-        return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest);
+    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest, HttpServletRequest request) {
+        return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest, request);
     }
 
 }

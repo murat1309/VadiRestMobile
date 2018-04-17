@@ -9,5 +9,5 @@ public enum DenetimTespitKararAksiyon {
     KAPAMA,
     EKSURE,
     BELIRSIZ,
-
+    TUTANAK,
 }

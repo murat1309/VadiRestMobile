@@ -13,6 +13,7 @@ public class TespitGrubuDTO implements Serializable {
     private String izahat;
     private String raporBaslik;
     private String altBilgi;
+    private String kararVerilebilirMi;
 
     public Long getId() {
         return id;
@@ -60,5 +61,13 @@ public class TespitGrubuDTO implements Serializable {
 
     public void setAltBilgi(String altBilgi) {
         this.altBilgi = altBilgi;
+    }
+
+    public String getKararVerilebilirMi() {
+        return kararVerilebilirMi;
+    }
+
+    public void setKararVerilebilirMi(String kararVerilebilirMi) {
+        this.kararVerilebilirMi = kararVerilebilirMi;
     }
 }
