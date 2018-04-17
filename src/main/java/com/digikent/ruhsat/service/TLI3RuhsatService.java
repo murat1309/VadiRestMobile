@@ -38,13 +38,13 @@ public class TLI3RuhsatService {
                 "(LI1.F_RUHSAT_FALIYET_GETIR(r.id)) rhs_faliyet_adi," +
                 "(select TANIM from GLI1FALIYET where id=r.GLI1FALIYET_ISYERI) rhs_faliyet_isyeri_adi," +
                 "r.ACILISSAATI,r.KAPANISSAATI,R.MPI1PAYDAS_ID," +
-                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATBASKAN_YARDIMCISI') RUHSATBASKANYARDIMCISI," +
-                "SM2.F_PARAMETRE('RUHSATYONETIMI','RUHSATMUDURU') RUHSATMUDURU," +
+                "(SELECT IHR1PERSONEL.ADISOYADI FROM IHR1PERSONEL WHERE IHR1PERSONEL.ID = R.IHR1PERSONEL_RUHSATBASKANYARD) AS RUHSATBASKANYARDIMCISI," +
+                "(SELECT IHR1PERSONEL.ADISOYADI FROM IHR1PERSONEL WHERE IHR1PERSONEL.ID = R.IHR1PERSONEL_RUHSATMUDURU) AS RUHSATMUDURU," +
                 "(SELECT ADISOYADI FROM IHR1PERSONEL I WHERE I.ID = R.IHR1PERSONEL_MEMUR) MEMUR," +
                 "r.IZAHAT" +
                 ",t.KAYITOZELISMI AS RUHSATTURU" +
                 ",nvl(decode(r.isyerisinifi,'Y','','L','LUKS SINIF ','1','1. SINIF ','2','2. SINIF ','3','3. SINIF ',r.isyerisinifi),' ') as isyerisinifi2, nvl(dosya.PAFTANO,'-') as PAFTANO ,nvl(dosya.ADANO,'-') as ADANO,nvl(dosya.PARSELNO,'-') as PARSELNO" +
-                ",(select adi||' '|| soyadi from ihr1personel where id=(select SM2.F_Parametre('RUHSATYONETIMI','RUHSATSEFI') from dual)) as SEF" +
+                ",(select IHR1PERSONEL.ADISOYADI from IHR1PERSONEL where IHR1PERSONEL.ID= R.IHR1PERSONEL_SEF) as SEF" +
                 "  from TLI3RUHSAT r,MPI1PAYDAS b,DRE1MAHALLE m,SRE1SOKAK s,SLI1RUHSATTURU t,eli1ruhsatdosya dosya" +
                 " where  r.MPI1PAYDAS_ID=b.ID" +
                 " and r.DRE1MAHALLE_ID=m.ID" +
@@ -526,7 +526,7 @@ public class TLI3RuhsatService {
     }
 
     public List<DRE1MahalleDTO> getMahalleList() {
-        String sql = "select ID,TANIM from DRE1MAHALLE where RRE1ILCE_id =(select RRE1ILCE_id from nsm2parametre) and ISACTIVE='E' order by TANIM";
+        String sql = "select ID,TANIM from DRE1MAHALLE where RRE1ILCE_id =(select RRE1ILCE_id from nsm2parametre) and ISACTIVE='E' AND TANIM IS NOT NULL order by TANIM";
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToDRE1MahalleDTO(objList);
     }
@@ -554,7 +554,7 @@ public class TLI3RuhsatService {
         String sql = " SELECT S.ID, S.TANIM " +
                 " FROM DRE1MAHALLESOKAK MS , SRE1SOKAK S, DRE1MAHALLE M " +
                 " WHERE MS.SRE1SOKAK_ID =S.ID  AND MS.DRE1MAHALLE_ID =M.ID " +
-                " AND NVL(M.ISACTIVE,'E')='E' AND NVL(S.ISACTIVE,'E')='E'  AND M.ID IN (" + mahId + ")  ORDER BY S.TANIM ";
+                " AND NVL(M.ISACTIVE,'E')='E' AND NVL(S.ISACTIVE,'E')='E'  AND M.ID IN (" + mahId + ") AND S.TANIM IS NOT NULL ORDER BY S.TANIM ";
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToSRE1SokakDTO(objList);
     }
@@ -584,6 +584,7 @@ public class TLI3RuhsatService {
                 "WHERE FRE1KAPITAHSIS.ERE1YAPI_ID = ERE1YAPI.ID\n" +
                 "AND (FRE1KAPITAHSIS.SRE1SOKAK_ID = SRE1SOKAK.ID)\n" +
                 "AND ERE1YAPI.ID > 0\n" +
+                "AND FRE1KAPITAHSIS.KAPINO IS NOT NULL\n" +
                 "AND SRE1SOKAK.ID = " + sokakId;
         List<Object> objList = runRuhsatSQL(sql);
         return convertObjectToERE1YapiDTO(objList);

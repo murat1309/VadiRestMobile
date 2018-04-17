@@ -1,7 +1,6 @@
 package com.digikent.denetimyonetimi.rest;
 
 import com.digikent.config.Constants;
-import com.digikent.denetimyonetimi.dto.adres.DenetimTebligatAdresi;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
@@ -71,7 +70,6 @@ public class DenetimResource {
     @Transactional
     public ResponseEntity<DenetimPaydasResponseDTO> getPaydasListByCriteria(@RequestBody DenetimPaydasRequestDTO denetimPaydasRequestDTO) {
         LOG.debug("Denetim - paydas/search Gelen Paydas Arama Kriteri : " + denetimPaydasRequestDTO.getFilter());
-        request.getHeader("UserId");
         DenetimPaydasResponseDTO denetimPaydasResponseDTO = null;
         if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
             denetimPaydasResponseDTO = paydasIliskileriManagementService.getPaydasInfoByDenetimFilter(denetimPaydasRequestDTO);
@@ -86,15 +84,15 @@ public class DenetimResource {
         taraflar bilgisi girildikten  sonra denetim kaydı oluşturuluyor
         eğer denetimId bilgisi null gelmezse, güncellenecek demektir.
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/denetim", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-
     public ResponseEntity<UtilDenetimSaveDTO> saveDenetim(@RequestBody DenetimRequest denetimRequest) {
         LOG.debug("Denetim kayit/guncelleme. paydaş ID : " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveDenetim(denetimRequest);
+        utilDenetimSaveDTO = denetimService.saveDenetim(denetimRequest, request);
         LOG.debug("denetim kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
@@ -155,6 +153,7 @@ public class DenetimResource {
     /*
         şahıs/kurum paydaş kayıt
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/paydas", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -162,7 +161,7 @@ public class DenetimResource {
     public ResponseEntity<UtilDenetimSaveDTO> saveSahisPaydas(@RequestBody DenetimPaydasDTO denetimPaydasDTO) {
         LOG.debug("Paydaş kayit islemi yapilacak");
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.savePaydasAllInformation(denetimPaydasDTO);
+        utilDenetimSaveDTO = denetimService.savePaydasAllInformation(denetimPaydasDTO, request);
         LOG.debug("Paydaş kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("PaydasId="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
@@ -171,6 +170,7 @@ public class DenetimResource {
     /*
         şahıs/kurum paydaş kayıt
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/isletme", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -178,7 +178,7 @@ public class DenetimResource {
     public ResponseEntity<UtilDenetimSaveDTO> saveIsletme(@RequestBody DenetimIsletmeDTO denetimIsletmeDTO) {
         LOG.debug("Isletme kayit islemi yapilacak paydasID="+denetimIsletmeDTO.getPaydasId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveIsletme(denetimIsletmeDTO);
+        utilDenetimSaveDTO = denetimService.saveIsletme(denetimIsletmeDTO, request);
         LOG.debug("Isletme kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("isletme="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
@@ -187,6 +187,7 @@ public class DenetimResource {
     /*
         denetim türü - Tespit Grubu kaydedilir
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/denetimtespit", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -196,7 +197,7 @@ public class DenetimResource {
         LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak denetimturuID="+denetimTespitRequest.getDenetimTuruId());
         LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi yapilacak tespitGrubuId="+denetimTespitRequest.getTespitGrubuId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveDenetimTespit(denetimTespitRequest);
+        utilDenetimSaveDTO = denetimService.saveDenetimTespit(denetimTespitRequest, request);
         LOG.debug("denetim - denetim türü - tespit grubu kayit/guncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         LOG.debug("denetimTespitID="+utilDenetimSaveDTO.getRecordId());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
@@ -235,9 +236,6 @@ public class DenetimResource {
     @Transactional
     public ResponseEntity<List<DenetimDTO>> getDenetimListByCriteria(@RequestBody DenetimTespitSearchRequest denetimTespitSearchRequest) {
         LOG.debug("REST denetimler geitirilecek");
-        User authenticatedUser = SecurityUtils.getAuthenticatedUser();
-        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        User currentUser = SecurityUtils.getCurrentUser();
         List<DenetimDTO> denetimDTOList = null;
         denetimDTOList = denetimService.getDenetimList(denetimTespitSearchRequest);
         return new ResponseEntity<List<DenetimDTO>>(denetimDTOList, OK);
@@ -246,6 +244,7 @@ public class DenetimResource {
     /*
         tespitler kaydedilir
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/tespitler", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -253,7 +252,7 @@ public class DenetimResource {
     public ResponseEntity<UtilDenetimSaveDTO> saveTespits(@RequestBody TespitlerRequest tespitlerRequest) {
         LOG.debug("tespitler kayit/guncelleme islemi yapilacak");
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
+        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest, request);
         LOG.debug("tespitler kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
@@ -261,6 +260,7 @@ public class DenetimResource {
     /*
         teblig bilgileri kaydedilir (denetimler sayfasında)
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/teblig", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -268,7 +268,7 @@ public class DenetimResource {
     public ResponseEntity<UtilDenetimSaveDTO> saveTespits(@RequestBody DenetimTebligRequest denetimTebligRequest) {
         LOG.debug("denetim teblig bilgisi kaydedilecek. DenetimID="+denetimTebligRequest.getBdntDenetimId() + " tebligTuru =" +denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveDenetimTeblig(denetimTebligRequest);
+        utilDenetimSaveDTO = denetimService.saveDenetimTeblig(denetimTebligRequest, request);
         LOG.debug("denetim teblig kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
@@ -290,6 +290,7 @@ public class DenetimResource {
     /*
         denetim tespit kararını kaydeder (denetimtespit güncelleniyor)
     */
+    //TODO Header eklendi
     @RequestMapping(value = "/save/karar", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -297,7 +298,7 @@ public class DenetimResource {
     public ResponseEntity<UtilDenetimSaveDTO> saveDecide(@RequestBody DenetimTespitKararRequest denetimTespitKararRequest) {
         LOG.debug("denetim tespit karar bilgisi kaydedilecek. denetimTespitId="+denetimTespitKararRequest.getDenetimTespitId());
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveDenetimTespitKarar(denetimTespitKararRequest);
+        utilDenetimSaveDTO = denetimService.saveDenetimTespitKarar(denetimTespitKararRequest, request);
         LOG.debug("denetim tespit karar kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
@@ -305,7 +306,7 @@ public class DenetimResource {
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<Boolean> dene() {
-        denetimService.saveTelefon(547898457l,2342342l,5000000l);
+        denetimService.saveTelefon(547898457l,2342342l,5000000l, request);
         return new ResponseEntity<Boolean>(true, OK);
     }
 

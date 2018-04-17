@@ -13,6 +13,7 @@ public class ReportKararDTO {
     private String ekSure;
     private String ekSureZaman;
     private String belirsiz;
+    private String tutanak;
 
     public String getCeza() {
         return ceza;
@@ -76,5 +77,13 @@ public class ReportKararDTO {
 
     public void setEkSureZaman(String ekSureZaman) {
         this.ekSureZaman = ekSureZaman;
+    }
+
+    public String getTutanak() {
+        return tutanak;
+    }
+
+    public void setTutanak(String tutanak) {
+        this.tutanak = tutanak;
     }
 }

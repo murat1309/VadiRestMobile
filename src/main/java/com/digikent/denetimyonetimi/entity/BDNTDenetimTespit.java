@@ -59,6 +59,15 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
     @Column(name = "CEZAMIKTARI")
     private Long cezaMiktari;
 
+    @Column(name = "YIL")
+    private Long yil;
+
+    @Column(name = "TUTANAKNO")
+    private Long tutanakNo;
+
+    @Column(name = "CEZANO")
+    private Long cezaNo;
+
     public Long getID() {
         return ID;
     }
@@ -153,5 +162,29 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setCezaMiktari(Long cezaMiktari) {
         this.cezaMiktari = cezaMiktari;
+    }
+
+    public Long getYil() {
+        return yil;
+    }
+
+    public void setYil(Long yil) {
+        this.yil = yil;
+    }
+
+    public Long getTutanakNo() {
+        return tutanakNo;
+    }
+
+    public void setTutanakNo(Long tutanakNo) {
+        this.tutanakNo = tutanakNo;
+    }
+
+    public Long getCezaNo() {
+        return cezaNo;
+    }
+
+    public void setCezaNo(Long cezaNo) {
+        this.cezaNo = cezaNo;
     }
 }

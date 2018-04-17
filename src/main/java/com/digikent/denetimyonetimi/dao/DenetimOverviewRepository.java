@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -414,8 +415,8 @@ public class DenetimOverviewRepository {
         return tespitlerRequest;
     }
 
-    public BDNTDenetim setBDNTDenetimTebligatAdresi(DenetimTebligatAdresi denetimTebligatAdresi, BDNTDenetim bdntDenetim) {
-
+    public BDNTDenetim setBDNTDenetimTebligatAdresi(DenetimTebligatAdresi denetimTebligatAdresi, BDNTDenetim bdntDenetim, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         bdntDenetim.setSiteAdiTebligat(denetimTebligatAdresi.getSiteAdiTebligat());
         bdntDenetim.setBlokNotebligat(denetimTebligatAdresi.getBlokNotebligat());
         bdntDenetim.setKapiHarfNoTebligat(denetimTebligatAdresi.getKapiNoHarfTebligat());
@@ -426,12 +427,14 @@ public class DenetimOverviewRepository {
         bdntDenetim.setDre1MahalleTebligat(denetimTebligatAdresi.getDre1MahalleTebligat());
         bdntDenetim.setSre1SokakTebligat(denetimTebligatAdresi.getSre1SokakTebligat());
         bdntDenetim.setPre1IlTebligat(denetimTebligatAdresi.getPre1IlTebligat());
+        bdntDenetim.setUpdDate(new Date());
+        bdntDenetim.setUpdUser(crUser);
 
         return bdntDenetim;
     }
 
-    public BDNTDenetim setBDNTDenetimOlayAdresi(DenetimOlayYeriAdresi denetimOlayYeriAdresi, BDNTDenetim bdntDenetim) {
-
+    public BDNTDenetim setBDNTDenetimOlayAdresi(DenetimOlayYeriAdresi denetimOlayYeriAdresi, BDNTDenetim bdntDenetim, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         bdntDenetim.setRre1IlceOlayYeri(denetimOlayYeriAdresi.getRre1IlceOlayYeri());
         bdntDenetim.setDre1MahalleOlayYeri(denetimOlayYeriAdresi.getDre1MahalleOlayYeri());
         bdntDenetim.setSre1SokakOlayYeri(denetimOlayYeriAdresi.getSre1SokakOlayYeri());
@@ -448,6 +451,8 @@ public class DenetimOverviewRepository {
         bdntDenetim.setKapiNoSayiOlayYeri(denetimOlayYeriAdresi.getKapiNoSayiOlayYeri());
         bdntDenetim.setDaireNoSayiOlayYeri(denetimOlayYeriAdresi.getDaireNoSayiOlayYeri());
         bdntDenetim.setPre1IlOlayYeri(denetimOlayYeriAdresi.getPre1IlOlayYeri());
+        bdntDenetim.setUpdDate(new Date());
+        bdntDenetim.setUpdUser(crUser);
 
         return bdntDenetim;
     }
@@ -492,13 +497,15 @@ public class DenetimOverviewRepository {
         return denetimGoruntuleTarafDTOList;
     }
 
-    public BDNTDenetimTespit setBDNTDenetimTespitKararBilgisi(DenetimTespitKararRequest denetimTespitKararRequest, BDNTDenetimTespit bdntDenetimTespit) {
-
+    public BDNTDenetimTespit setBDNTDenetimTespitKararBilgisi(DenetimTespitKararRequest denetimTespitKararRequest, BDNTDenetimTespit bdntDenetimTespit, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         bdntDenetimTespit.setDenetimAksiyonu(denetimTespitKararRequest.getAksiyon().toString());
         bdntDenetimTespit.setCezaMiktari(denetimTespitKararRequest.getCezaMiktari());
         bdntDenetimTespit.setKapamaBitisTarihi(denetimTespitKararRequest.getKapamaBitisTarihi());
         bdntDenetimTespit.setKapamaBaslangicTarihi(denetimTespitKararRequest.getKapamaBaslangicTarihi());
         bdntDenetimTespit.setVerilenSure(denetimTespitKararRequest.getEkSure());
+        bdntDenetimTespit.setUpdUser(crUser);
+        bdntDenetimTespit.setUpdDate(new Date());
 
         return bdntDenetimTespit;
     }
@@ -647,7 +654,7 @@ public class DenetimOverviewRepository {
         return denetimObjectDTO;
     }
 
-    public UtilDenetimSaveDTO updateDenetimTebligatAdresiByDenetimId(DenetimTebligatAdresi denetimTebligatAdresi, Long denetimId) {
+    public UtilDenetimSaveDTO updateDenetimTebligatAdresiByDenetimId(DenetimTebligatAdresi denetimTebligatAdresi, Long denetimId, HttpServletRequest request) {
 
         UtilDenetimSaveDTO utilDenetimSaveDTO;
         Session session = sessionFactory.openSession();
@@ -658,7 +665,7 @@ public class DenetimOverviewRepository {
         try {
             Object o = session.get(BDNTDenetim.class,denetimId);
             bdntDenetim = (BDNTDenetim) o;
-            bdntDenetim = setBDNTDenetimTebligatAdresi(denetimTebligatAdresi, bdntDenetim);
+            bdntDenetim = setBDNTDenetimTebligatAdresi(denetimTebligatAdresi, bdntDenetim, request);
             session.update(bdntDenetim);
             tx.commit();
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimId);
@@ -675,7 +682,7 @@ public class DenetimOverviewRepository {
         return utilDenetimSaveDTO;
     }
 
-    public UtilDenetimSaveDTO updateDenetimOlayYeriAdresiByDenetimId(DenetimOlayYeriAdresi denetimOlayYeriAdresi, Long denetimId) {
+    public UtilDenetimSaveDTO updateDenetimOlayYeriAdresiByDenetimId(DenetimOlayYeriAdresi denetimOlayYeriAdresi, Long denetimId, HttpServletRequest request) {
 
         UtilDenetimSaveDTO utilDenetimSaveDTO;
         Session session = sessionFactory.openSession();
@@ -686,7 +693,7 @@ public class DenetimOverviewRepository {
         try {
             Object o = session.get(BDNTDenetim.class,denetimId);
             bdntDenetim = (BDNTDenetim) o;
-            bdntDenetim = setBDNTDenetimOlayAdresi(denetimOlayYeriAdresi, bdntDenetim);
+            bdntDenetim = setBDNTDenetimOlayAdresi(denetimOlayYeriAdresi, bdntDenetim, request);
             session.update(bdntDenetim);
             tx.commit();
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimId);
@@ -704,7 +711,7 @@ public class DenetimOverviewRepository {
         return utilDenetimSaveDTO;
     }
 
-    public UtilDenetimSaveDTO updateDenetimKararBilgileriByDenetimId(DenetimTespitKararRequest denetimTespitKararRequest, Long denetimTespitId) {
+    public UtilDenetimSaveDTO updateDenetimKararBilgileriByDenetimId(DenetimTespitKararRequest denetimTespitKararRequest, Long denetimTespitId, HttpServletRequest request) {
 
         UtilDenetimSaveDTO utilDenetimSaveDTO;
         Session session = sessionFactory.openSession();
@@ -715,7 +722,7 @@ public class DenetimOverviewRepository {
         try {
             Object o = session.get(BDNTDenetimTespit.class,denetimTespitId);
             bdntDenetimTespit = (BDNTDenetimTespit) o;
-            bdntDenetimTespit = setBDNTDenetimTespitKararBilgisi(denetimTespitKararRequest, bdntDenetimTespit);
+            bdntDenetimTespit = setBDNTDenetimTespitKararBilgisi(denetimTespitKararRequest, bdntDenetimTespit, request);
             session.update(bdntDenetimTespit);
             tx.commit();
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTespitId);

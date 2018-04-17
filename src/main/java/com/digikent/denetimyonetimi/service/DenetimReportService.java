@@ -99,7 +99,20 @@ public class DenetimReportService {
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));
         //TODO döküman no ayarlanmalı
-        vc.put("documentDTO", new DocumentDTO(new SimpleDateFormat("dd-MM-yyyy").format(new Date()), " "));
+        String raporNo;
+        String raporYil;
+        if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase("BELIRSIZ")) {
+            raporNo = " ";
+            raporYil = " ";
+        } else if(bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase("CEZA")) {
+            raporNo = bdntDenetimTespit.getCezaNo().toString();
+            raporYil = bdntDenetimTespit.getYil().toString();
+        } else {
+            raporNo = bdntDenetimTespit.getTutanakNo().toString();
+            raporYil = bdntDenetimTespit.getYil().toString();
+        }
+        vc.put("documentDTO", new DocumentDTO(raporYil, raporNo));
+
         vc.put("reportTespitDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_TESPIT));
         vc.put("reportEkBilgiDTOs", getTespitReportDataByTespitTur(bdntDenetimTespit, Constants.TESPIT_TUR_EKBILGI));
         vc.put("tebligEdilenBilgileri", getTebligBilgileri(denetimDTO));
@@ -149,6 +162,10 @@ public class DenetimReportService {
 
         if (DenetimTespitKararAksiyon.BELIRSIZ.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
             reportKararDTO.setBelirsiz(DenetimTespitKararAksiyon.BELIRSIZ.toString());
+        }
+
+        if (DenetimTespitKararAksiyon.TUTANAK.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
+            reportKararDTO.setTutanak(DenetimTespitKararAksiyon.TUTANAK.toString());
         }
 
         return reportKararDTO;
@@ -321,6 +338,17 @@ public class DenetimReportService {
             LOG.error("getTebligBilgileri() hata olustu. TebligTCNO="+denetimDTO.getTebligTCKimlikNo());
             return null;
         }
+    }
+
+    public static String getDenetimTespitReportSequenceIdentifierSql(String denetimTespitAksiyon) {
+        if(denetimTespitAksiyon.equalsIgnoreCase("CEZA"))
+            return "SELECT BDNTDENETIMTESPIT_CEZANO.nextval FROM DUAL\n";
+        else
+            return "SELECT BDNTDENETIMTESPIT_TUTANAKNO.nextval FROM DUAL\n";
+    }
+
+    public ErrorDTO insertDenetimTespitReportIdentifier(Long denetimTespitId) {
+        return denetimReportRepository.insertDenetimTespitReportIdentifier(denetimTespitId);
     }
 
 

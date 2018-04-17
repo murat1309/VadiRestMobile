@@ -9,9 +9,7 @@ import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.dto.tespit.TespitlerRequest;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.service.DenetimOverviewService;
-import com.digikent.denetimyonetimi.service.DenetimReportService;
 import com.digikent.denetimyonetimi.service.DenetimService;
-import com.digikent.paydasiliskileri.service.PaydasIliskileriManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import java.util.List;
@@ -44,6 +43,9 @@ public class DenetimOverviewResource {
     @Autowired
     DenetimOverviewService denetimOverviewService;
 
+    @Autowired
+    HttpServletRequest request;
+
     @RequestMapping(value = "/get/denetimobject", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -62,7 +64,7 @@ public class DenetimOverviewResource {
 
         return new ResponseEntity<DenetimObjectDTO>(denetimObjectDTO, OK);
     }
-
+    //TODO Header eklendi
     @RequestMapping(value = "/update/tebligatadresi/{denetimId}", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -71,11 +73,11 @@ public class DenetimOverviewResource {
 
         LOG.debug("Rest request to update tebligat adresi with denetim id : " + denetimId);
         UtilDenetimSaveDTO utilDenetimSaveDTO;
-        utilDenetimSaveDTO = denetimOverviewService.updateDenetimTebligatAdresiByDenetimId(denetimTebligatAdresi, denetimId);
+        utilDenetimSaveDTO = denetimOverviewService.updateDenetimTebligatAdresiByDenetimId(denetimTebligatAdresi, denetimId, request);
 
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
-
+    //TODO Header eklendi
     @RequestMapping(value = "/update/olayadresi/{denetimId}", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -84,11 +86,11 @@ public class DenetimOverviewResource {
 
         LOG.debug("Rest request to update olay adresi with denetim id : " + denetimId);
         UtilDenetimSaveDTO utilDenetimSaveDTO;
-        utilDenetimSaveDTO = denetimOverviewService.updateDenetimOlayYeriAdresiByDenetimId(denetimOlayYeriAdresi, denetimId);
+        utilDenetimSaveDTO = denetimOverviewService.updateDenetimOlayYeriAdresiByDenetimId(denetimOlayYeriAdresi, denetimId, request);
 
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
-
+    //TODO Header eklendi
     @RequestMapping(value = "/update/karar/{denetimTespitId}", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -97,11 +99,11 @@ public class DenetimOverviewResource {
 
         LOG.debug("Rest request to update karar bilgisi with denetim tespit id : " + denetimTespitId);
         UtilDenetimSaveDTO utilDenetimSaveDTO;
-        utilDenetimSaveDTO = denetimOverviewService.updateDenetimKararBilgileriByDenetimId(denetimTespitKararRequest, denetimTespitId);
+        utilDenetimSaveDTO = denetimOverviewService.updateDenetimKararBilgileriByDenetimId(denetimTespitKararRequest, denetimTespitId, request);
 
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
-
+    //TODO Header eklendi
     @RequestMapping(value = "/update/tespitgirisleri", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -109,7 +111,7 @@ public class DenetimOverviewResource {
     public ResponseEntity<UtilDenetimSaveDTO> updateDenetimTespitBilgileriByDenetimTespitId(@RequestBody TespitlerRequest tespitlerRequest) {
         LOG.debug("tespit guncelleme islemi yapilacak");
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
-        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest);
+        utilDenetimSaveDTO = denetimService.saveTespitler(tespitlerRequest, request);
         LOG.debug("path=/update/tespitgirisleri : tespitlerin güncelleme islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }

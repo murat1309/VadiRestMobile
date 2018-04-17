@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,7 +42,7 @@ public class DenetimRepository {
     @Autowired
     DenetimTarafService denetimTarafService;
 
-    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest) {
+    public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest, HttpServletRequest request) {
 
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         Session session = sessionFactory.openSession();
@@ -55,14 +56,14 @@ public class DenetimRepository {
                 LOG.debug("Denetim Guncellemesi paydasID=" + denetimRequest.getDenetimPaydasDTO().getPaydasNo() + " BdntDenetimId=" + denetimRequest.getBdntDenetimId());
                 Object o = session.get(BDNTDenetim.class,denetimRequest.getBdntDenetimId());
                 bdntDenetim = (BDNTDenetim)o;
-                bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim);
+                bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim, request);
                 session.update(bdntDenetim);
                 tx.commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimRequest.getBdntDenetimId());
             } else {
                 bdntDenetim = new BDNTDenetim();
                 LOG.debug("Denetim Kaydi paydas ID = " + denetimRequest.getDenetimPaydasDTO().getPaydasNo());
-                bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim);
+                bdntDenetim = getBDNTDenetim(denetimRequest, bdntDenetim, request);
                 Object o = session.save(bdntDenetim);
                 tx.commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,(Long)o);
@@ -76,7 +77,10 @@ public class DenetimRepository {
         }
     }
 
-    private BDNTDenetim getBDNTDenetim(DenetimRequest denetimRequest, BDNTDenetim bdntDenetim) {
+    private BDNTDenetim getBDNTDenetim(DenetimRequest denetimRequest, BDNTDenetim bdntDenetim, HttpServletRequest request) {
+
+        String crUser = request.getHeader("UserId");
+
         bdntDenetim.setMpi1PaydasId(denetimRequest.getDenetimPaydasDTO().getPaydasNo());
         bdntDenetim.setDenetimTarihi(new Date());
         bdntDenetim.setIzahat(null);
@@ -121,8 +125,8 @@ public class DenetimRepository {
         vsynRoleTeam.setID(denetimRequest.getDenetimTarafDTO().getRoleTeamId());
         bdntDenetim.setVsynRoleTeam(vsynRoleTeam);
 
-        if (bdntDenetim.getCrUser() == null)
-            bdntDenetim.setCrUser(1l);
+        if (crUser != null)
+            bdntDenetim.setCrUser(Long.parseLong(crUser));
         if (bdntDenetim.getCrDate() == null)
             bdntDenetim.setCrDate(new Date());
         bdntDenetim.setDeleteFlag("H");
@@ -168,7 +172,7 @@ public class DenetimRepository {
 
     public List<TespitGrubuDTO> findTespitGrubuDTOListByDenetimTuruId(Long denetimTuruId) {
         List<TespitGrubuDTO> tespitGrubuDTOList = new ArrayList<>();
-        String sql = "SELECT A.ID,A.TANIM,A.KAYITOZELISMI,A.IZAHAT,A.RAPORBASLIK FROM LDNTTESPITGRUBU A JOIN ADNTDENETIMTURUTESPITGRUBU B " +
+        String sql = "SELECT A.KARARVERILEBILIRMI, A.ID,A.TANIM,A.KAYITOZELISMI,A.IZAHAT,A.RAPORBASLIK FROM LDNTTESPITGRUBU A JOIN ADNTDENETIMTURUTESPITGRUBU B " +
                 " ON A.ISACTIVE='E' AND A.ID=B.LDNTTESPITGRUBU_ID AND B.LDNTDENETIMTURU_ID=" + denetimTuruId;
         List list = new ArrayList<>();
 
@@ -187,6 +191,7 @@ public class DenetimRepository {
                 String kayitOzelIsmi = (String) map.get("KAYITOZELISMI");
                 String izahat = (String) map.get("IZAHAT");
                 String raporBaslik = (String) map.get("RAPORBASLIK");
+                String kararVerilebilirMi = (String) map.get("KARARVERILEBILIRMI");
 
                 if(id != null)
                     tespitGrubuDTO.setId(id.longValue());
@@ -198,6 +203,8 @@ public class DenetimRepository {
                     tespitGrubuDTO.setIzahat(izahat);
                 if(raporBaslik != null)
                     tespitGrubuDTO.setRaporBaslik(raporBaslik);
+                if(kararVerilebilirMi != null)
+                    tespitGrubuDTO.setKararVerilebilirMi(kararVerilebilirMi);
 
                 tespitGrubuDTOList.add(tespitGrubuDTO);
             }
@@ -367,7 +374,8 @@ public class DenetimRepository {
         return true;
     }
 
-    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO) {
+    public UtilDenetimSaveDTO savePaydas(DenetimPaydasDTO denetimPaydasDTO, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         LOG.debug("Paydas kayit islemi basladi");;
         try {
@@ -396,6 +404,8 @@ public class DenetimRepository {
                     mpi1Paydas.setTcKimlikNo(denetimPaydasDTO.getTcKimlikNo());
                     mpi1Paydas.setAdi(denetimPaydasDTO.getAdi());
                     mpi1Paydas.setSoyadi(denetimPaydasDTO.getSoyAdi());
+                    mpi1Paydas.setCrDate(new Date());
+                    mpi1Paydas.setCrUser(crUser);
 
                     Object o = session.save(mpi1Paydas);
                     tx.commit();
@@ -414,6 +424,8 @@ public class DenetimRepository {
                 mpi1Paydas.setVergiDairesi(denetimPaydasDTO.getVergiDairesi());
                 mpi1Paydas.setTabelaAdi(denetimPaydasDTO.getUnvan());
                 mpi1Paydas.setUnvan(denetimPaydasDTO.getUnvan());
+                mpi1Paydas.setCrDate(new Date());
+                mpi1Paydas.setCrUser(crUser);
 
                 Object o = session.save(mpi1Paydas);
                 tx.commit();
@@ -432,7 +444,8 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs,Long paydasId) {
+    public UtilDenetimSaveDTO saveTelefon(Long telefonCep, Long telefonIs, Long paydasId, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             Session session = sessionFactory.openSession();
@@ -458,7 +471,7 @@ public class DenetimRepository {
                 eilTelefon.setMpi1paydasId(paydasId);
                 eilTelefon.setTelefonnumarasi(telefonCep);
                 eilTelefon.setCrDate(new Date());
-                eilTelefon.setCrUser(0l);
+                eilTelefon.setCrUser(crUser);
                 eilTelefon.setUpdUser(0l);
 
                 Object o = session.save(eilTelefon);
@@ -481,7 +494,7 @@ public class DenetimRepository {
                 eilTelefon.setMpi1paydasId(paydasId);
                 eilTelefon.setTelefonnumarasi(telefonIs);
                 eilTelefon.setCrDate(new Date());
-                eilTelefon.setCrUser(0l);
+                eilTelefon.setCrUser(crUser);
                 eilTelefon.setUpdUser(0l);
 
                 Object o = session.save(eilTelefon);
@@ -503,7 +516,8 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId) {
+    public UtilDenetimSaveDTO saveAdres(DenetimPaydasDTO denetimPaydasDTO, Long paydasId, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             LOG.debug("BPI1Adres icin kayit olusturulacak paydasID = " + paydasId);
@@ -524,7 +538,7 @@ public class DenetimRepository {
             bpi1Adres.setPre1IlId((denetimPaydasDTO.getPre1IlId() != null ? denetimPaydasDTO.getPre1IlId() : 0l));
             bpi1Adres.setDre1BagBolumId(0l);
             bpi1Adres.setCrDate(new Date());
-            bpi1Adres.setCrUser(0l);
+            bpi1Adres.setCrUser(crUser);
             bpi1Adres.setUpdUser(0l);
             bpi1Adres.setActive(true);
             bpi1Adres.setMektupGonderimAdresiMi("E");
@@ -542,14 +556,15 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO) {
+    public UtilDenetimSaveDTO saveIsletme(DenetimIsletmeDTO denetimIsletmeDTO, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             LOG.debug("Isletme icin kayit olusturulacak. Isletme Adi = " + denetimIsletmeDTO.getIsletmeAdi());
             BISLIsletme isletme = new BISLIsletme();
             isletme.setVergiDairesi(denetimIsletmeDTO.getVergiDairesi());
             isletme.setIsActive(true);
-            isletme.setCrUser(1l);
+            isletme.setCrUser(crUser);
             isletme.setCrDate(new Date());
             isletme.setBislIsletmeAdresId(null);
             isletme.setTabelaUnvani(denetimIsletmeDTO.getTabelaUnvani());
@@ -573,7 +588,8 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId) {
+    public UtilDenetimSaveDTO saveIsletmeAdresi(DenetimIsletmeDTO denetimIsletmeDTO, Long isletmeId, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             LOG.debug("BISLIsletmeAdresi icin kayit olusturulacak. isletmeId = " + isletmeId);
@@ -592,7 +608,7 @@ public class DenetimRepository {
             bislIsletmeAdres.setIletisimAdresiMi("EVET");
             bislIsletmeAdres.setBislIsletmeId(isletmeId);
             bislIsletmeAdres.setCrDate(new Date());
-            bislIsletmeAdres.setCrUser(1l);
+            bislIsletmeAdres.setCrUser(crUser);
             bislIsletmeAdres.setUpdUser(1l);
             bislIsletmeAdres.setDeleteFlag("H");
 
@@ -611,18 +627,21 @@ public class DenetimRepository {
         }
     }
 
-    public void updateIsletme(Long isletmeId, Long isletmeAdresId) {
+    public void updateIsletme(Long isletmeId, Long isletmeAdresId, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         Session session = sessionFactory.openSession();
         session.getTransaction().begin();
         Object o = session.get(BISLIsletme.class,isletmeId);
         BISLIsletme bisletme = (BISLIsletme)o;
         bisletme.setBislIsletmeAdresId(isletmeAdresId);
+        bisletme.setCrUser(crUser);
         session.update(bisletme);
         session.getTransaction().commit();
         LOG.debug("bislIsletme icin bislIsletmeAdresID guncellendi. bislIsletmeId=" + isletmeId);
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest) {
+    public UtilDenetimSaveDTO saveDenetimTespit(DenetimTespitRequest denetimTespitRequest, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         BDNTDenetimTespit bdntDenetimTespit = null;
         Session session = sessionFactory.openSession();
@@ -647,14 +666,18 @@ public class DenetimRepository {
                 bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
                 bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
                 bdntDenetimTespit.setBdntDenetimTespitLineList(null);
-                //bu aşamada karar verilmedi
-                bdntDenetimTespit.setDenetimAksiyonu(DenetimTespitKararAksiyon.BELIRSIZ.toString());
                 bdntDenetimTespit.setIzahat(null);
-                bdntDenetimTespit.setVerilenSure(null);
                 bdntDenetimTespit.setCrDate(new Date());
                 bdntDenetimTespit.setDeleteFlag("H");
                 bdntDenetimTespit.setIsActive(true);
-                bdntDenetimTespit.setCrUser(1l);
+                bdntDenetimTespit.setCrUser(crUser);
+
+                String aksiyon = denetimTespitRequest.getKararVerilebilirMi().equals("E") ? "BELIRSIZ" : "TUTANAK";
+                bdntDenetimTespit.setDenetimAksiyonu(aksiyon);
+                bdntDenetimTespit.setVerilenSure(null);
+                bdntDenetimTespit.setKapamaBaslangicTarihi(null);
+                bdntDenetimTespit.setKapamaBitisTarihi(null);
+                bdntDenetimTespit.setCezaMiktari(null);
 
                 Object o = session.save(bdntDenetimTespit);
                 session.getTransaction().commit();
@@ -880,7 +903,7 @@ public class DenetimRepository {
         return denetimDTOList;
     }
 
-    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest) {
+    public UtilDenetimSaveDTO saveTespitler(TespitlerRequest tespitlerRequest, HttpServletRequest request) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             Session session = sessionFactory.openSession();
@@ -889,7 +912,7 @@ public class DenetimRepository {
             BDNTDenetimTespit bdntDenetimTespitDB = (BDNTDenetimTespit)o;
 
             for (TespitSaveDTO tespitSaveDTO: tespitlerRequest.getTespitSaveDTOList()) {
-                bdntDenetimTespitDB.getBdntDenetimTespitLineList().add(createDenetimTespitLine(tespitSaveDTO,bdntDenetimTespitDB));
+                bdntDenetimTespitDB.getBdntDenetimTespitLineList().add(createDenetimTespitLine(tespitSaveDTO,bdntDenetimTespitDB, request));
                 //bdntDenetimTespitLineList.add(bdntDenetimTespitLine);
             }
             session.saveOrUpdate(bdntDenetimTespitDB);
@@ -905,7 +928,8 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO updateTespitler(TespitlerRequest tespitlerRequest) {
+    public UtilDenetimSaveDTO updateTespitler(TespitlerRequest tespitlerRequest, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
 
         try {
@@ -930,6 +954,8 @@ public class DenetimRepository {
                     LOG.debug("sonradan kaldirilan tespit. tespitId="+bdntDenetimTespitLine.getTespitId());
                     bdntDenetimTespitLine.setIsActive(false);
                     bdntDenetimTespitLine.setDeleteFlag("E");
+                    bdntDenetimTespitLine.setCrUser(crUser);
+                    bdntDenetimTespitLine.setCrDate(new Date());
                     session.update(bdntDenetimTespitLine);
                 }
             }
@@ -948,7 +974,7 @@ public class DenetimRepository {
                 if (!isExist) {
                     //demek ki yeni bir tespit eklendi
                     LOG.debug("sonradan tepsit listesine eklenen tespitID=" + item.getTespitId());
-                    BDNTDenetimTespitLine bdntDenetimTespitLine = createDenetimTespitLine(item,bdntDenetimTespitDB);
+                    BDNTDenetimTespitLine bdntDenetimTespitLine = createDenetimTespitLine(item,bdntDenetimTespitDB, request);
                     session.save(bdntDenetimTespitLine);
                 }
             }
@@ -968,7 +994,8 @@ public class DenetimRepository {
 
     }
 
-    public BDNTDenetimTespitLine createDenetimTespitLine(TespitSaveDTO tespitSaveDTO, BDNTDenetimTespit bdntDenetimTespitDB) {
+    public BDNTDenetimTespitLine createDenetimTespitLine(TespitSaveDTO tespitSaveDTO, BDNTDenetimTespit bdntDenetimTespitDB, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0L;
         BDNTDenetimTespitLine bdntDenetimTespitLine = null;
         try {
             bdntDenetimTespitLine = new BDNTDenetimTespitLine();
@@ -982,7 +1009,7 @@ public class DenetimRepository {
             bdntDenetimTespitLine.setCrDate(new Date());
             bdntDenetimTespitLine.setDeleteFlag("H");
             bdntDenetimTespitLine.setIsActive(true);
-            bdntDenetimTespitLine.setCrUser(1l);
+            bdntDenetimTespitLine.setCrUser(crUser);
             //date value
             if (tespitSaveDTO.getTespitCevap().getDateValue() != null) {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -1000,7 +1027,8 @@ public class DenetimRepository {
         }
     }
 
-    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest) {
+    public UtilDenetimSaveDTO saveDenetimTeblig(DenetimTebligRequest denetimTebligRequest, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         try {
             Session session = sessionFactory.openSession();
@@ -1019,6 +1047,8 @@ public class DenetimRepository {
                     bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
                     bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
                     bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
+                    bdntDenetim.setCrDate(new Date());
+                    bdntDenetim.setCrUser(crUser);
                 } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null) {
                     // ILGILISI - IMTINA - PAYDASYOK - > SAHIS || KURUM
                     if (denetimTebligRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
@@ -1026,6 +1056,8 @@ public class DenetimRepository {
                         bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
                         bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
                         bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
+                        bdntDenetim.setCrDate(new Date());
+                        bdntDenetim.setCrUser(crUser);
                     }
                 }
                 session.update(bdntDenetim);
@@ -1055,7 +1087,6 @@ public class DenetimRepository {
             bdntDenetimTespit.setIsActive(false);
             bdntDenetimTespit.setDeleteFlag("E");
             bdntDenetimTespit.setUpdDate(new Date());
-            //TODO user doğrusunu setle
             bdntDenetimTespit.setUpdUser(0l);
             for (BDNTDenetimTespitLine denetimTespitLine: bdntDenetimTespit.getBdntDenetimTespitLineList()) {
                 denetimTespitLine.setIsActive(false);
@@ -1073,7 +1104,8 @@ public class DenetimRepository {
         return utilDenetimSaveDTO;
     }
 
-    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest) {
+    public UtilDenetimSaveDTO saveDenetimTespitKarar(DenetimTespitKararRequest denetimTespitKararRequest, HttpServletRequest request) {
+        Long crUser = request.getHeader("UserId") != null ? Long.parseLong(request.getHeader("UserId")) : 0;
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
 
         try {
@@ -1087,10 +1119,8 @@ public class DenetimRepository {
             bdntDenetimTespit.setKapamaBaslangicTarihi(denetimTespitKararRequest.getKapamaBaslangicTarihi());
             bdntDenetimTespit.setKapamaBitisTarihi(denetimTespitKararRequest.getKapamaBitisTarihi());
             bdntDenetimTespit.setCezaMiktari(denetimTespitKararRequest.getCezaMiktari());
-            bdntDenetimTespit.setDenetimAksiyonu(denetimTespitKararRequest.getAksiyon().toString());
             bdntDenetimTespit.setUpdDate(new Date());
-            //TODO user doğrusunu setle
-            bdntDenetimTespit.setUpdUser(0l);
+            bdntDenetimTespit.setUpdUser(crUser);
             session.update(bdntDenetimTespit);
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
             tx.commit();

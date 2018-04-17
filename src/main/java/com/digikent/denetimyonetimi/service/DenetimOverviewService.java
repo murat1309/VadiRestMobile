@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by Medet on 3/28/2018.
@@ -104,18 +105,18 @@ public class DenetimOverviewService {
         return denetimOverviewRepository.getDenetimObjectByDenetimAndDenetimTespitId(denetimObjectRequestDTO);
     }
 
-    public UtilDenetimSaveDTO updateDenetimTebligatAdresiByDenetimId(DenetimTebligatAdresi denetimTebligatAdresi, Long denetimId) {
+    public UtilDenetimSaveDTO updateDenetimTebligatAdresiByDenetimId(DenetimTebligatAdresi denetimTebligatAdresi, Long denetimId, HttpServletRequest request) {
 
-        return denetimOverviewRepository.updateDenetimTebligatAdresiByDenetimId(denetimTebligatAdresi, denetimId);
+        return denetimOverviewRepository.updateDenetimTebligatAdresiByDenetimId(denetimTebligatAdresi, denetimId, request);
     }
 
-    public UtilDenetimSaveDTO updateDenetimOlayYeriAdresiByDenetimId(DenetimOlayYeriAdresi denetimOlayYeriAdresi, Long denetimId) {
+    public UtilDenetimSaveDTO updateDenetimOlayYeriAdresiByDenetimId(DenetimOlayYeriAdresi denetimOlayYeriAdresi, Long denetimId, HttpServletRequest request) {
 
-        return denetimOverviewRepository.updateDenetimOlayYeriAdresiByDenetimId(denetimOlayYeriAdresi, denetimId);
+        return denetimOverviewRepository.updateDenetimOlayYeriAdresiByDenetimId(denetimOlayYeriAdresi, denetimId, request);
     }
 
-    public UtilDenetimSaveDTO updateDenetimKararBilgileriByDenetimId(DenetimTespitKararRequest denetimTespitKararRequest, Long denetimTespitId) {
+    public UtilDenetimSaveDTO updateDenetimKararBilgileriByDenetimId(DenetimTespitKararRequest denetimTespitKararRequest, Long denetimTespitId, HttpServletRequest request) {
 
-        return denetimOverviewRepository.updateDenetimKararBilgileriByDenetimId(denetimTespitKararRequest, denetimTespitId);
+        return denetimOverviewRepository.updateDenetimKararBilgileriByDenetimId(denetimTespitKararRequest, denetimTespitId, request);
     }
 }

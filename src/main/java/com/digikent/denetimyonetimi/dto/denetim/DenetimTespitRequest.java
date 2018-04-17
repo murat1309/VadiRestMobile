@@ -11,6 +11,7 @@ public class DenetimTespitRequest implements Serializable {
     private Long denetimTuruId;
     private Long tespitGrubuId;
     private Long denetimTespitId;
+    private String kararVerilebilirMi;
 
     public Long getDenetimId() {
         return denetimId;
@@ -42,5 +43,13 @@ public class DenetimTespitRequest implements Serializable {
 
     public void setDenetimTespitId(Long denetimTespitId) {
         this.denetimTespitId = denetimTespitId;
+    }
+
+    public String getKararVerilebilirMi() {
+        return kararVerilebilirMi;
+    }
+
+    public void setKararVerilebilirMi(String kararVerilebilirMi) {
+        this.kararVerilebilirMi = kararVerilebilirMi;
     }
 }

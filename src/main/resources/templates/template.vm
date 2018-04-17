@@ -340,6 +340,16 @@
                     <div class="cell row-height"> Karara bağlanmamıştır. </div>
                 </div>
             #end
+
+            #if ($karar.tutanak)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                </div>
+                <div class="row">
+                    <div class="cell row-height"> Tutanak </div>
+                </div>
+            #end
+
         </div>
 
 
