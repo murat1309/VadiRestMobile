@@ -29,7 +29,6 @@ import static org.springframework.http.HttpStatus.OK;
  * Created by Serkan on 4/2/2016.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/basvuruYonetim")
 public class BasvuruYonetimController {
 
@@ -38,6 +37,7 @@ public class BasvuruYonetimController {
     @Inject
     private BasvuruYonetimRepository basvuruYonetimRepository;
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/{id}/ddm1isakisi", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -50,6 +50,7 @@ public class BasvuruYonetimController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/{id}/edm1isakisiadim", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
@@ -67,7 +68,7 @@ public class BasvuruYonetimController {
 
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/edm1isakisiadim/{personelId}", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
@@ -92,6 +93,7 @@ public class BasvuruYonetimController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/edm1isakisiadimWithAttachment/{isAkisiId}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(
