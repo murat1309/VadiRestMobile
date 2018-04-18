@@ -10,6 +10,8 @@ public final class ErrorCode {
     public static final String ERROR_CODE_502 = "HATA KODU : 502. Denetim bulunamadı.";
     public static final String ERROR_CODE_503 = "HATA KODU : 503. Denetim taraf listesi getirilemedi.";
     public static final String ERROR_CODE_504 = "HATA KODU : 504  Belediye parametreleri getirilemedi.";
+    public static final String ERROR_CODE_505 = "HATA KODU : 505  Denetim tamamlanmadığı için rapor oluşturulamaz.";
+    public static final String ERROR_CODE_506 = "HATA KODU : 506  Rapor numarasi kaydedilirken bir hata ile karsilasildi";
 
 
 

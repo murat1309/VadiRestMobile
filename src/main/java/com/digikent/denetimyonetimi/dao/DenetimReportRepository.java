@@ -1,7 +1,9 @@
 package com.digikent.denetimyonetimi.dao;
 
 import com.digikent.denetimyonetimi.dto.rapor.Nsm2Parametre;
+import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.BDNTDenetimTespit;
+import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.hibernate.*;
 import org.slf4j.Logger;
@@ -69,7 +71,7 @@ public class DenetimReportRepository {
         return bdntDenetimTespit;
     }
 
-    public Long getDenetimTespitReportSequenceIdentifierValue(String sql) {
+    public Long getDenetimTespitReportSequenceIdentifierValue(String sql) throws Exception {
         BigDecimal raporNo = null;
         try {
 
@@ -84,13 +86,13 @@ public class DenetimReportRepository {
 
         } catch (Exception e) {
             LOG.debug("Denetim Tespit Rapor : rapor icin sekans getirilirken bir hata ile karsilasildi : " + e.getMessage());
-            return -1L;
+            throw new Exception();
         }
 
         return raporNo.longValue();
     }
 
-    public Boolean insertDenetimTespitReportNoAndYear(BDNTDenetimTespit bdntDenetimTespit, Long raporNo) {
+    public Boolean insertDenetimTespitReportNoAndYear(BDNTDenetimTespit bdntDenetimTespit, Long raporNo) throws Exception {
         Long year = (long) Calendar.getInstance().get(Calendar.YEAR);
 
         bdntDenetimTespit.setYil(year);
@@ -109,42 +111,25 @@ public class DenetimReportRepository {
             return true;
 
         } catch (Exception e) {
-            LOG.debug("Denetim Tespit Rapor: Rapor No ve Yil Kaydedilirken bir hata ile karsilasildi " + e.getMessage());
-
-            return false;
-
+            throw new Exception();
         }
 
     }
 
-    public Boolean isReportNoAlreadyExist(BDNTDenetimTespit bdntDenetimTespit) {
-        String aksiyon = bdntDenetimTespit.getDenetimAksiyonu();
-        Long tutanakNo = bdntDenetimTespit.getTutanakNo();
-        Long cezaNo = bdntDenetimTespit.getCezaNo();
-        Long yil = bdntDenetimTespit.getYil();
-        return yil != null && (cezaNo != null || tutanakNo != null);
-
-    }
-
-    public ErrorDTO insertDenetimTespitReportIdentifier(Long denetimTespitId) {
-
-        ErrorDTO errorDTO = new ErrorDTO();
-        BDNTDenetimTespit bdntDenetimTespit = getDenetimTespitById(denetimTespitId);
-        Boolean isDenetimCompleted = !bdntDenetimTespit.getDenetimAksiyonu().equalsIgnoreCase("BELIRSIZ");
-
-        if(isDenetimCompleted == true) {
-            Boolean reportNoExist = isReportNoAlreadyExist(bdntDenetimTespit);
-            if(!reportNoExist) {
-                String sql = getDenetimTespitReportSequenceIdentifierSql(bdntDenetimTespit.getDenetimAksiyonu());
-                Long raporNo = getDenetimTespitReportSequenceIdentifierValue(sql);
-                Boolean succes = raporNo == -1 ? false : insertDenetimTespitReportNoAndYear(bdntDenetimTespit, raporNo);
-                if(succes != true) {
-                    errorDTO.setError(true);
-                    errorDTO.setErrorMessage("Rapor numarasi kaydedilirken bir hata ile karsilasildi");
-                }
-            }
+    public UtilDenetimSaveDTO insertDenetimTespitReportIdentifier(Long denetimTespitId) {
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        try {
+            BDNTDenetimTespit bdntDenetimTespit = getDenetimTespitById(denetimTespitId);
+            String sql = getDenetimTespitReportSequenceIdentifierSql(bdntDenetimTespit.getDenetimAksiyonu());
+            Long raporNo = getDenetimTespitReportSequenceIdentifierValue(sql);
+            insertDenetimTespitReportNoAndYear(bdntDenetimTespit, raporNo);
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,null);
+        } catch (Exception ex) {
+            LOG.debug("Rapor numarasi kaydedilirken bir hata ile karsilasildi");
+            LOG.debug("HATA MESAJI = " + ex.getMessage());
+            utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true, ErrorCode.ERROR_CODE_506), null);
         }
 
-    return errorDTO;
+        return utilDenetimSaveDTO;
     }
 }
