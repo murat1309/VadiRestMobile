@@ -1041,29 +1041,17 @@ public class DenetimRepository {
             bdntDenetim = (BDNTDenetim)denetimCriteria;
             if (bdntDenetim != null) {
                 bdntDenetim.setTebligSecenegi(denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString());
-                if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null
-                        && denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi().toString().equals(DIGER.toString())) {
-                    bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
-                    bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
-                    bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
-                    bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
-                    bdntDenetim.setCrDate(new Date());
-                    bdntDenetim.setCrUser(crUser);
-                } else if (denetimTebligRequest.getDenetimTebligDTO().getTebligSecenegi() != null) {
-                    // ILGILISI - IMTINA - PAYDASYOK - > SAHIS || KURUM
-                    if (denetimTebligRequest.getDenetimPaydasDTO().getPaydasTuru().equalsIgnoreCase(Constants.PAYDAS_TURU_SAHIS)) {
-                        bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
-                        bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
-                        bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
-                        bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
-                        bdntDenetim.setCrDate(new Date());
-                        bdntDenetim.setCrUser(crUser);
-                    }
-                }
+                bdntDenetim.setTebligAdi(denetimTebligRequest.getDenetimTebligDTO().getTebligAdi());
+                bdntDenetim.setTebligSoyadi(denetimTebligRequest.getDenetimTebligDTO().getTebligSoyadi());
+                bdntDenetim.setTebligTC(denetimTebligRequest.getDenetimTebligDTO().getTebligTC());
+                bdntDenetim.setTebligIzahat(denetimTebligRequest.getDenetimTebligDTO().getTebligIzahat());
+                bdntDenetim.setCrDate(new Date());
+                bdntDenetim.setCrUser(crUser);
                 session.update(bdntDenetim);
                 tx.commit();
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(true,null,denetimTebligRequest.getBdntDenetimId());
-            } else {
+            }
+            else {
                 utilDenetimSaveDTO = new UtilDenetimSaveDTO(false, new ErrorDTO(true,"bdntDenetimID bilgisi bos geldi, denetimID" + denetimTebligRequest.getBdntDenetimId()), null);
             }
         } catch (Exception ex) {
