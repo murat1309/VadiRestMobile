@@ -6,6 +6,5 @@ package com.digikent.denetimyonetimi.enums;
 public enum TebligSecenegi {
     ILGILISI,
     IMTINA,
-    PAYDASYOK,
-    DIGER
+    PAYDASYOK
 }
