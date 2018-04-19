@@ -58,7 +58,7 @@ public class UtilityResource {
     @Transactional
     public ResponseEntity<Boolean> getDenetimListByCriteria() {
         LOG.debug("MOBIL PATLADI");
-        utilityService.saveMobileExceptionHandlerLog(request.getHeader("Message"),request.getHeader("ErrorLine"),request.getHeader("ErrorStack"));
+        utilityService.saveMobileExceptionHandlerLog(request.getHeader("Message"),request.getHeader("ErrorLine"));
         return new ResponseEntity<Boolean>(true, OK);
     }
 
