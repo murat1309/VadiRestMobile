@@ -64,6 +64,9 @@ public class UtilityRepository {
         String baskanAdiSoyadi = (String) map.get("BASKANADISOYADI");
         BigDecimal telefonAlanKodu = (BigDecimal) map.get("TELEFONALANKODU");
         String buyukSehirMi = (String) map.get("BUYUKSEHIRMI");
+        String yaziciTipi = (String) map.get("YAZICITIPI");
+        String yaziciMarka = (String) map.get("YAZICIMARKA");
+        String yaziciModel = (String) map.get("YAZICIMODEL");
 
         if (rre1ilce_id != null) {
             belediyeParamsDTO.setRre1ilce_id(rre1ilce_id.longValue());
@@ -106,6 +109,15 @@ public class UtilityRepository {
         }
         if (buyukSehirMi != null) {
             belediyeParamsDTO.setBuyukSehirMi(buyukSehirMi);
+        }
+        if (yaziciModel != null) {
+            belediyeParamsDTO.setYaziciModel(yaziciModel);
+        }
+        if (yaziciMarka != null) {
+            belediyeParamsDTO.setYaziciMarka(yaziciMarka);
+        }
+        if (yaziciTipi != null) {
+            belediyeParamsDTO.setYaziciTipi(yaziciTipi);
         }
 
         return belediyeParamsDTO;
