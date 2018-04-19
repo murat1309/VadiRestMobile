@@ -18,6 +18,9 @@ public class BelediyeParamsDTO {
     private String baskanAdiSoyadi;
     private Long telefonAlanKodu;
     private String buyukSehirMi;
+    private String yaziciTipi;
+    private String yaziciMarka;
+    private String yaziciModel;
 
     public BelediyeParamsDTO() {
     }
@@ -132,5 +135,29 @@ public class BelediyeParamsDTO {
 
     public void setBuyukSehirMi(String buyukSehirMi) {
         this.buyukSehirMi = buyukSehirMi;
+    }
+
+    public String getYaziciTipi() {
+        return yaziciTipi;
+    }
+
+    public void setYaziciTipi(String yaziciTipi) {
+        this.yaziciTipi = yaziciTipi;
+    }
+
+    public String getYaziciMarka() {
+        return yaziciMarka;
+    }
+
+    public void setYaziciMarka(String yaziciMarka) {
+        this.yaziciMarka = yaziciMarka;
+    }
+
+    public String getYaziciModel() {
+        return yaziciModel;
+    }
+
+    public void setYaziciModel(String yaziciModel) {
+        this.yaziciModel = yaziciModel;
     }
 }

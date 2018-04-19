@@ -792,7 +792,7 @@ public class MesajlasmaRepository {
                 for (TeilMesajİletimGrubuLine teilMesajİletimGrubuLine : groupLineList) {
                     if (teilMesajİletimGrubuLine.getIhr1PersonelId() != null && teilMesajİletimGrubuLine.getIhr1PersonelId().longValue() == user.getIletilenPersonelId().longValue()) {
                         control = true;
-                        GroupLeaveRequestDTO groupLeaveRequestDTO = new GroupLeaveRequestDTO();
+                        GroupLeaveRequestDTO  groupLeaveRequestDTO= new GroupLeaveRequestDTO();
                         groupLeaveRequestDTO.setGroupId(groupRequest.getGroupInformationDTO().getGroupId());
                         groupLeaveRequestDTO.setUserId(teilMesajİletimGrubuLine.getIhr1PersonelId());
                         updateIsActiveInGroupLineByUserIdAndGroupId(groupLeaveRequestDTO,'E');
