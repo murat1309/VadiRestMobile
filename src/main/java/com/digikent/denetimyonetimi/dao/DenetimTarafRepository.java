@@ -243,7 +243,7 @@ public class DenetimTarafRepository {
                 " FROM FSM1USERS A,IHR1PERSONEL B, LHR1GOREVTURU C\n" +
                 " WHERE A.IKY_PERSONEL_ID = B.ID\n" +
                 " AND B.LHR1GOREVTURU_ID=C.ID\n" +
-                " AND B.PERSONELDURUMU='CALISAN'\n" +
+                " AND B.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN')\n" +
                 " AND A.ACTIVE = 'E'\n" +
                 " AND A.IKY_PERSONEL_ID>0\n" +
                 " AND B.BSM2SERVIS_GOREV = (SELECT B.BSM2SERVIS_GOREV FROM FSM1USERS A,IHR1PERSONEL B WHERE A.USERID='"+ fsm1UsersUSERID +"' AND A.IKY_PERSONEL_ID = B.ID AND rownum = 1)";

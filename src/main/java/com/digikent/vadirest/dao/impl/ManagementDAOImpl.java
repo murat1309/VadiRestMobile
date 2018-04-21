@@ -136,7 +136,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 		           +"Sum( Case a.TURU When 'S' Then 1 Else 0 End ) SozlesmeliSayisi,"
 		           +"Sum( Case a.TURU When 'G' Then 1 Else 0 End ) GeciciIsciSayisi,"
 		           +"Sum( Case a.TURU When 'L' Then 1 Else 0 End ) MeclisUyesiSayisi from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID "
-		           +"And a.CIKISTARIHI IS NULL AND A.PERSONELDURUMU='CALISAN'"
+		           +"And a.CIKISTARIHI IS NULL AND A.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN')"
 		           +"group by a.BSM2SERVIS_GOREV,b.TANIM"
 				   +" order by BirimAdi";
 				
@@ -199,7 +199,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 		           +"Sum( Case a.TURU When 'S' Then 1 Else 0 End ) SozlesmeliSayisi,"
 		           +"Sum( Case a.TURU When 'G' Then 1 Else 0 End ) GeciciIsciSayisi,"
 		           +"Sum( Case a.TURU When 'L' Then 1 Else 0 End ) MeclisUyesiSayisi from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID "
-		           +"And a.CIKISTARIHI IS NULL AND A.PERSONELDURUMU='CALISAN'"
+		           +"And a.CIKISTARIHI IS NULL AND A.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN')"
 		           +"group by a.BSM2SERVIS_KADRO,b.TANIM"
 				   +" order by BirimAdi";
 
@@ -395,7 +395,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
 					   +" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
-					   +" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
+					   +" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
 					   +" order by a.ADISOYADI";
 		}
 		else{
@@ -403,7 +403,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
 					   +" And a.CIKISTARIHI IS NULL and a.TURU = '"+turu+"'"
-					   +" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
+					   +" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
 					   +" order by a.ADISOYADI";
 		}
 		
@@ -461,7 +461,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 				+"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 				+" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID and a.BSM2SERVIS_KADRO = "+servisKadroId
 				+" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
-				+" AND a.PERSONELDURUMU not in('EMEKLI','AYR') "
+				+" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
 				+" order by a.ADISOYADI";
 
 		List<Object> list = new ArrayList<Object>();
@@ -2601,7 +2601,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 	public List<InsanKaynaklari> getHumanResourcesType(){
 		String sql = "select TURU, (SELECT TANIM FROM AHR1PERSONELTURU WHERE AHR1PERSONELTURU.TURU="
 				+" IHR1PERSONEL.TURU) TuruAciklama,COUNT(*) TOPLAM from IHR1PERSONEL Where NVL(Id,0)!=0"  
-				+" and PERSONELDURUMU='CALISAN' AND CIKISTARIHI IS NULL  AND TURU IS NOT NULL"
+				+" and LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN') AND CIKISTARIHI IS NULL  AND TURU IS NOT NULL"
 				+" GROUP BY TURU  ORDER BY TURU";
 		
 		List<Object> list = new ArrayList<Object>();
@@ -2636,7 +2636,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 		String sql = "select B.TANIM,A.TURU,  DECODE(A.TURU,'M','Memur','I','Isci','D','Daimi Isci','G','Gecici Isci',"
 				+" 'S','Sozlesmeli','F','Firma Personeli','L','Meclis Uyesi','O','Stajyer') "
 				+" TuruAciklama,  COUNT(*) TOPLAM,B.ID   from IHR1PERSONEL A,BSM2SERVIS B  "
-				+" Where A.ID>0  and A.PERSONELDURUMU='CALISAN'   And A.CIKISTARIHI IS NULL  AND"
+				+" Where A.ID>0  and A.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN') And A.CIKISTARIHI IS NULL  AND"
 				+" A.TURU='" + type + "'"  
 				+" And A.BSM2SERVIS_GOREV = B.ID   GROUP BY B.TANIM,A.TURU,B.ID   ORDER  BY B.TANIM";
 		
