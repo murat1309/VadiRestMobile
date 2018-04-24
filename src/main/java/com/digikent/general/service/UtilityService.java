@@ -38,8 +38,9 @@ public class UtilityService {
         return utilityRepository.getBelediyeParams();
     }
 
-    public void saveMobileExceptionHandlerLog(String message, String errorLine) {
+    public void saveMobileExceptionHandlerLog(String message, String errorLine, String currentPage) {
         LOG.error("mobil hata mesaji = " + message);
+        LOG.error("mobil hata router = " + currentPage);
         LOG.error("mobil hata bundle satiri = " + errorLine);
     }
 }
