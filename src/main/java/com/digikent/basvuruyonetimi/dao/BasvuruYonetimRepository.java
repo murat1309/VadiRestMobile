@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -51,20 +52,36 @@ public class BasvuruYonetimRepository {
         return dm1IsAkisi;
     }
 
-    public DM1IsAkisiAdim getEdm1isakisiadim(@Param("id") Long id){
-        Session session = getCurrentSession();
+    public Long getEdm1isakisiadim(@Param("id") Long id){
 
-        String sqlQuery = "from DM1IsAkisiAdim e where e.ID= :id";
-        Query query1 = session.createQuery(sqlQuery);
-        query1.setParameter("id", id);
-        DM1IsAkisiAdim dm1IsAkisiAdim = (DM1IsAkisiAdim)query1.uniqueResult();
+        BigDecimal ddm1IsAkisiId;
+        List list = new ArrayList<>();
+        String sqlQuery = "select DDM1ISAKISI_ID from EDM1IsAkisiAdim e where e.ID= " + id;
 
-        return dm1IsAkisiAdim;
+        try {
+
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sqlQuery);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            if(!list.isEmpty()) {
+                Map map = (Map) list.get(0);
+                ddm1IsAkisiId = (BigDecimal) map.get("DDM1ISAKISI_ID");
+                if(ddm1IsAkisiId != null)
+                    return ddm1IsAkisiId.longValue();
+            }
+
+        } catch (Exception ex) {
+            throw  ex;
+        }
+
+        return -1L;
     }
 
     public DM1IsAkısıAdımDTO getEdm1isakisiadimDTO(Long id){
 
-        String sql = "SELECT IZAHAT,SONUCDURUMU FROM EDM1ISAKISIADIM WHERE ID=" + id;
+        String sql = "SELECT IZAHAT,SONUCDURUMU, SONUCTARIHI FROM EDM1ISAKISIADIM WHERE ID=" + id;
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -94,16 +111,21 @@ public class BasvuruYonetimRepository {
     }
 
     public void updateEdm1isakisiadim(long personelId, DM1IsAkısıAdımDTO dM1IsAkisiAdimDTO) throws Exception {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date currentDate = new Date();
         String date = dateFormat.format(currentDate);
 
-        String sqlQuery = "update EDM1ISAKISIADIM set IZAHAT = 'asd' where ID="+dM1IsAkisiAdimDTO.getId();
-        //String sqlQuery = "select * from EDM1ISAKISIADIM where ID="+dM1IsAkisiAdimDTO.getId();
+//        "UPDATE DM1IsAkisiAdim e " +
+//                "set e.izahat = :izahat , e.sonucDurumu= :sonucdurumu , e.sonuctarihi= :sonuctarihi " +
+//                "WHERE e.ID= :id";
+        String sqlQuery = "update EDM1ISAKISIADIM " +
+                            " set IZAHAT = " + "'"+ dM1IsAkisiAdimDTO.getIzahat()  + "'" +
+                            " ,SONUCDURUMU = " + "'" + dM1IsAkisiAdimDTO.getSonucDurumu() + "'" +
+                            " ,SONUCTARIHI = " + "TO_DATE('" + date + "', 'DD/MM/RRRR HH24:MI:SS')" +
+                            " where ID="+ dM1IsAkisiAdimDTO.getId();
 
         Session session2 = sessionFactory.withOptions().interceptor(null).openSession();
         SQLQuery query2 = session2.createSQLQuery(sqlQuery);
-        //query2.setParameter("date", date);
         query2.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         query2.executeUpdate();
 

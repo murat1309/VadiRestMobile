@@ -84,7 +84,6 @@ public class BasvuruYonetimController {
             dm1IsAkısıAdımDTO.setError("ERROR");
         }
 
-
         return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
 
     }
@@ -92,17 +91,15 @@ public class BasvuruYonetimController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/edm1isakisiadimWithAttachment/{isAkisiId}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(
-            @PathVariable Long isAkisiId,
-            @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
+    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(@PathVariable Long isAkisiId,@RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
         LOG.debug("REST request to update updateEdm1isakisiadimWithAttachment, iskisiId: {}", isAkisiId);
         LOG.debug("count of uploaded document = " + uploadfiles.length);
+
         DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
         try {
-            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(isAkisiId);
-
+            Long ddm1IsAkisiId = basvuruYonetimRepository.getEdm1isakisiadim(isAkisiId);
             for (int i=0; i<uploadfiles.length; i++) {
-                basvuruYonetimRepository.saveToDocumentum("DDM1ISAKISI", edm1isakisiadim.getDdm1isakisiId(), uploadfiles[i].getBytes());
+                basvuruYonetimRepository.saveToDocumentum("DDM1ISAKISI", ddm1IsAkisiId, uploadfiles[i].getBytes());
                 LOG.debug("This document saved Documentum, docName = (" + i + uploadfiles[i].getName());
             }
 
