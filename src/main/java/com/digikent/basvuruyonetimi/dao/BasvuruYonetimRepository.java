@@ -1,41 +1,24 @@
 package com.digikent.basvuruyonetimi.dao;
 
-import com.digikent.basinyayin.dto.AsmaIndirmeIslemiDTO;
-import com.digikent.basinyayin.dto.TtnyekipDTO;
-import com.digikent.basinyayin.dto.TtnylokasyonDTO;
-import com.digikent.basinyayin.dto.VtnytanitimDTO;
-import com.digikent.web.rest.errors.CustomParameterizedException;
+import com.digikent.basvuruyonetimi.dto.DM1IsAkısıAdımDTO;
 
 
 import com.vadi.digikent.service.icerikyonetimi.documentum.DocumentumConnector;
 import com.vadi.digikent.service.icerikyonetimi.documentum.DocumentumItemAction;
 import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisi;
 import com.vadi.smartkent.datamodel.domains.icerikyonetimi.dm1.DM1IsAkisiAdim;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.transform.Transformers;
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -49,6 +32,9 @@ public class BasvuruYonetimRepository {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Autowired
+    SessionFactory sessionFactory;
 
     protected Session getCurrentSession()  {
         return entityManager.unwrap(Session.class);
@@ -76,33 +62,56 @@ public class BasvuruYonetimRepository {
         return dm1IsAkisiAdim;
     }
 
-    public void updateEdm1isakisiadim(long personelId, DM1IsAkisiAdim dM1IsAkisiAdim) throws Exception {
-        Session session = getCurrentSession();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date currentDate = new Date();
+    public DM1IsAkısıAdımDTO getEdm1isakisiadimDTO(Long id){
 
-        String sqlQuery = "UPDATE DM1IsAkisiAdim e " +
-                "set e.izahat = :izahat , e.sonucDurumu= :sonucdurumu , e.sonuctarihi= :sonuctarihi " +
-                "WHERE e.ID= :id";
+        String sql = "SELECT IZAHAT,SONUCDURUMU FROM EDM1ISAKISIADIM WHERE ID=" + id;
+        List list = new ArrayList<>();
 
-        try{
-            Query query = session.createQuery(sqlQuery);
-            int updatedRows = query
-                    .setParameter("sonucdurumu", dM1IsAkisiAdim.getSonucDurumu())
-                    .setParameter("izahat", dM1IsAkisiAdim.getIzahat())
-                    .setParameter("sonuctarihi", currentDate)
-                    .setParameter("id", dM1IsAkisiAdim.getID())
-                    .executeUpdate();
-        }catch (Exception e){
-            LOG.warn("DM1IsAkisiAdim update hata {}",e.getMessage(),dM1IsAkisiAdim.getID() );
-            throw new Exception(e.getMessage());
+        Session session = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query = session.createSQLQuery(sql);
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        list = query.list();
+
+        if(!list.isEmpty()) {
+            for(Object o : list) {
+                Map map = (Map) o;
+                DM1IsAkısıAdımDTO dm1IsAkisiAdimDTO = new DM1IsAkısıAdımDTO();
+
+                String sonucDurumu = (String) map.get("SONUCDURUMU");
+                String izahat = (String) map.get("IZAHAT");
+
+                if(id != null)
+                    dm1IsAkisiAdimDTO.setId(id.longValue());
+                if(sonucDurumu != null)
+                    dm1IsAkisiAdimDTO.setSonucDurumu(sonucDurumu);
+                if(izahat != null)
+                    dm1IsAkisiAdimDTO.setIzahat(izahat);
+
+                return dm1IsAkisiAdimDTO;
+            }
         }
+        return null;
+    }
+
+    public void updateEdm1isakisiadim(long personelId, DM1IsAkısıAdımDTO dM1IsAkisiAdimDTO) throws Exception {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currentDate = new Date();
+        String date = dateFormat.format(currentDate);
+
+        String sqlQuery = "update EDM1ISAKISIADIM set IZAHAT = 'asd' where ID="+dM1IsAkisiAdimDTO.getId();
+        //String sqlQuery = "select * from EDM1ISAKISIADIM where ID="+dM1IsAkisiAdimDTO.getId();
+
+        Session session2 = sessionFactory.withOptions().interceptor(null).openSession();
+        SQLQuery query2 = session2.createSQLQuery(sqlQuery);
+        //query2.setParameter("date", date);
+        query2.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+        query2.executeUpdate();
 
         try{
-            Query exQuery = session.createSQLQuery("CALL " +
+            Query exQuery = session2.createSQLQuery("CALL " +
                     "DM1.P_BELGE_ISLEM_KAYDET(:adimId,:kayitTuru,:personelId,:errcode,:errtext)");
 
-            exQuery.setParameter("adimId", dM1IsAkisiAdim.getID());
+            exQuery.setParameter("adimId", dM1IsAkisiAdimDTO.getId());
             exQuery.setParameter("kayitTuru", "U");
             exQuery.setParameter("personelId", personelId);
             exQuery.setParameter("errcode", 0);

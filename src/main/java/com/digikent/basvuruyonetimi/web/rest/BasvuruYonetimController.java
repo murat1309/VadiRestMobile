@@ -57,12 +57,11 @@ public class BasvuruYonetimController {
     public ResponseEntity<DM1IsAkısıAdımDTO> getEdm1isakisiadim(@PathVariable Long id) {
         LOG.debug("REST request to get DM1IsAkisiAdim : {}", id);
 
-        DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(id);
-
-        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
-        dm1IsAkısıAdımDTO.setId(edm1isakisiadim.getID());
-        dm1IsAkısıAdımDTO.setIzahat(edm1isakisiadim.getIzahat());
-        dm1IsAkısıAdımDTO.setSonucDurumu(edm1isakisiadim.getSonucDurumu());
+        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = basvuruYonetimRepository.getEdm1isakisiadimDTO(id);
+        if (dm1IsAkısıAdımDTO == null) {
+            LOG.debug("DM1IsAkisiAdim getirilirken hata oluştu id : {}", id);
+            dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO(id,null,null,"İş Akışı Bulunamadı");
+        }
 
         return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
 
@@ -78,10 +77,7 @@ public class BasvuruYonetimController {
         try {
             LOG.debug("REST request to update updateEdm1isakisiadim : {}", dm1IsAkısıAdımDTO.getId());
 
-            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(dm1IsAkısıAdımDTO.getId());
-            edm1isakisiadim.setIzahat(dm1IsAkısıAdımDTO.getIzahat());
-            edm1isakisiadim.setSonucDurumu(dm1IsAkısıAdımDTO.getSonucDurumu());
-            basvuruYonetimRepository.updateEdm1isakisiadim(personelId, edm1isakisiadim);
+            basvuruYonetimRepository.updateEdm1isakisiadim(personelId, dm1IsAkısıAdımDTO);
 
             LOG.debug("This approve was updated a successfully ");
         } catch (Exception ex) {

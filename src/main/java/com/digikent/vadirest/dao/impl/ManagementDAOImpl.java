@@ -665,7 +665,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 				+"Where a.ID = b.DDM1ISAKISI_ID "
 				+"And c.ID = b.ALC_BSM2SERVIS_ID And b.TARIH BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') "
  				+"AND TO_DATE ('"+endDate+"', 'dd-MM-yyyy') "
-				+"and b.ALC_MSM2ORGANIZASYON_ID <> b.GON_MSM2ORGANIZASYON_ID And a.turu = 'S' "
+				+"and b.ALC_MSM2ORGANIZASYON_ID <> b.GON_MSM2ORGANIZASYON_ID And a.turu = 'S' and c.ID>0 "
 				+"Group By b.ALC_BSM2SERVIS_ID,c.TANIM "
 				+"Order By 3 Desc";
 		
