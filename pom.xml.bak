@@ -31,8 +31,6 @@
         <java.version>1.8</java.version>
         <javax.inject.version>1</javax.inject.version>
         <liquibase-slf4j.version>1.2.1</liquibase-slf4j.version>
-        <resteasy.version>*</resteasy.version>
-        <keycloak.version>2.2.1.Final</keycloak.version>
 
         <mapstruct.version>1.0.0.CR1</mapstruct.version>
         <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
@@ -62,6 +60,14 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+      </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -391,27 +397,6 @@
             <artifactId>spring-security-data</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-admin-client</artifactId>
-            <version>${keycloak.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-adapter-core</artifactId>
-            <version>${keycloak.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-services</artifactId>
-            <version>${keycloak.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-server-spi</artifactId>
-            <version>${keycloak.version}</version>
-        </dependency>
-
         <!--        <dependency>
             <groupId>com.vadi.smartkent</groupId>
             <artifactId>datamodel</artifactId>
@@ -472,6 +457,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>
@@ -528,6 +519,7 @@
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+                    <include>**/*.vm</include>
                 </includes>
             </resource>
             <resource>
@@ -682,7 +674,7 @@
                             <propertyName>surefireArgLine</propertyName>
                         </configuration>
                     </execution>
-                    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
+                    <!-- Ensures that the code coverage rapor for unit tests is created after unit tests have been run -->
                     <execution>
                         <id>post-unit-test</id>
                         <phase>test</phase>
