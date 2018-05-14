@@ -1,7 +1,9 @@
-package com.digikent.sosyalyardim.web.rest;
+package com.digikent.sosyalyardim.rest;
 
 import com.digikent.sosyalyardim.dao.SY1DosyaRepository;
-import com.digikent.sosyalyardim.web.dto.SY1DosyaDTO;
+import com.digikent.sosyalyardim.dto.SY1DosyaDTO;
+import com.digikent.sosyalyardim.dto.SYS1DosyaRequest;
+import com.digikent.sosyalyardim.service.SY1DosyaService;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Dosya;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,26 +22,40 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * Created by Serkan on 8/16/16.
+ * Edited by Kadir on 05/11/18.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1dosya")
 public class SY1DosyaResource {
 
     @Inject
-    private SY1DosyaRepository repository;
+    private SY1DosyaRepository sy1DosyaRepository;
+
+    @Inject
+    private SY1DosyaService sy1DosyaService;
 
     @RequestMapping(method = GET, value = "/list", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<SY1DosyaDTO>> list() {
-        List<SY1DosyaDTO> results = repository.list();
+        List<SY1DosyaDTO> results = sy1DosyaRepository.list();
         return new ResponseEntity<List<SY1DosyaDTO>>(results, OK);
     }
 
     @RequestMapping(method = POST, value = "/search", produces = APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<List<SY1DosyaDTO>> search(@RequestBody SY1Dosya sy1Dosya) {
-        List<SY1DosyaDTO> results = repository.search(sy1Dosya);
+        List<SY1DosyaDTO> results = sy1DosyaRepository.search(sy1Dosya);
+        return new ResponseEntity<List<SY1DosyaDTO>>(results, OK);
+    }
+
+
+    //YENI
+
+    @RequestMapping(method = POST, value = "/arama")
+    @Transactional
+    public ResponseEntity<List<SY1DosyaDTO>> getDosyaByCriteria(@RequestBody SYS1DosyaRequest sys1DosyaRequest) {
+        List<SY1DosyaDTO> results = sy1DosyaService.getDosyaByCriteria(sys1DosyaRequest);
         return new ResponseEntity<List<SY1DosyaDTO>>(results, OK);
     }
 

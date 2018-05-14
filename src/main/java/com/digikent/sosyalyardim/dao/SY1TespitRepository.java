@@ -1,6 +1,6 @@
 package com.digikent.sosyalyardim.dao;
 
-import com.digikent.sosyalyardim.web.dto.SY1TespitDTO;
+import com.digikent.sosyalyardim.dto.SY1TespitDTO;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Tespit;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;

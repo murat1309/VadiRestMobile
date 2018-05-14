@@ -1,6 +1,4 @@
-package com.digikent.sosyalyardim.web.dto;
-
-import java.util.Date;
+package com.digikent.sosyalyardim.dto;
 
 /**
  * Created by Serkan on 8/23/16.

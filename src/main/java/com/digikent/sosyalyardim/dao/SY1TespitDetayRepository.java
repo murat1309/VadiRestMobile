@@ -1,6 +1,6 @@
 package com.digikent.sosyalyardim.dao;
 
-import com.digikent.sosyalyardim.web.dto.SY1TespitDetayDTO;
+import com.digikent.sosyalyardim.dto.SY1TespitDetayDTO;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1TespitDetay;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -11,11 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
