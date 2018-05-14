@@ -13,6 +13,7 @@ public final class ErrorCode {
     public static final String ERROR_CODE_505 = "HATA KODU : 505  Denetim tamamlanmadığı için rapor oluşturulamaz.";
     public static final String ERROR_CODE_506 = "HATA KODU : 506  Rapor numarasi kaydedilirken bir hata ile karsilasildi";
 
-
-
+    //Sosyal Yardım
+    public static final String ERROR_CODE_601 = "HATA KODU : 601. Tespit soruları getirilemedi.";
+    public static final String ERROR_CODE_602 = "HATA KODU : 602. Tespit soruları dönüştürülürken hata oluştu.";
 }

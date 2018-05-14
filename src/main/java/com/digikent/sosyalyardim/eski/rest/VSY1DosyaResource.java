@@ -1,12 +1,11 @@
-package com.digikent.sosyalyardim.rest;
+package com.digikent.sosyalyardim.eski.rest;
 
-import com.digikent.sosyalyardim.dao.SY1DosyaRepository;
-import com.digikent.sosyalyardim.dto.SY1DosyaDTO;
-import com.digikent.sosyalyardim.dto.SYS1DosyaRequest;
-import com.digikent.sosyalyardim.service.SY1DosyaService;
+import com.digikent.sosyalyardim.yeni.dao.SY1DosyaRepository;
+import com.digikent.sosyalyardim.yeni.dto.SY1DosyaDTO;
+import com.digikent.sosyalyardim.yeni.dto.SYS1DosyaRequest;
+import com.digikent.sosyalyardim.yeni.service.VSY1DosyaService;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Dosya;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +26,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 //@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1dosya")
-public class SY1DosyaResource {
+public class VSY1DosyaResource {
 
     @Inject
     private SY1DosyaRepository sy1DosyaRepository;
 
     @Inject
-    private SY1DosyaService sy1DosyaService;
+    private VSY1DosyaService VSY1DosyaService;
 
     @RequestMapping(method = GET, value = "/list", produces = APPLICATION_JSON_VALUE)
     @Transactional
@@ -55,7 +54,7 @@ public class SY1DosyaResource {
     @RequestMapping(method = POST, value = "/arama")
     @Transactional
     public ResponseEntity<List<SY1DosyaDTO>> getDosyaByCriteria(@RequestBody SYS1DosyaRequest sys1DosyaRequest) {
-        List<SY1DosyaDTO> results = sy1DosyaService.getDosyaByCriteria(sys1DosyaRequest);
+        List<SY1DosyaDTO> results = VSY1DosyaService.getDosyaByCriteria(sys1DosyaRequest);
         return new ResponseEntity<List<SY1DosyaDTO>>(results, OK);
     }
 

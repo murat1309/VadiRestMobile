@@ -1,7 +1,7 @@
-package com.digikent.sosyalyardim.dao;
+package com.digikent.sosyalyardim.yeni.dao;
 
-import com.digikent.sosyalyardim.dto.SY1DosyaDTO;
-import com.digikent.sosyalyardim.dto.SYS1DosyaRequest;
+import com.digikent.sosyalyardim.yeni.dto.SY1DosyaDTO;
+import com.digikent.sosyalyardim.yeni.dto.SYS1DosyaRequest;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Dosya;
 import org.hibernate.*;
 import org.slf4j.Logger;

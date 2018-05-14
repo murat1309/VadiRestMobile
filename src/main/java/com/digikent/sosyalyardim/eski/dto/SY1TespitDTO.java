@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.dto;
+package com.digikent.sosyalyardim.eski.dto;
 
 /**
  * Created by Serkan on 8/23/16.

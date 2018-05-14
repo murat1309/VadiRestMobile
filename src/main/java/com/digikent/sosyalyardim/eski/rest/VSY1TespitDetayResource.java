@@ -1,7 +1,7 @@
-package com.digikent.sosyalyardim.rest;
+package com.digikent.sosyalyardim.eski.rest;
 
-import com.digikent.sosyalyardim.dao.SY1TespitDetayRepository;
-import com.digikent.sosyalyardim.dto.SY1TespitDetayDTO;
+import com.digikent.sosyalyardim.eski.dao.SY1TespitDetayRepository;
+import com.digikent.sosyalyardim.eski.dto.SY1TespitDetayDTO;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1TespitDetay;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 //@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1tespitline")
-public class SY1TespitDetayResource {
+public class VSY1TespitDetayResource {
 
     @Inject
     private SY1TespitDetayRepository repository;

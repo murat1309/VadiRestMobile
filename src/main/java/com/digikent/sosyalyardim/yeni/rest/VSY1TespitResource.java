@@ -1,7 +1,9 @@
-package com.digikent.sosyalyardim.rest;
+package com.digikent.sosyalyardim.yeni.rest;
 
-import com.digikent.sosyalyardim.dao.SY1TespitRepository;
-import com.digikent.sosyalyardim.dto.SY1TespitDTO;
+import com.digikent.sosyalyardim.eski.dao.SY1TespitRepository;
+import com.digikent.sosyalyardim.eski.dto.SY1TespitDTO;
+import com.digikent.sosyalyardim.yeni.dto.VSY1TespitSorulariResponse;
+import com.digikent.sosyalyardim.yeni.service.VSY1TespitService;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Tespit;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,12 +24,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by Serkan on 8/16/16.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1tespit")
-public class SY1TespitResource {
+public class VSY1TespitResource {
 
     @Inject
     private SY1TespitRepository repository;
+
+    @Inject
+    private VSY1TespitService vsy1TespitService;
 
     @RequestMapping(method = GET, value = "/list", produces = APPLICATION_JSON_VALUE)
     @Transactional
@@ -42,6 +47,16 @@ public class SY1TespitResource {
     public ResponseEntity<List<SY1TespitDTO>> search(@RequestBody SY1Tespit sy1Tespit) {
         List<SY1TespitDTO> results = repository.search(sy1Tespit);
         return new ResponseEntity<List<SY1TespitDTO>>(results, OK);
+    }
+
+
+    //YENI
+
+    @RequestMapping(method = GET, value = "/soru")
+    @Transactional
+    public ResponseEntity<VSY1TespitSorulariResponse> getTespitSorulari() {
+        VSY1TespitSorulariResponse results = vsy1TespitService.getTespitSorulariResponse();
+        return new ResponseEntity<VSY1TespitSorulariResponse>(results, OK);
     }
 
 }
