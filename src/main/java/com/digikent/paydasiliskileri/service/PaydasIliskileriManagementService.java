@@ -27,16 +27,16 @@ public class PaydasIliskileriManagementService {
                             "PAYDASTURU,TABELAADI,KAYITDURUMU," +
                             "(select max( decode( NVL(MAHALLEADI,'-'), '-' ,'','MAHALLE: '||MAHALLEADI )||   DECODE( NVL(CADDESADI,'-'), '-' ,'',' CADDE: '||CADDESADI )||   DECODE( NVL(SOKAKADI,'-'), '-' ,'',' SOKAK: '||SOKAKADI )||    ' NO:'||KAPINO||' '||    ' D:'||DAIRENO||' '||  POSTAKODU||  ' ' || RRE1ILCE_ADI || '/' || PRE1IL_ADI) " +
                             "from BPI1ADRES where MPI1PAYDAS_ID=MPI1PAYDAS.ID and MEKTUPGONDERIMADRESIMI='E') ADRES " +
-                            "from MPI1PAYDAS ";
+                            "from MPI1PAYDAS where KAYITDURUMU='A' ";
 
         if(paydasSorguRequestDTO.getPaydasNo() != null)
-            query = baseQuery + " where ID= " + paydasSorguRequestDTO.getPaydasNo();
+            query = baseQuery + " and ID= " + paydasSorguRequestDTO.getPaydasNo();
         else if(paydasSorguRequestDTO.getSorguAdi() != null)
-            query = baseQuery + " where SORGUADI LIKE '" + paydasSorguRequestDTO.getSorguAdi() + "%'";
+            query = baseQuery + " and SORGUADI LIKE '" + paydasSorguRequestDTO.getSorguAdi() + "%'";
         else if(paydasSorguRequestDTO.getVergiNo() != null)
-            query = baseQuery + " where VERGINUMARASI= '" + paydasSorguRequestDTO.getVergiNo() + "'";
+            query = baseQuery + " and VERGINUMARASI= '" + paydasSorguRequestDTO.getVergiNo() + "'";
         else if(paydasSorguRequestDTO.getTcNo() != null)
-            query = baseQuery + " where TCKIMLIKNO= " + paydasSorguRequestDTO.getTcNo();
+            query = baseQuery + " and TCKIMLIKNO= " + paydasSorguRequestDTO.getTcNo();
 
         return query;
     }
