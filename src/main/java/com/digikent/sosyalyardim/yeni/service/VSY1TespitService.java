@@ -12,6 +12,7 @@ import com.digikent.sosyalyardim.yeni.entity.TSY1TespitSoru;
 import com.digikent.sosyalyardim.yeni.entity.TSY1TespitSoruTuru;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ public class VSY1TespitService {
     @Inject
     VSY1TespitRepository vsy1TespitRepository;
 
+    @Cacheable(value = "tespitsorulari", key = "#root.methodName.toString()")
     public VSY1TespitSorulariResponse getTespitSorulariResponse() {
         VSY1TespitSorulariResponse tespitSorulariResponse = null;
         List<TSY1TespitKategoriDTO> vsy1TespitSorulariDTOList = null;
@@ -86,6 +88,9 @@ public class VSY1TespitService {
                 tespitSoruDTO.setAktif(item.getAktif());
                 tespitSoruDTO.setCevap(item.getCevap());
                 tespitSoruDTO.setTespitSoruTuruDTO(convertTespitSoruTuruToDTO(item.getTsy1TespitSoruTuru()));
+                tespitSoruDTO.setBilgi("");
+                tespitSoruDTO.setCbrbdegeri(0l);
+                tespitSoruDTO.setStnmdegeri("");
                 tespitSoruDTOList.add(tespitSoruDTO);
             }
         } catch (Exception ex) {

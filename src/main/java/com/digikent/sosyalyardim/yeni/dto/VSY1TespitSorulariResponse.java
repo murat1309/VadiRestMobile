@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Serkan on 14.05.2018.
+ * Created by Kadir on 14.05.2018.
  */
 public class VSY1TespitSorulariResponse {
 

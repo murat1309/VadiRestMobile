@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.eski.rest;
+package com.digikent.sosyalyardim.yeni.rest;
 
 import com.digikent.sosyalyardim.yeni.dao.SY1DosyaRepository;
 import com.digikent.sosyalyardim.yeni.dto.SY1DosyaDTO;

@@ -1,6 +1,5 @@
 package com.digikent.sosyalyardim.yeni.dao;
 
-import com.digikent.sosyalyardim.yeni.dto.VSY1TespitSorulariDTO;
 import com.digikent.sosyalyardim.yeni.entity.TSY1TespitKategori;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

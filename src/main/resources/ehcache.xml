@@ -49,4 +49,12 @@
     maxElementsInMemory="1000"
     overflowToDisk="true"/>
 
+  <cache
+    name="tespitsorulari"
+    maxElementsInMemory="1000"
+    memoryStoreEvictionPolicy="LRU"
+    overflowToDisk="false"
+    timeToIdleSeconds="0"
+    timeToLiveSeconds="3600"/>
+
   </ehcache>

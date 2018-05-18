@@ -16,6 +16,12 @@ public class TSY1TespitSoruDTO {
     private Long cevap;
     private Long aktif;
     private String kayitOzelIsmi;
+    //UI için gerekli datalar
+    //string number degeri
+    private String stnmdegeri;
+    //combobox radio buton değeri
+    private Long cbrbdegeri;
+    private String bilgi;
 
     public Long getId() {
         return id;
@@ -79,5 +85,29 @@ public class TSY1TespitSoruDTO {
 
     public void setKayitOzelIsmi(String kayitOzelIsmi) {
         this.kayitOzelIsmi = kayitOzelIsmi;
+    }
+
+    public String getStnmdegeri() {
+        return stnmdegeri;
+    }
+
+    public void setStnmdegeri(String stnmdegeri) {
+        this.stnmdegeri = stnmdegeri;
+    }
+
+    public Long getCbrbdegeri() {
+        return cbrbdegeri;
+    }
+
+    public void setCbrbdegeri(Long cbrbdegeri) {
+        this.cbrbdegeri = cbrbdegeri;
+    }
+
+    public String getBilgi() {
+        return bilgi;
+    }
+
+    public void setBilgi(String bilgi) {
+        this.bilgi = bilgi;
     }
 }
