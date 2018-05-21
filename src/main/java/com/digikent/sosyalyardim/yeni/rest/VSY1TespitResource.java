@@ -2,8 +2,10 @@ package com.digikent.sosyalyardim.yeni.rest;
 
 import com.digikent.sosyalyardim.eski.dao.SY1TespitRepository;
 import com.digikent.sosyalyardim.eski.dto.SY1TespitDTO;
+import com.digikent.sosyalyardim.yeni.dto.VSY1TespitKayitRequest;
 import com.digikent.sosyalyardim.yeni.dto.VSY1TespitSorulariResponse;
 import com.digikent.sosyalyardim.yeni.service.VSY1TespitService;
+import com.digikent.sosyalyardim.yeni.util.UtilSosyalYardimSaveDTO;
 import com.vadi.smartkent.datamodel.domains.sosyalhizmetler.sya.SY1Tespit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,7 @@ public class VSY1TespitResource {
 
     //YENI
 
+    //Sosyal yardım soruları getirilecek
     @RequestMapping(method = GET, value = "/soru")
     @Transactional
     public ResponseEntity<VSY1TespitSorulariResponse> getTespitSorulari() {
@@ -66,14 +69,21 @@ public class VSY1TespitResource {
         return new ResponseEntity<VSY1TespitSorulariResponse>(results, OK);
     }
 
+    //Sosyal yardım tespiti kayıt edilecek
     @RequestMapping(method = POST, value = "/kaydet")
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<VSY1TespitSorulariResponse> saveTespit(@RequestBody ) {
+    public ResponseEntity<UtilSosyalYardimSaveDTO> saveTespit(@RequestBody VSY1TespitKayitRequest tespitKayitRequest) throws Exception {
         LOG.info("tespit kaydedilecek");
-        VSY1TespitSorulariResponse results = vsy1TespitService.getTespitSorulariResponse();
-        return new ResponseEntity<VSY1TespitSorulariResponse>(results, OK);
+        UtilSosyalYardimSaveDTO results = null;
+        try {
+            results = vsy1TespitService.saveSosyalYardimTespit(tespitKayitRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        }
+        return new ResponseEntity<UtilSosyalYardimSaveDTO>(results, OK);
     }
 
 }

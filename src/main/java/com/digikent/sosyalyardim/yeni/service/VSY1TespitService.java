@@ -3,13 +3,9 @@ package com.digikent.sosyalyardim.yeni.service;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.sosyalyardim.yeni.dao.VSY1TespitRepository;
-import com.digikent.sosyalyardim.yeni.dto.TSY1TespitKategoriDTO;
-import com.digikent.sosyalyardim.yeni.dto.TSY1TespitSoruDTO;
-import com.digikent.sosyalyardim.yeni.dto.TSY1TespitSoruTuruDTO;
-import com.digikent.sosyalyardim.yeni.dto.VSY1TespitSorulariResponse;
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitKategori;
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitSoru;
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitSoruTuru;
+import com.digikent.sosyalyardim.yeni.dto.*;
+import com.digikent.sosyalyardim.yeni.entity.*;
+import com.digikent.sosyalyardim.yeni.util.UtilSosyalYardimSaveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,6 +55,7 @@ public class VSY1TespitService {
                 //soru yoksa, kategoriyi göndermeye gerek yok
                 if (item.getTsy1TespitSoruList() != null && item.getTsy1TespitSoruList().size() != 0) {
                     TSY1TespitKategoriDTO tespitKategoriDTO = new TSY1TespitKategoriDTO();
+                    tespitKategoriDTO.setId(item.getID());
                     tespitKategoriDTO.setTanim(item.getTanim());
                     tespitKategoriDTO.setAktif(item.getAktif());
                     tespitKategoriDTO.setDosyaBirey(item.getDosyabirey());
@@ -83,6 +81,7 @@ public class VSY1TespitService {
         try {
             for (TSY1TespitSoru item: tsy1TespitSoruList) {
                 TSY1TespitSoruDTO tespitSoruDTO = new TSY1TespitSoruDTO();
+                tespitSoruDTO.setId(item.getID());
                 tespitSoruDTO.setTanim(item.getTanim());
                 tespitSoruDTO.setKayitOzelIsmi(item.getKayitOzelIsmi());
                 tespitSoruDTO.setAktif(item.getAktif());
@@ -113,5 +112,68 @@ public class VSY1TespitService {
             ex.printStackTrace();
         }
         return tespitSoruTuruDTO;
+    }
+
+    public UtilSosyalYardimSaveDTO saveSosyalYardimTespit(VSY1TespitKayitRequest tespitKayitRequest) throws Exception {
+        UtilSosyalYardimSaveDTO utilSosyardimSaveDTO = null;
+        try {
+            VSY1Tespit vsy1Tespit = new VSY1Tespit();
+            List<VSY1TespitLine> tespitLineList = createTespitLineList(tespitKayitRequest,vsy1Tespit);
+            if (tespitLineList == null || tespitLineList.size() == 0) {
+                LOG.info("Kayıt edilecek veri girişi bulunamadı");
+                utilSosyardimSaveDTO = new UtilSosyalYardimSaveDTO(false,new ErrorDTO(true,"Kayıt edilecek veri girişi bulunamadı"),null);
+            } else {
+                vsy1TespitRepository.saveTespit(tespitKayitRequest, tespitLineList,vsy1Tespit);
+                utilSosyardimSaveDTO = new UtilSosyalYardimSaveDTO(true,null,null);
+            }
+        } catch (Exception e) {
+            utilSosyardimSaveDTO = new UtilSosyalYardimSaveDTO(false,new ErrorDTO(true,e.getMessage()),null);
+            throw new Exception();
+        }
+
+        return utilSosyardimSaveDTO;
+    }
+
+    private List<VSY1TespitLine> createTespitLineList(VSY1TespitKayitRequest tespitKayitRequest,VSY1Tespit vsy1tespit) throws Exception {
+        List<VSY1TespitLine> tespitLineList = new ArrayList<>();
+
+        try {
+            for (TSY1TespitKategoriDTO kategoriDTO: tespitKayitRequest.getTespitKategoriDTOList()) {
+
+                for (TSY1TespitSoruDTO soruDTO: kategoriDTO.getSoruDTOList()) {
+                    if (
+                            (soruDTO.getCbrbdegeri() != null && soruDTO.getCbrbdegeri().longValue() == 1)
+                                    || (soruDTO.getStnmdegeri() != null && !soruDTO.getStnmdegeri().trim().equalsIgnoreCase(""))
+                                    || (soruDTO.getBilgi() != null && !soruDTO.getBilgi().trim().equalsIgnoreCase(""))
+                            ) {
+                        VSY1TespitLine tespitLine = new VSY1TespitLine();
+                        tespitLine.setCrDate(new Date());
+                        tespitLine.setDosyaId(tespitKayitRequest.getDosyaId());
+                        tespitLine.setVsy1Tespit(vsy1tespit);
+                        tespitLine.setSoruId(soruDTO.getId());
+                        tespitLine.setKategoriId(kategoriDTO.getId());
+                        tespitLine.setDeger((soruDTO.getCbrbdegeri() != null && soruDTO.getCbrbdegeri().longValue() == 1 ? soruDTO.getCbrbdegeri() : (soruDTO.getStnmdegeri() != null && !soruDTO.getStnmdegeri().trim().equalsIgnoreCase("") ? Long.valueOf(soruDTO.getStnmdegeri().trim()) : null)));
+                        tespitLine.setBilgi(soruDTO.getBilgi());
+                        tespitLine.setCrDate(new Date());
+                        tespitLine.setCrUser(tespitKayitRequest.getFsm1UsersId());
+                        tespitLine.setIsActive(null);
+
+
+                        tespitLineList.add(tespitLine);
+                    }
+                }
+
+            }
+        } catch (NumberFormatException ex) {
+            LOG.error("Long a cevirimde hata oluştu");
+            throw new Exception("Lütfen değer alanlarını sayı giriniz");
+        } catch (Exception ex) {
+            LOG.error("Tespit line lar oluşturulurken bir hata oluştu");
+            throw new Exception("Tespit line lar oluşturulurken bir hata oluştu");
+        }
+
+
+
+        return tespitLineList;
     }
 }
