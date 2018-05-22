@@ -1,9 +1,9 @@
-package com.digikent.sosyalyardim.yeni.dao;
+package com.digikent.sosyalyardim.dao;
 
-import com.digikent.sosyalyardim.yeni.dto.VSY1TespitKayitRequest;
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitKategori;
-import com.digikent.sosyalyardim.yeni.entity.VSY1Tespit;
-import com.digikent.sosyalyardim.yeni.entity.VSY1TespitLine;
+import com.digikent.sosyalyardim.dto.VSY1TespitKayitRequest;
+import com.digikent.sosyalyardim.entity.TSY1TespitKategori;
+import com.digikent.sosyalyardim.entity.VSY1Tespit;
+import com.digikent.sosyalyardim.entity.VSY1TespitLine;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

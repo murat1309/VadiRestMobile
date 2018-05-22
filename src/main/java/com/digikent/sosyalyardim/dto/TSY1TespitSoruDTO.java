@@ -1,7 +1,4 @@
-package com.digikent.sosyalyardim.yeni.dto;
-
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitKategori;
-import com.digikent.sosyalyardim.yeni.entity.TSY1TespitSoruTuru;
+package com.digikent.sosyalyardim.dto;
 
 /**
  * Created by Kadir on 14.05.2018.

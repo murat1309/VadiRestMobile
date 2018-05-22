@@ -1,8 +1,7 @@
-package com.digikent.sosyalyardim.yeni.dto;
+package com.digikent.sosyalyardim.dto;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

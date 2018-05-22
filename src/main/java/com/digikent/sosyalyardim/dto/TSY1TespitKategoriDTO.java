@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.yeni.dto;
+package com.digikent.sosyalyardim.dto;
 
 import java.util.ArrayList;
 import java.util.List;

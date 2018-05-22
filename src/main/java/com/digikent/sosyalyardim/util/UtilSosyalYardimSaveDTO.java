@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.yeni.util;
+package com.digikent.sosyalyardim.util;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 

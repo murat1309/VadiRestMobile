@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.yeni.entity;
+package com.digikent.sosyalyardim.entity;
 
 import com.digikent.domain.BaseEntity;
 import org.hibernate.annotations.NotFound;

@@ -1,11 +1,11 @@
-package com.digikent.sosyalyardim.yeni.service;
+package com.digikent.sosyalyardim.service;
 
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import com.digikent.sosyalyardim.yeni.dao.VSY1TespitRepository;
-import com.digikent.sosyalyardim.yeni.dto.*;
-import com.digikent.sosyalyardim.yeni.entity.*;
-import com.digikent.sosyalyardim.yeni.util.UtilSosyalYardimSaveDTO;
+import com.digikent.sosyalyardim.dao.VSY1TespitRepository;
+import com.digikent.sosyalyardim.dto.*;
+import com.digikent.sosyalyardim.entity.*;
+import com.digikent.sosyalyardim.util.UtilSosyalYardimSaveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;

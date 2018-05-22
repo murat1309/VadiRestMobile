@@ -1,4 +1,4 @@
-package com.digikent.sosyalyardim.yeni.dto;
+package com.digikent.sosyalyardim.dto;
 
 /**
  * Created by Kadir on 14.05.2018.

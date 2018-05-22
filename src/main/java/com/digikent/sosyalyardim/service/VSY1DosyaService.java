@@ -1,8 +1,8 @@
-package com.digikent.sosyalyardim.yeni.service;
+package com.digikent.sosyalyardim.service;
 
-import com.digikent.sosyalyardim.yeni.dao.SY1DosyaRepository;
-import com.digikent.sosyalyardim.yeni.dto.SY1DosyaDTO;
-import com.digikent.sosyalyardim.yeni.dto.SYS1DosyaRequest;
+import com.digikent.sosyalyardim.dao.SY1DosyaRepository;
+import com.digikent.sosyalyardim.dto.SY1DosyaDTO;
+import com.digikent.sosyalyardim.dto.SYS1DosyaRequest;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
