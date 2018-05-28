@@ -5,6 +5,7 @@ import com.digikent.sosyalyardim.dto.SY1DosyaDTO;
 import com.digikent.sosyalyardim.dto.SYS1DosyaRequest;
 import com.digikent.sosyalyardim.service.VSY1DosyaService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * Edited by Kadir on 05/11/18.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1dosya")
 public class VSY1DosyaResource {
 

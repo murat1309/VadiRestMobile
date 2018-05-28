@@ -18,7 +18,7 @@
     }
 
     .m {
-        margin: 0 0 10px 0;
+        margin: 0 0 0 0;
     }
 
     .row {
@@ -102,9 +102,9 @@
     }
 
     .kolon2 {
-        position: relative;
+
         text-align: center;
-        padding-top: 20px;
+        padding-top: 10px;
     }
 
     .head {
@@ -125,6 +125,15 @@
         border: solid 1px #000000;
     }
 
+    .pitem {
+        margin-top: 0px;
+        margin-bottom: 2px;
+    }
+
+    .satir {
+        margin-bottom:30px;
+    }
+
 </style>
 
 <body>
@@ -135,9 +144,9 @@
             <div class=""><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
         </div>
         <div class="kolon2">
-            <h3> T.C. $belediyeAdi BELEDİYE BAŞKANLIĞI </h3>
-            <h3> ZABITA MÜDÜRLÜĞÜ </h3>
-            <h3> $tespitBaslik </h3>
+            <p class="pitem"> T.C. $belediyeAdi BELEDİYE BAŞKANLIĞI </p>
+            <p class="pitem"> ZABITA MÜDÜRLÜĞÜ </p>
+            <p class="pitem"> $tespitBaslik </p>
         </div>
     </div>
 
@@ -215,11 +224,7 @@
         </div>
     </div>
 
-
-
     </br>
-    </br>
-
 
     <div class="cerceve">
         #if ($reportEkBilgiDTOs)
@@ -287,7 +292,6 @@
         </div>
     #end
 
-    <br>
     <br>
 
     <div class="cerceve">
@@ -357,6 +361,7 @@
             <div class="title"> » Taraflar</div>
             <div class="row header">
                 <div class="cell border-bottom">Taraf Türü</div>
+                <div class="cell border-bottom">Sicil No</div>
                 <div class="cell border-bottom">Adı Soyadı</div>
                 <div class="cell border-bottom">Görevi</div>
                 <div class="cell border-bottom" style="width: 150px">İmza</div>
@@ -365,6 +370,7 @@
             #foreach( $user in $belediyeUserDTOList )
                 <div class="row">
                     <div class="cell border-bottom row-height">$user.tarafTuru</div>
+                    <div class="cell border-bottom row-height">$user.sicilNo</div>
                     <div class="cell border-bottom row-height">$user.adiSoyadi</div>
                     <div class="cell border-bottom row-height">$user.gorevi</div>
                     <div class="cell border-bottom row-height" style="width: 150px">  </div>

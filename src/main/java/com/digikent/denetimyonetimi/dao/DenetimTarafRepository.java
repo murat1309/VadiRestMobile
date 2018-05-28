@@ -49,8 +49,8 @@ public class DenetimTarafRepository {
                 for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
                     Boolean isExist = false;
                     for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
-                        if (bdntDenetimTespitTaraf.getIhr1PersonelId() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null){
-                            if (bdntDenetimTespitTaraf.getIhr1PersonelId().longValue() == item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue()) {
+                        if (bdntDenetimTespitTaraf.getIhr1Personel().getID() != null && item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null){
+                            if (bdntDenetimTespitTaraf.getIhr1Personel().getID().longValue() == item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue()) {
                                 isExist = true;
                                 break;
                             }
@@ -69,8 +69,8 @@ public class DenetimTarafRepository {
                 for (VsynMemberShipDTO item:denetimTarafDTO.getMemberShipDTOList()) {
                     Boolean isExist = false;
                     for (BDNTDenetimTespitTaraf bdntDenetimTespitTaraf:bdntDenetimTespitTarafList) {
-                        if (item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null && bdntDenetimTespitTaraf.getIhr1PersonelId() != null) {
-                            if (item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue() == bdntDenetimTespitTaraf.getIhr1PersonelId().longValue()) {
+                        if (item.getFsm1UserDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO() != null && item.getFsm1UserDTO().getIhr1PersonelDTO().getId() != null && bdntDenetimTespitTaraf.getIhr1Personel().getID() != null) {
+                            if (item.getFsm1UserDTO().getIhr1PersonelDTO().getId().longValue() == bdntDenetimTespitTaraf.getIhr1Personel().getID().longValue()) {
                                 isExist = true;
                                 break;
                             }
@@ -145,7 +145,11 @@ public class DenetimTarafRepository {
         bdntDenetimTespitTaraf.setAdi(vsynMemberShipDTO.getFsm1UserDTO().getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
         bdntDenetimTespitTaraf.setGorevi(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getLhr1GorevTuruDTO().getTanim());
-        bdntDenetimTespitTaraf.setIhr1PersonelId(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getId());
+
+        IHR1Personel ihr1Personel = new IHR1Personel();
+        ihr1Personel.setID(vsynMemberShipDTO.getFsm1UserDTO().getIhr1PersonelDTO().getId());
+        bdntDenetimTespitTaraf.setIhr1Personel(ihr1Personel);
+
         bdntDenetimTespitTaraf.setSoyadi(vsynMemberShipDTO.getFsm1UserDTO().getSoyadi());
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_BELEDIYE);
         bdntDenetimTespitTaraf.setIzahat(null);
@@ -163,7 +167,7 @@ public class DenetimTarafRepository {
         bdntDenetimTespitTaraf.setAdi(item.getAdi());
         bdntDenetimTespitTaraf.setBdntDenetimId(denetimId);
         bdntDenetimTespitTaraf.setGorevi("PAYDAS");
-        bdntDenetimTespitTaraf.setIhr1PersonelId(null);
+        bdntDenetimTespitTaraf.setIhr1Personel(null);
         bdntDenetimTespitTaraf.setSoyadi(item.getSoyAdi());
         bdntDenetimTespitTaraf.setTarafTuru(Constants.DENETIM_TARAF_TURU_PAYDAS);
         bdntDenetimTespitTaraf.setTcKimlikNo(item.getTcKimlikNo());

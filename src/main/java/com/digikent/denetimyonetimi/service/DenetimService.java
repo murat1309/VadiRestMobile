@@ -42,14 +42,14 @@ public class DenetimService {
     DenetimRepository denetimRepository;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest, HttpServletRequest request) {
-            UtilDenetimSaveDTO utilDenetimSaveDTO = null;
+        UtilDenetimSaveDTO utilDenetimSaveDTO = null;
         utilDenetimSaveDTO = denetimRepository.saveDenetim(denetimRequest, request);
         //denetim taraf objelerini setle
         if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() != null) {
             LOG.debug("Denetim Güncellendi BdntDenetimId : " + denetimRequest.getBdntDenetimId());
             UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),false, request);
         } else if (utilDenetimSaveDTO.getSaved() && denetimRequest.getBdntDenetimId() == null) {
-            LOG.debug("Denetim Oluşturuldu BdntDenetimId : " + denetimRequest.getBdntDenetimId());
+            LOG.debug("Denetim Oluşturuldu BdntDenetimId : " + utilDenetimSaveDTO.getRecordId());
             UtilDenetimSaveDTO utilDenetimTarafSaveDTO = denetimTarafRepository.saveDenetimTespitTaraf(denetimRequest,utilDenetimSaveDTO.getRecordId(),true, request);
         }
 

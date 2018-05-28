@@ -176,6 +176,18 @@ public class DenetimReportService {
                     belediyeUserDTO.setAdiSoyadi(item.getAdi() + " " + item.getSoyadi());
                     belediyeUserDTO.setGorevi((item.getGorevi() == null ? " " : item.getGorevi()));
                     belediyeUserDTO.setTarafTuru((item.getTarafTuru() == null ? " " : item.getTarafTuru()));
+
+                    if (item.getIhr1Personel() != null) {
+                        //iş kuralı : taşeronların sicil numarası yok. bu yüzden id verilecek
+                        if (item.getIhr1Personel().getKurumSicilNumarasi() != null && item.getIhr1Personel().getKurumSicilNumarasi().longValue() != 0) {
+                            belediyeUserDTO.setSicilNo(item.getIhr1Personel().getKurumSicilNumarasi());
+                        } else {
+                            belediyeUserDTO.setSicilNo(item.getIhr1Personel().getID());
+                        }
+                    } else {
+                        belediyeUserDTO.setSicilNo(0l);
+                    }
+
                     belediyeUserDTOList.add(belediyeUserDTO);
                 }
             } catch (Exception ex) {

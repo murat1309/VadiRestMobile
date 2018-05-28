@@ -21,8 +21,11 @@ public class BDNTDenetimTespitTaraf extends BaseEntity implements Serializable {
     @Column(name = "BDNTDENETIM_ID")
     private Long bdntDenetimId;
 
-    @Column(name = "IHR1PERSONEL_ID")
-    private Long ihr1PersonelId;
+    //@Column(name = "IHR1PERSONEL_ID")
+    //private Long ihr1PersonelId;
+    @OneToOne
+    @JoinColumn(name = "IHR1PERSONEL_ID")
+    private IHR1Personel ihr1Personel;
 
     @Column(name = "MPI1PAYDAS_ID")
     private Long mpi1PaydasId;
@@ -61,12 +64,12 @@ public class BDNTDenetimTespitTaraf extends BaseEntity implements Serializable {
         this.bdntDenetimId = bdntDenetimId;
     }
 
-    public Long getIhr1PersonelId() {
-        return ihr1PersonelId;
+    public IHR1Personel getIhr1Personel() {
+        return ihr1Personel;
     }
 
-    public void setIhr1PersonelId(Long ihr1PersonelId) {
-        this.ihr1PersonelId = ihr1PersonelId;
+    public void setIhr1Personel(IHR1Personel ihr1Personel) {
+        this.ihr1Personel = ihr1Personel;
     }
 
     public Long getMpi1PaydasId() {

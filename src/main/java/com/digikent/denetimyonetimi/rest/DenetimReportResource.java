@@ -39,13 +39,10 @@ public class DenetimReportResource {
     HttpServletRequest request;
 
     /**
-     * Ceza Denetim Raporunu getirir
-     * //TODO henüz ceza yada tutanak için ayrım yapılmadı
+     * Denetim Raporunu getirir. İlk oluşturulurken bu çağırılır. Sebebi döküman numarasının oluşturulmasıdır
      * @param denetimTespitId
      * @return
      */
-
-    //TODO HEADER EKLENECEK ?
     @RequestMapping(value = "/create/yenidenetim/{denetimtespitid}", method = RequestMethod.GET)
     @Transactional
     public ResponseEntity<ReportResponse> createCezaDenetimReportByDenetimTespitId(@PathVariable("denetimtespitid") Long denetimTespitId) {
@@ -57,9 +54,14 @@ public class DenetimReportResource {
 
     }
 
+    /**
+     * Görüntüleme ekranı için denetim raporunu getirir.
+     * @param denetimTespitId
+     * @return
+     */
     @RequestMapping(value = "/create/view/{denetimtespitid}", method = RequestMethod.GET)
     @Transactional
-    public ResponseEntity<ReportResponse> createReport(@PathVariable("denetimtespitid") Long denetimTespitId) {
+    public ResponseEntity<ReportResponse> getDenetimReport(@PathVariable("denetimtespitid") Long denetimTespitId) {
         LOG.debug("Denetim Goruntuleme / Rapor hazirlanacak bdntDenetimTespitID="+denetimTespitId);
         ReportResponse reportResponse = null;
         if (denetimReportService.isReportNoAlreadyExist(denetimTespitId)) {
