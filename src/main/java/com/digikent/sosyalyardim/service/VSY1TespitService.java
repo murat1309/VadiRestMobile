@@ -1,5 +1,6 @@
 package com.digikent.sosyalyardim.service;
 
+import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.sosyalyardim.dao.VSY1TespitRepository;
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -150,14 +152,20 @@ public class VSY1TespitService {
                         tespitLine.setCrDate(new Date());
                         tespitLine.setDosyaId(tespitKayitRequest.getDosyaId());
                         tespitLine.setVsy1Tespit(vsy1tespit);
-                        tespitLine.setSoruId(soruDTO.getId());
-                        tespitLine.setKategoriId(kategoriDTO.getId());
+
+                        TSY1TespitSoru tespitSoru = new TSY1TespitSoru();
+                        tespitSoru.setID(soruDTO.getId());
+                        tespitLine.setSoru(tespitSoru);
+
+                        TSY1TespitKategori tespitKategori = new TSY1TespitKategori();
+                        tespitKategori.setID(kategoriDTO.getId());
+                        tespitLine.setKategori(tespitKategori);
+
                         tespitLine.setDeger((soruDTO.getCbrbdegeri() != null && soruDTO.getCbrbdegeri().longValue() == 1 ? soruDTO.getCbrbdegeri() : (soruDTO.getStnmdegeri() != null && !soruDTO.getStnmdegeri().trim().equalsIgnoreCase("") ? Long.valueOf(soruDTO.getStnmdegeri().trim()) : null)));
                         tespitLine.setBilgi(soruDTO.getBilgi());
                         tespitLine.setCrDate(new Date());
                         tespitLine.setCrUser(tespitKayitRequest.getFsm1UsersId());
-                        tespitLine.setIsActive(null);
-
+                        tespitLine.setIsActive(true);
 
                         tespitLineList.add(tespitLine);
                     }
@@ -172,8 +180,83 @@ public class VSY1TespitService {
             throw new Exception("Tespit line lar oluşturulurken bir hata oluştu");
         }
 
-
-
         return tespitLineList;
+    }
+
+    public VSY1TespitResponse getTespitByDosyaId(Long dosyaId) {
+        VSY1TespitResponse vsy1TespitResponse = new VSY1TespitResponse();
+        List<VSY1TespitDTO> tespitDTOList = null;
+        List<VSY1Tespit> tespitList = null;
+        try {
+            tespitList = vsy1TespitRepository.findTespitByDosyaId(dosyaId);
+            if (tespitList != null && tespitList.size() != 0)
+                tespitDTOList = convertTespitToTespitDTO(tespitList);
+            vsy1TespitResponse.setVsy1TespitDTOList(tespitDTOList);
+            vsy1TespitResponse.setErrorDTO(null);
+        } catch (Exception ex) {
+            vsy1TespitResponse.setVsy1TespitDTOList(null);
+            vsy1TespitResponse.setErrorDTO(new ErrorDTO(true,ErrorCode.ERROR_CODE_603));
+            LOG.error("HATA KODU : 603. Tespitler getirilirken hata oluştu.");
+        }
+
+        return vsy1TespitResponse;
+    }
+
+    private List<VSY1TespitDTO> convertTespitToTespitDTO(List<VSY1Tespit> tespitList) {
+        List<VSY1TespitDTO> tespitDTOList = new ArrayList<>();
+
+        for (VSY1Tespit item: tespitList) {
+            try {
+                VSY1TespitDTO tespitDTO = new VSY1TespitDTO();
+                tespitDTO.setTespitBilgisi(item.getAlinanBilgi());
+
+                if (item.getTarih() != null) {
+                    tespitDTO.setTespitTarihi(new SimpleDateFormat("dd-MM-yyyy").format(item.getTarih()));
+                } else {
+                    if (item.getCrDate() != null) {
+                        tespitDTO.setTespitTarihi(new SimpleDateFormat("dd-MM-yyyy").format(item.getCrDate()));
+                    }
+                }
+
+                tespitDTO.setTespitYapan((item.getIhr1PersonelTespitYapan() != null ? item.getIhr1PersonelTespitYapan().getAdi()+" "+item.getIhr1PersonelTespitYapan().getSoyadi() : "-"));
+
+                tespitDTO.setTespitLineDTOList((item.getVsy1TespitLineList().size() > 0 ? convertTespitLineDTOList(item.getVsy1TespitLineList()) : null));
+
+                tespitDTOList.add(tespitDTO);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                LOG.error("convertTespitToTespitDTO() hata oluştu, pas geçildi...");
+            }
+        }
+
+        return tespitDTOList;
+    }
+
+    private List<VSY1TespitLineDTO> convertTespitLineDTOList(List<VSY1TespitLine> vsy1TespitLineList) {
+        List<VSY1TespitLineDTO> vsy1TespitLineDTOList = new ArrayList<>();
+
+
+            for (VSY1TespitLine item:vsy1TespitLineList) {
+                try {
+                    VSY1TespitLineDTO tespitLineDTO = new VSY1TespitLineDTO();
+                    tespitLineDTO.setBilgi(item.getBilgi());
+                    tespitLineDTO.setDeger(item.getDeger());
+
+                    if (item.getSoru() != null) {
+                        tespitLineDTO.setSoru(item.getSoru().getTanim());
+                        tespitLineDTO.setSoruId(item.getSoru().getID());
+
+                        if (item.getSoru().getTsy1TespitSoruTuru() != null) {
+                            tespitLineDTO.setSoruTuru(item.getSoru().getTsy1TespitSoruTuru().getTanim());
+                        }
+                    }
+
+                    vsy1TespitLineDTOList.add(tespitLineDTO);
+                } catch (Exception ex) {
+                    LOG.error("convertTespitLineDTOList() hata oluştu, pas geçildi...");
+                }
+            }
+
+        return vsy1TespitLineDTOList;
     }
 }

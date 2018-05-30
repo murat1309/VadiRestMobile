@@ -1,6 +1,7 @@
 package com.digikent.sosyalyardim.rest;
 
 import com.digikent.sosyalyardim.dto.VSY1TespitKayitRequest;
+import com.digikent.sosyalyardim.dto.VSY1TespitResponse;
 import com.digikent.sosyalyardim.dto.VSY1TespitSorulariResponse;
 import com.digikent.sosyalyardim.service.VSY1TespitService;
 import com.digikent.sosyalyardim.util.UtilSosyalYardimSaveDTO;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by Kadir on 8/16/16.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1tespit")
 public class VSY1TespitResource {
 
@@ -59,6 +61,19 @@ public class VSY1TespitResource {
             throw new Exception(e.getMessage());
         }
         return new ResponseEntity<UtilSosyalYardimSaveDTO>(results, OK);
+    }
+
+    /**
+     * bir dosyaya ait tespitler getirilecek
+     * @return
+     */
+    @RequestMapping(method = GET, value = "/tespitler/{dosyaId}")
+    @Transactional
+    public ResponseEntity<VSY1TespitResponse> getTespitlerByDosyaId(@PathVariable("dosyaId") Long dosyaId) {
+        LOG.info("tespitler getirilecek. dosyaId="+dosyaId);
+        VSY1TespitResponse results = vsy1TespitService.getTespitByDosyaId(dosyaId);
+
+        return new ResponseEntity<VSY1TespitResponse>(results, OK);
     }
 
 }

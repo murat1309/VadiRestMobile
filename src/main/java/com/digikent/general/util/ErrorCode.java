@@ -16,4 +16,5 @@ public final class ErrorCode {
     //Sosyal Yardım
     public static final String ERROR_CODE_601 = "HATA KODU : 601. Tespit soruları getirilemedi.";
     public static final String ERROR_CODE_602 = "HATA KODU : 602. Tespit soruları dönüştürülürken hata oluştu.";
+    public static final String ERROR_CODE_603 = "HATA KODU : 603. Tespitler getirilirken hata oluştu.";
 }

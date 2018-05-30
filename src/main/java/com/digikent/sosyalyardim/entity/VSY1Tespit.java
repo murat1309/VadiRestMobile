@@ -1,11 +1,13 @@
 package com.digikent.sosyalyardim.entity;
 
+import com.digikent.denetimyonetimi.entity.IHR1Personel;
 import com.digikent.domain.BaseEntity;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,6 +32,16 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
 
     @Column(name = "IHR1PERSONEL_ID")
     private Long ihr1PersonelId;
+
+    @ManyToOne
+    @JoinColumn(name = "IHR1PERSONEL_TESPITYAPAN")
+    private IHR1Personel ihr1PersonelTespitYapan;
+
+    @Column(name = "TARIH")
+    private Date tarih;
+
+    @Column(name = "ALINANBILGI")
+    private String alinanBilgi;
 
     public VSY1Tespit() {
 
@@ -69,5 +81,29 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
 
     public void setIhr1PersonelId(Long ihr1PersonelId) {
         this.ihr1PersonelId = ihr1PersonelId;
+    }
+
+    public IHR1Personel getIhr1PersonelTespitYapan() {
+        return ihr1PersonelTespitYapan;
+    }
+
+    public void setIhr1PersonelTespitYapan(IHR1Personel ihr1PersonelTespitYapan) {
+        this.ihr1PersonelTespitYapan = ihr1PersonelTespitYapan;
+    }
+
+    public Date getTarih() {
+        return tarih;
+    }
+
+    public void setTarih(Date tarih) {
+        this.tarih = tarih;
+    }
+
+    public String getAlinanBilgi() {
+        return alinanBilgi;
+    }
+
+    public void setAlinanBilgi(String alinanBilgi) {
+        this.alinanBilgi = alinanBilgi;
     }
 }

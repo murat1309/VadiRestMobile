@@ -1,6 +1,8 @@
 package com.digikent.sosyalyardim.entity;
 
 import com.digikent.domain.BaseEntity;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;

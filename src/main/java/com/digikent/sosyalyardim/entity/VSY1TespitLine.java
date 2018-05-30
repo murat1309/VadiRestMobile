@@ -1,6 +1,8 @@
 package com.digikent.sosyalyardim.entity;
 
 import com.digikent.domain.BaseEntity;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,11 +27,14 @@ public class VSY1TespitLine extends BaseEntity implements Serializable {
     @Column(name = "VSY1DOSYA_ID")
     private Long dosyaId;
 
-    @Column(name = "TSY1TESPITKATEGORI_ID")
-    private Long kategoriId;
+    @ManyToOne
+    @JoinColumn(name = "TSY1TESPITKATEGORI_ID")
+    private TSY1TespitKategori kategori;
 
-    @Column(name = "TSY1TESPITSORU_ID")
-    private Long soruId;
+    @ManyToOne
+    @JoinColumn(name = "TSY1TESPITSORU_ID")
+    @NotFound(action = NotFoundAction.IGNORE)
+    private TSY1TespitSoru soru;
 
     @Column( name = "BILGI")
     private String bilgi;
@@ -61,20 +66,20 @@ public class VSY1TespitLine extends BaseEntity implements Serializable {
         this.dosyaId = dosyaId;
     }
 
-    public Long getKategoriId() {
-        return kategoriId;
+    public TSY1TespitKategori getKategori() {
+        return kategori;
     }
 
-    public void setKategoriId(Long kategoriId) {
-        this.kategoriId = kategoriId;
+    public void setKategori(TSY1TespitKategori kategori) {
+        this.kategori = kategori;
     }
 
-    public Long getSoruId() {
-        return soruId;
+    public TSY1TespitSoru getSoru() {
+        return soru;
     }
 
-    public void setSoruId(Long soruId) {
-        this.soruId = soruId;
+    public void setSoru(TSY1TespitSoru soru) {
+        this.soru = soru;
     }
 
     public String getBilgi() {
