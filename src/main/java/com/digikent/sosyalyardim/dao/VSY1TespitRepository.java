@@ -101,10 +101,8 @@ public class VSY1TespitRepository {
             Session session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(VSY1Tespit.class);
             criteria.add(Restrictions.or(Restrictions.eq("isActive", true),Restrictions.isNull("isActive")));
-            //criteria.add(Restrictions.eq("id", 1058l));
-            //criteria.add(Restrictions.eq("isActive",true));
             criteria.add(Restrictions.eq("dosyaId", dosyaId));
-            criteria.addOrder(Order.asc("tarih"));
+            criteria.addOrder(Order.desc("tarih"));
 
             list = criteria.list();
         } catch (Exception ex) {
