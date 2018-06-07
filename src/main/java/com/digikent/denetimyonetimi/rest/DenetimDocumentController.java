@@ -33,16 +33,16 @@ public class DenetimDocumentController {
     DenetimDocumentService denetimDocumentService;
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @RequestMapping(value = "/save/photo/{denetimtespitid}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "/save/photo/{denetimId}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity<UtilDenetimSaveDTO> saveDenetimPhoto (@PathVariable Long denetimtespitid, @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
-        LOG.debug("REST / Denetim Tespiti icin fotograf yuklenecek");
+    public ResponseEntity<UtilDenetimSaveDTO> saveDenetimPhoto (@PathVariable Long denetimId, @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
+        LOG.debug("REST / Denetim icin fotograf yuklenecek denetimId : " + denetimId);
         LOG.debug("yuklenecek fotograf sayisi = " + uploadfiles.length);
         UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO();
         try {
             for (int i=0; i<uploadfiles.length; i++) {
                 LOG.debug((i+1) + ".ci foto kaydedilecek. Adi= " + uploadfiles[i].getOriginalFilename());
-                utilDenetimSaveDTO = denetimDocumentService.saveDenetimPhotoToDocumentum("BDNTDENETIMTESPIT", denetimtespitid, uploadfiles[i].getBytes());
+                utilDenetimSaveDTO = denetimDocumentService.saveDenetimPhotoToDocumentum("BDNTDENETIM", denetimId, uploadfiles[i].getBytes());
                 LOG.debug("Kayit gerceklesti. sirasi ve docName = " + (i+1) + " " + uploadfiles[i].getOriginalFilename());
             }
         } catch (Exception ex) {
