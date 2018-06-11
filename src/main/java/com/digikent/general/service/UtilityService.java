@@ -2,6 +2,7 @@ package com.digikent.general.service;
 
 import com.digikent.general.dao.UtilityRepository;
 import com.digikent.general.dto.BelediyeParamResponseDTO;
+import com.digikent.general.dto.MobileAppExceptionDTO;
 import com.digikent.general.dto.MobileExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,5 +43,9 @@ public class UtilityService {
         LOG.error("mobil hata mesaji = " + message);
         LOG.error("mobil hata router = " + currentPage);
         LOG.error("mobil hata bundle satiri = " + errorLine);
+    }
+
+    public void LogMobileAppException(MobileAppExceptionDTO mobileAppExceptionDTO) {
+        LOG.error(mobileAppExceptionDTO.getErrorMessage());
     }
 }
