@@ -29,11 +29,11 @@ public class DenetimDocumentService {
     @Inject
     BasvuruYonetimRepository basvuruYonetimRepository;
 
-    public UtilDenetimSaveDTO saveDenetimPhotoToDocumentum(String tableName, Long denetimtespitid, byte[] bytes) {
+    public UtilDenetimSaveDTO saveDenetimPhotoToDocumentum(String tableName, Long denetimId, byte[] bytes) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
 
         try {
-            denetimDocumentRepository.saveToDocumentum(tableName, denetimtespitid, bytes);
+            denetimDocumentRepository.saveToDocumentum(tableName, denetimId, bytes);
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(true, null, null);
         } catch (Exception e) {
             utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true,"Fotograf kaydedilirken bir hata olustu"),null);

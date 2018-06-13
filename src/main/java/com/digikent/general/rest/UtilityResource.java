@@ -1,6 +1,7 @@
 package com.digikent.general.rest;
 
 import com.digikent.general.dto.BelediyeParamResponseDTO;
+import com.digikent.general.dto.MobileAppExceptionDTO;
 import com.digikent.general.dto.MobileExceptionHandler;
 import com.digikent.general.service.UtilityService;
 import org.slf4j.Logger;
@@ -62,6 +63,13 @@ public class UtilityResource {
         return new ResponseEntity<Boolean>(true, OK);
     }
 
-
+    @RequestMapping(value = "/mobile/log/exception", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> getMobileAppException(@RequestBody MobileAppExceptionDTO mobileAppExceptionDTO) {
+        LOG.debug("Mobile App Exception Has Been Thrown");
+        utilityService.LogMobileAppException(mobileAppExceptionDTO);
+        return new ResponseEntity<>(true, OK);
+    }
 
 }
