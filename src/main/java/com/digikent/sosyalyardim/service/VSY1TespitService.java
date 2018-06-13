@@ -183,12 +183,12 @@ public class VSY1TespitService {
         return tespitLineList;
     }
 
-    public VSY1TespitResponse getTespitByDosyaId(Long dosyaId) {
+    public VSY1TespitResponse getTespitByDosyaId(Long dosyaId, Long aktiviteId) {
         VSY1TespitResponse vsy1TespitResponse = new VSY1TespitResponse();
         List<VSY1TespitDTO> tespitDTOList = null;
         List<VSY1Tespit> tespitList = null;
         try {
-            tespitList = vsy1TespitRepository.findTespitByDosyaId(dosyaId);
+            tespitList = vsy1TespitRepository.findTespitByDosyaId(dosyaId, aktiviteId);
             if (tespitList != null && tespitList.size() != 0)
                 tespitDTOList = convertTespitToTespitDTO(tespitList);
             vsy1TespitResponse.setVsy1TespitDTOList(tespitDTOList);

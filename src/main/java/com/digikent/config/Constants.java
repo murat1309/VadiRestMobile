@@ -55,6 +55,8 @@ public final class Constants {
     public static final String DENETIM_TARAFTIPI_SAHIS = "P";//şahıs paydaşı
     public static final String DENETIM_TARAFTIPI_KURUM = "I";//Kurum-işletme
 
+    public static final String SOSYAL_YARDIM_AKTIVITE_TANIM_TAMAMLANDI = "TAMAMLANDI";
+
 
     private Constants() {
     }

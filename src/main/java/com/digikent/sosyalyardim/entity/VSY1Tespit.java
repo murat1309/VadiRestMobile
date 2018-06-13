@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "VSY1TESPIT")
-public class VSY1Tespit  extends BaseEntity implements Serializable {
+public class VSY1Tespit extends BaseEntity implements Serializable {
 
     @Id
     @SequenceGenerator(name = "vsy1tespit_seq", sequenceName = "VSY1TESPIT_ID", initialValue = 1, allocationSize = 1)
@@ -23,7 +23,7 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
     @Column(name = "ID", unique = true, nullable = false, updatable = false)
     private Long ID;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="vsy1Tespit")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "vsy1Tespit")
     @Where(clause = "isActive = 'E'")
     List<VSY1TespitLine> vsy1TespitLineList = new ArrayList<>();
 
@@ -32,6 +32,10 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
 
     @Column(name = "IHR1PERSONEL_ID")
     private Long ihr1PersonelId;
+
+    @ManyToOne
+    @JoinColumn(name = "VSY1AKTIVITE_ID")
+    private VSY1Aktivite vsy1Aktivite;
 
     @ManyToOne
     @JoinColumn(name = "IHR1PERSONEL_TESPITYAPAN")
@@ -50,6 +54,7 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
     public VSY1Tespit(Long id) {
         this.ID = id;
     }
+
 
     public Long getID() {
         return ID;
@@ -81,6 +86,14 @@ public class VSY1Tespit  extends BaseEntity implements Serializable {
 
     public void setIhr1PersonelId(Long ihr1PersonelId) {
         this.ihr1PersonelId = ihr1PersonelId;
+    }
+
+    public VSY1Aktivite getVsy1Aktivite() {
+        return vsy1Aktivite;
+    }
+
+    public void setVsy1Aktivite(VSY1Aktivite vsy1Aktivite) {
+        this.vsy1Aktivite = vsy1Aktivite;
     }
 
     public IHR1Personel getIhr1PersonelTespitYapan() {

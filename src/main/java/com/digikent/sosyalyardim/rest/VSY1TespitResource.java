@@ -28,7 +28,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by Kadir on 8/16/16.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/sosyalYardim/sy1tespit")
 public class VSY1TespitResource {
 
@@ -67,12 +67,11 @@ public class VSY1TespitResource {
      * bir dosyaya ait tespitler getirilecek
      * @return
      */
-    @RequestMapping(method = GET, value = "/tespitler/{dosyaId}")
+    @RequestMapping(method = GET, value = "/tespitler/{dosyaId}/{aktiviteId}")
     @Transactional
-    public ResponseEntity<VSY1TespitResponse> getTespitlerByDosyaId(@PathVariable("dosyaId") Long dosyaId) {
+    public ResponseEntity<VSY1TespitResponse> getTespitlerByDosyaId(@PathVariable("dosyaId") Long dosyaId, @PathVariable("aktiviteId") Long aktiviteId) {
         LOG.info("tespitler getirilecek. dosyaId="+dosyaId);
-        VSY1TespitResponse results = vsy1TespitService.getTespitByDosyaId(dosyaId);
-
+        VSY1TespitResponse results = vsy1TespitService.getTespitByDosyaId(dosyaId, aktiviteId);
         return new ResponseEntity<VSY1TespitResponse>(results, OK);
     }
 
