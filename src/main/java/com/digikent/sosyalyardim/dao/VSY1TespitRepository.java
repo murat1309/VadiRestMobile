@@ -1,11 +1,10 @@
 package com.digikent.sosyalyardim.dao;
 
+import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.tespit.TespitDTO;
 import com.digikent.denetimyonetimi.entity.IHR1Personel;
 import com.digikent.sosyalyardim.dto.VSY1TespitKayitRequest;
-import com.digikent.sosyalyardim.entity.TSY1TespitKategori;
-import com.digikent.sosyalyardim.entity.VSY1Tespit;
-import com.digikent.sosyalyardim.entity.VSY1TespitLine;
+import com.digikent.sosyalyardim.entity.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -60,6 +59,15 @@ public class VSY1TespitRepository {
             vsy1Tespit.setIsActive(true);
             vsy1Tespit.setIhr1PersonelId(tespitKayitRequest.getIhr1personelId());
 
+            VSY1Aktivite vsy1Aktivite = (VSY1Aktivite) session.get(VSY1Aktivite.class, tespitKayitRequest.getAktiviteId());
+
+            TSY1AktiviteIslem tsy1AktiviteIslem = new TSY1AktiviteIslem();
+            tsy1AktiviteIslem.setID(2);
+
+            vsy1Aktivite.setTsy1AktiviteIslem(tsy1AktiviteIslem);
+            vsy1Aktivite.setBitisTarihi(new Date());
+            vsy1Tespit.setVsy1Aktivite(vsy1Aktivite);
+
             IHR1Personel ihr1Personel = new IHR1Personel();
             ihr1Personel.setID(tespitKayitRequest.getIhr1personelId());
             vsy1Tespit.setIhr1PersonelTespitYapan(ihr1Personel);
@@ -93,16 +101,20 @@ public class VSY1TespitRepository {
         }
     }
 
-    public List<VSY1Tespit> findTespitByDosyaId(Long dosyaId) throws Exception {
+    public List<VSY1Tespit> findTespitByDosyaId(Long dosyaId, Long aktiviteId) throws Exception {
 
         List<VSY1Tespit> list = null;
 
         try {
             Session session = sessionFactory.openSession();
             Criteria criteria = session.createCriteria(VSY1Tespit.class);
-            criteria.add(Restrictions.or(Restrictions.eq("isActive", true),Restrictions.isNull("isActive")));
+            criteria.add(Restrictions.or(Restrictions.eq("isActive", true), Restrictions.isNull("isActive")));
             criteria.add(Restrictions.eq("dosyaId", dosyaId));
             criteria.addOrder(Order.desc("tarih"));
+            if (aktiviteId != null) {
+                criteria.createAlias("vsy1Aktivite", "v");
+                criteria.add(Restrictions.eq("v.ID", aktiviteId));
+            }
 
             list = criteria.list();
         } catch (Exception ex) {

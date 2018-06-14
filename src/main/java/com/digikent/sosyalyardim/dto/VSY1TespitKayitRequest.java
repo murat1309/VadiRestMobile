@@ -9,6 +9,7 @@ public class VSY1TespitKayitRequest {
 
     private List<TSY1TespitKategoriDTO> tespitKategoriDTOList;
     private Long dosyaId;
+    private Long aktiviteId;
     private Long ihr1personelId;
     private Long fsm1UsersId;
 
@@ -26,6 +27,14 @@ public class VSY1TespitKayitRequest {
 
     public void setDosyaId(Long dosyaId) {
         this.dosyaId = dosyaId;
+    }
+
+    public Long getAktiviteId() {
+        return aktiviteId;
+    }
+
+    public void setAktiviteId(Long aktiviteId) {
+        this.aktiviteId = aktiviteId;
     }
 
     public Long getIhr1personelId() {
