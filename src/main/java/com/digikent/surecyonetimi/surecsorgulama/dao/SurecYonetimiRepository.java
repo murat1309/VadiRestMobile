@@ -1,13 +1,13 @@
-package com.digikent.surecyonetimi.dao;
+package com.digikent.surecyonetimi.surecsorgulama.dao;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
-import com.digikent.surecyonetimi.dto.basvurudetay.*;
-import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruRequestDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
-import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimDTO;
-import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay.*;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.BasvuruTuruDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.BasvuruTuruRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.ImarRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.ImarSurecDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec.YapiDenetimDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec.YapiDenetimRequestDTO;
 import org.hibernate.annotations.Nationalized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

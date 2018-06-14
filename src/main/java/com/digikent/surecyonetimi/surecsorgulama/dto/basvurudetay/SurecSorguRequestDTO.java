@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto.basvurudetay;
+package com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay;
 
 /**
  * Created by Medet on 12/28/2017.

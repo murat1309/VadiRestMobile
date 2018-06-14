@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto.basvurudetay;
+package com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 

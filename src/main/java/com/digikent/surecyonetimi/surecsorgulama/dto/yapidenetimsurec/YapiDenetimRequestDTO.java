@@ -1,7 +1,7 @@
-package com.digikent.surecyonetimi.dto.yapidenetimsurec;
+package com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec;
 
 
-import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.BasvuruTuruRequestDTO;
 
 import java.util.List;
 

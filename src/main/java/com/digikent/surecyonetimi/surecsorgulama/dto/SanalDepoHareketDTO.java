@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto;
+package com.digikent.surecyonetimi.surecsorgulama.dto;
 
 import java.util.Date;
 

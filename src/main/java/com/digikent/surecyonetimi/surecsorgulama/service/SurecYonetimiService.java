@@ -1,8 +1,8 @@
-package com.digikent.surecyonetimi.service;
+package com.digikent.surecyonetimi.surecsorgulama.service;
 
-import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
-import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguRequestDTO;
-import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguResponseDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dao.SurecYonetimiRepository;
+import com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay.SurecSorguRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay.SurecSorguResponseDTO;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

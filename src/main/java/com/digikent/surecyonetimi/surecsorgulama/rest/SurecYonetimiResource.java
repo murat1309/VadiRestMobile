@@ -1,14 +1,14 @@
-package com.digikent.surecyonetimi.rest;
+package com.digikent.surecyonetimi.surecsorgulama.rest;
 
-import com.digikent.surecyonetimi.dao.SurecYonetimiRepository;
-import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguRequestDTO;
-import com.digikent.surecyonetimi.dto.basvurudetay.SurecSorguResponseDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.BasvuruTuruDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarRequestDTO;
-import com.digikent.surecyonetimi.dto.imarsurec.ImarSurecDTO;
-import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimDTO;
-import com.digikent.surecyonetimi.dto.yapidenetimsurec.YapiDenetimRequestDTO;
-import com.digikent.surecyonetimi.service.SurecYonetimiService;
+import com.digikent.surecyonetimi.surecsorgulama.dao.SurecYonetimiRepository;
+import com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay.SurecSorguRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay.SurecSorguResponseDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.BasvuruTuruDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.ImarRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec.ImarSurecDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec.YapiDenetimDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec.YapiDenetimRequestDTO;
+import com.digikent.surecyonetimi.surecsorgulama.service.SurecYonetimiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**

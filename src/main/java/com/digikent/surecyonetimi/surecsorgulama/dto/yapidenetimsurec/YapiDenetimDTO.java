@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto.yapidenetimsurec;
+package com.digikent.surecyonetimi.surecsorgulama.dto.yapidenetimsurec;
 
 
 
