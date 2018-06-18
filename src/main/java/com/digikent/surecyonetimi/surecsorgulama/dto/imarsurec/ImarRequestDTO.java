@@ -1,4 +1,4 @@
-package com.digikent.surecyonetimi.dto.imarsurec;
+package com.digikent.surecyonetimi.surecsorgulama.dto.imarsurec;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.digikent.demirbas.dto;
 
-import com.digikent.surecyonetimi.dto.SanalDepoHareketDTO;
+import com.digikent.surecyonetimi.surecsorgulama.dto.SanalDepoHareketDTO;
 
 import java.util.List;
 

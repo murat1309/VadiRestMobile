@@ -1,5 +1,4 @@
-package com.digikent.surecyonetimi.dto.basvurudetay;
-import java.util.*;
+package com.digikent.surecyonetimi.surecsorgulama.dto.basvurudetay;
 
 /**
  * Created by Medet on 12/28/2017.
