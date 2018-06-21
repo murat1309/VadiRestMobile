@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.digikent.denetimyonetimi.enums.TebligSecenegi.*;
 
@@ -653,8 +654,14 @@ public class DenetimRepository {
                 Object o = session.get(BDNTDenetimTespit.class,denetimTespitRequest.getDenetimTespitId());
                 bdntDenetimTespit = (BDNTDenetimTespit)o;
 
-                bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
-                bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+                //bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
+                LDNTDenetimTuru ldntDenetimTuru = new LDNTDenetimTuru();
+                ldntDenetimTuru.setID(denetimTespitRequest.getDenetimTuruId());
+                bdntDenetimTespit.setLdntDenetimTuru(ldntDenetimTuru);
+
+                LDNTTespitGrubu ldntTespitGrubu = new LDNTTespitGrubu();
+                ldntTespitGrubu.setID(denetimTespitRequest.getTespitGrubuId());
+                bdntDenetimTespit.setLdntTespitGrubu(ldntTespitGrubu);
 
                 session.update(bdntDenetimTespit);
                 session.getTransaction().commit();
@@ -663,8 +670,14 @@ public class DenetimRepository {
                 //yeni bir denetimtespit kaydı oluşturuluyor.
                 bdntDenetimTespit = new BDNTDenetimTespit();
                 bdntDenetimTespit.setDenetimId(denetimTespitRequest.getDenetimId());
-                bdntDenetimTespit.setDenetimTuruId(denetimTespitRequest.getDenetimTuruId());
-                bdntDenetimTespit.setTespitGrubuId(denetimTespitRequest.getTespitGrubuId());
+
+                LDNTDenetimTuru ldntDenetimTuru = new LDNTDenetimTuru();
+                ldntDenetimTuru.setID(denetimTespitRequest.getDenetimTuruId());
+                bdntDenetimTespit.setLdntDenetimTuru(ldntDenetimTuru);
+
+                LDNTTespitGrubu ldntTespitGrubu = new LDNTTespitGrubu();
+                ldntTespitGrubu.setID(denetimTespitRequest.getTespitGrubuId());
+                bdntDenetimTespit.setLdntTespitGrubu(ldntTespitGrubu);
                 bdntDenetimTespit.setBdntDenetimTespitLineList(null);
                 bdntDenetimTespit.setIzahat(null);
                 bdntDenetimTespit.setCrDate(new Date());
@@ -1163,5 +1176,64 @@ public class DenetimRepository {
         return tespitGrubuDTOList.get(0);
     }
 
+    //TODO
+    //
+    //    public TespitGrubuDTO convertToTespitGrubuToTespitGrubuDTO(LDNTTespitGrubu ldntTespitGrubu) {
+    //        //dto ya çevirilecek
+    //    }
+
+    public List<Long> getGecmisDenetimlerDenetimIdListByPaydasId(long paydasId) {
+        List<Long> denetimIdList = new ArrayList<>();
+        List<BDNTDenetim> bdntDenetimList = new ArrayList<>();
+        try {
+            Session session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(BDNTDenetim.class);
+            criteria.add(Restrictions.eq("mpi1PaydasId", paydasId));
+            criteria.add(Restrictions.eq("isActive", true));
+            bdntDenetimList = criteria.list();
+            denetimIdList = bdntDenetimList.stream().map(BDNTDenetim::getID).collect(Collectors.toList());
+
+        } catch (Exception e) {
+           LOG.debug("Denetim Yonetimi: gecmis denetimler Denetim Id listesi getirilirken bir hata olustu" + e.getMessage());
+        }
+        return denetimIdList;
+    }
+
+    public List<DenetimGecmisDenetimlerDTO> getGecmisDenetimTespitlerByDenetimIdList(List<Long> denetimIdList) {
+        List<DenetimGecmisDenetimlerDTO> denetimGecmisDenetimlerDTOList = new ArrayList<>();
+        try {
+            if(!denetimIdList.isEmpty()) {
+                Session session = sessionFactory.openSession();
+                Criteria criteria = session.createCriteria(BDNTDenetimTespit.class);
+                criteria.add(Restrictions.in("denetimId", denetimIdList));
+                criteria.add(Restrictions.ne("denetimAksiyonu", "BELIRSIZ"));
+                criteria.add(Restrictions.eq("isActive", true));
+                criteria.addOrder(Order.desc("crDate"));
+                List list = criteria.list();
+
+                for(int i = 0; i < list.size(); i++) {
+                    BDNTDenetimTespit bdntDenetimTespit = (BDNTDenetimTespit) list.get(i);
+                    DenetimGecmisDenetimlerDTO denetimGecmisDenetimlerDTO = new DenetimGecmisDenetimlerDTO();
+
+                    if(bdntDenetimTespit.getDenetimAksiyonu() != null)
+                        denetimGecmisDenetimlerDTO.setDenetimAksiyonu(bdntDenetimTespit.getDenetimAksiyonu());
+                    if(bdntDenetimTespit.getID() != null)
+                        denetimGecmisDenetimlerDTO.setDenetimTespitId(bdntDenetimTespit.getID());
+                    if(bdntDenetimTespit.getLdntDenetimTuru().getKayitOzelIsmi() != null)
+                        denetimGecmisDenetimlerDTO.setDenetimTuruAdi(bdntDenetimTespit.getLdntDenetimTuru().getKayitOzelIsmi());
+                    if(bdntDenetimTespit.getLdntTespitGrubu().getKayitOzelIsmi() != null)
+                        denetimGecmisDenetimlerDTO.setTespitGrubuAdi(bdntDenetimTespit.getLdntTespitGrubu().getKayitOzelIsmi());
+                    if(bdntDenetimTespit.getCrDate() != null)
+                        denetimGecmisDenetimlerDTO.setDenetimTespitTarih(new SimpleDateFormat("dd-MM-yyyy").format(bdntDenetimTespit.getCrDate()));
+
+                    denetimGecmisDenetimlerDTOList.add(denetimGecmisDenetimlerDTO);
+                }
+            }
+        } catch (Exception e) {
+            LOG.debug("Denetim Yonetimi: Gecmis Denetim Tespitler getirilirken bir hata ile karsilasildi. " + e.getMessage());
+        }
+
+        return denetimGecmisDenetimlerDTOList;
+    }
 
 }

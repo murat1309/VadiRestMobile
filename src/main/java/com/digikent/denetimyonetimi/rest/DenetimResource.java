@@ -31,16 +31,18 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * Created by Kadir on 25.01.2018.
  */
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/denetim")
 public class DenetimResource {
 
@@ -301,6 +303,16 @@ public class DenetimResource {
         utilDenetimSaveDTO = denetimService.saveDenetimTespitKarar(denetimTespitKararRequest, request);
         LOG.debug("denetim tespit karar kayit islemi tamamlandi. SONUC = " + utilDenetimSaveDTO.getSaved());
         return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
+    }
+
+    @RequestMapping(value = "/list/gecmis/denetimler/{paydasId}", method = RequestMethod.GET)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<List<DenetimGecmisDenetimlerDTO>> getGecmisDenetimlerByPaydasId(@PathVariable("paydasId") long paydasId) {
+        LOG.debug("Denetim yonetimi: gecmis denetimler sorgulanacak paydasId: " + paydasId);
+        List<DenetimGecmisDenetimlerDTO> denetimGecmisDenetimlerDTOList = denetimService.getGecmisDenetimlerByPaydasId(paydasId);
+        return new ResponseEntity<List<DenetimGecmisDenetimlerDTO>>(denetimGecmisDenetimlerDTOList, OK);
     }
 
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)
