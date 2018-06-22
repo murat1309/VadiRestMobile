@@ -329,4 +329,11 @@ public class DenetimService {
         return denetimRepository.saveDenetimTespitKarar(denetimTespitKararRequest, request);
     }
 
+    public List<DenetimGecmisDenetimlerDTO> getGecmisDenetimlerByPaydasId(long paydasId) {
+        List<DenetimGecmisDenetimlerDTO> denetimGecmisDenetimlerDTOList= null;
+        List<Long> denetimIdList = denetimRepository.getGecmisDenetimlerDenetimIdListByPaydasId(paydasId);
+        denetimGecmisDenetimlerDTOList = denetimRepository.getGecmisDenetimTespitlerByDenetimIdList(denetimIdList);
+        return denetimGecmisDenetimlerDTOList;
+    }
+
 }

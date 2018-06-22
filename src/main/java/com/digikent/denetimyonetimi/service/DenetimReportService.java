@@ -95,7 +95,7 @@ public class DenetimReportService {
 
         List<BelediyeUserDTO> belediyeUserDTOList = getBelediyeUserDTOListByDenetimTarafList(bdntDenetimTespitTarafList);
         Nsm2Parametre nsm2Parametre = denetimReportRepository.getNSM2Parametre();
-        TespitGrubuDTO tespitGrubuDTO = denetimRepository.findTespitGrubuDTOById(bdntDenetimTespit.getTespitGrubuId());
+        TespitGrubuDTO tespitGrubuDTO = denetimRepository.findTespitGrubuDTOById(bdntDenetimTespit.getLdntTespitGrubu().getID());
 
         vc.put("belediyeUserDTOList", (belediyeUserDTOList.size() == 0 ? null : belediyeUserDTOList));
         vc.put("locationDTO", getLocationReportDTOByDenetimDTO(denetimDTO));

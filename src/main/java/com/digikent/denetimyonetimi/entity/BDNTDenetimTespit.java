@@ -25,14 +25,21 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
     @Column(name = "BDNTDENETIM_ID")
     private Long denetimId;
 
-    @Column(name = "LDNTTESPITGRUBU_ID")
-    private Long tespitGrubuId;
+    @OneToOne
+    @JoinColumn(name = "LDNTTESPITGRUBU_ID")
+    private LDNTTespitGrubu ldntTespitGrubu = new LDNTTespitGrubu();
+
+//    @Column(name = "LDNTTESPITGRUBU_ID")
+//    private Long tespitGrubuId;
 
     @Column(name = "VERILENSURE")
     private Long verilenSure;
 
-    @Column(name = "LDNTDENETIMTURU_ID")
-    private Long denetimTuruId;
+    //@Column(name = "LDNTDENETIMTURU_ID")
+    //private Long denetimTuruId;
+    @OneToOne
+    @JoinColumn(name="LDNTDENETIMTURU_ID")
+    private LDNTDenetimTuru ldntDenetimTuru = new LDNTDenetimTuru();
 
     @Column(name = "DENETIMAKSIYONU")
     private String denetimAksiyonu;
@@ -54,7 +61,7 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit")
     @Where(clause = "isActive = 'E'")
-    List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
+    private List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
 
     @Column(name = "CEZAMIKTARI")
     private Long cezaMiktari;
@@ -84,13 +91,13 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
         this.denetimId = denetimId;
     }
 
-    public Long getTespitGrubuId() {
-        return tespitGrubuId;
-    }
+//    public Long getTespitGrubuId() {
+//        return tespitGrubuId;
+//    }
 
-    public void setTespitGrubuId(Long tespitGrubuId) {
-        this.tespitGrubuId = tespitGrubuId;
-    }
+//    public void setTespitGrubuId(Long tespitGrubuId) {
+//        this.tespitGrubuId = tespitGrubuId;
+//    }
 
     public Long getVerilenSure() {
         return verilenSure;
@@ -100,12 +107,12 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
         this.verilenSure = verilenSure;
     }
 
-    public Long getDenetimTuruId() {
-        return denetimTuruId;
+    public LDNTDenetimTuru getLdntDenetimTuru() {
+        return ldntDenetimTuru;
     }
 
-    public void setDenetimTuruId(Long denetimTuruId) {
-        this.denetimTuruId = denetimTuruId;
+    public void setLdntDenetimTuru(LDNTDenetimTuru ldntDenetimTuru) {
+        this.ldntDenetimTuru = ldntDenetimTuru;
     }
 
     public String getDenetimAksiyonu() {
@@ -186,5 +193,13 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setCezaNo(Long cezaNo) {
         this.cezaNo = cezaNo;
+    }
+
+    public LDNTTespitGrubu getLdntTespitGrubu() {
+        return ldntTespitGrubu;
+    }
+
+    public void setLdntTespitGrubu(LDNTTespitGrubu ldntTespitGrubu) {
+        this.ldntTespitGrubu = ldntTespitGrubu;
     }
 }
