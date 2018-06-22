@@ -6,6 +6,15 @@ package com.digikent.surecyonetimi.izinonay.dto;
 public class IzinSurecDTO {
 
     private String instanceName;
+    private Long instanceId;
+
+    public IzinSurecDTO() {
+    }
+
+    public IzinSurecDTO(String instanceName, Long instanceId) {
+        this.instanceName = instanceName;
+        this.instanceId = instanceId;
+    }
 
     public String getInstanceName() {
         return instanceName;
@@ -13,5 +22,13 @@ public class IzinSurecDTO {
 
     public void setInstanceName(String instanceName) {
         this.instanceName = instanceName;
+    }
+
+    public Long getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(Long instanceId) {
+        this.instanceId = instanceId;
     }
 }

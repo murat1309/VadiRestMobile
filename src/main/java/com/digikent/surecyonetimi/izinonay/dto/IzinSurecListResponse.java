@@ -9,23 +9,23 @@ import java.util.List;
  */
 public class IzinSurecListResponse {
 
-    private List<IzinSurecDTO> izinSurecDTO;
+    private List<IzinSurecDTO> izinSurecDTOList;
     private ErrorDTO errorDTO;
 
     public IzinSurecListResponse() {
     }
 
-    public IzinSurecListResponse(List<IzinSurecDTO> izinSurecDTO, ErrorDTO errorDTO) {
-        this.izinSurecDTO = izinSurecDTO;
+    public IzinSurecListResponse(List<IzinSurecDTO> izinSurecDTOList, ErrorDTO errorDTO) {
+        this.izinSurecDTOList = izinSurecDTOList;
         this.errorDTO = errorDTO;
     }
 
-    public List<IzinSurecDTO> getIzinSurecDTO() {
-        return izinSurecDTO;
+    public List<IzinSurecDTO> getIzinSurecDTOList() {
+        return izinSurecDTOList;
     }
 
-    public void setIzinSurecDTO(List<IzinSurecDTO> izinSurecDTO) {
-        this.izinSurecDTO = izinSurecDTO;
+    public void setIzinSurecDTOList(List<IzinSurecDTO> izinSurecDTOList) {
+        this.izinSurecDTOList = izinSurecDTOList;
     }
 
     public ErrorDTO getErrorDTO() {
