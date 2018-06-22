@@ -119,8 +119,13 @@ public class PaydasIliskileriRepository {
 
         try {
 
-            String sql = "SELECT TAHAKKUKTARIHI ,(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, BORCTUTARI FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
-                    " AND BORCTUTARI > 0 AND MPI1PAYDAS.ID = " + paydasSorguRequestDTO.getPaydasNo();
+            String sql = "SELECT " +
+                        "TAHAKKUKTARIHI ," +
+                        "(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, " +
+                        "BORCTUTARI, " +
+                        "F_BORCGECIKMEZAMMIHESAPLA(JIN2TAHAKKUKVIEW.JIN2TAHAKKUK_ID, JIN2TAHAKKUKVIEW.BIN2VERGIBARISITAKSITLINE_ID,TO_DATE(SYSDATE, 'DD/MM/RRRR')) AS GECIKMETUTAR " +
+                        "FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
+                        " AND BORCTUTARI > 0 AND MPI1PAYDAS.ID = " + paydasSorguRequestDTO.getPaydasNo();
 
 
             List list = new ArrayList<>();
@@ -137,6 +142,8 @@ public class PaydasIliskileriRepository {
                     Date tarihIslem = (Date) map.get("TAHAKKUKTARIHI");
                     String gelirAdi = (String) map.get("GELIRTURU");
                     BigDecimal borcTutar = (BigDecimal) map.get("BORCTUTARI");
+                    BigDecimal gecikmeTutar = (BigDecimal) map.get("GECIKMETUTAR");
+
 
                     if(tarihIslem != null)
                         paydasBorcSorguDTO.setTarihIslem(tarihIslem);
@@ -144,6 +151,8 @@ public class PaydasIliskileriRepository {
                         paydasBorcSorguDTO.setGelirAdi(gelirAdi);
                     if(borcTutar != null)
                         paydasBorcSorguDTO.setBorcTutar(borcTutar);
+                    if(gecikmeTutar != null)
+                        paydasBorcSorguDTO.setGecikmeTutar(gecikmeTutar);
 
                     paydasBorcSorguList.add(paydasBorcSorguDTO);
                 }
@@ -163,19 +172,6 @@ public class PaydasIliskileriRepository {
 
         return paydasSorguResponseDTO;
     }
-
-    /*
-     * Name        Type (DB)
- ----------- ---------
- KAYITTARIHI DATE
- TARIFETURU  NUMBER
- TABELAENI   NUMBER
- BOY         NUMBER
- TABELAYUZU  NUMBER
- ILANADEDI   NUMBER
- ILANALANI   NUMBER
- IZAHAT      VARCHAR2
-     */
 
     public PaydasSorguResponseDTO getPaydasAdvertInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
 
@@ -254,7 +250,11 @@ public class PaydasIliskileriRepository {
 
         try {
 
-            String sql = "SELECT SUM(TAHAKKUKTUTARI) AS TAHAKKUKTUTARI,SUM(BORCTUTARI) AS BORCTUTARI FROM JIN2TAHAKKUKVIEW\n" +
+            String sql = "SELECT " +
+                    "SUM(TAHAKKUKTUTARI) AS TAHAKKUKTUTARI," +
+                    "SUM(BORCTUTARI) AS BORCTUTARI, " +
+                    "SUM(F_BORCGECIKMEZAMMIHESAPLA(JIN2TAHAKKUKVIEW.JIN2TAHAKKUK_ID, JIN2TAHAKKUKVIEW.BIN2VERGIBARISITAKSITLINE_ID,TO_DATE(SYSDATE, 'DD/MM/RRRR'))) AS GECIKMEZAMMI " +
+                    "FROM JIN2TAHAKKUKVIEW\n" +
                     "WHERE  MPI1PAYDAS_ID = " + paydasSorguRequestDTO.getPaydasNo();
 
             List list = new ArrayList<>();
@@ -271,11 +271,14 @@ public class PaydasIliskileriRepository {
 
                     BigDecimal tahakkukTutar = (BigDecimal) map.get("TAHAKKUKTUTARI");
                     BigDecimal borcTutar = (BigDecimal) map.get("BORCTUTARI");
+                    BigDecimal gecikmeZammiTutar = (BigDecimal) map.get("GECIKMEZAMMI");
 
                     if(tahakkukTutar != null)
                         paydasTahakkukSorguDTO.setTahakkukTutar(tahakkukTutar);
                     if(borcTutar != null)
                         paydasTahakkukSorguDTO.setBorcTutar(borcTutar);
+                    if(gecikmeZammiTutar != null)
+                        paydasTahakkukSorguDTO.setGecikmeZammiTutar(gecikmeZammiTutar);
 
                     paydasTahakkukSorguList.add(paydasTahakkukSorguDTO);
                 }

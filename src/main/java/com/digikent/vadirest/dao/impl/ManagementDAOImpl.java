@@ -394,7 +394,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 			sql ="select a.ID, a.BSM2SERVIS_GOREV,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
 					   +"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
-					   +" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
+					   +" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('O','-','D')"
 					   +" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
 					   +" order by a.ADISOYADI";
 		}
@@ -404,7 +404,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 					   +" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_GOREV = b.ID and a.BSM2SERVIS_GOREV = "+servisGorevId 
 					   +" And a.CIKISTARIHI IS NULL and a.TURU = '"+turu+"'"
 					   +" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
-					   +" order by a.ADISOYADI";
+					   +" order by a.ADISOYADI ";
 		}
 		
 		List<Object> list = new ArrayList<Object>();

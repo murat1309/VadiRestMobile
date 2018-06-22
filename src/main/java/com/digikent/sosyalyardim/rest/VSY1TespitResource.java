@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -67,10 +64,10 @@ public class VSY1TespitResource {
      * bir dosyaya ait tespitler getirilecek
      * @return
      */
-    @RequestMapping(method = GET, value = "/tespitler/{dosyaId}/{aktiviteId}")
+    @RequestMapping(method = GET, value = {"/tespitler/{dosyaId}", "/tespitler/{dosyaId}/aktivite"})
     @Transactional
-    public ResponseEntity<VSY1TespitResponse> getTespitlerByDosyaId(@PathVariable("dosyaId") Long dosyaId, @PathVariable("aktiviteId") Long aktiviteId) {
-        LOG.info("tespitler getirilecek. dosyaId="+dosyaId);
+    public ResponseEntity<VSY1TespitResponse> getTespitlerByDosyaId(@PathVariable("dosyaId") Long dosyaId, @RequestParam(value = "aktiviteId", required = false) Long aktiviteId) {
+        LOG.info("tespitler getirilecek. dosyaId=" + dosyaId);
         VSY1TespitResponse results = vsy1TespitService.getTespitByDosyaId(dosyaId, aktiviteId);
         return new ResponseEntity<VSY1TespitResponse>(results, OK);
     }
