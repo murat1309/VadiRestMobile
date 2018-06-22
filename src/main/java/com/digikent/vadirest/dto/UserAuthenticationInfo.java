@@ -1,6 +1,7 @@
 package com.digikent.vadirest.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class UserAuthenticationInfo {
@@ -18,15 +19,14 @@ public class UserAuthenticationInfo {
 	private String dosyaAdi;
 	private String dosyaTuru;
 	private byte[] icerik;
+	private String dogumTarihi;
 
 	public String getActiveDirectoryUserName() {
 		return activeDirectoryUserName;
 	}
-
 	public void setActiveDirectoryUserName(String activeDirectoryUserName) {
 		this.activeDirectoryUserName = activeDirectoryUserName;
 	}
-
 	public String getDosyaAdi() {
 		return dosyaAdi;
 	}
@@ -99,5 +99,10 @@ public class UserAuthenticationInfo {
 	public void setServisId(long servisId) {
 		this.servisId = servisId;
 	}
-
+	public String getDogumTarihi() {
+		return dogumTarihi;
+	}
+	public void setDogumTarihi(String dogumTarihi) {
+		this.dogumTarihi = dogumTarihi;
+	}
 }
