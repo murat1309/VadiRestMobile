@@ -171,7 +171,7 @@ public class IzinSurecRepository {
         return kullanilacakToplamIzinSuresiDakika;
     }
 
-    private String calculateTheKullanilacakIzinSuresiByDakika(Long toplamIzinSuresiDakika) {
+    public String calculateTheKullanilacakIzinSuresiByDakika(Long toplamIzinSuresiDakika) {
 
         String izinSuresiText = "";
         if(toplamIzinSuresiDakika != null) {
