@@ -1,10 +1,14 @@
 package com.digikent.surecyonetimi.izinonay.dao;
 
+import com.digikent.config.Constants;
+import com.digikent.general.entity.TSM2Params;
+import com.digikent.general.util.ErrorCode;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayDTO;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,6 +186,35 @@ public class IzinSurecRepository {
 
         return izinSuresiValue;
     }
+
+
+    public Map getIzinSurecParameters() throws Exception {
+        Map<String, String> paramDict = new HashMap<>();
+
+        Session session = sessionFactory.openSession();
+        Criteria criteria = session.createCriteria(TSM2Params.class)
+                .createAlias("rsm2ParamGroup", "r")
+                .createAlias("ssm2ParamName", "s")
+                .add(Restrictions.eq("r.kodu", "ISSURECLERI"))
+                .add(Restrictions.in("s.kodu", Constants.BPM_IZIN_SUREC));
+
+        List list = criteria.list();
+        if(!list.isEmpty()) {
+            for(int i = 0; i < list.size(); i++) {
+                TSM2Params tsm2Params = (TSM2Params) list.get(i);
+                String tanim = tsm2Params.getSsm2ParamName().getKodu();
+                String kodu = tsm2Params.getParamValue();
+                if(tanim.equals(null) || kodu.equals(null)) {
+                    LOG.info(ErrorCode.ERROR_CODE_705);
+                    throw new Exception("Izin surecleri parametrelerini getir: Parametre degeri null");
+                }
+                paramDict.put(tanim, kodu);
+            }
+        }
+
+        return paramDict;
+    }
+
 
 
 }

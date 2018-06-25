@@ -1,5 +1,7 @@
 package com.digikent.surecyonetimi.izinonay.service;
 
+import com.digikent.general.entity.RSM2ParamGroup;
+import com.digikent.general.entity.TSM2Params;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.surecyonetimi.izinonay.dao.IzinSurecRepository;
@@ -7,6 +9,10 @@ import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayResponse;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecListResponse;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mortbay.util.ajax.JSON;
@@ -21,10 +27,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Kadir on 13.06.2018.
@@ -40,15 +43,27 @@ public class IzinSurecService {
     @Autowired
     IzinSurecRepository izinSurecRepository;
 
+    @Autowired
+    SessionFactory sessionFactory;
+
     private RestTemplate restTemplate = new RestTemplate();
 
     public IzinSurecListResponse getIzinSurecListByUsername(String username) {
 
         IzinSurecListResponse izinSurecListResponse = new IzinSurecListResponse();
         List<IzinSurecDTO> izinSurecDTOList = null;
+
         try {
-            String izinSurecUrl = env.getProperty("izinSurecUrl") + username;
-            HttpEntity<String> entity = getHttpEntityForIzinOnayProcess();
+            Map<String, String> paramDict = izinSurecRepository.getIzinSurecParameters();
+            String userNameParam = paramDict.get("BPM_SERVER_USER_NAME");
+            String password = paramDict.get("BPM_SERVER_PASSWORD");
+            String host = paramDict.get("BPM_SERVER_HOST_NAME");
+            String port = paramDict.get("BPM_SERVER_PORT");
+
+            String izinSurecUrl = env.getProperty("izinSurecUrl");
+            izinSurecUrl = izinSurecUrl.replace("host", host).replace("port", port) + username;
+
+            HttpEntity<String> entity = getHttpEntityForIzinOnayProcess(userNameParam, password);
             restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
             ResponseEntity<String> response = restTemplate.exchange(izinSurecUrl, HttpMethod.POST, entity, String.class);
             izinSurecDTOList = getIzinSurecDTOList(response);
@@ -100,9 +115,9 @@ public class IzinSurecService {
         return izinSurecDTOList;
     }
 
-    public HttpEntity<String> getHttpEntityForIzinOnayProcess() {
+    public HttpEntity<String> getHttpEntityForIzinOnayProcess(String userNameParam, String password) {
         HttpHeaders headers = new HttpHeaders();
-        String credential = "admin:admin";
+        String credential = userNameParam + ":" + password;
 
         byte[] plainCredsBytes = credential.getBytes();
         byte[] base64CredsBytes = Base64.getEncoder().encode(plainCredsBytes);

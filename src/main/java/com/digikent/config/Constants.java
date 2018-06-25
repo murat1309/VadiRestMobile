@@ -1,5 +1,6 @@
 package com.digikent.config;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public final class Constants {
 
     public static final String SOSYAL_YARDIM_AKTIVITE_TANIM_TAMAMLANDI = "TAMAMLANDI";
 
+    public static final String[] BPM_IZIN_SUREC = new String[]{"BPM_SERVER_PORT", "BPM_SERVER_HOST_NAME", "BPM_SERVER_USER_NAME", "BPM_SERVER_PASSWORD"};
 
     private Constants() {
     }

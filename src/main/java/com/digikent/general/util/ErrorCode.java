@@ -23,6 +23,7 @@ public final class ErrorCode {
     public static final String ERROR_CODE_702 = "HATA KODU : 702. İzin süreçleri getirilirken bir hata oluştu.";
     public static final String ERROR_CODE_703 = "HATA KODU : 703. İzin süreç detayı getirilirken bir hata oluştu.";
     public static final String ERROR_CODE_704 = "İzin süreç detayı bulunamamıştır.";
+    public static final String ERROR_CODE_705 = "İzin süreç parametreleri alınırken null degerler getirildi.";
 
 
 }
