@@ -4,11 +4,13 @@ import com.digikent.config.Constants;
 import com.digikent.general.entity.TSM2Params;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayDTO;
+import com.digikent.surecyonetimi.izinonay.entity.HHR1IzinTalebiLine;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.mortbay.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * Created by Kadir on 18.06.2018.
@@ -141,52 +145,58 @@ public class IzinSurecRepository {
         return izinSurecDetayDTO;
     }
 
-    private String getIzinSuresiByIzinTalebiId(Long id) {
+    private Long getKullanilacakToplamIzinSuresiByIzinTalebiId(Long id) {
 
-        String izinSuresiValue = "";
-        Long eklenecekGun = 0l;
-        Long toplamSaat = 0l;
-        Long toplamGun = 0l;
+        Long kullanilacakToplamIzinSuresiDakika = 0L;
+        List<HHR1IzinTalebiLine> hhr1IzinTalebiLineList = new ArrayList<>();
 
-        String sql = "SELECT KULLANILACAKGUN,KULLANILACAKSAAT FROM HHR1IZINTALEBILINE WHERE HHR1IZINTALEBI_ID="+id;
+        try {
+            Session session = sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(HHR1IzinTalebiLine.class);
+            criteria.add(Restrictions.eq("hhr1IzinTalebiId", id));
+            hhr1IzinTalebiLineList = criteria.list();
 
-        List<Object> list = new ArrayList<Object>();
-        Session session = sessionFactory.withOptions().interceptor(null).openSession();
-        SQLQuery query = session.createSQLQuery(sql);
-        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-
-        list = query.list();
-
-        for(Object o : list){
-            Map map = (Map) o;
-            BigDecimal kullanilacakGun = (BigDecimal) map.get("KULLANILACAKGUN");
-            BigDecimal kullanilacakSaat = (BigDecimal) map.get("KULLANILACAKSAAT");
-
-            if(kullanilacakGun != null && kullanilacakSaat != null){
-                toplamGun = toplamGun + kullanilacakGun.longValue();
-                toplamSaat = toplamSaat + kullanilacakSaat.longValue();
+            if(!hhr1IzinTalebiLineList.isEmpty()) {
+                Long kullanilacakToplamGun = hhr1IzinTalebiLineList.stream().map(HHR1IzinTalebiLine::getKullanilacakGun).mapToLong(Long::longValue).sum();
+                Long kullanilacakToplamSaat = hhr1IzinTalebiLineList.stream().map(HHR1IzinTalebiLine::getKullanilacakSaat).mapToLong(Long::longValue).sum();
+                Long kullanilacakToplamDakika = hhr1IzinTalebiLineList.stream().map(HHR1IzinTalebiLine::getKullanilacakDakika).mapToLong(Long::longValue).sum();
+                kullanilacakToplamIzinSuresiDakika = kullanilacakToplamGun * 8 * 60 + kullanilacakToplamSaat * 60 + kullanilacakToplamDakika;
             }
-        }
 
-        if (toplamSaat != 0) {
-            eklenecekGun = toplamSaat.longValue()/8;
-            toplamGun = toplamGun + eklenecekGun;
-            if (toplamSaat % 8 == 0) {
-                izinSuresiValue = toplamGun + " Gün";
-            } else if (toplamSaat % 8 != 0) {
-                if (toplamGun == 0) {
-                    izinSuresiValue = toplamSaat + " Saat";
-                } else {
-                    izinSuresiValue = toplamGun + " Gün " + (toplamSaat % 8) + " Saat";
-                }
-            }
-        } else if (toplamSaat == 0) {
-            izinSuresiValue = toplamGun + " Gün";
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.debug("Kullanilacak izin süresi getirilirken bir hata ile karsilasildi hhr1IzinTalebiId : " + id);
+            return kullanilacakToplamIzinSuresiDakika;
         }
-
-        return izinSuresiValue;
+        return kullanilacakToplamIzinSuresiDakika;
     }
 
+    private String calculateTheKullanilacakIzinSuresiByDakika(Long toplamIzinSuresiDakika) {
+
+        String izinSuresiText = "";
+        if(toplamIzinSuresiDakika != null) {
+
+            Long toplamGun = toplamIzinSuresiDakika / (8 * 60);
+            izinSuresiText = toplamGun.equals(0L) ? "" : toplamGun + " Gun ";
+
+            Long toplamSaat = ( toplamIzinSuresiDakika % (8 * 60) ) / 60;
+            izinSuresiText += toplamSaat.equals(0L) ? "" : toplamSaat + " Saat ";
+
+            Long toplamDakika = (toplamIzinSuresiDakika % (8 * 60) ) % 60;
+            izinSuresiText += toplamDakika.equals(0L) ? "" : toplamDakika + " Dakika ";
+        }
+
+        return izinSuresiText;
+    }
+
+    private String getIzinSuresiByIzinTalebiId(Long id) {
+
+        String izinSuresiText = "";
+        Long toplamIzinSuresiDakika= getKullanilacakToplamIzinSuresiByIzinTalebiId(id);
+        izinSuresiText = calculateTheKullanilacakIzinSuresiByDakika(toplamIzinSuresiDakika);
+
+        return izinSuresiText;
+    }
 
     public Map getIzinSurecParameters() throws Exception {
         Map<String, String> paramDict = new HashMap<>();

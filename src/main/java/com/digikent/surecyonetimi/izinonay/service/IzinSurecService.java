@@ -55,15 +55,15 @@ public class IzinSurecService {
 
         try {
             Map<String, String> paramDict = izinSurecRepository.getIzinSurecParameters();
-            String userNameParam = paramDict.get("BPM_SERVER_USER_NAME");
-            String password = paramDict.get("BPM_SERVER_PASSWORD");
-            String host = paramDict.get("BPM_SERVER_HOST_NAME");
-            String port = paramDict.get("BPM_SERVER_PORT");
+            final String BPM_SERVER_USER_NAME = paramDict.get("BPM_SERVER_USER_NAME");
+            final String BPM_SERVER_PASSWORD = paramDict.get("BPM_SERVER_PASSWORD");
+            final String BPM_SERVER_HOST_NAME = paramDict.get("BPM_SERVER_HOST_NAME");
+            final String BPM_SERVER_PORT = paramDict.get("BPM_SERVER_PORT");
 
             String izinSurecUrl = env.getProperty("izinSurecUrl");
-            izinSurecUrl = izinSurecUrl.replace("host", host).replace("port", port) + username;
+            izinSurecUrl = izinSurecUrl.replace("host", BPM_SERVER_HOST_NAME).replace("port", BPM_SERVER_PORT) + username;
 
-            HttpEntity<String> entity = getHttpEntityForIzinOnayProcess(userNameParam, password);
+            HttpEntity<String> entity = getHttpEntityForIzinOnayProcess(BPM_SERVER_USER_NAME, BPM_SERVER_PASSWORD);
             restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
             ResponseEntity<String> response = restTemplate.exchange(izinSurecUrl, HttpMethod.POST, entity, String.class);
             izinSurecDTOList = getIzinSurecDTOList(response);
