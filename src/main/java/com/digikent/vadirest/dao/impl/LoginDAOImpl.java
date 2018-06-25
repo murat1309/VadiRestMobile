@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("loginDao")
 @Transactional
 public class LoginDAOImpl implements LoginDAO {
-	
+
 	@Autowired
 	protected SessionFactory sessionFactory;
 
@@ -38,19 +38,19 @@ public class LoginDAOImpl implements LoginDAO {
                    +"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , "
                    +"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IHR1PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID and rownum=1) AS MASTERID "
 				   +"from fsm1users A WHERE A.USERID ='"+ userName +"' and A.PASSWORD = F_MD5HASH('"+password+"')";
-		
+
 		List<Object> list = new ArrayList<Object>();
 		Session session = sessionFactory.withOptions().interceptor(null).openSession();
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
 		UserAuthenticationInfo userAuthenticationInfo = new UserAuthenticationInfo();
-		
+
 		for(Object o : list){
 			int imageLength;
 			Map map = (Map) o;
-			
+
 			BigDecimal id = (BigDecimal)map.get("ID");
 			BigDecimal personelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
 			String firstName = (String) map.get("FIRSTNAME");
@@ -59,7 +59,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
 			BigDecimal bsm2ServisMudurluk = (BigDecimal) map.get("BSM2SERVIS_MUDURLUK");
-			
+
 			if(id != null)
 				userAuthenticationInfo.setId(id.longValue());
 			if(personelId != null)
@@ -81,23 +81,26 @@ public class LoginDAOImpl implements LoginDAO {
 
 		}
 		return userAuthenticationInfo;
-		
+
 	}
-	
+
 	public UserAuthenticationInfo loginWithoutPassword(String userName) {
-		String sql = "SELECT A.ID, A.IKY_PERSONEL_ID ,(SELECT IP.ADI FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) ADI " +
-				",(SELECT IP.SOYADI FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) SOYADI,A.USERID,A.FSM1ROLES_ID,  " +
+		String sql = "SELECT A.ID, A.IKY_PERSONEL_ID ," +
+                "(SELECT IP.ADI FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) ADI ," +
+				"(SELECT IP.SOYADI FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) SOYADI,A.USERID,A.FSM1ROLES_ID,  " +
+                "(SELECT IP.DOGUMTARIHI FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) DOGUMTARIHI," +
 				"(SELECT MSM2ORGANIZASYON_ID FROM IHR1PERSONELORGANIZASYON WHERE IHR1PERSONEL_ID = A.IKY_PERSONEL_ID AND ROWNUM=1) AS  MSM2PERSONEL_ID, " +
 				"(SELECT IP.BSM2SERVIS_GOREV FROM IHR1PERSONEL IP WHERE IP.ID=A.IKY_PERSONEL_ID) SERVIS_ID, " +
-				" (SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , " +
+				"(SELECT BSM2SERVIS_MUDURLUK FROM FSM1ROLES WHERE ID=A.FSM1ROLES_ID) BSM2SERVIS_MUDURLUK , " +
 				"(SELECT MASTERID FROM MSM2ORGANIZASYON C,IHR1PERSONELORGANIZASYON B  WHERE B.IHR1PERSONEL_ID = A.IKY_PERSONEL_ID AND B.MSM2ORGANIZASYON_ID = C.ID AND ROWNUM=1) AS MASTERID " +
 				"FROM FSM1USERS A WHERE LOWER(A.USERID)=LOWER('" + userName + "')";
-		
+
 		List<Object> list = new ArrayList<Object>();
 		Session session = sessionFactory.withOptions().interceptor(null).openSession();
 		SQLQuery query = session.createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/YYYY");
 		list = query.list();
 		UserAuthenticationInfo userAuthenticationInfo = new UserAuthenticationInfo();
 
@@ -109,6 +112,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal personelId = (BigDecimal) map.get("IKY_PERSONEL_ID");
 			String firstName = (String) map.get("ADI");
 			String lastName = (String) map.get("SOYADI");
+			Date dogumTarihi = (Date) map.get("DOGUMTARIHI");
 			BigDecimal msm2PersonelId = (BigDecimal)map.get("MSM2PERSONEL_ID");
 			BigDecimal masterId = (BigDecimal) map.get("MASTERID");
 			BigDecimal servisId = (BigDecimal) map.get("SERVIS_ID");
@@ -140,6 +144,8 @@ public class LoginDAOImpl implements LoginDAO {
 				userAuthenticationInfo.setBsm2ServisMudurluk(bsm2ServisMudurluk.longValue());
 			if(userName != null)
 				userAuthenticationInfo.setUserName(userName);
+			if(dogumTarihi != null)
+				userAuthenticationInfo.setDogumTarihi(simpleDateFormat.format(dogumTarihi));
 
 		}
 		return userAuthenticationInfo;
@@ -224,18 +230,18 @@ public class LoginDAOImpl implements LoginDAO {
 			      + "FROM ISM1USERROLES A,ASM1ROLES B,FSM1USERS C WHERE     USERID =" + "'"+userName+"' "
 			      + "AND A.FSM1USERS_ID = C.ID AND NVL (B.KAYITOZELISMI, 'H') = 'MOBILE' AND A.ASM1ROLES_ID = B.ID "
 			      + "AND B.TYPE = 'E'))) A, VSM1PROGS B WHERE A.VSM1PROGS_ID = B.ID ORDER BY A.KODU";
-				
+
 		List<Object> list = new ArrayList<Object>();
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
 		List<UserAuthorizationInfo> userAuthorizationInfoList = new ArrayList<UserAuthorizationInfo>();
-		
+
 		for(Object o : list){
 			Map map = (Map) o;
 			UserAuthorizationInfo userAuthorizationInfo = new UserAuthorizationInfo();
-			
+
 			BigDecimal  vsm1ProgsId = (BigDecimal)map.get("VSM1PROGS_ID");
 			String type = (String)map.get("TYPE");
 			String name = (String) map.get("NAME");
@@ -245,7 +251,7 @@ public class LoginDAOImpl implements LoginDAO {
 			String parameter = (String) map.get("PARAMETER");
 			BigDecimal kayitDuzeyi = (BigDecimal) map.get("KAYITDUZEYI");
 			BigDecimal menuId = (BigDecimal) map.get("MENUID");
-			
+
 			if(vsm1ProgsId != null)
 				userAuthorizationInfo.setVsm1ProgsId(vsm1ProgsId.longValue());
 			if(type != null)
@@ -264,10 +270,10 @@ public class LoginDAOImpl implements LoginDAO {
 				userAuthorizationInfo.setKayitDuzeyi(kayitDuzeyi.longValue());
 			if(menuId != null)
 				userAuthorizationInfo.setMenuId(menuId.longValue());
-			
+
 			userAuthorizationInfoList.add(userAuthorizationInfo);
 		}
-		
+
 		return userAuthorizationInfoList;
 	}
 
@@ -291,20 +297,20 @@ public class LoginDAOImpl implements LoginDAO {
 				+ ")) "
 				+ "	) A, VSM1PROGS B WHERE A.VSM1PROGS_ID = B.ID "
 				+ " ORDER BY A.KODU";
-		
+
 		List<BYSMenu> bysMenuList =  new ArrayList<BYSMenu>();
 		List<Object> list = new ArrayList<Object>();
-		
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
-		
+
 		for(Object o : list){
 
 			BYSMenu bysMenu = new BYSMenu();
 			Map map = (Map)o;
-			
+
 			BigDecimal vsm1progsId =(BigDecimal) map.get("VSM1PROGS_ID");
 			String type = (String)map.get("TYPE");
 			String name = (String)map.get("NAME");
@@ -315,7 +321,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal kayitDuzeyi = (BigDecimal)map.get("KAYITDUZEYI");
 			String isLeaf = (String) map.get("ISLEAF");
 			BigDecimal id = (BigDecimal)map.get("ID");
-			
+
 			if(vsm1progsId != null)
 				bysMenu.setId(String.valueOf(vsm1progsId.longValue()));
 			if(type != null)
@@ -339,9 +345,9 @@ public class LoginDAOImpl implements LoginDAO {
 			if(isLeaf != null)
 				bysMenu.setIsLeaf(isLeaf);
 
-			
+
 			bysMenuList.add(bysMenu);
-				
+
 		}
 		return bysMenuList;
 	}
@@ -369,20 +375,20 @@ public class LoginDAOImpl implements LoginDAO {
 				+ ")) "
 				+ "	) A, VSM1PROGS B WHERE A.VSM1PROGS_ID = B.ID "
 				+ " ORDER BY A.KODU";
-		
+
 		List<BYSMenu> bysMenuList =  new ArrayList<BYSMenu>();
 		List<Object> list = new ArrayList<Object>();
-		
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
-		
+
 		for(Object o : list){
 
 			BYSMenu bysMenu = new BYSMenu();
 			Map map = (Map)o;
-			
+
 			BigDecimal vsm1progsId =(BigDecimal) map.get("VSM1PROGS_ID");
 			String type = (String)map.get("TYPE");
 			String name = (String)map.get("NAME");
@@ -393,7 +399,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal kayitDuzeyi = (BigDecimal)map.get("KAYITDUZEYI");
 			String isLeaf = (String) map.get("ISLEAF");
 			BigDecimal id = (BigDecimal)map.get("ID");
-			
+
 			if(vsm1progsId != null)
 				bysMenu.setId(String.valueOf(vsm1progsId.longValue()));
 			if(type != null)
@@ -417,13 +423,13 @@ public class LoginDAOImpl implements LoginDAO {
 			if(isLeaf != null)
 				bysMenu.setIsLeaf(isLeaf);
 
-			
+
 			bysMenuList.add(bysMenu);
-				
+
 		}
 		return bysMenuList;
 	}
-	
+
 	@Override
 	public List<BYSMenu> getChilds(String userName, long parentId) {
 		String sql = "select A.VSM1PROGS_ID,B.TYPE,B.NAME,B.DESCRIPTION,A.PARENT_ID,B.LINK,A.PARAMETER,a.KAYITDUZEYI,"
@@ -435,7 +441,7 @@ public class LoginDAOImpl implements LoginDAO {
 				+ "( select m.id,m.VSM1PROGS_ID,M.KODU,m.isleaf,m.PARENT_id,m.PARAMETER,m.KAYITDUZEYI from NSM1MENUS m "
 				+ " WHERE  m.PARENT_id in "
 				+ "(select  m.VSM1PROGS_ID from NSM1MENUS m "
-	            + " WHERE  m.PARENT_id = " 
+	            + " WHERE  m.PARENT_id = "
 				+ parentId +")"
 				+ " and m.VSM1PROGS_ID in "
 				+ "(select distinct VSM1PROGS_ID from "
@@ -449,20 +455,20 @@ public class LoginDAOImpl implements LoginDAO {
 				+ ")) "
 				+ "	) A, VSM1PROGS B WHERE A.VSM1PROGS_ID = B.ID "
 				+ " ORDER BY A.KODU";
-		
+
 		List<BYSMenu> bysMenuList =  new ArrayList<BYSMenu>();
 		List<Object> list = new ArrayList<Object>();
-		
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
-		
+
 		for(Object o : list){
 
 			BYSMenu bysMenu = new BYSMenu();
 			Map map = (Map)o;
-			
+
 			BigDecimal vsm1progsId =(BigDecimal) map.get("VSM1PROGS_ID");
 			String type = (String)map.get("TYPE");
 			String name = (String)map.get("NAME");
@@ -473,7 +479,7 @@ public class LoginDAOImpl implements LoginDAO {
 			BigDecimal kayitDuzeyi = (BigDecimal)map.get("KAYITDUZEYI");
 			String isLeaf = (String) map.get("ISLEAF");
 			BigDecimal id = (BigDecimal)map.get("ID");
-			
+
 			if(vsm1progsId != null)
 				bysMenu.setId(String.valueOf(vsm1progsId.longValue()));
 			if(type != null)
@@ -497,62 +503,62 @@ public class LoginDAOImpl implements LoginDAO {
 			if(isLeaf != null)
 				bysMenu.setIsLeaf(isLeaf);
 
-			
+
 			bysMenuList.add(bysMenu);
-				
+
 		}
 		return bysMenuList;
 	}
-	
+
 	public List<BYSMenu> getWholeYBSMenu(String userName){
-		
+
 		return null;
 	}
 
 	@Override
 	public long getTopNavigationMessageCount(long userId) {
 		String sql = "select count(*) Toplam from VSM1MESAJ WHERE OKUNDU='H'";
-		
+
 		List<Object> list = new ArrayList<Object>();
-		
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
 		BigDecimal toplam = null;
-		
+
 		for(Object o : list){
 			Map map = (Map)o;
 			toplam =(BigDecimal) map.get("TOPLAM");
 		}
 		return toplam.longValue();
 	}
-	
+
 	public List<Message> getTopNavigationMessages(long userId){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		
+
 		String sql = "select id, mesaj, okundu, crdate from VSM1MESAJ WHERE fsm1users_id =" +userId
                     +" and (isactive is null or isactive!='H')"
                     +" order by okundu desc, crdate desc" ;
-		
+
 		List<Message> messageList =  new ArrayList<Message>();
 		List<Object> list = new ArrayList<Object>();
-		
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+
 		list = query.list();
-		
+
 		for(Object o : list){
 
 			Message message = new Message();
 			Map map = (Map)o;
-			
+
 			BigDecimal id = (BigDecimal)map.get("ID");
 			String messageText = (String)map.get("MESAJ");
 			String isRead = (String)map.get("OKUDU");
 			Date crDate = (Date)map.get("CRDATE");
-			
+
 			if(id != null)
 				message.setId(id.longValue());
 			if(messageText != null)
@@ -561,12 +567,12 @@ public class LoginDAOImpl implements LoginDAO {
 				message.setIsRead(isRead);
 			if(crDate != null)
 				message.setCreateDate(dateFormat.format(crDate));
-			
+
 			messageList.add(message);
 		}
-		
+
 		return messageList;
 	}
-	
+
 
 }
