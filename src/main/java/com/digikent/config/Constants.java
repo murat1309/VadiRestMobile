@@ -60,6 +60,18 @@ public final class Constants {
 
     public static final String[] BPM_IZIN_SUREC = new String[]{"BPM_SERVER_PORT", "BPM_SERVER_HOST_NAME", "BPM_SERVER_USER_NAME", "BPM_SERVER_PASSWORD"};
 
+    public static final HashMap<String, String> IHR1PERSONEL_STATU = new HashMap<String, String>(){{
+        put("S", "Sözlesmeli");
+        put("M", "Memur");
+        put("I", "Isci");
+        put("G", "Geçici");
+        put("F", "Firma");
+        put("L", "Meclis");
+        put("O", "Stajyer");
+        put("C", "Geçici Memur");
+        put("D", "Diğer");
+    }};
+
     private Constants() {
     }
 }

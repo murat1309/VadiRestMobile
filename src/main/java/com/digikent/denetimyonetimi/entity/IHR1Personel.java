@@ -34,6 +34,12 @@ public class IHR1Personel extends BaseEntity implements Serializable {
     @Column(name = "KURUMSICILNUMARASI")
     private Long kurumSicilNumarasi;
 
+    @Column(name = "TURU")
+    private String turu;
+
+    @Column(name = "ELEKTRONIKPOSTA")
+    private String elektronikPosta;
+
     public Long getID() {
         return ID;
     }
@@ -72,5 +78,21 @@ public class IHR1Personel extends BaseEntity implements Serializable {
 
     public void setKurumSicilNumarasi(Long kurumSicilNumarasi) {
         this.kurumSicilNumarasi = kurumSicilNumarasi;
+    }
+
+    public String getTuru() {
+        return turu;
+    }
+
+    public void setTuru(String turu) {
+        this.turu = turu;
+    }
+
+    public String getElektronikPosta() {
+        return elektronikPosta;
+    }
+
+    public void setElektronikPosta(String elektronikPosta) {
+        this.elektronikPosta = elektronikPosta;
     }
 }
