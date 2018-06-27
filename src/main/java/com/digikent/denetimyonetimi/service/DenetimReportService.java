@@ -350,9 +350,9 @@ public class DenetimReportService {
 
     public static String getDenetimTespitReportSequenceIdentifierSql(String denetimTespitAksiyon) {
         if(denetimTespitAksiyon.equalsIgnoreCase("CEZA"))
-            return "SELECT BDNTDENETIMTESPIT_CEZANO.nextval FROM DUAL\n";
+            return "SELECT MAX(CEZANO) + 1 AS NO FROM  BDNTDENETIMTESPIT\n";
         else
-            return "SELECT BDNTDENETIMTESPIT_TUTANAKNO.nextval FROM DUAL\n";
+            return "SELECT MAX(TUTANAKNO) + 1 AS NO FROM  BDNTDENETIMTESPIT\n";
     }
 
     public Boolean isReportNoAlreadyExist(Long bdntDenetimTespitId) {
