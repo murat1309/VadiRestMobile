@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ public class TLI3RuhsatService {
 
     public String getruhsatCommonSQL() {
         return "select R.ID,r.RUHSATID,b.raporadi as ADSOYAD,ISYERIUNVANI," +
+                "(SELECT F_FETCH_DATA_ONE_ROW('SELECT (SELECT BELGEADI FROM CLI1BELGETURU WHERE ID = CLI1BELGETURU_ID  )  FROM HLI1DOSYABELGELER B WHERE B.BELGEDURUMU <> ''E'' AND B.ELI1RUHSATDOSYA_ID =:x ', TLI3RUHSAT.ELI1RUHSATDOSYA_ID,',','-'   ) FROM TLI3RUHSAT WHERE ID =r.ID) AS EKSIKBELGELER,\n" +
                 "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
                 "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
                 "(select TANIM from PRE1IL where id=(select PRE1IL_ID from RRE1ILCE where id=m.RRE1ILCE_ID))as adres2," +
@@ -425,6 +425,7 @@ public class TLI3RuhsatService {
             String isyeriAnaFaaliyet = (String)map.get("ISYERIANAFAALIYET");
             String ruhsatDurumu = (String)map.get("RUHSATDURUMU");
             String isyeriDurumu = (String)map.get("ISYERIDURUMU");
+            String eksikBelgeler = (String) map.get("EKSIKBELGELER");
 
             if(id != null)
                 tli3RuhsatDTO.setId(id.longValue());
@@ -473,6 +474,8 @@ public class TLI3RuhsatService {
                 tli3RuhsatDTO.setRuhsatDurumu(ruhsatDurumu);
             if(isyeriDurumu != null)
                 tli3RuhsatDTO.setIsyeriDurumu(isyeriDurumu);
+            if(eksikBelgeler != null)
+                tli3RuhsatDTO.setEksikBelgeler(eksikBelgeler);
 
 
             tli3RuhsatDTOList.add(tli3RuhsatDTO);

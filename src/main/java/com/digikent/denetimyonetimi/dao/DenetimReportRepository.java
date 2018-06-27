@@ -81,7 +81,7 @@ public class DenetimReportRepository {
             query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
             list = query.list();
             Map map = (Map) list.get(0);
-            raporNo = (BigDecimal) map.get("NEXTVAL");
+            raporNo = (BigDecimal) map.get("NO");
             session.close();
 
         } catch (Exception e) {
