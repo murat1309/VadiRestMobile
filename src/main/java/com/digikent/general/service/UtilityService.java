@@ -1,9 +1,7 @@
 package com.digikent.general.service;
 
 import com.digikent.general.dao.UtilityRepository;
-import com.digikent.general.dto.BelediyeParamResponseDTO;
-import com.digikent.general.dto.MobileAppExceptionDTO;
-import com.digikent.general.dto.MobileExceptionHandler;
+import com.digikent.general.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -47,5 +45,9 @@ public class UtilityService {
 
     public void LogMobileAppException(MobileAppExceptionDTO mobileAppExceptionDTO) {
         LOG.error(mobileAppExceptionDTO.getErrorMessage());
+    }
+
+    public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
+        return utilityRepository.getNotifications(notificationRequestDTO);
     }
 }
