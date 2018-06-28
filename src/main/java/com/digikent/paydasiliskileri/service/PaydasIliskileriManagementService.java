@@ -104,8 +104,8 @@ public class PaydasIliskileriManagementService {
         if(denetimPaydasRequestDTO.getFilter() != null && !denetimPaydasRequestDTO.getFilter().isEmpty()) {
             query = baseQuery + "  ROWNUM <= 20 AND (SORGUADI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
                     " OR VERGINUMARASI LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
-                    " OR TCKIMLIKNO LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%')" +
-                    " OR ID LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'";
+                    " OR TCKIMLIKNO LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%'" +
+                    " OR ID LIKE '%" + denetimPaydasRequestDTO.getFilter() + "%')";
         }
 
         denetimPaydasResponseDTO = paydasIliskileriRepository.getPaydasInformationDenetimByCriteria(query);
