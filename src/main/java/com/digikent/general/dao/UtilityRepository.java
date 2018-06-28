@@ -176,7 +176,7 @@ public class UtilityRepository {
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } catch (Exception e) {
-            LOG.debug("An error occured while fetching the ebys notification count !");
+            LOG.debug("An error occurred while fetching the ebys notification count !");
         }
 
         return ebysNotificationCount;
@@ -194,7 +194,7 @@ public class UtilityRepository {
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
         } catch (Exception e) {
-            LOG.debug("An error occured while fetching the mesajlasma notification count !");
+            LOG.debug("An error occurred while fetching the mesajlasma notification count !");
         }
 
         return mesajNotificationCount;
