@@ -9,6 +9,7 @@ import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayResponse;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecListResponse;
+import com.documentum.xml.xpath.operations.Bool;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,8 +25,15 @@ import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import vdcizn.wsizinonay.WSizinOnay;
+import vdcizn.wsizinonay.WSizinOnayPortType;
 
 import javax.inject.Inject;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.ws.Holder;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -145,5 +153,23 @@ public class IzinSurecService {
         }
 
         return izinSurecDetayResponse;
+    }
+
+    public static void main(String[] args) {
+        WSizinOnay wSizinOnay = new WSizinOnay();
+        WSizinOnayPortType operation = wSizinOnay.getWSizinOnaySoap();
+        Holder<Boolean> holder = new Holder<Boolean>(true);
+        operation.izinOnay("2223422131", holder);
+    }
+
+    public Boolean approveOrRejectedIzinSurec(Long instanceId, Boolean karar) {
+
+        WSizinOnay wSizinOnay = new WSizinOnay();
+        WSizinOnayPortType operation = wSizinOnay.getWSizinOnaySoap();
+        Holder<Boolean> holder = new Holder<Boolean>(karar);
+        operation.izinOnay("43885", holder);
+        System.out.println("what");
+
+        return null;
     }
 }
