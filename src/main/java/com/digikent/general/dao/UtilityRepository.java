@@ -2,9 +2,15 @@ package com.digikent.general.dao;
 
 import com.digikent.general.dto.BelediyeParamResponseDTO;
 import com.digikent.general.dto.BelediyeParamsDTO;
+import com.digikent.general.dto.NotificationRequestDTO;
+import com.digikent.general.dto.NotificationResponseDTO;
+import com.digikent.general.entity.ABPMWorkItem;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
+import com.digikent.mesajlasma.entity.VeilMesajLine;
 import org.hibernate.*;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,4 +148,56 @@ public class UtilityRepository {
 
         return belediyeParamResponseDTO;
     }
+
+    public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
+        NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
+
+        Long ebysNotificationCount = getEBYSNotificationCount(notificationRequestDTO.getFsm1userId());
+        Long mesajNotificationCount = getMesajNotificationCount(notificationRequestDTO.getIhr1personelId());
+
+        if(ebysNotificationCount != null)
+            notificationResponseDTO.setEbysNotificationCount(ebysNotificationCount);
+        if(mesajNotificationCount != null)
+            notificationResponseDTO.setMesajNotificationCount(mesajNotificationCount);
+
+        return notificationResponseDTO;
+    }
+
+    public Long getEBYSNotificationCount(Long fsm1userId) {
+        Long ebysNotificationCount = 0L;
+
+        try {
+            Session session = sessionFactory.openSession();
+            ebysNotificationCount = (Long) session.createCriteria(ABPMWorkItem.class)
+                    .createAlias("abpmTask", "a")
+                    .add(Restrictions.eq("action", "PROGRESS"))
+                    .add(Restrictions.eq("a.eImzaRequired", "EVET"))
+                    .add(Restrictions.eq("fsm1UsersPerformer", fsm1userId))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        } catch (Exception e) {
+            LOG.debug("An error occured while fetching the ebys notification count !");
+        }
+
+        return ebysNotificationCount;
+    }
+
+    public Long getMesajNotificationCount(Long ihr1personelId) {
+        Long mesajNotificationCount = 0L;
+
+        try {
+            Session session = sessionFactory.openSession();
+            mesajNotificationCount = (Long) session.createCriteria(VeilMesajLine.class)
+                    .add(Restrictions.isNull("okunmaZamani"))
+                    .add(Restrictions.eq("isActive", true))
+                    .add(Restrictions.eq("ihr1PersonelIletilenId", ihr1personelId))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        } catch (Exception e) {
+            LOG.debug("An error occured while fetching the mesajlasma notification count !");
+        }
+
+        return mesajNotificationCount;
+    }
+
 }
