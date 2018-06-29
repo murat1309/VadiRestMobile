@@ -53,7 +53,7 @@ public class MesajlasmaRepository {
             LOG.debug("procedure will Call ");
             callProcedure(session, veilMesaj);
         }catch(Exception e){
-            LOG.error("while save message to database, An error occured. ");
+            LOG.error("while saving the message to the database, An error has occured. ");
             if(tx != null){
                 tx.rollback();
             }

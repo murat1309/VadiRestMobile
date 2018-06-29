@@ -1,8 +1,6 @@
 package com.digikent.general.rest;
 
-import com.digikent.general.dto.BelediyeParamResponseDTO;
-import com.digikent.general.dto.MobileAppExceptionDTO;
-import com.digikent.general.dto.MobileExceptionHandler;
+import com.digikent.general.dto.*;
 import com.digikent.general.service.UtilityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.Notification;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -27,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/utility")
 public class UtilityResource {
 
@@ -70,6 +69,14 @@ public class UtilityResource {
         LOG.debug("Mobile App Exception Has Been Thrown");
         utilityService.LogMobileAppException(mobileAppExceptionDTO);
         return new ResponseEntity<>(true, OK);
+    }
+
+    @RequestMapping(value = "/get/notifications", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public ResponseEntity<NotificationResponseDTO> getNotifications(@RequestBody NotificationRequestDTO notificationRequestDTO) {
+        NotificationResponseDTO notificationResponseDTO = utilityService.getNotifications(notificationRequestDTO);
+        return new ResponseEntity<NotificationResponseDTO>(notificationResponseDTO, OK);
     }
 
 }

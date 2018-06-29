@@ -599,6 +599,7 @@
                     <simulationClass>*</simulationClass>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -652,6 +653,25 @@
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>1.12</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <wsdlDirectory>src/main/resources/wsdl</wsdlDirectory>
+                    <!-- 					<packageName>com.raps.code.generate.ws</packageName> -->
+                    <keep>true</keep>
+                    <sourceDestDir>${project.build.directory}/generated-sources/java</sourceDestDir>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar-maven-plugin.version}</version>
             </plugin>
@@ -698,6 +718,7 @@
                     <mainClass>com.digikent.ApplicationWebXml</mainClass>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

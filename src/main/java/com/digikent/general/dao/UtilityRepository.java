@@ -2,16 +2,26 @@ package com.digikent.general.dao;
 
 import com.digikent.general.dto.BelediyeParamResponseDTO;
 import com.digikent.general.dto.BelediyeParamsDTO;
+import com.digikent.general.dto.NotificationRequestDTO;
+import com.digikent.general.dto.NotificationResponseDTO;
+import com.digikent.general.entity.ABPMWorkItem;
+import com.digikent.general.entity.EDM1IsAkisiAdim;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
+import com.digikent.mesajlasma.entity.VeilMesajLine;
+import com.vadi.smartkent.datamodel.domains.Edm1isakisiadimnot1;
 import org.hibernate.*;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -142,4 +152,88 @@ public class UtilityRepository {
 
         return belediyeParamResponseDTO;
     }
+
+    public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
+        NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
+
+        Long ebysNotificationCount = getEBYSNotificationCount(notificationRequestDTO.getFsm1userId());
+        Long mesajNotificationCount = getMesajNotificationCount(notificationRequestDTO.getIhr1personelId());
+        Long gelenBasvuruNotificationCount = getGelenBasvuruNotificationCount(notificationRequestDTO.getIhr1personelId());
+
+        if(ebysNotificationCount != null)
+            notificationResponseDTO.setEbysNotificationCount(ebysNotificationCount);
+        if(mesajNotificationCount != null)
+            notificationResponseDTO.setMesajNotificationCount(mesajNotificationCount);
+        if(gelenBasvuruNotificationCount != null)
+            notificationResponseDTO.setGelenBasvuruNotificationCount(gelenBasvuruNotificationCount);
+
+        return notificationResponseDTO;
+    }
+
+    public Long getEBYSNotificationCount(Long fsm1userId) {
+        Long ebysNotificationCount = 0L;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            ebysNotificationCount = (Long) session.createCriteria(ABPMWorkItem.class)
+                    .createAlias("abpmTask", "a")
+                    .add(Restrictions.eq("action", "PROGRESS"))
+                    .add(Restrictions.eq("a.eImzaRequired", "EVET"))
+                    .add(Restrictions.eq("fsm1UsersPerformer", fsm1userId))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        } catch (Exception e) {
+            LOG.debug("An error occurred while fetching the ebys notification count !");
+        } finally {
+            session.close();
+        }
+
+        return ebysNotificationCount;
+    }
+
+    public Long getMesajNotificationCount(Long ihr1personelId) {
+        Long mesajNotificationCount = 0L;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            mesajNotificationCount = (Long) session.createCriteria(VeilMesajLine.class)
+                    .add(Restrictions.isNull("okunmaZamani"))
+                    .add(Restrictions.eq("isActive", true))
+                    .add(Restrictions.eq("ihr1PersonelIletilenId", ihr1personelId))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+        } catch (Exception e) {
+            LOG.debug("An error occurred while fetching the mesajlasma notification count !");
+        } finally {
+            session.close();
+        }
+
+        return mesajNotificationCount;
+    }
+
+    public Long getGelenBasvuruNotificationCount(Long ihr1personelId) {
+        Long gelenBasvuruNotificationCount = 0L;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            gelenBasvuruNotificationCount = (Long) session.createCriteria(EDM1IsAkisiAdim.class)
+                    .createAlias("ddm1IsAkisi", "d")
+                    .add(Restrictions.eq("durumu", "S"))
+                    .add(Restrictions.ne("sonucDurumu", "T"))
+                    .add(Restrictions.isNotNull("alcMsm2OrganizasyonId"))
+                    .add(Restrictions.gt("alcMsm2OrganizasyonId", 0L))
+                    .add(Restrictions.neProperty("alcMsm2OrganizasyonId", "gonMsm2OrganizasyonId"))
+                    .add(Restrictions.in("d.turu", Arrays.asList("S", "K")))
+                    .setProjection(Projections.rowCount())
+                    .uniqueResult();
+
+        } catch (Exception e) {
+            LOG.debug("An error occurred while fetching the gelen basvuru notification count !");
+        } finally {
+            session.close();
+        }
+
+        return gelenBasvuruNotificationCount;
+    }
+
 }
