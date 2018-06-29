@@ -616,8 +616,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			BigDecimal msm2OrganizasyonIdPilot= (BigDecimal) map.get("MSM2ORGANIZASYON_ID_PILOT");
 			BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
 			
-			BigDecimal telefonNumarasi = (BigDecimal) map.get("TELEFONNUMARASI");
-			BigDecimal isTelefonu = (BigDecimal) map.get("ISTELEFONU");
+			String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
+			String isTelefonu = (String) map.get("ISTELEFONU");
 			BigDecimal cepTelefonu = (BigDecimal) map.get("CEPTELEFONU");
 			String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
 			String geriDonusYapilsinMi =(String) map.get("GERIDONUSYAPILSINMI");
@@ -704,9 +704,9 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 			if(ihr1PersonelId != null)
 				belgeBasvuruDetay.setIhr1PersonelId(ihr1PersonelId.longValue());
 			if(telefonNumarasi != null)
-				belgeBasvuruDetay.setTelefonNumarasi(telefonNumarasi.longValue());
+				belgeBasvuruDetay.setTelefonNumarasi(telefonNumarasi);
 			if(isTelefonu != null)
-				belgeBasvuruDetay.setIsTelefonu(isTelefonu.longValue());
+				belgeBasvuruDetay.setIsTelefonu(isTelefonu);
 			if(cepTelefonu != null)
 				belgeBasvuruDetay.setCepTelefonu(cepTelefonu.longValue());
 			if(elektronikPosta != null)
