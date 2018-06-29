@@ -59,15 +59,16 @@ public class VSY1TespitRepository {
             vsy1Tespit.setIsActive(true);
             vsy1Tespit.setIhr1PersonelId(tespitKayitRequest.getIhr1personelId());
 
-            VSY1Aktivite vsy1Aktivite = (VSY1Aktivite) session.get(VSY1Aktivite.class, tespitKayitRequest.getAktiviteId());
+            if (tespitKayitRequest.getAktiviteId() != null) {
+                VSY1Aktivite vsy1Aktivite = (VSY1Aktivite) session.get(VSY1Aktivite.class, tespitKayitRequest.getAktiviteId());
 
-            TSY1AktiviteIslem tsy1AktiviteIslem = new TSY1AktiviteIslem();
-            tsy1AktiviteIslem.setID(2);
+                TSY1AktiviteIslem tsy1AktiviteIslem = new TSY1AktiviteIslem();
+                tsy1AktiviteIslem.setID(2);
 
-            vsy1Aktivite.setTsy1AktiviteIslem(tsy1AktiviteIslem);
-            vsy1Aktivite.setBitisTarihi(new Date());
-            vsy1Tespit.setVsy1Aktivite(vsy1Aktivite);
-
+                vsy1Aktivite.setTsy1AktiviteIslem(tsy1AktiviteIslem);
+                vsy1Aktivite.setBitisTarihi(new Date());
+                vsy1Tespit.setVsy1Aktivite(vsy1Aktivite);
+            }
             IHR1Personel ihr1Personel = new IHR1Personel();
             ihr1Personel.setID(tespitKayitRequest.getIhr1personelId());
             vsy1Tespit.setIhr1PersonelTespitYapan(ihr1Personel);
