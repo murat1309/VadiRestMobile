@@ -158,14 +158,14 @@ public class UtilityRepository {
 
         Long ebysNotificationCount = getEBYSNotificationCount(notificationRequestDTO.getFsm1userId());
         Long mesajNotificationCount = getMesajNotificationCount(notificationRequestDTO.getIhr1personelId());
-        //Long gelenBasvuruNotificationCount = getGelenBasvuruNotificationCount(notificationRequestDTO.getIhr1personelId());
+        Long gelenBasvuruNotificationCount = getGelenBasvuruNotificationCount(notificationRequestDTO.getIhr1personelId());
 
         if(ebysNotificationCount != null)
             notificationResponseDTO.setEbysNotificationCount(ebysNotificationCount);
         if(mesajNotificationCount != null)
             notificationResponseDTO.setMesajNotificationCount(mesajNotificationCount);
-        //if(gelenBasvuruNotificationCount != null)
-            //notificationResponseDTO.setGelenBasvuruNotificationCount(gelenBasvuruNotificationCount);
+        if(gelenBasvuruNotificationCount != null)
+            notificationResponseDTO.setGelenBasvuruNotificationCount(gelenBasvuruNotificationCount);
 
         return notificationResponseDTO;
     }
