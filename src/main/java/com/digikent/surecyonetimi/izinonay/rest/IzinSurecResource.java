@@ -68,11 +68,8 @@ public class IzinSurecResource {
     @RequestMapping(method = POST, value = "/action")
     @Transactional
     public ResponseEntity<Boolean> approveOrRejectIzinSureci(@RequestBody IzinSurecKararDTO izinSurecKararDTO) {
-        LOG.info("İzin süreç karari = "+izinSurecKararDTO.getKarar() + " instanceID="+izinSurecKararDTO.getInstanceId());
-        //IzinSurecDetayResponse response = izinSurecService.getIzinSurecDetayDTOByInstanceId(instanceId);
-
+        LOG.info(" instanceID="+izinSurecKararDTO.getInstanceId() + ", Izin surec karari = "+izinSurecKararDTO.getKarar());
         Boolean result = izinSurecService.approveOrRejectedIzinSurec(izinSurecKararDTO.getInstanceId(), izinSurecKararDTO.getKarar());
-
         return new ResponseEntity<Boolean>(result, OK);
     }
 
