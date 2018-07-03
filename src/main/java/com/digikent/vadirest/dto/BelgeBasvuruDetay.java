@@ -39,8 +39,8 @@ public class BelgeBasvuruDetay {
 	private long msm2OrganizasyonIdPilot;
 	private long ihr1PersonelId;
 	
-	private long telefonNumarasi ;
-	private long isTelefonu ;
+	private String telefonNumarasi ;
+	private String isTelefonu ;
 	private long cepTelefonu ;
 	private String elektronikPosta ;
 	private String geriDonusYapilsinMi;
@@ -134,16 +134,16 @@ public class BelgeBasvuruDetay {
 	public void setDaireNo(String daireNo) {
 		this.daireNo = daireNo;
 	}
-	public long getTelefonNumarasi() {
+	public String getTelefonNumarasi() {
 		return telefonNumarasi;
 	}
-	public void setTelefonNumarasi(long telefonNumarasi) {
+	public void setTelefonNumarasi(String telefonNumarasi) {
 		this.telefonNumarasi = telefonNumarasi;
 	}
-	public long getIsTelefonu() {
+	public String getIsTelefonu() {
 		return isTelefonu;
 	}
-	public void setIsTelefonu(long isTelefonu) {
+	public void setIsTelefonu(String isTelefonu) {
 		this.isTelefonu = isTelefonu;
 	}
 	public long getCepTelefonu() {

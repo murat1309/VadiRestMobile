@@ -265,9 +265,9 @@ public class DenetimReportService {
                 locationDTO.getTamAdres();
                 locationDTO.setDaireBilgisi((denetimDTO.getOlayYeriDaireNoSayi() != null ? denetimDTO.getOlayYeriDaireNoSayi().toString() + "/" + denetimDTO.getOlayYeriDaireNoHarf() : denetimDTO.getOlayYeriDaireNoHarf()));
                 locationDTO.setKapiBilgisi((denetimDTO.getOlayYeriKapiNoSayi() != null ? denetimDTO.getOlayYeriKapiNoSayi().toString() + "/" + denetimDTO.getOlayYeriKapiNoHarf() : denetimDTO.getOlayYeriKapiNoHarf()));
-                locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce());
-                locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle());
-                locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak());
+                locationDTO.setIlceAdi(denetimDTO.getOlayYeriIlce() != null ? denetimDTO.getOlayYeriIlce() : "-");
+                locationDTO.setMahalleAdi(denetimDTO.getOlayYeriMahalle() != null ? denetimDTO.getOlayYeriMahalle() : "-");
+                locationDTO.setSokakAdi(denetimDTO.getOlayYeriSokak() != null ? denetimDTO.getOlayYeriSokak() : "-");
             }
 
             return locationDTO;
