@@ -41,6 +41,9 @@ public class EDM1IsAkisiAdim extends BaseEntity implements Serializable {
     @OneToOne
     private MPI1Paydas gonMpi1PaydasId;
 
+    @Column(name = "ALC_IHR1PERSONEL_ID")
+    private Long alcIhr1PersonelId;
+
     public Long getID() {
         return ID;
     }

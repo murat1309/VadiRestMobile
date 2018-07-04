@@ -224,6 +224,7 @@ public class UtilityRepository {
                     .add(Restrictions.gt("alcMsm2OrganizasyonId", 0L))
                     .add(Restrictions.neProperty("alcMsm2OrganizasyonId", "gonMsm2OrganizasyonId"))
                     .add(Restrictions.in("d.turu", Arrays.asList("S", "K")))
+                    .add(Restrictions.eq("alcIhr1PersonelId", ihr1personelId))
                     .setProjection(Projections.rowCount())
                     .uniqueResult();
 
