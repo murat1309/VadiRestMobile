@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import vdcizn.wsizinonay.WSizinOnay;
 import vdcizn.wsizinonay.WSizinOnayPortType;
-
 import javax.inject.Inject;
+import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
@@ -81,7 +81,7 @@ public class IzinSurecService {
                 LOG.info("Getirilen izin surec sayisi = " + izinSurecDTOList.size());
             } else {
                 LOG.info("ERROR_CODE_701 Izin sureci bulunamamistir.");
-                izinSurecListResponse.setErrorDTO(new ErrorDTO(true, ErrorCode.ERROR_CODE_701));
+                izinSurecListResponse.setErrorDTO(null);
                 izinSurecListResponse.setIzinSurecDTOList(null);
             }
 
@@ -155,21 +155,20 @@ public class IzinSurecService {
         return izinSurecDetayResponse;
     }
 
-    public static void main(String[] args) {
-        WSizinOnay wSizinOnay = new WSizinOnay();
-        WSizinOnayPortType operation = wSizinOnay.getWSizinOnaySoap();
-        Holder<Boolean> holder = new Holder<Boolean>(true);
-        operation.izinOnay("2223422131", holder);
-    }
-
     public Boolean approveOrRejectedIzinSurec(Long instanceId, Boolean karar) {
+        try {
+            WSizinOnay wSizinOnay = new WSizinOnay();
+            WSizinOnayPortType operation = wSizinOnay.getWSizinOnaySoap();
+            Holder<String> holderInstanceId = new Holder<String>(instanceId.toString());
+            Holder<Boolean> holderKarar = new Holder<Boolean>(karar);
+            operation.izinOnay(holderInstanceId, holderKarar);
+            LOG.info("response dan donen deger : " + holderKarar.value + " instanceId = ", instanceId);
 
-        WSizinOnay wSizinOnay = new WSizinOnay();
-        WSizinOnayPortType operation = wSizinOnay.getWSizinOnaySoap();
-        Holder<Boolean> holder = new Holder<Boolean>(karar);
-        operation.izinOnay("43885", holder);
-        System.out.println("what");
-
-        return null;
+            return holderKarar.value;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            LOG.error("Izin surecinde bir hata olustu. instanceId = " + instanceId);
+            return false;
+        }
     }
 }
