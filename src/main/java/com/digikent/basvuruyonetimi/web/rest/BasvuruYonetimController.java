@@ -29,7 +29,6 @@ import static org.springframework.http.HttpStatus.OK;
  * Created by Serkan on 4/2/2016.
  */
 @RestController
-//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/basvuruYonetim")
 public class BasvuruYonetimController {
 
@@ -38,6 +37,7 @@ public class BasvuruYonetimController {
     @Inject
     private BasvuruYonetimRepository basvuruYonetimRepository;
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/{id}/ddm1isakisi", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -50,24 +50,24 @@ public class BasvuruYonetimController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/{id}/edm1isakisiadim", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity<DM1IsAkısıAdımDTO> getEdm1isakisiadim(@PathVariable Long id) {
         LOG.debug("REST request to get DM1IsAkisiAdim : {}", id);
 
-        DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(id);
-
-        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
-        dm1IsAkısıAdımDTO.setId(edm1isakisiadim.getID());
-        dm1IsAkısıAdımDTO.setIzahat(edm1isakisiadim.getIzahat());
-        dm1IsAkısıAdımDTO.setSonucDurumu(edm1isakisiadim.getSonucDurumu());
+        DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = basvuruYonetimRepository.getEdm1isakisiadimDTO(id);
+        if (dm1IsAkısıAdımDTO == null) {
+            LOG.debug("DM1IsAkisiAdim getirilirken hata oluştu id : {}", id);
+            dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO(id,null,null,"İş Akışı Bulunamadı");
+        }
 
         return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
 
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/edm1isakisiadim/{personelId}", method = RequestMethod.PUT,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
@@ -77,34 +77,29 @@ public class BasvuruYonetimController {
         try {
             LOG.debug("REST request to update updateEdm1isakisiadim : {}", dm1IsAkısıAdımDTO.getId());
 
-            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(dm1IsAkısıAdımDTO.getId());
-            edm1isakisiadim.setIzahat(dm1IsAkısıAdımDTO.getIzahat());
-            edm1isakisiadim.setSonucDurumu(dm1IsAkısıAdımDTO.getSonucDurumu());
-            basvuruYonetimRepository.updateEdm1isakisiadim(personelId, edm1isakisiadim);
+            basvuruYonetimRepository.updateEdm1isakisiadim(personelId, dm1IsAkısıAdımDTO);
 
             LOG.debug("This approve was updated a successfully ");
         } catch (Exception ex) {
             dm1IsAkısıAdımDTO.setError("ERROR");
         }
 
-
         return new ResponseEntity<DM1IsAkısıAdımDTO>(dm1IsAkısıAdımDTO, OK);
 
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/edm1isakisiadimWithAttachment/{isAkisiId}", method = RequestMethod.POST,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(
-            @PathVariable Long isAkisiId,
-            @RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
+    public ResponseEntity<DM1IsAkısıAdımDTO> updateEdm1isakisiadimWithAttachment(@PathVariable Long isAkisiId,@RequestPart("files") MultipartFile[] uploadfiles) throws Exception {
         LOG.debug("REST request to update updateEdm1isakisiadimWithAttachment, iskisiId: {}", isAkisiId);
         LOG.debug("count of uploaded document = " + uploadfiles.length);
+
         DM1IsAkısıAdımDTO dm1IsAkısıAdımDTO = new DM1IsAkısıAdımDTO();
         try {
-            DM1IsAkisiAdim edm1isakisiadim = basvuruYonetimRepository.getEdm1isakisiadim(isAkisiId);
-
+            Long ddm1IsAkisiId = basvuruYonetimRepository.getEdm1isakisiadim(isAkisiId);
             for (int i=0; i<uploadfiles.length; i++) {
-                basvuruYonetimRepository.saveToDocumentum("DDM1ISAKISI", edm1isakisiadim.getDdm1isakisiId(), uploadfiles[i].getBytes());
+                basvuruYonetimRepository.saveToDocumentum("DDM1ISAKISI", ddm1IsAkisiId, uploadfiles[i].getBytes());
                 LOG.debug("This document saved Documentum, docName = (" + i + uploadfiles[i].getName());
             }
 

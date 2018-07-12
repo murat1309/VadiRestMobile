@@ -10,6 +10,16 @@ public class DM1IsAkısıAdımDTO {
     private String izahat;
     private String error;
 
+    public DM1IsAkısıAdımDTO() {
+    }
+
+    public DM1IsAkısıAdımDTO(Long id, String sonucDurumu, String izahat, String error) {
+        this.id = id;
+        this.sonucDurumu = sonucDurumu;
+        this.izahat = izahat;
+        this.error = error;
+    }
+
     public Long getId() {
         return id;
     }

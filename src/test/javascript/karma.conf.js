@@ -63,7 +63,7 @@ module.exports = function (config) {
             
             dir: '../target/test-results/coverage',
             reporters: [
-                {type: 'lcov', subdir: 'report-lcov'}
+                {type: 'lcov', subdir: 'rapor-lcov'}
             ]
         },
 

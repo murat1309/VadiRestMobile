@@ -1,5 +1,6 @@
 package com.digikent.config;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,51 @@ public final class Constants {
     public static final long RUHSAT_GENEL_SONUC = 1;
     public static final long RUHSAT_BASVURU_DURUM = 2;
     public static final long MESSAGE_SYSTEM_USER_ID = -1;
+    public static final String ERROR_MESSAGE_PAYDAS_MIN_CHARACHTER_SIZE = "Filtreleme yetersiz";
+    public static final String DENETIM_AKSIYON_TYPE_CEZA = "CEZA";
+    public static final String DENETIM_AKSIYON_TYPE_TUTANAK = "TUTANAK";
+    public static final String DENETIM_AKSIYON_TYPE_EKSURE = "EKSURE";
+    public static final String DENETIM_AKSIYON_TYPE_KAPAMA = "KAPAMA";
 
+    public static final String TESPIT_AKSIYON_TYPE_CEZA = "CEZA";
+    public static final String TESPIT_AKSIYON_TYPE_TUTANAK = "TUTANAK";
+
+    public static final String TESPIT_TUR_TESPIT = "TESPIT";
+    public static final String TESPIT_TUR_EKBILGI = "EKBILGI";
+
+    public static final String TESPIT_SECENEK_TURU_CHECHBOX = "CHECKBOX";
+    public static final String TESPIT_SECENEK_TURU_TEXT = "TEXT";
+    public static final String TESPIT_SECENEK_TURU_DATE = "DATE";
+    public static final String TESPIT_SECENEK_TURU_NUMBER = "NUMBER";
+
+    public static final String DENETIM_TARAF_TURU_BELEDIYE = "BELEDIYE";
+    public static final String DENETIM_TARAF_TURU_PAYDAS = "PAYDAS";
+    public static final String DENETIM_TARAF_TURU_DIGER = "DIGER";
+
+    public static final String DENETIM_TARAF_PAYDAS_GOREV = "PAYDASGOREV";
+    public static final String DENETIM_TARAF_MEMUR_GOREV = "MEMURGOREV";
+
+    public static final String PAYDAS_TURU_SAHIS = "S";//şahıs
+    public static final String PAYDAS_TURU_KURUM = "K";//Kurum
+
+    public static final String DENETIM_TARAFTIPI_SAHIS = "P";//şahıs paydaşı
+    public static final String DENETIM_TARAFTIPI_KURUM = "I";//Kurum-işletme
+
+    public static final String SOSYAL_YARDIM_AKTIVITE_TANIM_TAMAMLANDI = "TAMAMLANDI";
+
+    public static final String[] BPM_IZIN_SUREC = new String[]{"BPM_SERVER_PORT", "BPM_SERVER_HOST_NAME", "BPM_SERVER_USER_NAME", "BPM_SERVER_PASSWORD"};
+
+    public static final HashMap<String, String> IHR1PERSONEL_STATU = new HashMap<String, String>(){{
+        put("S", "Sözlesmeli");
+        put("M", "Memur");
+        put("I", "Isci");
+        put("G", "Geçici");
+        put("F", "Firma");
+        put("L", "Meclis");
+        put("O", "Stajyer");
+        put("C", "Geçici Memur");
+        put("D", "Diğer");
+    }};
 
     private Constants() {
     }

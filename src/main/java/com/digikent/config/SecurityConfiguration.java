@@ -1,29 +1,15 @@
 package com.digikent.config;
 
-import com.digikent.security.AuthoritiesConstants;
-import com.digikent.security.Http401UnauthorizedEntryPoint;
-import com.digikent.security.xauth.TokenProvider;
-import com.digikent.security.xauth.XAuthTokenConfigurer;
-
+import com.digikent.general.util.UtilOperationSystem;
 import com.vadi.digikent.base.util.FileUtil;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
-
-import javax.inject.Inject;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -39,11 +25,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        String digikentPath = System.getenv("DIGIKENT_PATH");
-        Properties userProp = FileUtil.getPropsFromFile(digikentPath
-                + "\\services\\users.properties");
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        String path = System.getenv("DIGIKENT_PATH") + "\\services\\users.properties";
+        if (!UtilOperationSystem.isWindows()) {
+            path = System.getenv("DIGIKENT_PATH") + "/services/users.properties";
+        }
+        Properties userProp = FileUtil.getPropsFromFile(path);
+
         Enumeration<Object> keys = userProp.keys();
         while (keys.hasMoreElements()) {
             String userName = (String) keys.nextElement();

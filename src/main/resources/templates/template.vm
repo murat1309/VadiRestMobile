@@ -1,0 +1,446 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial;
+        font-size: 16px;
+        /*  line-height: 12px; */
+        font-weight: 500;
+        color: #3b3b3b;
+        -webkit-font-smoothing: antialiased;
+        font-smoothing: antialiased;
+        /*  background: #2b2b2b; */
+    }
+
+    .table {
+        width: 100%;
+        /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
+        display: table;
+    }
+
+    .m {
+        margin: 0 0 0 0;
+    }
+
+    .row {
+        display: table-row;
+    }
+
+    .row:nth-of-type(odd) {
+    }
+
+    .row.header {
+        font-weight: 600;
+        /*color: #ffffff;
+      background: #ea6153;*/
+    }
+
+    .row.green {
+        background: #27ae60;
+    }
+
+    .row.blue {
+        background: #ffffff;
+    }
+
+    .cell {
+        /*  padding: 3px 5px; */
+        display: table-cell;
+        padding: 0 0 0 5px;
+        /*border: 1px solid #dadada;*/
+    }
+
+    .cell-ek {
+        /*  padding: 3px 5px; */
+        display: table-cell;
+        /*border: 1px solid #dadada;*/
+    }
+
+    .title {
+        display: table-caption;
+        /*  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); */
+        padding: 2px 5px;
+        font-weight: 600;
+        color: #000000;
+        /* border: 2px solid; */
+        background: #ffffff;
+        border-bottom: solid 1px #000;
+    }
+
+    .b {
+        font-weight: 600;
+    }
+
+    .innertable{
+        display: table;
+        width: 100%;
+    }
+    .innertable .row {
+        display: table-row;
+        background-color: transparent;
+    }
+    .innertable .cell {
+        /*  padding: 3px 5px; */
+        display: table-cell;
+    }
+    .innertable .cell.b{
+        width: 10%;
+        padding: 0 0 0 5px;
+    }
+
+    .innertable .cell.c{
+        width: 25%;
+        padding: 0 0 0 5px;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    .kolon1 {
+        float: left;
+    }
+
+    .kolon2 {
+
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    .head {
+        border-bottom: solid 1px #000000;
+        border-right: solid 1px #000000;
+        border-left: solid 1px #000000;
+    }
+
+    .border-bottom {
+        border-bottom: solid 1px #000;
+    }
+
+    .row-height {
+        line-height: 40px;
+    }
+
+    .cerceve {
+        border: solid 1px #000000;
+    }
+
+    .pitem {
+        margin-top: 0px;
+        margin-bottom: 2px;
+    }
+
+    .satir {
+        margin-bottom:30px;
+    }
+
+</style>
+
+<body>
+<div class="wrapper">
+    <!-- style="width: 65%; float: left;" -->
+    <div class="satir">
+        <div class="kolon1">
+            <div class=""><img border="0" alt="logo"  src="data:image/png;base64,$logoBase64"/></a></td></div>
+        </div>
+        <div class="kolon2">
+            <p class="pitem"> T.C. $belediyeAdi BELEDİYE BAŞKANLIĞI </p>
+            <p class="pitem"> ZABITA MÜDÜRLÜĞÜ </p>
+            <p class="pitem"> $tespitBaslik </p>
+        </div>
+    </div>
+
+    <div class="cerceve">
+        <div class="table m ">
+            <div class="title"> » Tarih/Döküman Bilgileri</div>
+            <div class="row header">
+                <div class="cell">Tarih</div>
+                <div class="cell">Tutanak/Döküman No</div>
+            </div>
+            #if ($documentDTO)
+                <div class="row">
+                    <div class="cell">$documentDTO.dateString</div>
+                    <div class="cell">$documentDTO.number</div>
+                </div>
+            #end
+        </div>
+
+        <div class="table m ">
+            <div class="title"> » Olay Yeri Adresi</div>
+            #if ($locationDTO)
+
+                <div class="row header">
+                    <div class="cell">İlçe</div>
+                    <div class="cell">Mahalle</div>
+                    <div class="cell">Sokak</div>
+                    <div class="cell">Daire</div>
+                    <div class="cell">Kapı</div>
+                </div>
+
+
+                <div class="row">
+                    <div class="cell">$locationDTO.ilceAdi</div>
+                    <div class="cell">$locationDTO.mahalleAdi</div>
+                    <div class="cell">$locationDTO.sokakAdi</div>
+                    <div class="cell">$locationDTO.daireBilgisi</div>
+                    <div class="cell">$locationDTO.kapiBilgisi</div>
+                </div>
+
+            #end
+
+        </div>
+
+        <div class="table m">
+            <div class="title"> » Paydaş</div>
+            #if ($userDTO)
+
+                <div class="row header">
+                    <div class="cell">Taraf Türü</div>
+                    <div class="cell">Adı Soyadı</div>
+                    <div class="cell">TC Kimlik No</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell">$userDTO.tarafTuru</div>
+                    <div class="cell">$userDTO.adiSoyadi</div>
+                    <div class="cell">$userDTO.tckn</div>
+                </div>
+
+            #end
+
+            #if ($kurumDTO)
+
+                <div class="row header">
+                    <div class="cell">Kurum Ünvanı</div>
+                    <div class="cell">Vergi Numarası</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell">$kurumDTO.unvan</div>
+                    <div class="cell">$kurumDTO.vergiNo</div>
+                </div>
+
+            #end
+        </div>
+    </div>
+
+    </br>
+
+    <div class="cerceve">
+        #if ($reportEkBilgiDTOs)
+            <div class="table m">
+                <div class="title"> » Ek Bilgiler </div>
+                #foreach( $ekBilgiDTO in $reportEkBilgiDTOs )
+                    <div class="row">
+                        <div class="cell-ek" style="width: 50%">
+                            <div class="innertable head">
+                                <div class="row">
+                                    <div class="cell c">$ekBilgiDTO.tespitAciklamasi</div>
+                                    <div class="cell">$ekBilgiDTO.deger</div>
+                                </div>
+                                #if ($ekBilgiDTO.aciklama)
+                                    <div class="row">
+                                        <div class="cell c">Açıklama</div>
+                                        <div class="cell">$ekBilgiDTO.aciklama</div>
+                                    </div>
+                                #end
+                            </div>
+                        </div>
+                    </div>
+                #end
+            </div>
+        #end
+
+        #if ($reportTespitDTOs)
+            <div class="table m">
+                <div class="title"> » Tespitler</div>
+                #foreach( $tespitDTO in $reportTespitDTOs )
+                    <div class="row">
+                        <div class="cell" style="width: 50%">
+                            <div class="innertable head">
+                                <div class="row">
+                                    <div class="cell b">Konu</div>
+                                    <div class="cell">$tespitDTO.tespitAciklamasi</div>
+                                </div>
+                                <div class="row">
+                                    <div class="cell b">Kanun</div>
+                                    <div class="cell">$tespitDTO.dayanakKanunu</div>
+                                </div>
+                                <div class="row">
+                                    <div class="cell b">Değer</div>
+                                    <div class="cell">$tespitDTO.deger</div>
+                                </div>
+                                #if ($tespitDTO.aciklama)
+                                    <div class="row">
+                                        <div class="cell b">Açıklama</div>
+                                        <div class="cell">$tespitDTO.aciklama</div>
+                                    </div>
+                                #end
+                            </div>
+                        </div>
+                    </div>
+                #end
+            </div>
+        #end
+    </div>
+
+    <br>
+
+    #if ($tespitGrubuAciklama)
+        <div class="row">
+            <div class="cell"> $tespitGrubuAciklama </div>
+        </div>
+    #end
+
+    <br>
+
+    <div class="cerceve">
+        <div class="table m">
+            <div class="title"> » Denetim Kararı </div>
+            #if ($karar.ceza)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                    <div class="cell"> Ceza Miktarı </div>
+                </div>
+
+                <div class="row">
+                    <div class="cell row-height">$karar.ceza</div>
+                    <div class="cell row-height">$karar.cezaMiktari</div>
+                </div>
+            #end
+
+            #if ($karar.kapama)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                    <div class="cell"> Başlangıç Tarihi </div>
+                    <div class="cell"> Bitiş Tarihi </div>
+                </div>
+
+                <div class="row">
+                    <div class="cell row-height">$karar.kapama</div>
+                    <div class="cell row-height">$karar.kapamaBaslangicTarihi</div>
+                    <div class="cell row-height">$karar.kapamaBitisTarihi</div>
+                </div>
+            #end
+
+            #if ($karar.ekSure)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                    <div class="cell"> Verilen Süre </div>
+                </div>
+
+                <div class="row">
+                    <div class="cell row-height">$karar.ekSure</div>
+                    <div class="cell row-height">$karar.ekSureZaman</div>
+                </div>
+            #end
+
+            #if ($karar.belirsiz)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                </div>
+
+                <div class="row">
+                    <div class="cell row-height"> Karara bağlanmamıştır. </div>
+                </div>
+            #end
+
+            #if ($karar.tutanak)
+                <div class="row header">
+                    <div class="cell"> Karar </div>
+                </div>
+                <div class="row">
+                    <div class="cell row-height"> Tutanak </div>
+                </div>
+            #end
+
+        </div>
+
+
+        <div class="table m">
+            <div class="title"> » Taraflar</div>
+            <div class="row header">
+                <div class="cell border-bottom">Taraf Türü</div>
+                <div class="cell border-bottom">Sicil No</div>
+                <div class="cell border-bottom">Adı Soyadı</div>
+                <div class="cell border-bottom">Görevi</div>
+                <div class="cell border-bottom" style="width: 150px">İmza</div>
+            </div>
+
+            #foreach( $user in $belediyeUserDTOList )
+                <div class="row">
+                    <div class="cell border-bottom row-height">$user.tarafTuru</div>
+                    <div class="cell border-bottom row-height">$user.sicilNo</div>
+                    <div class="cell border-bottom row-height">$user.adiSoyadi</div>
+                    <div class="cell border-bottom row-height">$user.gorevi</div>
+                    <div class="cell border-bottom row-height" style="width: 150px">  </div>
+                </div>
+            #end
+        </div>
+
+        <div class="table m">
+            <div class="title"> » Tebliğ Bilgileri</div>
+            #if ($tebligEdilenBilgileri)
+
+                <div class="row header">
+                    <div class="cell">Adı</div>
+                    <div class="cell">Soyadı</div>
+                    <div class="cell">TC Kimlik No</div>
+                    <div class="cell">İmza</div>
+                </div>
+
+                <div class="row">
+                    <div class="cell row-height">$tebligEdilenBilgileri.adi</div>
+                    <div class="cell row-height">$tebligEdilenBilgileri.soyadi</div>
+                    <div class="cell row-height">$tebligEdilenBilgileri.TCKimlikNo</div>
+                    <div class="cell row-height"> </div>
+                </div>
+
+                <div class="row">
+                    #if ($tebligEdilenBilgileri.imtina)
+                        <div class="cell row-height">$tebligEdilenBilgileri.imtina</div>
+                    #end
+
+                    #if ($tebligEdilenBilgileri.paydasYok)
+                        <div class="cell row-height">$tebligEdilenBilgileri.paydasYok</div>
+                    #end
+                </div>
+
+            #end
+        </div>
+
+        #if ($karar.ceza)
+            <div class="table m">
+                <div class="title"> » Yasal Uyarılar </div>
+                <div class="innertable">
+                    <div class="row">
+                        <div class="cell"> 1-İş Bu İdari Yaptırım Tutanağına karşı kararın şahsınıza tebliğen 15 gün içerisinde Sulh Ceza Hakimliğine şahsen veya yasal temsilciniz yada avukatınız aracılığı ile başvurabilirsiniz.Bu süre içerisinde başvuru yapılmaması halinde idari yaptırım kararı kesinleşir. </div>
+                    </div>
+                    <div class="row">
+                        <div class="cell"> 2- İdari para cezasını tebliğ tarihinden itibaren 15 günlük süre içerisinde ödemeniz halinde 3/4'ü tahsil edilir (%25 indirim). Peşin ödeme kişinin bu karara karşı kanun yoluna başvurmasını etkilemez. </div>
+                    </div>
+                    <div class="row">
+                        <div class="cell"> 3-Kişi imzadan kaçınması halinde bu durum tutanağın "tebliğ"bölümünde belirtilir.</div>
+                    </div>
+                </div>
+            </div>
+        #end
+    </div>
+
+    #if ($belediyeAdres)
+        <br>
+        <div class="row">
+            <div class="cell">Belediye Adresi : $belediyeAdres </div>
+        </div>
+    #end
+
+
+
+
+
+</div>
+</body>
+</html>

@@ -1,7 +1,10 @@
 package com.digikent.paydasiliskileri.dao;
 
+import com.digikent.config.Constants;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.paydasiliskileri.dto.*;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
+import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasResponseDTO;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -29,7 +32,7 @@ public class PaydasIliskileriRepository {
     @Autowired
     SessionFactory sessionFactory;
 
-    public PaydasSorguResponseDTO getPaydasInfoByCriteria(PaydasSorguRequestDTO paydasSorguRequestDTO, String sql) {
+    public PaydasSorguResponseDTO getPaydasInfoByCriteria(String sql) {
 
         PaydasSorguResponseDTO paydasSorguResponseDTO = new PaydasSorguResponseDTO();
 
@@ -74,11 +77,7 @@ public class PaydasIliskileriRepository {
                     if(unvan != null) // bUNU SOR? paydasTuru != null && paydasTuru.equalsIgnoreCase("S") &&
                         paydasSorguDTO.setUnvan(unvan);
                     if(paydasTuru != null)
-                        if(paydasTuru.equalsIgnoreCase("S")) {
-                            paydasSorguDTO.setPaydasTuru("Şahıs");
-                        } else {
-                            paydasSorguDTO.setPaydasTuru("Kurum");
-                        }
+                        paydasSorguDTO.setPaydasTuru(paydasTuru);
                     if(adres != null)
                         paydasSorguDTO.setAdres(adres);
                     if(paydasTuru != null && paydasTuru.equalsIgnoreCase("K")) {
@@ -120,8 +119,13 @@ public class PaydasIliskileriRepository {
 
         try {
 
-            String sql = "SELECT TAHAKKUKTARIHI ,(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, BORCTUTARI FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
-                    " AND BORCTUTARI > 0 AND MPI1PAYDAS.ID = " + paydasSorguRequestDTO.getPaydasNo();
+            String sql = "SELECT " +
+                        "TAHAKKUKTARIHI ," +
+                        "(SELECT TANIM FROM GIN1GELIRTURU WHERE ID = GIN1GELIRTURU_ID) AS GELIRTURU, " +
+                        "BORCTUTARI, " +
+                        "F_BORCGECIKMEZAMMIHESAPLA(JIN2TAHAKKUKVIEW.JIN2TAHAKKUK_ID, JIN2TAHAKKUKVIEW.BIN2VERGIBARISITAKSITLINE_ID,TO_DATE(SYSDATE, 'DD/MM/RRRR')) AS GECIKMETUTAR " +
+                        "FROM JIN2TAHAKKUKVIEW, MPI1PAYDAS WHERE  JIN2TAHAKKUKVIEW.MPI1PAYDAS_ID = MPI1PAYDAS.ID " +
+                        " AND BORCTUTARI > 0 AND MPI1PAYDAS.ID = " + paydasSorguRequestDTO.getPaydasNo();
 
 
             List list = new ArrayList<>();
@@ -138,6 +142,8 @@ public class PaydasIliskileriRepository {
                     Date tarihIslem = (Date) map.get("TAHAKKUKTARIHI");
                     String gelirAdi = (String) map.get("GELIRTURU");
                     BigDecimal borcTutar = (BigDecimal) map.get("BORCTUTARI");
+                    BigDecimal gecikmeTutar = (BigDecimal) map.get("GECIKMETUTAR");
+
 
                     if(tarihIslem != null)
                         paydasBorcSorguDTO.setTarihIslem(tarihIslem);
@@ -145,6 +151,8 @@ public class PaydasIliskileriRepository {
                         paydasBorcSorguDTO.setGelirAdi(gelirAdi);
                     if(borcTutar != null)
                         paydasBorcSorguDTO.setBorcTutar(borcTutar);
+                    if(gecikmeTutar != null)
+                        paydasBorcSorguDTO.setGecikmeTutar(gecikmeTutar);
 
                     paydasBorcSorguList.add(paydasBorcSorguDTO);
                 }
@@ -164,19 +172,6 @@ public class PaydasIliskileriRepository {
 
         return paydasSorguResponseDTO;
     }
-
-    /*
-     * Name        Type (DB)
- ----------- ---------
- KAYITTARIHI DATE
- TARIFETURU  NUMBER
- TABELAENI   NUMBER
- BOY         NUMBER
- TABELAYUZU  NUMBER
- ILANADEDI   NUMBER
- ILANALANI   NUMBER
- IZAHAT      VARCHAR2
-     */
 
     public PaydasSorguResponseDTO getPaydasAdvertInfoByPaydasNo(PaydasSorguRequestDTO paydasSorguRequestDTO) {
 
@@ -255,7 +250,11 @@ public class PaydasIliskileriRepository {
 
         try {
 
-            String sql = "SELECT SUM(TAHAKKUKTUTARI) AS TAHAKKUKTUTARI,SUM(BORCTUTARI) AS BORCTUTARI FROM JIN2TAHAKKUKVIEW\n" +
+            String sql = "SELECT " +
+                    "SUM(TAHAKKUKTUTARI) AS TAHAKKUKTUTARI," +
+                    "SUM(BORCTUTARI) AS BORCTUTARI, " +
+                    "SUM(F_BORCGECIKMEZAMMIHESAPLA(JIN2TAHAKKUKVIEW.JIN2TAHAKKUK_ID, JIN2TAHAKKUKVIEW.BIN2VERGIBARISITAKSITLINE_ID,TO_DATE(SYSDATE, 'DD/MM/RRRR'))) AS GECIKMEZAMMI " +
+                    "FROM JIN2TAHAKKUKVIEW\n" +
                     "WHERE  MPI1PAYDAS_ID = " + paydasSorguRequestDTO.getPaydasNo();
 
             List list = new ArrayList<>();
@@ -272,11 +271,14 @@ public class PaydasIliskileriRepository {
 
                     BigDecimal tahakkukTutar = (BigDecimal) map.get("TAHAKKUKTUTARI");
                     BigDecimal borcTutar = (BigDecimal) map.get("BORCTUTARI");
+                    BigDecimal gecikmeZammiTutar = (BigDecimal) map.get("GECIKMEZAMMI");
 
                     if(tahakkukTutar != null)
                         paydasTahakkukSorguDTO.setTahakkukTutar(tahakkukTutar);
                     if(borcTutar != null)
                         paydasTahakkukSorguDTO.setBorcTutar(borcTutar);
+                    if(gecikmeZammiTutar != null)
+                        paydasTahakkukSorguDTO.setGecikmeZammiTutar(gecikmeZammiTutar);
 
                     paydasTahakkukSorguList.add(paydasTahakkukSorguDTO);
                 }
@@ -298,6 +300,139 @@ public class PaydasIliskileriRepository {
         paydasSorguResponseDTO.setPaydasTahakkukResponse(paydasTahakkukSorguList);
         paydasSorguResponseDTO.setErrorDTO(errorDTO);
         return paydasSorguResponseDTO;
+    }
+
+    public DenetimPaydasResponseDTO getPaydasInformationDenetimByCriteria(String sql) {
+
+        DenetimPaydasResponseDTO denetimPaydasResponseDTO = new DenetimPaydasResponseDTO();
+
+        ErrorDTO errorDTO = new ErrorDTO();
+
+        try {
+            List list = new ArrayList<>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            if(!list.isEmpty()) {
+                denetimPaydasResponseDTO.setResponseDenetimPaydasList(new ArrayList<>());
+                for(Object o : list) {
+                    Map map = (Map) o;
+                    DenetimPaydasDTO denetimPaydasDTO = new DenetimPaydasDTO();
+
+                    BigDecimal paydasNo = (BigDecimal) map.get("ID");
+                    String adi = (String) map.get("ADI");
+                    String soyAdi = (String) map.get("SOYADI");
+                    String unvan = (String) map.get("UNVAN");
+                    String vergiNo = (String) map.get("VERGINUMARASI");
+                    String telNo = (String) map.get("TELEFON");
+                    String paydasTuru = (String) map.get("PAYDASTURU");
+                    String tabelaAdi = (String) map.get("TABELAADI");
+                    String izahat = (String) map.get("IZAHAT");
+                    String kayitDurumu = (String) map.get("KAYITDURUMU");
+                    String binaAdi = (String) map.get("BINAADI");
+                    String blokNo = (String) map.get("BLOKNO");
+                    String kapiNo = (String) map.get("KAPINO");
+                    String ilceAdi = (String) map.get("ILCEADI");
+                    String kapiNoHarf = (String) map.get("KAPINOHARF");
+                    String daireNoHarf = (String) map.get("DAIRENOHARF");
+                    String katHarf = (String) map.get("KATHARF");
+                    BigDecimal kapinoSayi = (BigDecimal) map.get("KAPINOSAYI");
+                    BigDecimal daireNoSayi = (BigDecimal) map.get("DAIRENOSAYI");
+                    BigDecimal katSayi = (BigDecimal) map.get("KATSAYI");
+                    BigDecimal dre1MahalleId = (BigDecimal) map.get("DRE1MAHALLE_ID");
+                    BigDecimal sre1SokakId = (BigDecimal) map.get("SRE1SOKAK_ID");
+                    BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
+                    BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
+                    BigDecimal pre1IlId = (BigDecimal) map.get("PRE1IL_ID");
+                    BigDecimal firmaYetkiliTCKimlikNo = (BigDecimal) map.get("FIRMAYETKILITCKIMLIKNO");
+                    String firmaYetkiliAdi = (String) map.get("FIRMAYETKILIADI");
+                    String firmaYetkiliSoyadi = (String) map.get("FIRMAYETKILISOYADI");
+
+                    if(paydasNo != null)
+                        denetimPaydasDTO.setPaydasNo(paydasNo.longValue());
+                    if(adi != null)
+                        denetimPaydasDTO.setAdi(adi);
+                    if(soyAdi != null)
+                        denetimPaydasDTO.setSoyAdi(soyAdi);
+                    if(telNo != null)
+                        denetimPaydasDTO.setTelefon(telNo);
+                    if(kayitDurumu != null)
+                        denetimPaydasDTO.setKayitDurumu(kayitDurumu);
+                    if(unvan != null)
+                        denetimPaydasDTO.setUnvan(unvan);
+                    if(paydasTuru != null)
+                        denetimPaydasDTO.setPaydasTuru(paydasTuru);
+                    if(paydasTuru != null && paydasTuru.equalsIgnoreCase(Constants.PAYDAS_TURU_KURUM)) {
+                        if(vergiNo != null)
+                            denetimPaydasDTO.setVergiNo(vergiNo);
+                        if(izahat != null)
+                            denetimPaydasDTO.setIzahat(izahat);
+                        if(tabelaAdi != null)
+                            denetimPaydasDTO.setTabelaAdi(tabelaAdi);
+                    }
+                    if(tcKimlikNo != null)
+                        denetimPaydasDTO.setTcKimlikNo(tcKimlikNo.longValue());
+
+                    //firma yetkilisi
+                    if(firmaYetkiliTCKimlikNo != null)
+                        denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTCKimlikNo.longValue());
+                    if(firmaYetkiliAdi != null)
+                        denetimPaydasDTO.setFirmaYetkiliAdi(firmaYetkiliAdi);
+                    if(firmaYetkiliSoyadi != null)
+                        denetimPaydasDTO.setFirmaYetkiliSoyadi(firmaYetkiliSoyadi);
+
+                    //adres
+                    if(binaAdi != null)
+                        denetimPaydasDTO.setBinaAdi(binaAdi);
+                    if(blokNo != null)
+                        denetimPaydasDTO.setBlokNo(blokNo);
+                    if(kapiNo != null)
+                        denetimPaydasDTO.setKapiNo(kapiNo);
+                    if(ilceAdi != null)
+                        denetimPaydasDTO.setIlceAdi(ilceAdi);
+                    if(kapiNoHarf != null)
+                        denetimPaydasDTO.setKapiNoHarf(kapiNoHarf);
+                    if(daireNoHarf != null)
+                        denetimPaydasDTO.setDaireNoHarf(daireNoHarf);
+                    if(katHarf != null)
+                        denetimPaydasDTO.setKatHarf(katHarf);
+                    if(kapinoSayi != null)
+                        denetimPaydasDTO.setKapiNoSayi(kapinoSayi.longValue());
+                    if(daireNoSayi != null)
+                        denetimPaydasDTO.setDaireNoSayi(daireNoSayi.longValue());
+                    if(katSayi != null)
+                        denetimPaydasDTO.setKatSayi(katSayi.longValue());
+                    if(dre1MahalleId != null)
+                        denetimPaydasDTO.setDre1MahalleId(dre1MahalleId.longValue());
+                    if(sre1SokakId != null)
+                        denetimPaydasDTO.setSre1SokakId(sre1SokakId.longValue());
+                    if(rre1IlceId != null)
+                        denetimPaydasDTO.setRre1IlceId(rre1IlceId.longValue());
+                    if(pre1IlId != null)
+                        denetimPaydasDTO.setPre1IlId(pre1IlId.longValue());
+
+                    denetimPaydasResponseDTO.getResponseDenetimPaydasList().add(denetimPaydasDTO);
+                }
+
+            }
+
+            errorDTO.setErrorMessage(null);
+            errorDTO.setError(false);
+            denetimPaydasResponseDTO.setErrorDTO(errorDTO);
+
+
+        } catch (Exception e) {
+
+
+            errorDTO.setErrorMessage("Bir hata meydana geldi.");
+            errorDTO.setError(true);
+            denetimPaydasResponseDTO.setErrorDTO(errorDTO);
+            //paydasSorguResponseDTO.getPaydasSorguResponse().add(paydasSorguDTO);
+        }
+
+        return denetimPaydasResponseDTO;
     }
 }
 

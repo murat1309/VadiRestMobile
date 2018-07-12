@@ -9,6 +9,7 @@ public class TLI3RuhsatDTO {
     private Long yili;
     private String ruhsatNumarasi;
     private String isyeriUnvani;
+    private String firmaAdı;
     private String adres;
     private String adaNo;
     private String paftaNo;
@@ -34,7 +35,7 @@ public class TLI3RuhsatDTO {
     private Long sokakId;
     private String bina;
     private Long binaId;
-
+    private String eksikBelgeler;
 
     public Long getDosyaReferansNo() {
         return dosyaReferansNo;
@@ -274,5 +275,21 @@ public class TLI3RuhsatDTO {
 
     public void setBinaId(Long binaId) {
         this.binaId = binaId;
+    }
+
+    public String getFirmaAdı() {
+        return firmaAdı;
+    }
+
+    public void setFirmaAdı(String firmaAdı) {
+        this.firmaAdı = firmaAdı;
+    }
+
+    public String getEksikBelgeler() {
+        return eksikBelgeler;
+    }
+
+    public void setEksikBelgeler(String eksikBelgeler) {
+        this.eksikBelgeler = eksikBelgeler;
     }
 }

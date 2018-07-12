@@ -2,6 +2,9 @@ package com.digikent.web.rest;
 
 
 import com.digikent.config.Constants;
+import com.digikent.denetimyonetimi.dto.adres.BelediyeDTO;
+import com.digikent.denetimyonetimi.dto.adres.MahalleDTO;
+import com.digikent.denetimyonetimi.service.DenetimAddressService;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.LoginService;
 
@@ -10,7 +13,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RestController
@@ -21,6 +32,9 @@ public class LoginController {
 	
 	@Autowired(required = true)
 	private LoginService loginService;
+
+	@Autowired
+	DenetimAddressService denetimAddressService;
 	
 	@RequestMapping(value ="/current" , method = RequestMethod.PUT)
 	public UserAuthenticationInfo loginWithPassword(@RequestBody UserDTO user){
@@ -109,6 +123,36 @@ public class LoginController {
 		System.out.println("----------get topnav messages--------------");
 		System.out.println(userId);
 		return loginService.getTopNavigationMessages(userId);
+	}
+
+	/*
+		*** react eğitimi için
+    	ildeki belediye listesini getirir
+	*/
+	@RequestMapping(value = "/belediyeler/{ilId}", method = RequestMethod.GET)
+	@Transactional
+	public ResponseEntity<List<BelediyeDTO>> getAllBelediyeListByIl(@PathVariable("ilId") Long ilId) {
+		LOG.debug("/belediyeler REST request to get belediye list. ilId="+ilId);
+		List<BelediyeDTO> belediyeDTOList = denetimAddressService.getBelediyeList(ilId);
+
+		return new ResponseEntity<List<BelediyeDTO>>(belediyeDTOList, OK);
+	}
+
+	/*
+		*** react eğitimi için
+		geçerli ilçeye ait mahalleleri getirir
+	*/
+	@RequestMapping(value = "/mahalle", method = RequestMethod.POST)
+	@Produces(APPLICATION_JSON_VALUE)
+	@Consumes(APPLICATION_JSON_VALUE)
+	@Transactional
+	public ResponseEntity<List<MahalleDTO>> getMahalleList(@RequestBody com.digikent.web.rest.dto.MahalleDTO mahalleDTO) {
+		LOG.debug("/mahalle REST request to get current mahalle List = ");
+		List<MahalleDTO> mahalleDTOs = null;
+		if (mahalleDTO.getUserId() != null && mahalleDTO.getUserId().toString().equals("1") && mahalleDTO.getBelediyeId() != null) {
+			mahalleDTOs = denetimAddressService.getMahalleByBelediyeId(mahalleDTO.getBelediyeId());
+		}
+		return new ResponseEntity<List<MahalleDTO>>(mahalleDTOs, OK);
 	}
 
 }

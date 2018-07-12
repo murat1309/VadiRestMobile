@@ -9,6 +9,7 @@ public class PaydasTahakkukSorguDTO {
 
     private BigDecimal tahakkukTutar;
     private BigDecimal borcTutar;
+    private BigDecimal gecikmeZammiTutar;
 
 
     public PaydasTahakkukSorguDTO() {
@@ -28,5 +29,13 @@ public class PaydasTahakkukSorguDTO {
 
     public void setBorcTutar(BigDecimal borcTutar) {
         this.borcTutar = borcTutar;
+    }
+
+    public BigDecimal getGecikmeZammiTutar() {
+        return gecikmeZammiTutar;
+    }
+
+    public void setGecikmeZammiTutar(BigDecimal gecikmeZammiTutar) {
+        this.gecikmeZammiTutar = gecikmeZammiTutar;
     }
 }

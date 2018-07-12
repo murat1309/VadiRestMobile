@@ -53,7 +53,7 @@ public class MesajlasmaRepository {
             LOG.debug("procedure will Call ");
             callProcedure(session, veilMesaj);
         }catch(Exception e){
-            LOG.error("while save message to database, An error occured. ");
+            LOG.error("while saving the message to the database, An error has occured. ");
             if(tx != null){
                 tx.rollback();
             }
@@ -70,7 +70,7 @@ public class MesajlasmaRepository {
 
         String sql = "SELECT A.USERID, A.FIRSTNAME, A.LASTNAME, A.ACTIVEDIRECTORYUSERNAME, A.IKY_PERSONEL_ID FROM FSM1USERS A,IHR1PERSONEL B" +
         " WHERE A.IKY_PERSONEL_ID = B.ID" +
-        " AND B.PERSONELDURUMU='CALISAN'" +
+        " AND B.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN')" +
         " AND A.ACTIVE = 'E'" +
         " AND A.IKY_PERSONEL_ID>0" +
         " AND A.USERID!='" + userName + "'";
@@ -792,7 +792,7 @@ public class MesajlasmaRepository {
                 for (TeilMesajİletimGrubuLine teilMesajİletimGrubuLine : groupLineList) {
                     if (teilMesajİletimGrubuLine.getIhr1PersonelId() != null && teilMesajİletimGrubuLine.getIhr1PersonelId().longValue() == user.getIletilenPersonelId().longValue()) {
                         control = true;
-                        GroupLeaveRequestDTO groupLeaveRequestDTO = new GroupLeaveRequestDTO();
+                        GroupLeaveRequestDTO  groupLeaveRequestDTO= new GroupLeaveRequestDTO();
                         groupLeaveRequestDTO.setGroupId(groupRequest.getGroupInformationDTO().getGroupId());
                         groupLeaveRequestDTO.setUserId(teilMesajİletimGrubuLine.getIhr1PersonelId());
                         updateIsActiveInGroupLineByUserIdAndGroupId(groupLeaveRequestDTO,'E');

@@ -1,8 +1,5 @@
 package com.digikent.aop.logging;
 
-
-import com.digikent.aspect.SystemContext;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.data.domain.Pageable;
@@ -66,14 +63,12 @@ public class SystemArchitecture {
     @Pointcut("execution(* com.vadi.efatura..*.*(..))")
     public void inAllLayers(){}
 
-
+/*
     @Pointcut(value = "@target(systemContext)", argNames = "systemContext")
     public void targetUserContext(SystemContext systemContext){}
 
 
-
-
-   /* @Pointcut("inInvoiceDataAccess() || inEnvelopeDataAccess()")
+  @Pointcut("inInvoiceDataAccess() || inEnvelopeDataAccess()")
     public void inCustomerArea(){}
 
     @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..)) && !execution(* com.vadi.efatura.business.repository.UserRepository.*(..))")

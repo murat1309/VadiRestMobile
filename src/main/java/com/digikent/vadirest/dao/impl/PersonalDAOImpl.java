@@ -7,7 +7,6 @@ import com.digikent.vadirest.dto.OdulCeza;
 import com.digikent.vadirest.dto.PDKSInformation;
 import com.digikent.vadirest.dto.Person;
 import com.vadi.digikent.memur.ikm.model.HR3Hesap;
-import com.vadi.digikent.memur.ikm.model.HR3HesapTuru;
 import com.vadi.digikent.ortak.model.EILElektronikPosta;
 import com.vadi.digikent.ortak.model.EILTelefon;
 import com.vadi.digikent.ortak.model.EILTelefonTuru;
@@ -22,7 +21,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +28,11 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-
 
 
 @Repository("personalDao")
@@ -50,10 +45,12 @@ public class PersonalDAOImpl implements PersonalDAO {
 
 	
 	public Person findPersonelInformationById(long persid) {
-		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI,IP.DOGUMYERI "
+		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI,IP.DOGUMYERI, IP.GIRISTARIHI "
 				+ ",(SELECT TANIM FROM   LHR1GOREVTURU  WHERE ID=LHR1GOREVTURU_ID) GOREVI "
 				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_GOREV) GOREVMUDURLUGU "
 				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_KADRO) KADROMUDURLUGU "
+				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_SEFLIK) SEFLIK "
+                + ",(SELECT TANIM FROM   KSM2MESLEK  WHERE ID=KSM2MESLEK_ID) MESLEK "
 				+ ",(SELECT TANIM FROM AHR1KADROSINIFI WHERE ID =AHR1KADROSINIFI_ID) KADROSINIFI "
 				+ ",(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI, "
 				+ "(SELECT TELEFONNUMARASI    FROM   AEILTELEFON" +
@@ -96,6 +93,9 @@ public class PersonalDAOImpl implements PersonalDAO {
 			String dosyaAdi = (String) map.get("DOSYAADI");
 			String dosyaTuru = (String) map.get("DOSYATURU");
 			Blob icerik = (Blob) map.get("ICERIK");
+			String seflik = (String) map.get("SEFLIK");
+            Date iseBaslamaTarihi = (Date) map.get("GIRISTARIHI");
+            String meslek = (String) map.get("MESLEK");
 			
 			if(adsoyad != null)
 				person.setAdSoyad(adsoyad);
@@ -127,6 +127,12 @@ public class PersonalDAOImpl implements PersonalDAO {
 				person.setDosyaAdi(dosyaAdi);
 			if(dosyaTuru != null)
 				person.setDosyaTuru(dosyaTuru);
+			if(seflik != null)
+				person.setSeflik(seflik);
+            if(iseBaslamaTarihi != null)
+                person.setIseBaslamaTarihi(dateFormat.format(iseBaslamaTarihi));
+            if(meslek != null)
+                person.setMeslek(meslek);
 			
 			try {
 				if (icerik!=null){
