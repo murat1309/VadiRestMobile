@@ -162,7 +162,7 @@ public class IzinSurecService {
             Holder<String> holderInstanceId = new Holder<String>(instanceId.toString());
             Holder<Boolean> holderKarar = new Holder<Boolean>(karar);
             operation.izinOnay(holderInstanceId, holderKarar);
-            LOG.info("response dan donen deger : " + holderKarar.value + " instanceId = ", instanceId);
+            LOG.info("response dan donen deger : " + holderKarar.value + " instanceId = " + instanceId);
 
             return holderKarar.value;
         } catch (Exception ex) {
