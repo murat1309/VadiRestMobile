@@ -303,7 +303,13 @@ public class DenetimReportService {
                 if (tur != null && tur.equalsIgnoreCase(ldntTespit.getTur())) {
                     reportTespitDTO.setTespitAciklamasi(ldntTespit.getTanim());
                     reportTespitDTO.setAciklama(denetimTespitLine.getTextValue());
-                    reportTespitDTO.setDayanakKanunu(ldntTespit.getLsm2Kanun().getTanim());
+                    if (ldntTespit.getLsm2Kanun() != null) {
+                        reportTespitDTO.setDayanakKanunu(ldntTespit.getLsm2Kanun().getTanim());
+                        reportTespitDTO.setMadde(ldntTespit.getLsm2Kanun().getMadde());
+                    } else {
+                        reportTespitDTO.setDayanakKanunu("-");
+                        reportTespitDTO.setMadde("-");
+                    }
                     reportTespitDTO.setTur(ldntTespit.getTur());
                     //tespit secenek türüne göre setleme yapılıyor
                     if (ldntTespit.getSecenekTuru().equalsIgnoreCase(Constants.TESPIT_SECENEK_TURU_CHECHBOX) && denetimTespitLine.getStringValue() != null) {

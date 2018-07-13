@@ -12,15 +12,17 @@ public class KanunDTO implements Serializable {
     private String tanim;
     private String izahat;
     private Date yayimTarihi;
+    private String madde;
 
     public KanunDTO() {
     }
 
-    public KanunDTO(Long id, String tanim, String izahat, Date yayimTarihi) {
+    public KanunDTO(Long id, String tanim, String izahat, Date yayimTarihi, String madde) {
         this.id = id;
         this.tanim = tanim;
         this.izahat = izahat;
         this.yayimTarihi = yayimTarihi;
+        this.madde = madde;
     }
 
     public Long getId() {
@@ -53,5 +55,13 @@ public class KanunDTO implements Serializable {
 
     public void setYayimTarihi(Date yayimTarihi) {
         this.yayimTarihi = yayimTarihi;
+    }
+
+    public String getMadde() {
+        return madde;
+    }
+
+    public void setMadde(String madde) {
+        this.madde = madde;
     }
 }

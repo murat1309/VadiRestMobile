@@ -141,7 +141,7 @@ public class DenetimService {
 
     private KanunDTO lsm2KanunTolsm2KanunDTO(LSM2Kanun lsm2Kanun) {
         if (lsm2Kanun != null) {
-            return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi());
+            return new KanunDTO(lsm2Kanun.getID(),lsm2Kanun.getTanim(),lsm2Kanun.getIzahat(),lsm2Kanun.getYayimTarihi(),lsm2Kanun.getMadde());
         } else {
             return null;
         }

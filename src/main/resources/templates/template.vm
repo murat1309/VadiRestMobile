@@ -262,7 +262,7 @@
                         <div class="cell" style="width: 50%">
                             <div class="innertable head">
                                 <div class="row">
-                                    <div class="cell b">Konu</div>
+                                    <div class="cell b">Madde</div>
                                     <div class="cell">$tespitDTO.tespitAciklamasi</div>
                                 </div>
                                 <div class="row">
