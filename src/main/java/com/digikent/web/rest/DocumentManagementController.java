@@ -3,7 +3,6 @@ package com.digikent.web.rest;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
 import com.digikent.web.rest.dto.DocumentRejectDTO;
-import com.digikent.web.rest.dto.ResponseUtil;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.ArrayList;
@@ -17,17 +16,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import javax.ws.rs.PathParam;
 
 import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
+//@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/belgeYonetim")
 @PropertySources({ @PropertySource(value = { "file:${DIGIKENT_PATH}/services/baseUrl.properties" }) })
 public class DocumentManagementController {
@@ -61,7 +57,86 @@ public class DocumentManagementController {
 		}
 		return rolList;
 	}
-	
+
+	/**
+	 * Ebys paraf onay bekleyen paraflar
+	 * Bu method ile paraflanabilir elektronik belgeler icin onay durumu onaybekliyor olan belgeler getirilir.
+	 *
+	 * @param persid IHR1PERSONEL personel tablosundaki ilgili id'ye sahip kisiyi belirtir.
+	 * @param rolid FSM1ROLES tablosundaki rol id'yi belirtir.
+	 * @param startDate paraflanabilir dokumanlar icin belirtilen baslangıc tarihine gore arama islemi gerceklestir
+	 * @param endDate  paraflanabilir dokumanlar icin belirtilen bitis tarihine gore arama islemi gerceklestirir
+	 * @return List<EBYS> objesi cevap olarak gonderilir
+	 */
+	@RequestMapping(value = "ebys/paraf/onaybekliyor/{persid}/{rolid}/{startDate}/{endDate}")
+    public List<EBYS> getWaitingEBYSParaf(
+    		@PathVariable("persid") long persid,
+			@PathVariable("rolid") long rolid,
+			@PathVariable("startDate") String startDate,
+			@PathVariable("endDate") String endDate) {
+
+		LOG.debug("Rest Request to get ebys paraf onay bekleyen documents persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYSParaf("ONAYBEKLIYOR", persid, rolid, startDate, endDate);
+	}
+
+	/**
+	 * Ebys paraf onay bekleyen paraflar detay
+	 * Bu method ile paraflanabilir elektronik belgeler icin onay durumu onaybekliyor olan belgelerin detayi getirilir
+	 *
+	 * @param documentId EBYSDOCUMENT tablosundaki id'yi belirtir
+	 * @return List<EBYSParafDetailDTO>
+	 */
+	@RequestMapping(value = "ebys/paraf/onaybekliyor/detay/{documentId}")
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafDetail(@PathVariable("documentId") long documentId) {
+		LOG.debug("Rest Request to get ebys paraf onaybekliyor documents detail with documentId: " + documentId);
+		return documentManagementService.getEBYSParafDetail("ONAYBEKLIYOR", documentId);
+	}
+
+	/**
+	 *  Ebys paraf onaybekliyor ek bilgi ve belge
+	 * Bu method ile paraflanabilir elektronik belgeler icin onay durumu onaybekliyor olan belgelere ait ek bilgi ve belgeler getirilir
+	 *
+	 * @param documentId EBYSDOCUMENT tablosundaki id'yi belirtir
+	 * @return List<EBYSParafDetailDTO>
+	 */
+	@RequestMapping(value = "ebys/paraf/onaybekliyor/ek/detay/{documentId}")
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafEkDetail(@PathVariable("documentId") long documentId) {
+		LOG.debug("Rest Request to get ebys paraf onaybekliyor ek belge document detail with documentId: " + documentId);
+		return documentManagementService.getWaitingEBYSParafEkDetail(documentId);
+	}
+
+	/**
+	 * Ebys paraf onaylanmis paraflar
+	 * Bu method ile paraflanabilir elektronik belgeler icin onay durumu onaylandi olan belgeler getirilir.
+	 * @param persid IHR1PERSONEL personel tablosundaki ilgili id'ye sahip kisiyi belirtir.
+	 * @param rolid FSM1ROLES tablosundaki rol id'yi belirtir.
+	 * @param startDate paraflanabilir dokumanlar icin belirtilen baslangıc tarihine gore arama islemi gerceklestir
+	 * @param endDate  paraflanabilir dokumanlar icin belirtilen bitis tarihine gore arama islemi gerceklestirir
+	 * @return EBYS objesi cevap olarak gonderilir
+	 */
+	@RequestMapping(value = "ebys/paraf/onaylandi/{persid}/{rolid}/{startDate}/{endDate}")
+	public List<EBYS> getCompletedEBYSParaf(
+			@PathVariable("persid") long persid,
+			@PathVariable("rolid") long rolid,
+			@PathVariable("startDate") String startDate,
+			@PathVariable("endDate") String endDate) {
+
+		LOG.debug("Rest Request to get ebys paraf onaylanan documents persid, rolid, startDate, endDate: {}", persid, rolid, startDate, endDate);
+		return documentManagementService.getEBYSParaf("ONAYLANDI", persid, rolid, startDate, endDate);
+	}
+
+	/**
+	 * Ebys paraf onaylanmis paraflar detay
+	 * Method paraflanabilir elektronik belgeler icin onay durumu onaylandi olan belgelerin detayini icereb bilgileri getirir
+	 * @param documentId
+	 * @return List<EBYSParafDetailDTO>
+	 */
+	@RequestMapping(value = "ebys/paraf/onaylandi/detay/{documentId}")
+	public List<EBYSParafDetailDTO> getCompletedEBYSParafDetail(@PathVariable("documentId") long documentId) {
+		LOG.debug("Rest Request to get ebys paraf onaylanmis documents detail with documentId: " + documentId);
+		return documentManagementService.getEBYSParafDetail("ONAYLANDI", documentId);
+	}
+
 	//EBYS bekleyen belge
 	@RequestMapping(value="EBYSBekleyen/{persid}/{rolid}/{startDate}/{endDate}",method = RequestMethod.GET)
 	public List<EBYS> getWaitingEBYS(@PathVariable("persid") long persid,

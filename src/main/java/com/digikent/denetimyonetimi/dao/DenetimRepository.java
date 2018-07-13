@@ -1208,7 +1208,7 @@ public class DenetimRepository {
                 criteria.add(Restrictions.in("denetimId", denetimIdList));
                 criteria.add(Restrictions.ne("denetimAksiyonu", "BELIRSIZ"));
                 criteria.add(Restrictions.eq("isActive", true));
-                criteria.add(Restrictions.isNotNull("tutanakNo"));
+                criteria.add(Restrictions.or( Restrictions.isNotNull("tutanakNo"), Restrictions.isNotNull("cezaNo")));
                 criteria.addOrder(Order.desc("crDate"));
 
                 List list = criteria.list();

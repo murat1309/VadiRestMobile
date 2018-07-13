@@ -124,6 +124,19 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		return documentManagementDAO.getEbysUnsignableAdditionDocument(documentId);
 	}
 
+	public List<EBYS> getEBYSParaf(String type, long persid, long rolid, String startDate, String endDate) {
+		return documentManagementDAO.getEBYSParaf(type, persid, rolid, startDate, endDate);
+	}
+
+	public List<EBYSParafDetailDTO> getEBYSParafDetail(String type, long documentId) {
+		return documentManagementDAO.getEBYSParafDetail(type, documentId);
+	}
+
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafEkDetail(long documentId) {
+		return documentManagementDAO.getWaitingEBYSParafEkDetail(documentId);
+	}
+
+
 	@Override
 	public Boolean rejectDocument(DocumentRejectDTO documentRejectDTO) {
 		return documentManagementDAO.documentReject(documentRejectDTO);
