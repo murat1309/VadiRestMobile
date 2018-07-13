@@ -346,7 +346,7 @@ public class PaydasIliskileriRepository {
                     BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
                     BigDecimal tcKimlikNo = (BigDecimal) map.get("TCKIMLIKNO");
                     BigDecimal pre1IlId = (BigDecimal) map.get("PRE1IL_ID");
-                    BigDecimal firmaYetkiliTCKimlikNo = (BigDecimal) map.get("FIRMAYETKILITCKIMLIKNO");
+                    String firmaYetkiliTCKimlikNo = (String) map.get("FIRMAYETKILITCKIMLIKNO");
                     String firmaYetkiliAdi = (String) map.get("FIRMAYETKILIADI");
                     String firmaYetkiliSoyadi = (String) map.get("FIRMAYETKILISOYADI");
 
@@ -377,7 +377,7 @@ public class PaydasIliskileriRepository {
 
                     //firma yetkilisi
                     if(firmaYetkiliTCKimlikNo != null)
-                        denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTCKimlikNo.longValue());
+                        denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTCKimlikNo);
                     if(firmaYetkiliAdi != null)
                         denetimPaydasDTO.setFirmaYetkiliAdi(firmaYetkiliAdi);
                     if(firmaYetkiliSoyadi != null)
@@ -425,7 +425,7 @@ public class PaydasIliskileriRepository {
 
         } catch (Exception e) {
 
-
+            e.printStackTrace();
             errorDTO.setErrorMessage("Bir hata meydana geldi.");
             errorDTO.setError(true);
             denetimPaydasResponseDTO.setErrorDTO(errorDTO);

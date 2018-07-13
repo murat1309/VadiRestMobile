@@ -34,6 +34,9 @@ public class LSM2Kanun extends BaseEntity implements Serializable {
     @OneToMany(cascade=CascadeType.ALL, mappedBy="lsm2Kanun")
     List<LDNTTespit> ldntTespitList = new ArrayList<>();
 
+    @Column(name = "MADDESI")
+    private String madde;
+
     public Long getID() {
         return ID;
     }
@@ -72,5 +75,13 @@ public class LSM2Kanun extends BaseEntity implements Serializable {
 
     public void setLdntTespitList(List<LDNTTespit> ldntTespitList) {
         this.ldntTespitList = ldntTespitList;
+    }
+
+    public String getMadde() {
+        return madde;
+    }
+
+    public void setMadde(String madde) {
+        this.madde = madde;
     }
 }
