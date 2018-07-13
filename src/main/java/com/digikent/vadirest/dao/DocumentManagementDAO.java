@@ -32,4 +32,7 @@ public interface DocumentManagementDAO {
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate);
 	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId);
 	public Boolean documentReject(DocumentRejectDTO documentRejectDTO);
+	public List<EBYS> getEBYSParaf(String type, long persid, long rolid, String startDate, String endDate);
+	public List<EBYSParafDetailDTO> getEBYSParafDetail(String type, long documentId);
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafEkDetail(long documentId);
 }

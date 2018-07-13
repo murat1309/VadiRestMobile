@@ -1,5 +1,6 @@
 package com.digikent.ruhsat.service;
 
+import com.digikent.general.util.UtilFinancialCalculations;
 import com.digikent.ruhsat.dto.*;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Created by Kadir on 13/10/17.
  */
@@ -23,6 +25,7 @@ public class TLI3RuhsatService {
 
     public String getruhsatCommonSQL() {
         return "select R.ID,r.RUHSATID,b.raporadi as ADSOYAD,ISYERIUNVANI," +
+                " (SELECT NVL(SUM(BORCTUTARI), 0) FROM  JIN2TAHAKKUK, ALI1TALEPTAHAKKUK WHERE  JIN2TAHAKKUK.ALI1TALEPTAHAKKUK_ID = ALI1TALEPTAHAKKUK.ID AND ALI1TALEPTAHAKKUK.NLI1RUHSAT_ID = r.ID) AS BORCTUTARI, " +
                 "(SELECT F_FETCH_DATA_ONE_ROW('SELECT (SELECT BELGEADI FROM CLI1BELGETURU WHERE ID = CLI1BELGETURU_ID  )  FROM HLI1DOSYABELGELER B WHERE B.BELGEDURUMU <> ''E'' AND B.ELI1RUHSATDOSYA_ID =:x ', TLI3RUHSAT.ELI1RUHSATDOSYA_ID,',','-'   ) FROM TLI3RUHSAT WHERE ID =r.ID) AS EKSIKBELGELER,\n" +
                 "m.TANIM||' '||(decode (( select nvl(dre1mahalle.turu,'M') from dre1mahalle where id=m.id),'K','KÖYÜ','M','MAH.' )) as adres1,s.TANIM|| DECODE(r.DAIRENO,null,' ',' ')||DOSYA.BINAADI||' NO:'||r.KAPINO|| DECODE(r.DAIRENO,null,' ','/')||r.DAIRENO||' '||" +
                 "(select TANIM from RRE1ILCE where id=m.RRE1ILCE_ID)||'/'||" +
@@ -62,6 +65,7 @@ public class TLI3RuhsatService {
         return "SELECT\n" +
                 "R.ID,\n" +
                 "r.RUHSATID,\n" +
+                "(SELECT NVL(SUM(BORCTUTARI), 0) FROM  JIN2TAHAKKUK, ALI1TALEPTAHAKKUK WHERE  JIN2TAHAKKUK.ALI1TALEPTAHAKKUK_ID = ALI1TALEPTAHAKKUK.ID AND ALI1TALEPTAHAKKUK.NLI1RUHSAT_ID = r.ID) AS BORCTUTARI,\n" +
                 "b.raporadi AS ADSOYAD,\n" +
                 "R.ISYERIUNVANI,\n" +
                 "m.TANIM || ' ' ||(\n" +
@@ -206,6 +210,7 @@ public class TLI3RuhsatService {
                 "AND r.ELI1RUHSATDOSYA_ID = dosya.ID(+)\n" +
                 "AND D.FRE1KAPITAHSIS_ID = g.ID\n" +
                 "AND s.ID = ";
+
     }
 
     public String getRuhsatDurumuSQL() {
@@ -426,6 +431,7 @@ public class TLI3RuhsatService {
             String ruhsatDurumu = (String)map.get("RUHSATDURUMU");
             String isyeriDurumu = (String)map.get("ISYERIDURUMU");
             String eksikBelgeler = (String) map.get("EKSIKBELGELER");
+            BigDecimal borcTutari = (BigDecimal) map.get("BORCTUTARI");
 
             if(id != null)
                 tli3RuhsatDTO.setId(id.longValue());
@@ -476,7 +482,8 @@ public class TLI3RuhsatService {
                 tli3RuhsatDTO.setIsyeriDurumu(isyeriDurumu);
             if(eksikBelgeler != null)
                 tli3RuhsatDTO.setEksikBelgeler(eksikBelgeler);
-
+            if(borcTutari != null)
+                tli3RuhsatDTO.setBorcTutari(UtilFinancialCalculations.getMoneyAmountInTurkishCurrencyFormat(borcTutari));
 
             tli3RuhsatDTOList.add(tli3RuhsatDTO);
         }
