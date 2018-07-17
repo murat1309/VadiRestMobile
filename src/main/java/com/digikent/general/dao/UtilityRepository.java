@@ -1,25 +1,27 @@
 package com.digikent.general.dao;
 
-import com.digikent.general.dto.BelediyeParamResponseDTO;
-import com.digikent.general.dto.BelediyeParamsDTO;
-import com.digikent.general.dto.NotificationRequestDTO;
-import com.digikent.general.dto.NotificationResponseDTO;
+import com.digikent.general.dto.*;
 import com.digikent.general.entity.ABPMWorkItem;
 import com.digikent.general.entity.EDM1IsAkisiAdim;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.mesajlasma.entity.VeilMesajLine;
-import com.vadi.smartkent.datamodel.domains.Edm1isakisiadimnot1;
 import org.hibernate.*;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,7 +141,7 @@ public class UtilityRepository {
         List belediyeParamList = null;
 
         belediyeParamList = getNSM2PARAMETRETableContents();
-        if(!belediyeParamList.isEmpty()) {
+        if (!belediyeParamList.isEmpty()) {
             belediyeParamsDTO = setBelediyeParams(belediyeParamList);
 
             belediyeParamResponseDTO.setBelediyeParamsDTO(belediyeParamsDTO);
@@ -160,11 +162,11 @@ public class UtilityRepository {
         Long mesajNotificationCount = getMesajNotificationCount(notificationRequestDTO.getIhr1personelId());
         Long gelenBasvuruNotificationCount = getGelenBasvuruNotificationCount(notificationRequestDTO.getIhr1personelId());
 
-        if(ebysNotificationCount != null)
+        if (ebysNotificationCount != null)
             notificationResponseDTO.setEbysNotificationCount(ebysNotificationCount);
-        if(mesajNotificationCount != null)
+        if (mesajNotificationCount != null)
             notificationResponseDTO.setMesajNotificationCount(mesajNotificationCount);
-        if(gelenBasvuruNotificationCount != null)
+        if (gelenBasvuruNotificationCount != null)
             notificationResponseDTO.setGelenBasvuruNotificationCount(gelenBasvuruNotificationCount);
 
         return notificationResponseDTO;
@@ -235,6 +237,48 @@ public class UtilityRepository {
         }
 
         return gelenBasvuruNotificationCount;
+    }
+
+    public RemoteNotificationResponseDTO pushNotification(RemoteNotificationRequestDTO remoteNotificationRequestDTO) {
+
+        RemoteNotificationResponseDTO remoteNotificationResponseDTO = new RemoteNotificationResponseDTO();
+        ErrorDTO errorDTO = new ErrorDTO();
+        try {
+            String androidFcmKey = "AAAAzs170ak:APA91bF_LFawwsxo0IdWew8k8DiTktQOiOwDw6MTfXXICZv-jh7r9SFB01NlVz6eHp0ok9QkJw26yPnsW-rR5rS3D0r84QAF4w0iKFcUtrhR0qklZtfByUXqJi36X-tdFXAaB2Vf6BMKmnLfBG_2MaYtY8B2LUk-pg";
+            String androidFcmUrl = "https://fcm.googleapis.com/fcm/send";
+
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.set("Authorization", "key=" + androidFcmKey);
+            httpHeaders.set("Content-Type", "application/json");
+            JSONObject msg= new JSONObject();
+
+            JSONObject msgOnly = new JSONObject();
+
+            msg.put("_body", "Onay Bekleyen Evraklar Var. \uD83D\uDCDD");
+
+            msgOnly.put("data",msg);
+            msgOnly.put("to", remoteNotificationRequestDTO.getDeviceToken());
+            msgOnly.put("priority", "high");
+
+            HttpEntity<String> msgHttpEntity = new HttpEntity<String>(msgOnly.toString(), httpHeaders);
+            String msgResponse = restTemplate.postForObject(androidFcmUrl, msgHttpEntity, String.class);
+            JSONObject msgResponseData = new JSONObject(msgResponse);
+            if (msgResponseData.get("success").equals(0)) {
+                errorDTO.setError(true);
+                errorDTO.setErrorMessage("Firebase message http request failed");
+                remoteNotificationResponseDTO.setErrorDTO(errorDTO);
+            }
+            System.out.println(msgResponseData);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            errorDTO.setError(true);
+            errorDTO.setErrorMessage("Notification gönderirken hata oluştu");
+            remoteNotificationResponseDTO.setErrorDTO(errorDTO);
+        }
+        return remoteNotificationResponseDTO;
     }
 
 }

@@ -50,4 +50,8 @@ public class UtilityService {
     public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
         return utilityRepository.getNotifications(notificationRequestDTO);
     }
+
+    public RemoteNotificationResponseDTO pushNotification(RemoteNotificationRequestDTO remoteNotificationRequestDTO) {
+        return utilityRepository.pushNotification(remoteNotificationRequestDTO);
+    }
 }

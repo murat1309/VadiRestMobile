@@ -79,4 +79,12 @@ public class UtilityResource {
         return new ResponseEntity<NotificationResponseDTO>(notificationResponseDTO, OK);
     }
 
+    @RequestMapping(value = "/send/notification", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    public ResponseEntity<RemoteNotificationResponseDTO> pushNotification(@RequestBody RemoteNotificationRequestDTO remoteNotificationRequestDTO) {
+        RemoteNotificationResponseDTO remoteNotificationResponseDTO = utilityService.pushNotification(remoteNotificationRequestDTO);
+        return new ResponseEntity<RemoteNotificationResponseDTO>(remoteNotificationResponseDTO, OK);
+    }
+
 }
