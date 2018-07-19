@@ -38,7 +38,7 @@ public class VSY1TespitRepository {
 
         try {
             Criteria criteria = session.createCriteria(TSY1TespitKategori.class);
-            criteria.add(Restrictions.eq("isActive", "E"));
+            criteria.add(Restrictions.eq("isActive", true));
             kategoriCriteriaList = criteria.list();
         } catch (Exception ex) {
             LOG.error("Tespit kategorileri/sorulari getirilirken bir hata olustu. Mesaj : " + ex.getMessage());
