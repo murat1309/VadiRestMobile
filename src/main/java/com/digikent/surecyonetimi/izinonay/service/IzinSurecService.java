@@ -1,7 +1,5 @@
 package com.digikent.surecyonetimi.izinonay.service;
 
-import com.digikent.general.entity.RSM2ParamGroup;
-import com.digikent.general.entity.TSM2Params;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.surecyonetimi.izinonay.dao.IzinSurecRepository;
@@ -9,14 +7,9 @@ import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayDTO;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecDetayResponse;
 import com.digikent.surecyonetimi.izinonay.dto.IzinSurecListResponse;
-import com.documentum.xml.xpath.operations.Bool;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.mortbay.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +18,10 @@ import org.springframework.http.*;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import vdcizn.wsizinonay.WSizinOnay;
-import vdcizn.wsizinonay.WSizinOnayPortType;
+import vdcizn.wsizinonay_tws.WSizinOnay;
+import vdcizn.wsizinonay_tws.WSizinOnayPortType;
+
 import javax.inject.Inject;
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.Holder;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -62,19 +51,25 @@ public class IzinSurecService {
         List<IzinSurecDTO> izinSurecDTOList = null;
 
         try {
+            LOG.info("database'den parametreler getirilecek");
             Map<String, String> paramDict = izinSurecRepository.getIzinSurecParameters();
             final String BPM_SERVER_USER_NAME = paramDict.get("BPM_SERVER_USER_NAME");
             final String BPM_SERVER_PASSWORD = paramDict.get("BPM_SERVER_PASSWORD");
             final String BPM_SERVER_HOST_NAME = paramDict.get("BPM_SERVER_HOST_NAME");
             final String BPM_SERVER_PORT = paramDict.get("BPM_SERVER_PORT");
+            LOG.info("BPM_SERVER_USER_NAME = " + BPM_SERVER_USER_NAME + " , BPM_SERVER_PASSWORD = " + BPM_SERVER_PASSWORD + " , BPM_SERVER_HOST_NAME = " + BPM_SERVER_HOST_NAME + " , BPM_SERVER_PORT = " + BPM_SERVER_PORT);
 
             String izinSurecUrl = env.getProperty("izinSurecUrl");
             izinSurecUrl = izinSurecUrl.replace("host", BPM_SERVER_HOST_NAME).replace("port", BPM_SERVER_PORT) + username;
+            LOG.info("izin surec url = " + izinSurecUrl);
 
             HttpEntity<String> entity = getHttpEntityForIzinOnayProcess(BPM_SERVER_USER_NAME, BPM_SERVER_PASSWORD);
             restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
             ResponseEntity<String> response = restTemplate.exchange(izinSurecUrl, HttpMethod.POST, entity, String.class);
+            LOG.info("response = " + response.getBody());
+
             izinSurecDTOList = getIzinSurecDTOList(response);
+
             if (izinSurecDTOList != null && izinSurecDTOList.size() > 0) {
                 izinSurecListResponse.setErrorDTO(null);
                 izinSurecListResponse.setIzinSurecDTOList(izinSurecDTOList);
@@ -86,8 +81,9 @@ public class IzinSurecService {
             }
 
         } catch (Exception ex) {
-            LOG.info("ERROR_CODE_702 Izin surecleri getirilirken bir hata olustu.");
-            ex.printStackTrace();
+            LOG.error("ERROR_CODE_702 Izin surecleri getirilirken bir hata olustu.");
+            LOG.error("hata mesaji = " + ex.getMessage());
+            LOG.error("HATA = " + ex.getStackTrace());
             izinSurecListResponse.setErrorDTO(new ErrorDTO(true, ErrorCode.ERROR_CODE_702));
             izinSurecListResponse.setIzinSurecDTOList(null);
         }
@@ -163,11 +159,11 @@ public class IzinSurecService {
             Holder<Boolean> holderKarar = new Holder<Boolean>(karar);
             operation.izinOnay(holderInstanceId, holderKarar);
             LOG.info("response dan donen deger : " + holderKarar.value + " instanceId = " + instanceId);
-
-            return holderKarar.value;
+            //başarılı başarısızı, catch'e düşmediği sürece bilemiyoruz. Kübranın bilgisi var.
+            return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
             LOG.error("Izin surecinde bir hata olustu. instanceId = " + instanceId);
+            LOG.error("Hata mesaji = " + ex.getMessage());
             return false;
         }
     }
