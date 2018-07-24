@@ -555,180 +555,229 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return belgeBasvuruList;
 	}
 
-	public BelgeBasvuruDetay getApplyDocDetail(long docId) {
+	public boolean hasAuthorization(Map map, long msm2OrganizationId, long organizasyonGizlilikSeviyesi) {
+
+		String kayitDerecesi = (String) map.get("KAYITDERECESI");
+		long docMsm2OrganizationId = ((BigDecimal) map.get("MSM2ORGANIZASYON_ID")).longValue();
+		boolean isOrgutlerAynimi = docMsm2OrganizationId == msm2OrganizationId;
+
+		boolean isAuthorized;
+		if(isOrgutlerAynimi) {
+			isAuthorized = true;
+		} else if(kayitDerecesi != null && organizasyonGizlilikSeviyesi >= Integer.parseInt(kayitDerecesi)) {
+			isAuthorized = true;
+		} else {
+			isAuthorized =  kayitDerecesi == null;
+		}
+
+		return isAuthorized;
+	}
+
+	public void setBelgeBasvuruDetay(BelgeBasvuruDetay belgeBasvuruDetay, Map map, boolean isAuthorized) {
+
+		String hideField = "**********";
+
+		String adi = (String) map.get("ADISOYADI");
+		String soyadi = (String) map.get("SOYADI");
+		String konuTuru = (String) map.get("TANIM");
+		String konusu = (String) map.get("KONUSU");
+		String ekBilgi = (String) map.get("EKBILGI");
+		String isAkisKonuOzeti = (String) map.get("ISAKISIKONUOZETI");
+		String izahat = (String) map.get("IZAHAT");
+		String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
+		String isTelefonu = (String) map.get("ISTELEFONU");
+		BigDecimal cepTelefonu = (BigDecimal) map.get("CEPTELEFONU");
+		String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
+		String babaAdi = (String) map.get("BABAADI");
+		BigDecimal tcKimlikNo =(BigDecimal) map.get("TCKIMLIKNO");
+
+		BigDecimal id = (BigDecimal)map.get("ID");
+		BigDecimal referansNo = (BigDecimal)map.get("ILGIID");
+		String tip = (String) map.get("tip");
+		BigDecimal disaridanGelenBelgeNo = (BigDecimal) map.get("DISARIDANGELENBELGENO");
+		BigDecimal defterKaydiGirisNo = (BigDecimal) map.get("DEFTERKAYDIGIRISNO");
+		Date tarih = (Date) map.get("TARIH");
+		Timestamp tarihSaat = (Timestamp) map.get("TARIHSAAT");
+		Date belgeTarih = (Date)map.get("BELGETARIHI");
+		String uretimTipi = (String)map.get("URETIMTIPI");
+		BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
+		String merciKurum = (String) map.get("MERCIKURUM");
+		String sdpKodu = (String) map.get("SDPKODU");
+
+		String gizlilik = (String) map.get("GIZLILIK");
+		String onemDerecesi = (String)map.get("ONEMDERECESI");
+		BigDecimal ekliSayfaSayisi = (BigDecimal) map.get("EKLISAYFASAYISI");
+		String digerEkler = (String) map.get("DIGEREKLER");
+		String dosyaNo = (String) map.get("DOSYANO");
+		Date beklenenBitisTarihi = (Date) map.get("BEKLENENBITISTARIHI");
+		String belgeDurumu = (String) map.get("BELGEDURUMU");
+		String evrakiGetiren = (String) map.get("EVRAKIGETIREN");
+
+		String mudurluk = (String) map.get("MUDURLUK");
+		BigDecimal bsm2ServisSeflik = (BigDecimal) map.get("BSM2SERVIS_SEFLIK");
+		BigDecimal msm2OrganizasyonId= (BigDecimal) map.get("MSM2ORGANIZASYON_ID");
+		BigDecimal msm2OrganizasyonIdPilot= (BigDecimal) map.get("MSM2ORGANIZASYON_ID_PILOT");
+		BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+
+		String geriDonusYapilsinMi =(String) map.get("GERIDONUSYAPILSINMI");
+		String geriBildirimTuru =(String) map.get("GERIBILDIRIMTURU");
+		String geriBildirimYapildi =(String) map.get("GERIBILDIRIMYAPILDI");
+
+		String ilce = (String) map.get("RRE1ILCE_ADI");
+		String mahalle = (String) map.get("DRE1MAHALLE_ADI");
+		String sokakAdi = (String) map.get("SRE1SOKAK_ADI");
+		String siteAdi = (String) map.get("RRE1SITE_ADI");
+		String kapiNo = (String) map.get("KAPINO");
+		String daireNo = (String) map.get("DAIRENO");
+
+		String bildirimdeBulunan=(String) map.get("BILDIRIMDEBULUNAN");
+		BigDecimal adm1BildirimTuruId = (BigDecimal)map.get("ADM1BILDIRIMTURU_ID");
+
+		String bildirimNiteligi = (String) map.get("BILDIRIMNITELIGI");
+		String bildirimTuru = (String) map.get("BILDIRIMTURU");
+
+		if(adi != null)
+			belgeBasvuruDetay.setAdi(isAuthorized ? adi : hideField);
+		if(soyadi != null)
+			belgeBasvuruDetay.setSoyadi(isAuthorized ? soyadi : hideField);
+		if(konuTuru != null)
+			belgeBasvuruDetay.setKonuTuru(isAuthorized ? konuTuru : hideField);
+		if(konusu != null)
+			belgeBasvuruDetay.setKonusu(isAuthorized ? konusu : hideField);
+		if(ekBilgi!= null)
+			belgeBasvuruDetay.setEkBilgi(isAuthorized ? ekBilgi : hideField);
+		if(isAkisKonuOzeti != null)
+			belgeBasvuruDetay.setIsAkisKonuOzeti(isAuthorized ? isAkisKonuOzeti : hideField);
+		if(izahat != null)
+			belgeBasvuruDetay.setIzahat(isAuthorized ? izahat : hideField);
+		if(telefonNumarasi != null)
+			belgeBasvuruDetay.setTelefonNumarasi(isAuthorized ? telefonNumarasi : hideField);
+		if(isTelefonu != null)
+			belgeBasvuruDetay.setIsTelefonu(isAuthorized ? isTelefonu : hideField);
+		if(cepTelefonu != null)
+			belgeBasvuruDetay.setCepTelefonu(isAuthorized ? Long.toString(cepTelefonu.longValue()) : hideField);
+		if(elektronikPosta != null)
+			belgeBasvuruDetay.setElektronikPosta(isAuthorized ? elektronikPosta : hideField);
+
+
+		if(id != null)
+			belgeBasvuruDetay.setId(id.longValue());
+		if(referansNo != null)
+			belgeBasvuruDetay.setReferansNo(referansNo.longValue());
+		if(tip != null)
+			belgeBasvuruDetay.setTip(tip);
+		if(disaridanGelenBelgeNo != null)
+			belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
+		if(defterKaydiGirisNo != null)
+			belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
+		if(tarih != null)
+			belgeBasvuruDetay.setTarih(dateFormat.format(tarih));
+		if(tarihSaat != null)
+			belgeBasvuruDetay.setTarihSaat(dateFormat.format(new Date(tarihSaat.getTime())));
+		if(uretimTipi != null)
+			belgeBasvuruDetay.setUretimTipi(uretimTipi);
+		if(edm1IsAkisiAdimId != null)
+			belgeBasvuruDetay.setEdm1IsAkisiAdimId(edm1IsAkisiAdimId.longValue());
+		if(merciKurum != null)
+			belgeBasvuruDetay.setMerciKurum(merciKurum);
+
+
+		if(sdpKodu != null)
+			belgeBasvuruDetay.setSdpKodu(sdpKodu);
+		if(gizlilik!= null)
+			belgeBasvuruDetay.setIzahat(izahat);
+		if(onemDerecesi != null)
+			belgeBasvuruDetay.setOnemDerecesi(onemDerecesi);
+		if(ekliSayfaSayisi != null)
+			belgeBasvuruDetay.setEkliSayfaSayisi(ekliSayfaSayisi.longValue());
+		if(digerEkler != null)
+			belgeBasvuruDetay.setDigerEkler(digerEkler);
+		if(dosyaNo != null)
+			belgeBasvuruDetay.setDosyaNo(dosyaNo);
+		if(beklenenBitisTarihi != null)
+			belgeBasvuruDetay.setBeklenenBitisTarihi(dateFormat.format(beklenenBitisTarihi));
+		if(belgeDurumu != null)
+			belgeBasvuruDetay.setBelgeDurumu(belgeDurumu);
+		if(evrakiGetiren != null)
+			belgeBasvuruDetay.setEvrakiGetiren(evrakiGetiren);
+		if(mudurluk != null)
+			belgeBasvuruDetay.setMudurluk(mudurluk);
+		if(bsm2ServisSeflik != null)
+			belgeBasvuruDetay.setBsm2ServisSeflik(bsm2ServisSeflik.longValue());
+		if(msm2OrganizasyonId != null)
+			belgeBasvuruDetay.setMsm2OrganizasyonId(msm2OrganizasyonId.longValue());
+		if(msm2OrganizasyonIdPilot != null)
+			belgeBasvuruDetay.setMsm2OrganizasyonIdPilot(msm2OrganizasyonIdPilot.longValue());
+		if(ihr1PersonelId != null)
+			belgeBasvuruDetay.setIhr1PersonelId(ihr1PersonelId.longValue());
+		if(geriDonusYapilsinMi != null)
+			belgeBasvuruDetay.setGeriDonusYapilsinMi(geriDonusYapilsinMi);
+		if(geriBildirimTuru != null)
+			belgeBasvuruDetay.setGeriBildirimTuru(geriBildirimTuru);
+		if(geriBildirimYapildi != null)
+			belgeBasvuruDetay.setGeriBildirimYapildi(geriBildirimYapildi);
+		if(ilce != null)
+			belgeBasvuruDetay.setIlce(ilce);
+		if(mahalle != null)
+			belgeBasvuruDetay.setMahalle(mahalle);
+		if(sokakAdi != null)
+			belgeBasvuruDetay.setSokakAdi(sokakAdi);
+		if(siteAdi != null)
+			belgeBasvuruDetay.setSiteAdi(siteAdi);
+		if(kapiNo != null)
+			belgeBasvuruDetay.setKapiNo(kapiNo);
+		if(daireNo != null)
+			belgeBasvuruDetay.setDaireNo(daireNo);
+		if(bildirimdeBulunan != null)
+			belgeBasvuruDetay.setBildirimdeBulunan(bildirimdeBulunan);
+		if(adm1BildirimTuruId != null)
+			belgeBasvuruDetay.setAdm1BildirimTuruId(adm1BildirimTuruId.longValue());
+		if(bildirimNiteligi != null)
+			belgeBasvuruDetay.setBildirimNiteligi(bildirimNiteligi);
+		if(bildirimTuru != null)
+			belgeBasvuruDetay.setBildirimTuru(bildirimTuru);
+
+	}
+
+	public long getOrganizasyonGizlilikSeviyesi(long msm2OrganizationId) {
+
+		String sql = "SELECT nvl(GIZLILIKSEVIYESI,'0') AS GIZLILIKSEVIYESI FROM MSM2ORGANIZASYON WHERE ID = " + msm2OrganizationId;
+		long gizlilikSeviyesi = 0L;
+		try {
+			List list = sessionFactory.getCurrentSession()
+						  .createSQLQuery(sql)
+						  .setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+						  .list();
+
+			Map map = (Map) list.get(0);
+			gizlilikSeviyesi = Long.parseLong((String) map.get("GIZLILIKSEVIYESI"));
+
+		} catch (Exception e) {
+			LOG.debug("Basvuru yonetim belge detay organizasyon gizlilik seviyesi getirilirken bir hata ile karsilasildi msm2OrganizationId:" + msm2OrganizationId);
+		}
+
+		return gizlilikSeviyesi;
+	}
+
+	public BelgeBasvuruDetay getApplyDocDetail(long docId, long msm2OrganizationId) {
 		String sql ="SELECT HDM1ISAKISITURU.TANIM, DDM1ISAKISI.ADI || ' ' || DDM1ISAKISI.SOYADI as ADISOYADI, "
 				  + "DDM1ISAKISI.* FROM HDM1ISAKISITURU JOIN DDM1ISAKISI ON HDM1ISAKISITURU.ID = DDM1ISAKISI.HDM1ISAKISITURU_ID "
 		          + "WHERE DDM1ISAKISI.ID=" + docId;
 
 		List<Object> list = new ArrayList();
+		BelgeBasvuruDetay belgeBasvuruDetay = new BelgeBasvuruDetay();
+		long gizlilikSeviyesi = getOrganizasyonGizlilikSeviyesi(msm2OrganizationId);
+		boolean isAuthorized = false;
 
 		SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
-		BelgeBasvuruDetay belgeBasvuruDetay = new BelgeBasvuruDetay();
-		for(Object o : list){
-			Map map = (Map)o;
-			
-			BigDecimal id = (BigDecimal)map.get("ID");
-			BigDecimal referansNo = (BigDecimal)map.get("ILGIID");
-			String tip = (String) map.get("tip");
-			BigDecimal disaridanGelenBelgeNo = (BigDecimal) map.get("DISARIDANGELENBELGENO");
-			BigDecimal defterKaydiGirisNo = (BigDecimal) map.get("DEFTERKAYDIGIRISNO");
-			Date tarih = (Date)map.get("TARIH");
-			Timestamp tarihSaat = (Timestamp) map.get("TARIHSAAT");
-			Date belgeTarih = (Date)map.get("BELGETARIHI");
-			String uretimTipi = (String)map.get("URETIMTIPI");
 
-			BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
-			String merciKurum = (String) map.get("MERCIKURUM");
-			String adi = (String) map.get("ADISOYADI");
-			String soyadi = (String) map.get("SOYADI");
-			String konuTuru = (String) map.get("TANIM");
-			String konusu = (String) map.get("KONUSU");
-			String sdpKodu = (String) map.get("SDPKODU");
-			String ekBilgi = (String) map.get("EKBILGI");
-			String isAkisKonuOzeti = (String) map.get("ISAKISIKONUOZETI");
-			String izahat = (String) map.get("IZAHAT");
-			String gizlilik = (String) map.get("GIZLILIK");
-			String onemDerecesi = (String)map.get("ONEMDERECESI");
-			BigDecimal ekliSayfaSayisi = (BigDecimal) map.get("EKLISAYFASAYISI");
-			String digerEkler = (String) map.get("DIGEREKLER");
-			String dosyaNo = (String) map.get("DOSYANO");
-			Date beklenenBitisTarihi = (Date) map.get("BEKLENENBITISTARIHI");
-			String belgeDurumu = (String) map.get("BELGEDURUMU");
-			String evrakiGetiren = (String) map.get("EVRAKIGETIREN");
-			
-			String mudurluk = (String) map.get("MUDURLUK");
-			BigDecimal bsm2ServisSeflik = (BigDecimal) map.get("BSM2SERVIS_SEFLIK");
-			BigDecimal msm2OrganizasyonId= (BigDecimal) map.get("MSM2ORGANIZASYON_ID");
-			BigDecimal msm2OrganizasyonIdPilot= (BigDecimal) map.get("MSM2ORGANIZASYON_ID_PILOT");
-			BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
-			
-			String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
-			String isTelefonu = (String) map.get("ISTELEFONU");
-			BigDecimal cepTelefonu = (BigDecimal) map.get("CEPTELEFONU");
-			String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
-			String geriDonusYapilsinMi =(String) map.get("GERIDONUSYAPILSINMI");
-			String geriBildirimTuru =(String) map.get("GERIBILDIRIMTURU");
-			String geriBildirimYapildi =(String) map.get("GERIBILDIRIMYAPILDI");
-			
-			String ilce = (String) map.get("RRE1ILCE_ADI");
-			String mahalle = (String) map.get("DRE1MAHALLE_ADI");
-			String sokakAdi = (String) map.get("SRE1SOKAK_ADI");
-			String siteAdi = (String) map.get("RRE1SITE_ADI");
-			String kapiNo = (String) map.get("KAPINO");
-			String daireNo = (String) map.get("DAIRENO");
-			
-			String babaAdi = (String) map.get("BABAADI");
-			BigDecimal tcKimlikNo =(BigDecimal) map.get("TCKIMLIKNO");
-			String bildirimdeBulunan=(String) map.get("BILDIRIMDEBULUNAN");
-			BigDecimal adm1BildirimTuruId = (BigDecimal)map.get("ADM1BILDIRIMTURU_ID");
-			
-			String bildirimNiteligi = (String) map.get("BILDIRIMNITELIGI");
-			String bildirimTuru = (String) map.get("BILDIRIMTURU");
-			
-			
-			
-			if(id != null)
-				belgeBasvuruDetay.setId(id.longValue());
-			if(referansNo != null)
-				belgeBasvuruDetay.setReferansNo(referansNo.longValue());
-			if(tip != null)
-				belgeBasvuruDetay.setTip(tip);
-			if(disaridanGelenBelgeNo != null)
-				belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
-			if(defterKaydiGirisNo != null)
-				belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
-			if(tarih != null)
-				belgeBasvuruDetay.setTarih(dateFormat.format(tarih));
-			if(tarihSaat != null)
-				belgeBasvuruDetay.setTarihSaat(dateFormat.format(new Date(tarihSaat.getTime())));
-			if(uretimTipi != null)
-				belgeBasvuruDetay.setUretimTipi(uretimTipi);
-			if(edm1IsAkisiAdimId != null)
-				belgeBasvuruDetay.setEdm1IsAkisiAdimId(edm1IsAkisiAdimId.longValue());
-			if(merciKurum != null)
-				belgeBasvuruDetay.setMerciKurum(merciKurum);
-			if(adi != null)
-				belgeBasvuruDetay.setAdi(adi);
-			if(soyadi != null)
-				belgeBasvuruDetay.setSoyadi(soyadi);
-			if(konuTuru != null)
-				belgeBasvuruDetay.setKonuTuru(konuTuru);
-			if(konusu != null)
-				belgeBasvuruDetay.setKonusu(konusu);
-			if(sdpKodu != null)
-				belgeBasvuruDetay.setSdpKodu(sdpKodu);
-			if(ekBilgi!= null)
-				belgeBasvuruDetay.setEkBilgi(ekBilgi);
-			if(isAkisKonuOzeti != null)
-				belgeBasvuruDetay.setIsAkisKonuOzeti(isAkisKonuOzeti);
-			if(izahat != null)
-				belgeBasvuruDetay.setIzahat(izahat);
-			if(gizlilik!= null)
-				belgeBasvuruDetay.setIzahat(izahat);
-			if(onemDerecesi != null)
-				belgeBasvuruDetay.setOnemDerecesi(onemDerecesi);
-			if(ekliSayfaSayisi != null)
-				belgeBasvuruDetay.setEkliSayfaSayisi(ekliSayfaSayisi.longValue());
-			if(digerEkler != null)
-				belgeBasvuruDetay.setDigerEkler(digerEkler);
-			if(dosyaNo != null)
-				belgeBasvuruDetay.setDosyaNo(dosyaNo);
-			if(beklenenBitisTarihi != null)
-				belgeBasvuruDetay.setBeklenenBitisTarihi(dateFormat.format(beklenenBitisTarihi));
-			if(belgeDurumu != null)
-				belgeBasvuruDetay.setBelgeDurumu(belgeDurumu);
-			if(evrakiGetiren != null)
-				belgeBasvuruDetay.setEvrakiGetiren(evrakiGetiren);
-			if(mudurluk != null)
-				belgeBasvuruDetay.setMudurluk(mudurluk);
-			if(bsm2ServisSeflik != null)
-				belgeBasvuruDetay.setBsm2ServisSeflik(bsm2ServisSeflik.longValue());
-			if(msm2OrganizasyonId != null)
-				belgeBasvuruDetay.setMsm2OrganizasyonId(msm2OrganizasyonId.longValue());
-			if(msm2OrganizasyonIdPilot != null)
-				belgeBasvuruDetay.setMsm2OrganizasyonIdPilot(msm2OrganizasyonIdPilot.longValue());
-			if(ihr1PersonelId != null)
-				belgeBasvuruDetay.setIhr1PersonelId(ihr1PersonelId.longValue());
-			if(telefonNumarasi != null)
-				belgeBasvuruDetay.setTelefonNumarasi(telefonNumarasi);
-			if(isTelefonu != null)
-				belgeBasvuruDetay.setIsTelefonu(isTelefonu);
-			if(cepTelefonu != null)
-				belgeBasvuruDetay.setCepTelefonu(cepTelefonu.longValue());
-			if(elektronikPosta != null)
-				belgeBasvuruDetay.setElektronikPosta(elektronikPosta);
-			if(geriDonusYapilsinMi != null)
-				belgeBasvuruDetay.setGeriDonusYapilsinMi(geriDonusYapilsinMi);
-			if(geriBildirimTuru != null)
-				belgeBasvuruDetay.setGeriBildirimTuru(geriBildirimTuru);
-			if(geriBildirimYapildi != null)
-				belgeBasvuruDetay.setGeriBildirimYapildi(geriBildirimYapildi);
-			if(ilce != null)
-				belgeBasvuruDetay.setIlce(ilce);
-			if(mahalle != null)
-				belgeBasvuruDetay.setMahalle(mahalle);
-			if(sokakAdi != null)
-				belgeBasvuruDetay.setSokakAdi(sokakAdi);
-			if(siteAdi != null)
-				belgeBasvuruDetay.setSiteAdi(siteAdi);
-			if(kapiNo != null)
-				belgeBasvuruDetay.setKapiNo(kapiNo);
-			if(daireNo != null)
-				belgeBasvuruDetay.setDaireNo(daireNo);
-			if(babaAdi != null)
-				belgeBasvuruDetay.setBabaAdi(babaAdi);
-			if(tcKimlikNo != null)
-				belgeBasvuruDetay.setTcKimlikNo(tcKimlikNo.longValue());
-			if(bildirimdeBulunan != null)
-				belgeBasvuruDetay.setBildirimdeBulunan(bildirimdeBulunan);
-			if(adm1BildirimTuruId != null)
-				belgeBasvuruDetay.setAdm1BildirimTuruId(adm1BildirimTuruId.longValue());
-			if(bildirimNiteligi != null)
-				belgeBasvuruDetay.setBildirimNiteligi(bildirimNiteligi);
-			if(bildirimTuru != null)
-				belgeBasvuruDetay.setBildirimTuru(bildirimTuru);
+		for(Object o : list){
+
+			Map map = (Map) o;
+			isAuthorized = hasAuthorization(map, msm2OrganizationId, gizlilikSeviyesi);
+			setBelgeBasvuruDetay(belgeBasvuruDetay, map, isAuthorized);
 		}
 		
 		return belgeBasvuruDetay;
@@ -1275,7 +1324,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate){
-		String sql = "SELECT DB.ID,\n" +
+		String sql = "SELECT * FROM (\n" +
+				"SELECT DB.ID,\n" +
 				"       DBI.ID as DM1ISAKISIADIMID,\n" +
 				"       DB.ADI,\n" +
 				"       DB.TARIH,\n" +
@@ -1287,7 +1337,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				"         AND DBI.GON_MSM2ORGANIZASYON_ID = " + organizationId  +"\n" +
 				"         AND DBI.ALC_MSM2ORGANIZASYON_ID <> DBI.GON_MSM2ORGANIZASYON_ID\n" +
 				"         AND DB.TARIH BETWEEN TO_DATE ('" + startDate +"',     'dd-MM-yyyy')   AND TO_DATE('"+ endDate +"','dd-MM-yyyy')  \n" +
-				"ORDER BY DB.TARIH DESC, DB.ID DESC";
+				"ORDER BY DB.TARIH DESC, DB.ID DESC) WHERE ROWNUM <= 100";
 
 
 
@@ -1325,7 +1375,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate){
-		String sql = "SELECT DB.ID,\n" +
+		String sql = "SELECT * FROM (\n" +
+				"SELECT DB.ID,\n" +
 				"       DBI.ID as DM1ISAKISIADIMID,\n" +
 				"       DB.ADI,\n" +
 				"       DB.TARIH,\n" +
@@ -1338,7 +1389,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				"       AND NVL (DBI.ILETIMYERI, '-') = '-'\n" +
 				"       AND NVL (DB.TURU, '-') IN ('S','K')\n" +
 				"         AND NVL (DB.TARIH, SYSDATE) >= TO_DATE ('" + startDate +"',   'dd/MM/yyyy')  AND NVL(DB.TARIH,SYSDATE) <= TO_DATE('"+ endDate +"','dd/MM/yyyy') \n"+
-				"       ORDER BY NVL(DB.TARIH,SYSDATE) DESC,DB.ID DESC";
+				"       ORDER BY NVL(DB.TARIH,SYSDATE) DESC,DB.ID DESC) WHERE ROWNUM <= 100";
 
 
 

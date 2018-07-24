@@ -41,7 +41,7 @@ public class BelgeBasvuruDetay {
 	
 	private String telefonNumarasi ;
 	private String isTelefonu ;
-	private long cepTelefonu ;
+	private String cepTelefonu ;
 	private String elektronikPosta ;
 	private String geriDonusYapilsinMi;
 	private String geriBildirimTuru ;
@@ -146,10 +146,10 @@ public class BelgeBasvuruDetay {
 	public void setIsTelefonu(String isTelefonu) {
 		this.isTelefonu = isTelefonu;
 	}
-	public long getCepTelefonu() {
+	public String getCepTelefonu() {
 		return cepTelefonu;
 	}
-	public void setCepTelefonu(long cepTelefonu) {
+	public void setCepTelefonu(String cepTelefonu) {
 		this.cepTelefonu = cepTelefonu;
 	}
 	public String getElektronikPosta() {

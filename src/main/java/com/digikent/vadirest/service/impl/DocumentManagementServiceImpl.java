@@ -49,8 +49,8 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		return documentManagementDAO.getApplyDoc(rolid);
 	}
 
-	public BelgeBasvuruDetay getApplyDocDetail(long docId) {
-		return documentManagementDAO.getApplyDocDetail(docId);
+	public BelgeBasvuruDetay getApplyDocDetail(long docId, long msm2OrganizationId) {
+		return documentManagementDAO.getApplyDocDetail(docId, msm2OrganizationId);
 	}
 
 	@Override

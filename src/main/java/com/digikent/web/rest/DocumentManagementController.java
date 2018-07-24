@@ -245,11 +245,11 @@ public class DocumentManagementController {
 	}
 	
 	//Belge Basuvuru detay
-	@RequestMapping(value = "belgeBasvuruDetay/{docId}",method = RequestMethod.GET)
-	public BelgeBasvuruDetay getApplyDocDetail(@PathVariable("docId") long docId){
+	@RequestMapping(value = "belgeBasvuruDetay/{docId}/{msm2OrganizationId}",method = RequestMethod.GET)
+	public BelgeBasvuruDetay getApplyDocDetail(@PathVariable("docId") long docId, @PathVariable("msm2OrganizationId") long msm2OrganizationId){
 		System.out.println("-------belge basvuru detay-------------");
 		System.out.println(docId);
-		return documentManagementService.getApplyDocDetail(docId);
+		return documentManagementService.getApplyDocDetail(docId, msm2OrganizationId);
 	}
 	
 	//EBYS ture gore toplam degerler
