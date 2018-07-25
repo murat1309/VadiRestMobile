@@ -13,6 +13,7 @@ import java.util.*;
 
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -324,48 +325,38 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return ebysList;
 	}
 
+	public String getEbysDocumentDetailQueryString(long documentId) {
+		String sql = "WITH TUMCE AS \n" +
+				"\t(SELECT \n" +
+				"\t\tc.ID CID, \n" +
+				"\t\ta.ID AID, \n" +
+				"\t\tC.ONAYSIRASI, a.TANIM, \n" +
+				"\t\t(SELECT DURUMU FROM EBYSVERSION WHERE ID = c.EBYSVERSION_ID) DURUMU,\n" +
+				"\t\tC.ONAYDURUMU,\n" +
+				"\t\tC.ONAYTIPI,\n" +
+				"\t\t(SELECT ADI || ' ' || SOYADI FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) ADSOYAD,\n" +
+				"\t\tC.IHR1PERSONEL_ID,                 \n" +
+				"\t\tc.DOKUMANTURU,                \n" +
+				"\t\tc.hitapeki,                 \n" +
+				"\t\tC.EBYSVERSION_ID,                 \n" +
+				"\t\tNVL (C.ABPMTASK_ID, 0) BPMTASKID,                 \n" +
+				"\t\t(SELECT NVL (EIMZASIZPARAFLAMA, 'H') FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) EIMZASIZPARAFLAMA,\n" +
+				"\t\tC.EBYSDOCUMENT_ID\n" +
+				"\t\tEBYSDOCUMENT_ONAY,\n" +
+				"\t\ta.MASTERID_DAGITIM,\n" +
+				"\t\t(SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,   \n" +
+				"\t\t(SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS,               \n" +
+				"\t\t(SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID   \n" +
+				"\t\tFROM EBYSDOCUMENT a, EBYSONAY c          \n" +
+				"\t\tWHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) \n" +
+				"\t\t\tSELECT * FROM TUMCE  WHERE (EBYSDOCUMENT_ONAY = "+ documentId +" ) UNION SELECT *   FROM TUMCE  WHERE (MASTERID_DAGITIM = "+ documentId +" ) ORDER BY 2, 3";
+
+		return sql;
+	}
+
 	public List<EBYSDetail> getEbysDocumentDetail(long documentId){
 
-		String sql = "WITH TUMCE " +
-				"     AS (SELECT /*+ inline*/ " +
-				"               c.ID                    CID, " +
-				"                a.ID                   AID, " +
-				"                C.ONAYSIRASI, " +
-				"                a.TANIM, " +
-				"                (SELECT DURUMU " +
-				"                   FROM EBYSVERSION " +
-				"                  WHERE ID = c.EBYSVERSION_ID) " +
-				"                   DURUMU, " +
-				"                C.ONAYDURUMU, " +
-				"                C.ONAYTIPI, " +
-				"                (SELECT ADI || ' ' || SOYADI " +
-				"                   FROM IHR1PERSONEL " +
-				"                  WHERE ID = C.IHR1PERSONEL_ID) " +
-				"                   ADSOYAD, " +
-				"                C.IHR1PERSONEL_ID, " +
-				"                c.DOKUMANTURU, " +
-				"                c.hitapeki, " +
-				"                C.EBYSVERSION_ID, " +
-				"                NVL (C.ABPMTASK_ID, 0) BPMTASKID, " +
-				"                (SELECT NVL (EIMZASIZPARAFLAMA, 'H') " +
-				"                   FROM IHR1PERSONEL " +
-				"                  WHERE ID = C.IHR1PERSONEL_ID) " +
-				"                   EIMZASIZPARAFLAMA, " +
-				"                C.EBYSDOCUMENT_ID      EBYSDOCUMENT_ONAY, " +
-				"                a.MASTERID_DAGITIM, " +
-				"               (SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,  " +
-				"               (SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS, "+
-				"               (SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID" +
-				"           FROM EBYSDOCUMENT a, EBYSONAY c " +
-				"          WHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) " +
-				"SELECT * " +
-				"  FROM TUMCE " +
-				" WHERE (EBYSDOCUMENT_ONAY = "+documentId+") " +
-				"UNION " +
-				"SELECT * " +
-				"  FROM TUMCE " +
-				" WHERE (MASTERID_DAGITIM = "+ documentId +") " +
-				"ORDER BY 2, 3 ";
+		String sql = getEbysDocumentDetailQueryString(documentId);
 
 		List<Object> list = new ArrayList();
 		List<EBYSDetail> ebysDetailList = new ArrayList();
@@ -445,9 +436,6 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				ebysDetail.setOnaySirasiTuru(onaySirasiTuru);
 			if(contentId != null)
 				ebysDetail.setContentId(contentId.longValue());
-
-
-
 
 			ebysDetailList.add(ebysDetail);
 		}
@@ -567,180 +555,229 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return belgeBasvuruList;
 	}
 
-	public BelgeBasvuruDetay getApplyDocDetail(long docId) {
+	public boolean hasAuthorization(Map map, long msm2OrganizationId, long organizasyonGizlilikSeviyesi) {
+
+		String kayitDerecesi = (String) map.get("KAYITDERECESI");
+		long docMsm2OrganizationId = ((BigDecimal) map.get("MSM2ORGANIZASYON_ID")).longValue();
+		boolean isOrgutlerAynimi = docMsm2OrganizationId == msm2OrganizationId;
+
+		boolean isAuthorized;
+		if(isOrgutlerAynimi) {
+			isAuthorized = true;
+		} else if(kayitDerecesi != null && organizasyonGizlilikSeviyesi >= Integer.parseInt(kayitDerecesi)) {
+			isAuthorized = true;
+		} else {
+			isAuthorized =  kayitDerecesi == null;
+		}
+
+		return isAuthorized;
+	}
+
+	public void setBelgeBasvuruDetay(BelgeBasvuruDetay belgeBasvuruDetay, Map map, boolean isAuthorized) {
+
+		String hideField = "**********";
+
+		String adi = (String) map.get("ADISOYADI");
+		String soyadi = (String) map.get("SOYADI");
+		String konuTuru = (String) map.get("TANIM");
+		String konusu = (String) map.get("KONUSU");
+		String ekBilgi = (String) map.get("EKBILGI");
+		String isAkisKonuOzeti = (String) map.get("ISAKISIKONUOZETI");
+		String izahat = (String) map.get("IZAHAT");
+		String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
+		String isTelefonu = (String) map.get("ISTELEFONU");
+		BigDecimal cepTelefonu = (BigDecimal) map.get("CEPTELEFONU");
+		String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
+		String babaAdi = (String) map.get("BABAADI");
+		BigDecimal tcKimlikNo =(BigDecimal) map.get("TCKIMLIKNO");
+
+		BigDecimal id = (BigDecimal)map.get("ID");
+		BigDecimal referansNo = (BigDecimal)map.get("ILGIID");
+		String tip = (String) map.get("tip");
+		BigDecimal disaridanGelenBelgeNo = (BigDecimal) map.get("DISARIDANGELENBELGENO");
+		BigDecimal defterKaydiGirisNo = (BigDecimal) map.get("DEFTERKAYDIGIRISNO");
+		Date tarih = (Date) map.get("TARIH");
+		Timestamp tarihSaat = (Timestamp) map.get("TARIHSAAT");
+		Date belgeTarih = (Date)map.get("BELGETARIHI");
+		String uretimTipi = (String)map.get("URETIMTIPI");
+		BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
+		String merciKurum = (String) map.get("MERCIKURUM");
+		String sdpKodu = (String) map.get("SDPKODU");
+
+		String gizlilik = (String) map.get("GIZLILIK");
+		String onemDerecesi = (String)map.get("ONEMDERECESI");
+		BigDecimal ekliSayfaSayisi = (BigDecimal) map.get("EKLISAYFASAYISI");
+		String digerEkler = (String) map.get("DIGEREKLER");
+		String dosyaNo = (String) map.get("DOSYANO");
+		Date beklenenBitisTarihi = (Date) map.get("BEKLENENBITISTARIHI");
+		String belgeDurumu = (String) map.get("BELGEDURUMU");
+		String evrakiGetiren = (String) map.get("EVRAKIGETIREN");
+
+		String mudurluk = (String) map.get("MUDURLUK");
+		BigDecimal bsm2ServisSeflik = (BigDecimal) map.get("BSM2SERVIS_SEFLIK");
+		BigDecimal msm2OrganizasyonId= (BigDecimal) map.get("MSM2ORGANIZASYON_ID");
+		BigDecimal msm2OrganizasyonIdPilot= (BigDecimal) map.get("MSM2ORGANIZASYON_ID_PILOT");
+		BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+
+		String geriDonusYapilsinMi =(String) map.get("GERIDONUSYAPILSINMI");
+		String geriBildirimTuru =(String) map.get("GERIBILDIRIMTURU");
+		String geriBildirimYapildi =(String) map.get("GERIBILDIRIMYAPILDI");
+
+		String ilce = (String) map.get("RRE1ILCE_ADI");
+		String mahalle = (String) map.get("DRE1MAHALLE_ADI");
+		String sokakAdi = (String) map.get("SRE1SOKAK_ADI");
+		String siteAdi = (String) map.get("RRE1SITE_ADI");
+		String kapiNo = (String) map.get("KAPINO");
+		String daireNo = (String) map.get("DAIRENO");
+
+		String bildirimdeBulunan=(String) map.get("BILDIRIMDEBULUNAN");
+		BigDecimal adm1BildirimTuruId = (BigDecimal)map.get("ADM1BILDIRIMTURU_ID");
+
+		String bildirimNiteligi = (String) map.get("BILDIRIMNITELIGI");
+		String bildirimTuru = (String) map.get("BILDIRIMTURU");
+
+		if(adi != null)
+			belgeBasvuruDetay.setAdi(isAuthorized ? adi : hideField);
+		if(soyadi != null)
+			belgeBasvuruDetay.setSoyadi(isAuthorized ? soyadi : hideField);
+		if(konuTuru != null)
+			belgeBasvuruDetay.setKonuTuru(isAuthorized ? konuTuru : hideField);
+		if(konusu != null)
+			belgeBasvuruDetay.setKonusu(isAuthorized ? konusu : hideField);
+		if(ekBilgi!= null)
+			belgeBasvuruDetay.setEkBilgi(isAuthorized ? ekBilgi : hideField);
+		if(isAkisKonuOzeti != null)
+			belgeBasvuruDetay.setIsAkisKonuOzeti(isAuthorized ? isAkisKonuOzeti : hideField);
+		if(izahat != null)
+			belgeBasvuruDetay.setIzahat(isAuthorized ? izahat : hideField);
+		if(telefonNumarasi != null)
+			belgeBasvuruDetay.setTelefonNumarasi(isAuthorized ? telefonNumarasi : hideField);
+		if(isTelefonu != null)
+			belgeBasvuruDetay.setIsTelefonu(isAuthorized ? isTelefonu : hideField);
+		if(cepTelefonu != null)
+			belgeBasvuruDetay.setCepTelefonu(isAuthorized ? Long.toString(cepTelefonu.longValue()) : hideField);
+		if(elektronikPosta != null)
+			belgeBasvuruDetay.setElektronikPosta(isAuthorized ? elektronikPosta : hideField);
+
+
+		if(id != null)
+			belgeBasvuruDetay.setId(id.longValue());
+		if(referansNo != null)
+			belgeBasvuruDetay.setReferansNo(referansNo.longValue());
+		if(tip != null)
+			belgeBasvuruDetay.setTip(tip);
+		if(disaridanGelenBelgeNo != null)
+			belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
+		if(defterKaydiGirisNo != null)
+			belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
+		if(tarih != null)
+			belgeBasvuruDetay.setTarih(dateFormat.format(tarih));
+		if(tarihSaat != null)
+			belgeBasvuruDetay.setTarihSaat(dateFormat.format(new Date(tarihSaat.getTime())));
+		if(uretimTipi != null)
+			belgeBasvuruDetay.setUretimTipi(uretimTipi);
+		if(edm1IsAkisiAdimId != null)
+			belgeBasvuruDetay.setEdm1IsAkisiAdimId(edm1IsAkisiAdimId.longValue());
+		if(merciKurum != null)
+			belgeBasvuruDetay.setMerciKurum(merciKurum);
+
+
+		if(sdpKodu != null)
+			belgeBasvuruDetay.setSdpKodu(sdpKodu);
+		if(gizlilik!= null)
+			belgeBasvuruDetay.setIzahat(izahat);
+		if(onemDerecesi != null)
+			belgeBasvuruDetay.setOnemDerecesi(onemDerecesi);
+		if(ekliSayfaSayisi != null)
+			belgeBasvuruDetay.setEkliSayfaSayisi(ekliSayfaSayisi.longValue());
+		if(digerEkler != null)
+			belgeBasvuruDetay.setDigerEkler(digerEkler);
+		if(dosyaNo != null)
+			belgeBasvuruDetay.setDosyaNo(dosyaNo);
+		if(beklenenBitisTarihi != null)
+			belgeBasvuruDetay.setBeklenenBitisTarihi(dateFormat.format(beklenenBitisTarihi));
+		if(belgeDurumu != null)
+			belgeBasvuruDetay.setBelgeDurumu(belgeDurumu);
+		if(evrakiGetiren != null)
+			belgeBasvuruDetay.setEvrakiGetiren(evrakiGetiren);
+		if(mudurluk != null)
+			belgeBasvuruDetay.setMudurluk(mudurluk);
+		if(bsm2ServisSeflik != null)
+			belgeBasvuruDetay.setBsm2ServisSeflik(bsm2ServisSeflik.longValue());
+		if(msm2OrganizasyonId != null)
+			belgeBasvuruDetay.setMsm2OrganizasyonId(msm2OrganizasyonId.longValue());
+		if(msm2OrganizasyonIdPilot != null)
+			belgeBasvuruDetay.setMsm2OrganizasyonIdPilot(msm2OrganizasyonIdPilot.longValue());
+		if(ihr1PersonelId != null)
+			belgeBasvuruDetay.setIhr1PersonelId(ihr1PersonelId.longValue());
+		if(geriDonusYapilsinMi != null)
+			belgeBasvuruDetay.setGeriDonusYapilsinMi(geriDonusYapilsinMi);
+		if(geriBildirimTuru != null)
+			belgeBasvuruDetay.setGeriBildirimTuru(geriBildirimTuru);
+		if(geriBildirimYapildi != null)
+			belgeBasvuruDetay.setGeriBildirimYapildi(geriBildirimYapildi);
+		if(ilce != null)
+			belgeBasvuruDetay.setIlce(ilce);
+		if(mahalle != null)
+			belgeBasvuruDetay.setMahalle(mahalle);
+		if(sokakAdi != null)
+			belgeBasvuruDetay.setSokakAdi(sokakAdi);
+		if(siteAdi != null)
+			belgeBasvuruDetay.setSiteAdi(siteAdi);
+		if(kapiNo != null)
+			belgeBasvuruDetay.setKapiNo(kapiNo);
+		if(daireNo != null)
+			belgeBasvuruDetay.setDaireNo(daireNo);
+		if(bildirimdeBulunan != null)
+			belgeBasvuruDetay.setBildirimdeBulunan(bildirimdeBulunan);
+		if(adm1BildirimTuruId != null)
+			belgeBasvuruDetay.setAdm1BildirimTuruId(adm1BildirimTuruId.longValue());
+		if(bildirimNiteligi != null)
+			belgeBasvuruDetay.setBildirimNiteligi(bildirimNiteligi);
+		if(bildirimTuru != null)
+			belgeBasvuruDetay.setBildirimTuru(bildirimTuru);
+
+	}
+
+	public long getOrganizasyonGizlilikSeviyesi(long msm2OrganizationId) {
+
+		String sql = "SELECT nvl(GIZLILIKSEVIYESI,'0') AS GIZLILIKSEVIYESI FROM MSM2ORGANIZASYON WHERE ID = " + msm2OrganizationId;
+		long gizlilikSeviyesi = 0L;
+		try {
+			List list = sessionFactory.getCurrentSession()
+						  .createSQLQuery(sql)
+						  .setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+						  .list();
+
+			Map map = (Map) list.get(0);
+			gizlilikSeviyesi = Long.parseLong((String) map.get("GIZLILIKSEVIYESI"));
+
+		} catch (Exception e) {
+			LOG.debug("Basvuru yonetim belge detay organizasyon gizlilik seviyesi getirilirken bir hata ile karsilasildi msm2OrganizationId:" + msm2OrganizationId);
+		}
+
+		return gizlilikSeviyesi;
+	}
+
+	public BelgeBasvuruDetay getApplyDocDetail(long docId, long msm2OrganizationId) {
 		String sql ="SELECT HDM1ISAKISITURU.TANIM, DDM1ISAKISI.ADI || ' ' || DDM1ISAKISI.SOYADI as ADISOYADI, "
 				  + "DDM1ISAKISI.* FROM HDM1ISAKISITURU JOIN DDM1ISAKISI ON HDM1ISAKISITURU.ID = DDM1ISAKISI.HDM1ISAKISITURU_ID "
 		          + "WHERE DDM1ISAKISI.ID=" + docId;
 
 		List<Object> list = new ArrayList();
+		BelgeBasvuruDetay belgeBasvuruDetay = new BelgeBasvuruDetay();
+		long gizlilikSeviyesi = getOrganizasyonGizlilikSeviyesi(msm2OrganizationId);
+		boolean isAuthorized = false;
 
 		SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
-		BelgeBasvuruDetay belgeBasvuruDetay = new BelgeBasvuruDetay();
-		for(Object o : list){
-			Map map = (Map)o;
-			
-			BigDecimal id = (BigDecimal)map.get("ID");
-			BigDecimal referansNo = (BigDecimal)map.get("ILGIID");
-			String tip = (String) map.get("tip");
-			BigDecimal disaridanGelenBelgeNo = (BigDecimal) map.get("DISARIDANGELENBELGENO");
-			BigDecimal defterKaydiGirisNo = (BigDecimal) map.get("DEFTERKAYDIGIRISNO");
-			Date tarih = (Date)map.get("TARIH");
-			Timestamp tarihSaat = (Timestamp) map.get("TARIHSAAT");
-			Date belgeTarih = (Date)map.get("BELGETARIHI");
-			String uretimTipi = (String)map.get("URETIMTIPI");
 
-			BigDecimal edm1IsAkisiAdimId = (BigDecimal) map.get("EDM1ISAKISIADIM_ID");
-			String merciKurum = (String) map.get("MERCIKURUM");
-			String adi = (String) map.get("ADISOYADI");
-			String soyadi = (String) map.get("SOYADI");
-			String konuTuru = (String) map.get("TANIM");
-			String konusu = (String) map.get("KONUSU");
-			String sdpKodu = (String) map.get("SDPKODU");
-			String ekBilgi = (String) map.get("EKBILGI");
-			String isAkisKonuOzeti = (String) map.get("ISAKISIKONUOZETI");
-			String izahat = (String) map.get("IZAHAT");
-			String gizlilik = (String) map.get("GIZLILIK");
-			String onemDerecesi = (String)map.get("ONEMDERECESI");
-			BigDecimal ekliSayfaSayisi = (BigDecimal) map.get("EKLISAYFASAYISI");
-			String digerEkler = (String) map.get("DIGEREKLER");
-			String dosyaNo = (String) map.get("DOSYANO");
-			Date beklenenBitisTarihi = (Date) map.get("BEKLENENBITISTARIHI");
-			String belgeDurumu = (String) map.get("BELGEDURUMU");
-			String evrakiGetiren = (String) map.get("EVRAKIGETIREN");
-			
-			String mudurluk = (String) map.get("MUDURLUK");
-			BigDecimal bsm2ServisSeflik = (BigDecimal) map.get("BSM2SERVIS_SEFLIK");
-			BigDecimal msm2OrganizasyonId= (BigDecimal) map.get("MSM2ORGANIZASYON_ID");
-			BigDecimal msm2OrganizasyonIdPilot= (BigDecimal) map.get("MSM2ORGANIZASYON_ID_PILOT");
-			BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
-			
-			String telefonNumarasi = (String) map.get("TELEFONNUMARASI");
-			String isTelefonu = (String) map.get("ISTELEFONU");
-			BigDecimal cepTelefonu = (BigDecimal) map.get("CEPTELEFONU");
-			String elektronikPosta = (String) map.get("ELEKTRONIKPOSTA");
-			String geriDonusYapilsinMi =(String) map.get("GERIDONUSYAPILSINMI");
-			String geriBildirimTuru =(String) map.get("GERIBILDIRIMTURU");
-			String geriBildirimYapildi =(String) map.get("GERIBILDIRIMYAPILDI");
-			
-			String ilce = (String) map.get("RRE1ILCE_ADI");
-			String mahalle = (String) map.get("DRE1MAHALLE_ADI");
-			String sokakAdi = (String) map.get("SRE1SOKAK_ADI");
-			String siteAdi = (String) map.get("RRE1SITE_ADI");
-			String kapiNo = (String) map.get("KAPINO");
-			String daireNo = (String) map.get("DAIRENO");
-			
-			String babaAdi = (String) map.get("BABAADI");
-			BigDecimal tcKimlikNo =(BigDecimal) map.get("TCKIMLIKNO");
-			String bildirimdeBulunan=(String) map.get("BILDIRIMDEBULUNAN");
-			BigDecimal adm1BildirimTuruId = (BigDecimal)map.get("ADM1BILDIRIMTURU_ID");
-			
-			String bildirimNiteligi = (String) map.get("BILDIRIMNITELIGI");
-			String bildirimTuru = (String) map.get("BILDIRIMTURU");
-			
-			
-			
-			if(id != null)
-				belgeBasvuruDetay.setId(id.longValue());
-			if(referansNo != null)
-				belgeBasvuruDetay.setReferansNo(referansNo.longValue());
-			if(tip != null)
-				belgeBasvuruDetay.setTip(tip);
-			if(disaridanGelenBelgeNo != null)
-				belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
-			if(defterKaydiGirisNo != null)
-				belgeBasvuruDetay.setDisaridanGelenBelgeNo(disaridanGelenBelgeNo.longValue());
-			if(tarih != null)
-				belgeBasvuruDetay.setTarih(dateFormat.format(tarih));
-			if(tarihSaat != null)
-				belgeBasvuruDetay.setTarihSaat(dateFormat.format(new Date(tarihSaat.getTime())));
-			if(uretimTipi != null)
-				belgeBasvuruDetay.setUretimTipi(uretimTipi);
-			if(edm1IsAkisiAdimId != null)
-				belgeBasvuruDetay.setEdm1IsAkisiAdimId(edm1IsAkisiAdimId.longValue());
-			if(merciKurum != null)
-				belgeBasvuruDetay.setMerciKurum(merciKurum);
-			if(adi != null)
-				belgeBasvuruDetay.setAdi(adi);
-			if(soyadi != null)
-				belgeBasvuruDetay.setSoyadi(soyadi);
-			if(konuTuru != null)
-				belgeBasvuruDetay.setKonuTuru(konuTuru);
-			if(konusu != null)
-				belgeBasvuruDetay.setKonusu(konusu);
-			if(sdpKodu != null)
-				belgeBasvuruDetay.setSdpKodu(sdpKodu);
-			if(ekBilgi!= null)
-				belgeBasvuruDetay.setEkBilgi(ekBilgi);
-			if(isAkisKonuOzeti != null)
-				belgeBasvuruDetay.setIsAkisKonuOzeti(isAkisKonuOzeti);
-			if(izahat != null)
-				belgeBasvuruDetay.setIzahat(izahat);
-			if(gizlilik!= null)
-				belgeBasvuruDetay.setIzahat(izahat);
-			if(onemDerecesi != null)
-				belgeBasvuruDetay.setOnemDerecesi(onemDerecesi);
-			if(ekliSayfaSayisi != null)
-				belgeBasvuruDetay.setEkliSayfaSayisi(ekliSayfaSayisi.longValue());
-			if(digerEkler != null)
-				belgeBasvuruDetay.setDigerEkler(digerEkler);
-			if(dosyaNo != null)
-				belgeBasvuruDetay.setDosyaNo(dosyaNo);
-			if(beklenenBitisTarihi != null)
-				belgeBasvuruDetay.setBeklenenBitisTarihi(dateFormat.format(beklenenBitisTarihi));
-			if(belgeDurumu != null)
-				belgeBasvuruDetay.setBelgeDurumu(belgeDurumu);
-			if(evrakiGetiren != null)
-				belgeBasvuruDetay.setEvrakiGetiren(evrakiGetiren);
-			if(mudurluk != null)
-				belgeBasvuruDetay.setMudurluk(mudurluk);
-			if(bsm2ServisSeflik != null)
-				belgeBasvuruDetay.setBsm2ServisSeflik(bsm2ServisSeflik.longValue());
-			if(msm2OrganizasyonId != null)
-				belgeBasvuruDetay.setMsm2OrganizasyonId(msm2OrganizasyonId.longValue());
-			if(msm2OrganizasyonIdPilot != null)
-				belgeBasvuruDetay.setMsm2OrganizasyonIdPilot(msm2OrganizasyonIdPilot.longValue());
-			if(ihr1PersonelId != null)
-				belgeBasvuruDetay.setIhr1PersonelId(ihr1PersonelId.longValue());
-			if(telefonNumarasi != null)
-				belgeBasvuruDetay.setTelefonNumarasi(telefonNumarasi);
-			if(isTelefonu != null)
-				belgeBasvuruDetay.setIsTelefonu(isTelefonu);
-			if(cepTelefonu != null)
-				belgeBasvuruDetay.setCepTelefonu(cepTelefonu.longValue());
-			if(elektronikPosta != null)
-				belgeBasvuruDetay.setElektronikPosta(elektronikPosta);
-			if(geriDonusYapilsinMi != null)
-				belgeBasvuruDetay.setGeriDonusYapilsinMi(geriDonusYapilsinMi);
-			if(geriBildirimTuru != null)
-				belgeBasvuruDetay.setGeriBildirimTuru(geriBildirimTuru);
-			if(geriBildirimYapildi != null)
-				belgeBasvuruDetay.setGeriBildirimYapildi(geriBildirimYapildi);
-			if(ilce != null)
-				belgeBasvuruDetay.setIlce(ilce);
-			if(mahalle != null)
-				belgeBasvuruDetay.setMahalle(mahalle);
-			if(sokakAdi != null)
-				belgeBasvuruDetay.setSokakAdi(sokakAdi);
-			if(siteAdi != null)
-				belgeBasvuruDetay.setSiteAdi(siteAdi);
-			if(kapiNo != null)
-				belgeBasvuruDetay.setKapiNo(kapiNo);
-			if(daireNo != null)
-				belgeBasvuruDetay.setDaireNo(daireNo);
-			if(babaAdi != null)
-				belgeBasvuruDetay.setBabaAdi(babaAdi);
-			if(tcKimlikNo != null)
-				belgeBasvuruDetay.setTcKimlikNo(tcKimlikNo.longValue());
-			if(bildirimdeBulunan != null)
-				belgeBasvuruDetay.setBildirimdeBulunan(bildirimdeBulunan);
-			if(adm1BildirimTuruId != null)
-				belgeBasvuruDetay.setAdm1BildirimTuruId(adm1BildirimTuruId.longValue());
-			if(bildirimNiteligi != null)
-				belgeBasvuruDetay.setBildirimNiteligi(bildirimNiteligi);
-			if(bildirimTuru != null)
-				belgeBasvuruDetay.setBildirimTuru(bildirimTuru);
+		for(Object o : list){
+
+			Map map = (Map) o;
+			isAuthorized = hasAuthorization(map, msm2OrganizationId, gizlilikSeviyesi);
+			setBelgeBasvuruDetay(belgeBasvuruDetay, map, isAuthorized);
 		}
 		
 		return belgeBasvuruDetay;
@@ -1287,7 +1324,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public List<BasvuruOzet> getGidenBasvuruList(long organizationId, String startDate, String endDate){
-		String sql = "SELECT DB.ID,\n" +
+		String sql = "SELECT * FROM (\n" +
+				"SELECT DB.ID,\n" +
 				"       DBI.ID as DM1ISAKISIADIMID,\n" +
 				"       DB.ADI,\n" +
 				"       DB.TARIH,\n" +
@@ -1299,7 +1337,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				"         AND DBI.GON_MSM2ORGANIZASYON_ID = " + organizationId  +"\n" +
 				"         AND DBI.ALC_MSM2ORGANIZASYON_ID <> DBI.GON_MSM2ORGANIZASYON_ID\n" +
 				"         AND DB.TARIH BETWEEN TO_DATE ('" + startDate +"',     'dd-MM-yyyy')   AND TO_DATE('"+ endDate +"','dd-MM-yyyy')  \n" +
-				"ORDER BY DB.TARIH DESC, DB.ID DESC";
+				"ORDER BY DB.TARIH DESC, DB.ID DESC) WHERE ROWNUM <= 100";
 
 
 
@@ -1337,7 +1375,8 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 	}
 
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate){
-		String sql = "SELECT DB.ID,\n" +
+		String sql = "SELECT * FROM (\n" +
+				"SELECT DB.ID,\n" +
 				"       DBI.ID as DM1ISAKISIADIMID,\n" +
 				"       DB.ADI,\n" +
 				"       DB.TARIH,\n" +
@@ -1350,7 +1389,7 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 				"       AND NVL (DBI.ILETIMYERI, '-') = '-'\n" +
 				"       AND NVL (DB.TURU, '-') IN ('S','K')\n" +
 				"         AND NVL (DB.TARIH, SYSDATE) >= TO_DATE ('" + startDate +"',   'dd/MM/yyyy')  AND NVL(DB.TARIH,SYSDATE) <= TO_DATE('"+ endDate +"','dd/MM/yyyy') \n"+
-				"       ORDER BY NVL(DB.TARIH,SYSDATE) DESC,DB.ID DESC";
+				"       ORDER BY NVL(DB.TARIH,SYSDATE) DESC,DB.ID DESC) WHERE ROWNUM <= 100";
 
 
 
@@ -1450,5 +1489,283 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
 		LOG.debug("belge reddi başarıyla gerçekleşti. response Code = " + response.getStatusCode().toString());
 		return true;
+	}
+
+	//TODO tamamlandı.
+	public String getEBYSParafQueryString(String type, long persid, long rolid, String startDate, String endDate) {
+
+		String progress = type.equalsIgnoreCase("ONAYBEKLIYOR") ? "PROGRESS" : "SEND";
+
+		String queryString = "SELECT \n" +
+				"A.id, \n" +
+				"abpmworkflow_id, \n" +
+				"BPM.F_DocumentIdForWorkItem (A.ID) DOCID, \n" +
+				"(SELECT FIRSTNAME || ' ' || LASTNAME FROM FSM1USERS WHERE ID = fsm1users_sentby) || '(' || (SELECT TANIM FROM FSM1ROLES WHERE ID = fsm1roles_sentby) || ')' NAME, \n" +
+				"DECODE ((SELECT NVL (ABYOKONU_ID, 0) FROM ABPMWORKFLOW WHERE ID = ABPMWORKFLOW_ID), 0, \n" +
+				"\t\t\tCASE WHEN (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER (ABPMWORKFLOW_ID,'EBYSBELGE_ID') FROM DUAL) > 0 \n" +
+				"\t\t\tTHEN\n" +
+				"          \t   (SELECT KONUOZETI FROM EBYSBELGE WHERE ID = (SELECT BPM.F_READ_WORKFLOWVALUE_NUMBER ( A.ABPMWORKFLOW_ID, 'EBYSBELGE_ID') FROM DUAL)) ELSE '' END, TASKSUBJECT)\n" +
+				"KONU, \n" +
+				"EBYSDOCUMENT_ID, \n" +
+				"creationdate, \n" +
+				"MESSAGE, \n" +
+				"(SELECT EBYSPAKETLINE.EBYSPAKET_ID FROM EBYSPAKETLINE WHERE EBYSPAKETLINE.TURU = 'USTYAZI_BIRIM' AND EBYSPAKETLINE.EBYSDOCUMENT_ID = BPM.F_DocumentIdForWorkItem (A.ID)) AS PAKETID \n" +
+				"FROM ABPMWORKITEM A, ABPMTASK TSK\n" +
+				"WHERE A.id > 0 AND \n" +
+				"A.ABPMTASK_ID = TSK.ID AND \n" +
+				"NVL (TSK.BPMTASKMI, 'H') = 'H' AND \n" +
+				"A.ACTION NOT IN ('CANCEL') AND \n" +
+				"EXISTS\n" +
+				" (SELECT 1 FROM EBYSONAY X, EBYSONAYTURU Y, EBYSONAYGRUBU Z \n" +
+				" \t\t   WHERE X.FSM1ROLES_ID ="+ rolid + " AND \n" +
+				" \t\t   \t\t X.IHR1PERSONEL_ID = " + persid + " AND \n" +
+				" \t\t   \t\t X.ONAYDURUMU = '"+ type +"' AND \n" +
+				" \t\t   \t\t X.ABPMWORKITEM_ID = A.ID AND \n" +
+				" \t\t   \t\t X.ONAYTIPI = Y.KAYITOZELISMI AND \n" +
+				" \t\t   \t\t Y.EBYSONAYGRUBU_ID = Z.ID  AND \n" +
+				" \t\t   \t\t Z.KAYITOZELISMI = 'PARAF') AND\n" +
+				"A.FSM1ROLES_PERFORMER = " + rolid +" \n" +
+				"AND \n" +
+				"A.ACTION = '"+ progress +"' \n" +
+				" AND A.CREATIONDATE BETWEEN TO_DATE('"+ startDate +"', 'dd-MM-yyyy') and"
+				+" TO_DATE ('"+ endDate +"', 'dd-MM-yyyy')" +
+				" ORDER BY A.CREATIONDATETIME DESC, A.id DESC";
+
+		return queryString;
+	}
+
+	public List<EBYS> getEBYSParaf(String type, long persid, long rolid, String startDate, String endDate) {
+
+	    List<EBYS> parafList = new ArrayList<>();
+
+		try {
+			String sql = getEBYSParafQueryString(type, persid, rolid, startDate, endDate);
+			List<HashMap> list = sessionFactory.getCurrentSession()
+					.createSQLQuery(sql)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+					.list();
+
+			if(!list.isEmpty()) {
+				for(Map<String ,Object> map : list) {
+
+					EBYS ebys = new EBYS();
+
+					BigDecimal id = (BigDecimal)map.get("ID");
+					BigDecimal ebysDocumentId = (BigDecimal)map.get("EBYSDOCUMENTID");
+					Date creationDate = (Date)map.get("CREATIONDATE");
+					String name = (String)map.get("NAME");
+					String konu = (String)map.get("KONU");
+					String message = (String) map.get("MESSAGE");
+					BigDecimal docId = (BigDecimal) map.get("DOCID");
+					BigDecimal paketId = (BigDecimal)map.get("PAKETID");
+					BigDecimal workFlowId = (BigDecimal)map.get("ABPMWORKFLOW_ID");
+
+					if(id != null)
+						ebys.setId(id.longValue());
+					if(ebysDocumentId != null)
+						ebys.setEbysDocumentId(ebysDocumentId.longValue());
+					if(creationDate != null)
+						ebys.setCreationDate(dateFormat.format(creationDate));
+					if(name != null)
+						ebys.setName(name);
+					if(konu != null)
+						ebys.setKonu(konu);
+					if(message != null)
+						ebys.setMessage(message);
+					if(docId != null)
+						ebys.setDocId(docId.longValue());
+					if(paketId != null)
+						ebys.setPaketId(paketId.longValue());
+					if(workFlowId != null)
+						ebys.setWorkFlowId(workFlowId.longValue());
+
+					parafList.add(ebys);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			String errorString = String .format("Ebys paraf bilgileri getirilirken bir hata ile karsilasildi onay durumu: %s, persid: %d, rolid: %d", type, persid, rolid);
+			LOG.debug(errorString);
+		}
+
+		return parafList;
+	}
+
+	public String getCompletedEBYSParafDetailQueryString(long documentId) {
+		String sql = "SELECT \n" +
+				"EBYSDOCUMENT.ID,\n" +
+				"EBYSDOCUMENT.TANIM,\n" +
+				"'ÜST YAZI' as TURU,  \n" +
+                "(SELECT ADI || ' ' || SOYADI FROM IHR1PERSONEL WHERE ID = EBYSONAY.IHR1PERSONEL_ID) ADSOYAD, \n" +
+				"EBYSONAY.DOKUMANTURU, \n" +
+				"EBYSONAY.IHR1PERSONEL_ID \n" +
+				"FROM EBYSDOCUMENT, EBYSONAYGRUBU, EBYSONAY, EBYSONAYTURU, ABPMWORKITEM\n" +
+				"WHERE EBYSONAYGRUBU.KAYITOZELISMI = 'PARAF' AND\n" +
+				"\t  ABPMWORKITEM.ID = EBYSONAY.ABPMWORKITEM_ID AND\n" +
+				"\t  EBYSONAY.EBYSDOCUMENT_ID = EBYSDOCUMENT.ID AND\n" +
+				"\t  EBYSONAYTURU.KAYITOZELISMI = EBYSONAY.ONAYTIPI AND\n" +
+				"   \t  EBYSONAYTURU.EBYSONAYGRUBU_ID = EBYSONAYGRUBU.ID AND\n" +
+				"\t  ABPMWORKITEM.ACTION <> 'PROGRESS' AND\n" +
+				"\t  EBYSONAY.ONAYDURUMU <> 'ONAYBEKLIYOR' AND\n" +
+				"\t  EBYSDOCUMENT.ID= " + documentId + " \n" +
+				"\t  UNION\n" +
+				"\tselect EBYSFOLDERLINK.EBYSDOCUMENT_ID, \n" +
+				"\t\t   (SELECT EBYSDOCUMENT.TANIM FROM EBYSDOCUMENT WHERE EBYSDOCUMENT.ID = EBYSFOLDERLINK.EBYSDOCUMENT_ID),\n" +
+				"\t\t   DECODE(EBYSDOCUMENTVALUE.DOCUMENTDEFINITIONKODU, 'ILGI','İlgi','DOCLINK','Eklenti','ILISKILIBELGE','İlişkili Belge','-'), \n" +
+				"\t\t   (SELECT ADI || ' ' || SOYADI FROM IHR1PERSONEL WHERE ID = EBYSONAY.IHR1PERSONEL_ID) ADSOYAD, \n" +
+				"\t\t   EBYSONAY.DOKUMANTURU, \n" +
+				"\t\t   EBYSONAY.IHR1PERSONEL_ID \n" +
+				"\t\t   from EBYSDOCUMENT, EBYSVERSION,EBYSDOCUMENTVALUE, EBYSFOLDERLINK, ABPMWORKITEM, EBYSONAY, EBYSONAYTURU, EBYSONAYGRUBU\n" +
+				"\t\t   Where EBYSDOCUMENT.EBYSVERSION_LAST = EBYSVERSION.ID And \n" +
+				"\t\t   \t\t EBYSDOCUMENT.ABPMWORKITEM_ID = ABPMWORKITEM.ID AND\n" +
+				"\t\t   \t\t ABPMWORKITEM.ACTION <> 'PROGRESS' AND\n" +
+				"\t\t   \t\t EBYSONAY.ABPMWORKITEM_ID = EBYSDOCUMENT.ABPMWORKITEM_ID AND\n" +
+				"\t\t   \t\t EBYSONAY.EBYSDOCUMENT_ID = EBYSDOCUMENT.ID AND\n" +
+				"\t\t   \t\t EBYSONAYTURU.KAYITOZELISMI = EBYSONAY.ONAYTIPI AND\n" +
+				"\t\t   \t\t EBYSONAYTURU.EBYSONAYGRUBU_ID = EBYSONAYGRUBU.ID AND\n" +
+				"\t\t   \t\t EBYSONAYGRUBU.KAYITOZELISMI = 'PARAF' AND\n" +
+				"\t\t   \t\t EBYSDOCUMENT.ID = EBYSDOCUMENTVALUE.EBYSDOCUMENT_ID AND \n" +
+				"\t\t   \t\t EBYSDOCUMENT.EBYSVERSION_LAST = EBYSDOCUMENTVALUE.EBYSVERSION_ID AND  \n" +
+				"\t\t   \t\t EBYSDOCUMENTVALUE.EBYSFOLDERLINK_ID = EBYSFOLDERLINK.ID And \n" +
+				"\t\t   \t\t EBYSDOCUMENTVALUE.EBYSDOCUMENT_ID  = " + documentId  + " And \n" +
+				"\t\t   \t\t EBYSDOCUMENTVALUE.DOCUMENTDEFINITIONKODU IN ('DOCLINK', 'ILGI','ILISKILIBELGE') AND \n" +
+				"\t\t   \t\t EBYSFOLDERLINK.ID>0 AND \n" +
+				"\t\t   \t\t EBYSONAY.ONAYDURUMU <> 'ONAYBEKLIYOR'";
+
+		return sql;
+	}
+
+	public String getWaitingEBYSParafDetailQueryString(long documentId) {
+		String sql = "WITH TUMCE AS \n" +
+				"\t(SELECT  \n" +
+				"\t\ta.ID AS ID, \n" +
+				"\t\ta.TANIM, \n" +
+				"\t\t(SELECT DURUMU FROM EBYSVERSION WHERE ID = c.EBYSVERSION_ID) DURUMU,\n" +
+				"\t\tC.ONAYDURUMU,\n" +
+				"\t\tC.ONAYTIPI,\n" +
+				"\t\t(SELECT ADI || ' ' || SOYADI FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) ADSOYAD,\n" +
+				"\t\tC.IHR1PERSONEL_ID,                 \n" +
+				"\t\tc.DOKUMANTURU AS TURU,                \n" +
+				"\t\tc.hitapeki,                 \n" +
+				"\t\tC.EBYSVERSION_ID,                 \n" +
+				"\t\tNVL (C.ABPMTASK_ID, 0) BPMTASKID,                 \n" +
+				"\t\t(SELECT NVL (EIMZASIZPARAFLAMA, 'H') FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) EIMZASIZPARAFLAMA,\n" +
+				"\t\tC.EBYSDOCUMENT_ID\n" +
+				"\t\tEBYSDOCUMENT_ONAY,\n" +
+				"\t\ta.MASTERID_DAGITIM,\n" +
+				"\t\t(SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,   \n" +
+				"\t\t(SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS,               \n" +
+				"\t\t(SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID   \n" +
+				"\t\tFROM EBYSDOCUMENT a, EBYSONAY c          \n" +
+				"\t\tWHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) \n" +
+				"\t\t\tSELECT * FROM TUMCE  WHERE (EBYSDOCUMENT_ONAY = "+ documentId +" ) UNION SELECT *   FROM TUMCE  WHERE (MASTERID_DAGITIM = "+ documentId + " ) ORDER BY 2, 3";
+		return sql;
+	}
+
+	public String getEBYSParafDetailQueryString(String type, long documentId) {
+		if(type.equalsIgnoreCase("ONAYBEKLIYOR"))
+			return getWaitingEBYSParafDetailQueryString(documentId);
+		else
+			return getCompletedEBYSParafDetailQueryString(documentId);
+	}
+
+	public List<EBYSParafDetailDTO> getEBYSParafDetail(String type, long documentId) {
+		List<EBYSParafDetailDTO> ebysParafDetailDTOList = new ArrayList<>();
+
+		try {
+			String sql = getEBYSParafDetailQueryString(type, documentId);
+			List<HashMap> list = sessionFactory.getCurrentSession()
+					.createSQLQuery(sql)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+					.list();
+			if(!list.isEmpty()) {
+				for(Map<String, Object> map : list) {
+
+					EBYSParafDetailDTO ebysParafDetailDTO = new EBYSParafDetailDTO();
+
+					String tanim = (String) map.get("TANIM");
+					String turu = (String) map.get("TURU");
+					BigDecimal ebysDocumentId = (BigDecimal) map.get("ID");
+					String adSoyad = (String) map.get("ADSOYAD");
+					BigDecimal ihr1PersonelId = (BigDecimal) map.get("IHR1PERSONEL_ID");
+
+					if(tanim != null)
+						ebysParafDetailDTO.setTanim(tanim);
+					if(turu != null)
+						ebysParafDetailDTO.setTuru(turu);
+					if(ebysDocumentId != null)
+						ebysParafDetailDTO.setEbysDocumentId(ebysDocumentId.longValue());
+					if(adSoyad != null)
+						ebysParafDetailDTO.setAdSoyad(adSoyad);
+					if (ihr1PersonelId != null)
+						ebysParafDetailDTO.setIhr1PersonelId(ihr1PersonelId.longValue());
+
+					ebysParafDetailDTOList.add(ebysParafDetailDTO);
+
+				}
+			}
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			LOG.debug("EBYS Paraf " + type + " belge detayi getirilirken bir hata ile karsilasildi. documentId: " + documentId);
+		}
+
+		return ebysParafDetailDTOList;
+	}
+
+	public String getWaitingEBYSParafEkDetailQueryString(long documentId) {
+		String sql = "SELECT \n" +
+				"EBYSFOLDERLINK.EBYSDOCUMENT_ID,\n" +
+				"(SELECT X.TANIM FROM EBYSDOCUMENT X WHERE X.ID = EBYSFOLDERLINK.EBYSDOCUMENT_ID) AS TANIM,\n" +
+				"DECODE(EBYSDOCUMENTVALUE.DOCUMENTDEFINITIONKODU, 'ILGI','İlgi','DOCLINK','Eklenti','ILISKILIBELGE','İlişkili Belge','-') AS TURU\n" +
+				"FROM EBYSDOCUMENT ,EBYSVERSION, EBYSDOCUMENTVALUE,EBYSFOLDERLINK\n" +
+				"WHERE EBYSDOCUMENT.EBYSVERSION_LAST = EBYSVERSION.ID AND \n" +
+				"EBYSDOCUMENT.ID = EBYSDOCUMENTVALUE.EBYSDOCUMENT_ID  AND \n" +
+				"EBYSDOCUMENT.EBYSVERSION_LAST = EBYSDOCUMENTVALUE.EBYSVERSION_ID AND  \n" +
+				"EBYSDOCUMENTVALUE.EBYSFOLDERLINK_ID = EBYSFOLDERLINK.ID AND \n" +
+				"EBYSDOCUMENTVALUE.EBYSDOCUMENT_ID  = "+ documentId + " AND \n" +
+				"EBYSDOCUMENTVALUE.DOCUMENTDEFINITIONKODU IN ('DOCLINK', 'ILGI','ILISKILIBELGE') AND \n" +
+				"EBYSFOLDERLINK.ID>0 AND \n" +
+				"EBYSFOLDERLINK.EBYSDOCUMENT_ID NOT IN ( SELECT EBYSDOCUMENT.ID FROM EBYSDOCUMENT , EBYSONAY WHERE EBYSDOCUMENT.EBYSVERSION_LAST = EBYSONAY.EBYSVERSION_ID  and EBYSONAY.EBYSDOCUMENT_ID = "+ documentId +" )";
+
+		return sql;
+	}
+
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafEkDetail(long documentId) {
+		List<EBYSParafDetailDTO> ebysParafDetailDTOList = new ArrayList<>();
+
+		try {
+			String sql = getWaitingEBYSParafEkDetailQueryString(documentId);
+			List<HashMap> list = sessionFactory.getCurrentSession()
+					.createSQLQuery(sql)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+					.list();
+
+			if(!list.isEmpty()) {
+				for(Map<String, Object> map : list) {
+
+					EBYSParafDetailDTO ebysParafDetailDTO = new EBYSParafDetailDTO();
+
+					String tanim = (String) map.get("TANIM");
+					String turu = (String) map.get("TURU");
+					BigDecimal ebysDocumentId = (BigDecimal) map.get("EBYSDOCUMENT_ID");
+
+					if(tanim != null)
+						ebysParafDetailDTO.setTanim(tanim);
+					if(turu != null)
+						ebysParafDetailDTO.setTuru(turu);
+					if(ebysDocumentId != null)
+						ebysParafDetailDTO.setEbysDocumentId(ebysDocumentId.longValue());
+
+					ebysParafDetailDTOList.add(ebysParafDetailDTO);
+				}
+			}
+
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			LOG.debug("EBYS Paraf onay bekleyen belge ekleri getirilirken bir hata ile karsilasildi. documentId: " + documentId);
+		}
+
+		return ebysParafDetailDTOList;
 	}
 }

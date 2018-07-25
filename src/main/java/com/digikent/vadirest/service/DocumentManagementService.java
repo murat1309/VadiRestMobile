@@ -17,7 +17,7 @@ public interface DocumentManagementService {
 	public List<EBYSDetail> getEBYSAddition(long documentId);
 	public List<Rol> getDocRollList(long persid, long mastid);
 	public List<BelgeBasvuru> getApplyDoc(long rolid);
-	public BelgeBasvuruDetay getApplyDocDetail(long docId);
+	public BelgeBasvuruDetay getApplyDocDetail(long docId, long msm2OrganizationId);
 	public Long getEbysMenuCount(long persid, long rolid, String tur);
 	public CozumOrtagi isSolutionPartner(long rolid);
 	public List<EBYSKlasorMenu> getEBYSFolderTree(long rolid);
@@ -33,4 +33,8 @@ public interface DocumentManagementService {
 	public List<BasvuruOzet> getUrettiklerimList(long organizationId, String startDate, String endDate);
 	public List<EBYSDetail> getEbysUnsignableAdditionDocument(long documentId);
 	public Boolean rejectDocument(DocumentRejectDTO documentRejectDTO);
+	public List<EBYS> getEBYSParaf(String type, long persid, long rolid, String startDate, String endDate);
+	public List<EBYSParafDetailDTO> getEBYSParafDetail(String type, long documentId);
+	public List<EBYSParafDetailDTO> getWaitingEBYSParafEkDetail(long documentId);
+
 }
