@@ -121,7 +121,7 @@
     }
 
     .row-height {
-        line-height: 40px;
+        line-height: 30px;
     }
 
     .cerceve {
@@ -287,15 +287,11 @@
         #end
     </div>
 
-    <br>
-
     #if ($tespitGrubuAciklama)
         <div class="row">
             <div class="cell"> $tespitGrubuAciklama </div>
         </div>
     #end
-
-    <br>
 
     <div class="cerceve">
         <div class="table m">
@@ -307,8 +303,8 @@
                 </div>
 
                 <div class="row">
-                    <div class="cell row-height">$karar.ceza</div>
-                    <div class="cell row-height">$karar.cezaMiktari</div>
+                    <div class="cell">$karar.ceza</div>
+                    <div class="cell">$karar.cezaMiktari</div>
                 </div>
             #end
 
