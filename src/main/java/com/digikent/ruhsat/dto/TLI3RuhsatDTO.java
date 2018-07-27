@@ -36,6 +36,7 @@ public class TLI3RuhsatDTO {
     private String bina;
     private Long binaId;
     private String eksikBelgeler;
+    private String borcTutari;
 
     public Long getDosyaReferansNo() {
         return dosyaReferansNo;
@@ -291,5 +292,13 @@ public class TLI3RuhsatDTO {
 
     public void setEksikBelgeler(String eksikBelgeler) {
         this.eksikBelgeler = eksikBelgeler;
+    }
+
+    public String getBorcTutari() {
+        return borcTutari;
+    }
+
+    public void setBorcTutari(String borcTutari) {
+        this.borcTutari = borcTutari;
     }
 }

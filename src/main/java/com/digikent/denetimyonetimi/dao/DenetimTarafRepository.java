@@ -250,7 +250,7 @@ public class DenetimTarafRepository {
                 " AND B.LHR1PERSONELDURUMU_ID=(SELECT ID FROM LHR1PERSONELDURUMU WHERE KAYITOZELISMI = 'CALISAN')\n" +
                 " AND A.ACTIVE = 'E'\n" +
                 " AND A.IKY_PERSONEL_ID>0\n" +
-                " AND B.BSM2SERVIS_GOREV = (SELECT B.BSM2SERVIS_GOREV FROM FSM1USERS A,IHR1PERSONEL B WHERE A.USERID='"+ fsm1UsersUSERID +"' AND A.IKY_PERSONEL_ID = B.ID AND rownum = 1)";
+                " AND B.BSM2SERVIS_GOREV = (SELECT B.BSM2SERVIS_GOREV FROM FSM1USERS A,IHR1PERSONEL B WHERE LOWER(A.USERID)=LOWER('"+ fsm1UsersUSERID +"') AND A.IKY_PERSONEL_ID = B.ID AND rownum = 1)";
 
         List list = new ArrayList<>();
         Session session = sessionFactory.withOptions().interceptor(null).openSession();

@@ -6,6 +6,7 @@ public class ReportTespitDTO {
   private String dayanakKanunu;
   private String aciklama;
   private String tur;
+  private String madde;
 
   public ReportTespitDTO() {
   }
@@ -56,5 +57,13 @@ public class ReportTespitDTO {
 
   public void setTur(String tur) {
     this.tur = tur;
+  }
+
+  public String getMadde() {
+    return madde;
+  }
+
+  public void setMadde(String madde) {
+    this.madde = madde;
   }
 }

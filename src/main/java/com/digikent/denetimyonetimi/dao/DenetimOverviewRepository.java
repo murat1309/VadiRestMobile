@@ -323,7 +323,7 @@ public class DenetimOverviewRepository {
         if (firmaYetkiliSoyadi != null)
             denetimPaydasDTO.setFirmaYetkiliSoyadi(firmaYetkiliSoyadi);
         if (firmaYetkiliTC != null)
-            denetimPaydasDTO.setFirmaYetkiliTC(Long.parseLong(firmaYetkiliTC, 10));
+            denetimPaydasDTO.setFirmaYetkiliTC(firmaYetkiliTC);
 
 
         return denetimPaydasDTO;

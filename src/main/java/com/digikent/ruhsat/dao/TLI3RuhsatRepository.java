@@ -25,12 +25,15 @@ public class TLI3RuhsatRepository {
     TLI3RuhsatService ruhsatService;
 
     public List<TLI3RuhsatDTO> getRuhsatInfo(TLI3RuhsatDTO tli3RuhsatDTO, String startDate, String endDate) {
-        String additionSQL = "AND R.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        String additionSQL = "";
+        if(!startDate.equalsIgnoreCase("null") && !endDate.equalsIgnoreCase("null")) {
+            additionSQL += "AND R.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        }
         if(tli3RuhsatDTO.getMpi1PaydasId() != null){
-            additionSQL = additionSQL + " AND R.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
+            additionSQL += " AND R.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
         }
         if(tli3RuhsatDTO.getFirmaAdı() != null && !tli3RuhsatDTO.getFirmaAdı().equalsIgnoreCase("")){
-            additionSQL = additionSQL + " AND (ISYERIUNVANI LIKE '%" + tli3RuhsatDTO.getIsyeriUnvani().replace('i','İ') + "%' OR B.SORGUADI LIKE '%" + tli3RuhsatDTO.getFirmaAdı().replace('i','İ') + "%')";
+            additionSQL += " AND (ISYERIUNVANI LIKE '%" + tli3RuhsatDTO.getIsyeriUnvani().replace('i','İ') + "%' OR B.SORGUADI LIKE '%" + tli3RuhsatDTO.getFirmaAdı().replace('i','İ') + "%')";
         }
         return ruhsatService.getRuhsatDTOListRunSQL(additionSQL);
     }

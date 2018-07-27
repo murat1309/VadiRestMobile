@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.digikent.general.service.UtilityService.getNSM2PARAMETRESqlQuery;
 
@@ -208,10 +205,22 @@ public class UtilityRepository {
 
     public Long getGelenBasvuruNotificationCount(Long ihr1personelId) {
         Long gelenBasvuruNotificationCount = 0L;
-        Session session = null;
+
         try {
-            session = sessionFactory.openSession();
-            gelenBasvuruNotificationCount = (Long) session.createCriteria(EDM1IsAkisiAdim.class)
+            String sql = "SELECT COUNT(DB.ID)\n" +
+                    "FROM EDM1ISAKISIADIM DBI, DDM1ISAKISI DB\n" +
+                    "WHERE  (DB.ID = DBI.DDM1ISAKISI_ID)\n" +
+                    "AND DB.TURU IN('S','K') \n" +
+                    "AND NVL (DBI.ALC_MSM2ORGANIZASYON_ID, 0) > 0\n" +
+                    "AND DBI.ALC_MSM2ORGANIZASYON_ID IN (\n" +
+                    "SELECT B.MSM2ORGANIZASYON_ID FROM IHR1PERSONEL A,IHR1PERSONELORGANIZASYON B WHERE A.ID = B.IHR1PERSONEL_ID AND A.ID =" + ihr1personelId + "\n" +
+                    " UNION all \n" +
+                    "SELECT A.MSM2ORGANIZASYON_ID FROM IHR1PERSONEL A WHERE A.MSM2ORGANIZASYON_ID IN (SELECT MSM2ORGANIZASYON_ID FROM MSM2ORGANIZASYON_YETKILI WHERE MSM2ORGANIZASYON_MASTER = (SELECT BSM2SERVIS_GOREV FROM IHR1PERSONEL WHERE ID=" + ihr1personelId + ")))\n" +
+                    "AND DBI.ALC_MSM2ORGANIZASYON_ID <> DBI.GON_MSM2ORGANIZASYON_ID\n" +
+                    "AND DBI.DURUMU = 'S'\n" +
+                    "AND DBI.SONUCDURUMU NOT IN ('T')\n" +
+                    "ORDER BY DB.TARIHSAAT DESC,DB.ID";
+           /* gelenBasvuruNotificationCount = (Long) session.createCriteria(EDM1IsAkisiAdim.class)
                     .createAlias("ddm1IsAkisi", "d")
                     .add(Restrictions.eq("durumu", "S"))
                     .add(Restrictions.ne("sonucDurumu", "T"))
@@ -221,12 +230,26 @@ public class UtilityRepository {
                     .add(Restrictions.in("d.turu", Arrays.asList("S", "K")))
                     .add(Restrictions.eq("alcIhr1PersonelId", ihr1personelId))
                     .setProjection(Projections.rowCount())
-                    .uniqueResult();
+                    .uniqueResult();*/
+
+            List<Object> list = new ArrayList<Object>();
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+            list = query.list();
+
+            for(Object o : list){
+                Map map = (Map) o;
+                BigDecimal count = (BigDecimal)map.get("COUNT(DB.ID)");
+
+                if(count != null)
+                    gelenBasvuruNotificationCount = count.longValue();
+
+                break;
+            }
 
         } catch (Exception e) {
             LOG.debug("An error occurred while fetching the gelen basvuru notification count !");
-        } finally {
-            session.close();
         }
 
         return gelenBasvuruNotificationCount;
