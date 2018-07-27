@@ -1,4 +1,4 @@
-package com.digikent.general.dto;
+package com.digikent.notification.dto;
 
 import com.digikent.mesajlasma.dto.ErrorDTO;
 
@@ -17,3 +17,4 @@ public class RemoteNotificationResponseDTO {
         this.errorDTO = errorDTO;
     }
 }
+

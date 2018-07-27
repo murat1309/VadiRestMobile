@@ -6,17 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Notification;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -79,12 +75,5 @@ public class UtilityResource {
         return new ResponseEntity<NotificationResponseDTO>(notificationResponseDTO, OK);
     }
 
-    @RequestMapping(value = "/send/notification", method = RequestMethod.POST)
-    @Produces(APPLICATION_JSON_VALUE)
-    @Consumes(APPLICATION_JSON_VALUE)
-    public ResponseEntity<RemoteNotificationResponseDTO> pushNotification(@RequestBody RemoteNotificationRequestDTO remoteNotificationRequestDTO) {
-        RemoteNotificationResponseDTO remoteNotificationResponseDTO = utilityService.pushNotification(remoteNotificationRequestDTO);
-        return new ResponseEntity<RemoteNotificationResponseDTO>(remoteNotificationResponseDTO, OK);
-    }
 
 }
