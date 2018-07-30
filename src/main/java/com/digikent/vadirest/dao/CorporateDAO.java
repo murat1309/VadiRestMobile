@@ -1,5 +1,6 @@
 package com.digikent.vadirest.dao;
 
+import com.digikent.vadirest.dto.FavoriteWebSite;
 import com.digikent.vadirest.dto.Person;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;
@@ -20,4 +21,5 @@ public interface CorporateDAO {
 	public List<HR1EgitimGenel> getEducation(long persid);
 	public List<PR1KurumIndirim> getDiscount();
 	public List<HR1PersonelIslem> getJobChange();
+	public List<FavoriteWebSite> getFavoriteWebSites();
 }

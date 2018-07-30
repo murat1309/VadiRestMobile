@@ -1,5 +1,6 @@
 package com.digikent.vadirest.service;
 
+import com.digikent.vadirest.dto.FavoriteWebSite;
 import com.digikent.vadirest.dto.Person;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;
@@ -27,5 +28,7 @@ public interface CorporateService {
 	public List<PR1KurumIndirim> getDiscount();
 	//get role changes
 	public List<HR1PersonelIslem> getJobChange();
+
+	public List<FavoriteWebSite> getFavoriteWebSites();
 
 }

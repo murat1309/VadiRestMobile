@@ -1,6 +1,7 @@
 package com.digikent.vadirest.service.impl;
 
 import com.digikent.vadirest.dao.CorporateDAO;
+import com.digikent.vadirest.dto.FavoriteWebSite;
 import com.digikent.vadirest.dto.Person;
 import com.digikent.vadirest.service.CorporateService;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
@@ -49,5 +50,9 @@ public class CorporateServiceImpl implements CorporateService {
 	
 	public List<HR1PersonelIslem> getJobChange(){
 		return corporateDAO.getJobChange();
+	}
+
+	public List<FavoriteWebSite> getFavoriteWebSites(){
+		return corporateDAO.getFavoriteWebSites();
 	}
 }
