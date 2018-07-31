@@ -50,4 +50,5 @@ public class UtilityService {
     public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
         return utilityRepository.getNotifications(notificationRequestDTO);
     }
+
 }
