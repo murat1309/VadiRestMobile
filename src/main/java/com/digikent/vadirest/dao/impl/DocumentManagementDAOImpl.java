@@ -325,31 +325,48 @@ public class DocumentManagementDAOImpl implements DocumentManagementDAO {
 		return ebysList;
 	}
 
+
 	public String getEbysDocumentDetailQueryString(long documentId) {
-		String sql = "WITH TUMCE AS \n" +
-				"\t(SELECT \n" +
-				"\t\tc.ID CID, \n" +
-				"\t\ta.ID AID, \n" +
-				"\t\tC.ONAYSIRASI, a.TANIM, \n" +
-				"\t\t(SELECT DURUMU FROM EBYSVERSION WHERE ID = c.EBYSVERSION_ID) DURUMU,\n" +
-				"\t\tC.ONAYDURUMU,\n" +
-				"\t\tC.ONAYTIPI,\n" +
-				"\t\t(SELECT ADI || ' ' || SOYADI FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) ADSOYAD,\n" +
-				"\t\tC.IHR1PERSONEL_ID,                 \n" +
-				"\t\tc.DOKUMANTURU,                \n" +
-				"\t\tc.hitapeki,                 \n" +
-				"\t\tC.EBYSVERSION_ID,                 \n" +
-				"\t\tNVL (C.ABPMTASK_ID, 0) BPMTASKID,                 \n" +
-				"\t\t(SELECT NVL (EIMZASIZPARAFLAMA, 'H') FROM IHR1PERSONEL WHERE ID = C.IHR1PERSONEL_ID) EIMZASIZPARAFLAMA,\n" +
-				"\t\tC.EBYSDOCUMENT_ID\n" +
-				"\t\tEBYSDOCUMENT_ONAY,\n" +
-				"\t\ta.MASTERID_DAGITIM,\n" +
-				"\t\t(SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,   \n" +
-				"\t\t(SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS,               \n" +
-				"\t\t(SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID   \n" +
-				"\t\tFROM EBYSDOCUMENT a, EBYSONAY c          \n" +
-				"\t\tWHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) \n" +
-				"\t\t\tSELECT * FROM TUMCE  WHERE (EBYSDOCUMENT_ONAY = "+ documentId +" ) UNION SELECT *   FROM TUMCE  WHERE (MASTERID_DAGITIM = "+ documentId +" ) ORDER BY 2, 3";
+		String sql = "WITH TUMCE \n" +
+				"     AS (SELECT /*+ inline*/ \n" +
+				"               c.ID                    CID, \n" +
+				"                a.ID                   AID, \n" +
+				"                C.ONAYSIRASI, \n" +
+				"                a.TANIM, \n" +
+				"                (SELECT DURUMU \n" +
+				"                   FROM EBYSVERSION \n" +
+				"                  WHERE ID = c.EBYSVERSION_ID) \n" +
+				"                   DURUMU, \n" +
+				"                C.ONAYDURUMU, \n" +
+				"                C.ONAYTIPI, \n" +
+				"                (SELECT ADI || ' ' || SOYADI \n" +
+				"                   FROM IHR1PERSONEL \n" +
+				"                  WHERE ID = C.IHR1PERSONEL_ID) \n" +
+				"                   ADSOYAD, \n" +
+				"                C.IHR1PERSONEL_ID, \n" +
+				"                c.DOKUMANTURU, \n" +
+				"                c.hitapeki, \n" +
+				"                C.EBYSVERSION_ID, \n" +
+				"                NVL (C.ABPMTASK_ID, 0) BPMTASKID, \n" +
+				"                (SELECT NVL (EIMZASIZPARAFLAMA, 'H') \n" +
+				"                   FROM IHR1PERSONEL \n" +
+				"                  WHERE ID = C.IHR1PERSONEL_ID) \n" +
+				"                   EIMZASIZPARAFLAMA, \n" +
+				"                C.EBYSDOCUMENT_ID      EBYSDOCUMENT_ONAY, \n" +
+				"                a.MASTERID_DAGITIM, \n" +
+				"               (SELECT EBYSPAKET_ID FROM EBYSPAKETLINE WHERE TURU = 'USTYAZI_BIRIM' AND EBYSDOCUMENT_ID = a.id) PAKETID,  \n" +
+				"               (SELECT ONAYSIRASI FROM EBYSONAYTURU WHERE KAYITOZELISMI=C.ONAYTIPI) OS, \n" +
+				"               (SELECT MAX(EBYSCONTENT_ID) FROM EBYSDOCUMENTVALUE V WHERE V.DOCUMENTDEFINITIONKODU='PDFDOKUMAN' AND V.EBYSDOCUMENT_ID=a.ID  ) CONTENTID\n" +
+				"           FROM EBYSDOCUMENT a, EBYSONAY c \n" +
+				"          WHERE a.EBYSVERSION_LAST = c.EBYSVERSION_ID) \n" +
+				"SELECT * \n" +
+				"  FROM TUMCE \n" +
+				" WHERE (EBYSDOCUMENT_ONAY = " + documentId + ") \n" +
+				"UNION \n" +
+				"SELECT * \n" +
+				"  FROM TUMCE \n" +
+				" WHERE (MASTERID_DAGITIM = " + documentId + ") \n" +
+				"ORDER BY 2, 3 ";
 
 		return sql;
 	}
