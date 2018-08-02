@@ -588,38 +588,5 @@ public class CorporateDAOImpl implements CorporateDAO {
         return doc.body().html();
     }
 
-    public List<FavoriteWebSite> getFavoriteWebSites() {
-        String sql = "SELECT ID, TANIM, KOPRU, SIRA FROM OPR1LINK ORDER BY SIRA ASC";
-
-        List list;
-        List<FavoriteWebSite> favoriteWebSiteList = new ArrayList<>();
-        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-
-        list = query.list();
-
-        for (Object o : list) {
-            FavoriteWebSite favoriteWebSite = new FavoriteWebSite();
-
-            Map map = (Map) o;
-
-            BigDecimal id = (BigDecimal) map.get("ID");
-            String tanim = (String) map.get("TANIM");
-            String kopru = (String) map.get("KOPRU");
-            BigDecimal sira = (BigDecimal) map.get("SIRA");
-
-            if (id != null)
-                favoriteWebSite.setId(id.longValue());
-            favoriteWebSite.setTanim(tanim != null ? tanim : "-");
-            favoriteWebSite.setKopru(kopru != null ? kopru : "-");
-            favoriteWebSite.setSira(sira != null ? sira.longValue() : -1);
-
-            favoriteWebSiteList.add(favoriteWebSite);
-        }
-
-
-        return favoriteWebSiteList;
-    }
-
 
 }

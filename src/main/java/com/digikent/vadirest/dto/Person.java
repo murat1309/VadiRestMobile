@@ -25,8 +25,9 @@ public class Person {
 	private String seflik;
 	private String iseBaslamaTarihi;
 	private String meslek;
-		
-	
+	private String telefonNumaralari;
+	private String mailler;
+
 	
 	public String getDosyaAdi() {
 		return dosyaAdi;
@@ -180,5 +181,21 @@ public class Person {
 
 	public void setMeslek(String meslek) {
 		this.meslek = meslek;
+	}
+
+	public String getTelefonNumaralari() {
+		return telefonNumaralari;
+	}
+
+	public void setTelefonNumaralari(String telefonNumaralari) {
+		this.telefonNumaralari = telefonNumaralari;
+	}
+
+	public String getMailler() {
+		return mailler;
+	}
+
+	public void setMailler(String mailler) {
+		this.mailler = mailler;
 	}
 }

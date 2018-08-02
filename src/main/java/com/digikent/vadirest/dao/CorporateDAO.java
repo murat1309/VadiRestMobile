@@ -21,5 +21,4 @@ public interface CorporateDAO {
 	public List<HR1EgitimGenel> getEducation(long persid);
 	public List<PR1KurumIndirim> getDiscount();
 	public List<HR1PersonelIslem> getJobChange();
-	public List<FavoriteWebSite> getFavoriteWebSites();
 }

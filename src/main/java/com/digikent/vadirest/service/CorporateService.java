@@ -29,6 +29,4 @@ public interface CorporateService {
 	//get role changes
 	public List<HR1PersonelIslem> getJobChange();
 
-	public List<FavoriteWebSite> getFavoriteWebSites();
-
 }
