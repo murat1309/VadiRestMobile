@@ -45,9 +45,10 @@ public class UtilityResource {
         return new ResponseEntity<BelediyeParamResponseDTO>(belediyeParamResponseDTO, OK);
     }
 
-    /*
-        Mobil Uygulama patladığı zaman, log atacaktır.
-    */
+    /**
+     * @deprecated /mobile/log/exception
+     * @return
+     */
     @RequestMapping(value = "/mobil/exceptionhandler", method = RequestMethod.GET)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -58,6 +59,9 @@ public class UtilityResource {
         return new ResponseEntity<Boolean>(true, OK);
     }
 
+    /*
+        Mobil Uygulama patladığı zaman, log atacaktır.
+    */
     @RequestMapping(value = "/mobile/log/exception", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -67,6 +71,15 @@ public class UtilityResource {
         return new ResponseEntity<>(true, OK);
     }
 
+    /**
+     *
+     * @param notificationRequestDTO
+     * @return
+        ana menüdeki bildirim sayılarını getirir.
+        ebys de onay bekleyenler
+        mesajlaşmada, bekleyen mesajlar
+        başvuruda, onay bekleyenler
+     */
     @RequestMapping(value = "/get/notifications", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
