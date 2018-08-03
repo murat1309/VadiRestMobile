@@ -1,10 +1,6 @@
 package com.digikent.vadirest.dao;
 
-import com.digikent.vadirest.dto.AracTalep;
-import com.digikent.vadirest.dto.Izin;
-import com.digikent.vadirest.dto.OdulCeza;
-import com.digikent.vadirest.dto.PDKSInformation;
-import com.digikent.vadirest.dto.Person;
+import com.digikent.vadirest.dto.*;
 import com.vadi.digikent.memur.ikm.model.HR3Hesap;
 import com.vadi.digikent.ortak.model.EILElektronikPosta;
 import com.vadi.digikent.ortak.model.EILTelefon;
@@ -34,5 +30,7 @@ public interface PersonalDAO {
 	public List<Izin> getCancelledHolidays(long persid);
 	public List<OdulCeza> getRewardPenaltyInformation(long persid, String param);
 	public List<AracTalep> getVehicleRequestInformation(long persid);
+	public List<FavoriteWebSite> getFavoriteWebSites();
+
 
 }

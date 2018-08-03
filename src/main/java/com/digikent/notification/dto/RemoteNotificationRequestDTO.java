@@ -4,14 +4,14 @@ public class RemoteNotificationRequestDTO {
     public RemoteNotificationRequestDTO() {
     }
     private Long fsm1UserId;
-    private String notificationMessage;
+    private String notificationType;
 
-    public String getNotificationMessage() {
-        return notificationMessage;
+    public String getNotificationType() {
+        return notificationType;
     }
 
-    public void setNotificationMessage(String notificationMessage) {
-        this.notificationMessage = notificationMessage;
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
     }
 
     public Long getFsm1UserId() {

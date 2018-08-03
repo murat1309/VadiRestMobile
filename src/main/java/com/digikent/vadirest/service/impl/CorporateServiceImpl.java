@@ -52,7 +52,4 @@ public class CorporateServiceImpl implements CorporateService {
 		return corporateDAO.getJobChange();
 	}
 
-	public List<FavoriteWebSite> getFavoriteWebSites(){
-		return corporateDAO.getFavoriteWebSites();
-	}
 }

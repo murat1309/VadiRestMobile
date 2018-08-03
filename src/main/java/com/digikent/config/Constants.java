@@ -66,7 +66,11 @@ public final class Constants {
     public static final String FIREBASE_CLOUD_MESSAGING_URL = "https://fcm.googleapis.com/fcm/send";
     public static final String FIREBASE_CLOUD_MESSAGING_API_KEY = "AAAA6uAS0Cs:APA91bFA0P8DW9woh_L-wJdP9yLwqZRgf-THnYQ0vLPO7B_nDoq7zClXFc1x8tyP1TzAtbLjdkAHprZQ5WoabfjMFo73kApQ5qT1M4uSsRJdxCZzNzDG-mWs4rnnaNBOJflhwSV4oJPYd7azazTL_vLUZ9ySVuUHDQ";
 
-    public static final String DEFAULT_NOTIFICATION_MESSAGE = "Onay Bekleyen Evraklar Var. \uD83D\uDCDD";
+    public static final HashMap<String, String> NOTIFICATION_TYPE = new HashMap<String, String>() {{
+        put("EBYS_ONAY_BEKLEYEN", "Onay Bekleyen evrağınız bulunmaktadır. \uD83D\uDCDD");
+        put("EBYS_GELEN_HAVALE", "Havale edilmiş evrağınız bulunmaktadır.");
+        put("SUREC_IZIN_ONAY", "Onay Bekleyen izin süreciniz bulunmaktadır.");
+    }};
 
     public static final HashMap<String, String> IHR1PERSONEL_STATU = new HashMap<String, String>() {{
         put("S", "Sözlesmeli");

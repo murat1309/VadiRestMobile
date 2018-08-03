@@ -216,13 +216,5 @@ public class CorporateController {
         return announcementList;
     }
 
-    // Favorite Web Pages
-    @RequestMapping(value = "/favoriteWebSites", method = RequestMethod.GET)
-    public List<FavoriteWebSite> getFavoriteWebSites() {
-        System.out.println("-----------------------Favori Web Sayfalarım------------------------");
-        List<FavoriteWebSite> favoriteWebSiteList = new ArrayList<>();
-        favoriteWebSiteList = corporateService.getFavoriteWebSites();
-        return favoriteWebSiteList;
-    }
 
 }
