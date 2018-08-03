@@ -60,8 +60,13 @@ public class PersonalController {
 		}
 		return maasList;
 	}
-	
-	//personel bilgileri
+
+	/**
+	 * Personele ait detay bilgileri getirilir
+	 * görev, müdürlük, şeflik, mail, telefonlar, fotoğraf vs
+	 * @param persid
+	 * @return
+	 */
 	@RequestMapping(value = "personelBilgi/{persid}",method=RequestMethod.GET)
 	public Person getPersonalInformation(@PathVariable("persid") long persid){
 		System.out.println("------------------personel bilgi---------------");
