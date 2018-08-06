@@ -27,6 +27,7 @@ public class Person {
 	private String meslek;
 	private String telefonNumaralari;
 	private String mailler;
+	private String dahiliTelNolari;
 
 	
 	public String getDosyaAdi() {
@@ -189,6 +190,14 @@ public class Person {
 
 	public void setTelefonNumaralari(String telefonNumaralari) {
 		this.telefonNumaralari = telefonNumaralari;
+	}
+
+	public String getDahiliTelNolari() {
+		return dahiliTelNolari;
+	}
+
+	public void setDahiliTelNolari(String dahiliTelNolari) {
+		this.dahiliTelNolari = dahiliTelNolari;
 	}
 
 	public String getMailler() {

@@ -51,12 +51,13 @@ public class PersonalDAOImpl implements PersonalDAO {
 				"(SELECT TANIM FROM KSM2MESLEK WHERE ID=KSM2MESLEK_ID) MESLEK ,\n" +
 				"(SELECT TANIM FROM AHR1KADROSINIFI WHERE ID =AHR1KADROSINIFI_ID) KADROSINIFI ,\n" +
 				"(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI, \n" +
-				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT T.TELEFONNUMARASI FROM AEILTELEFON T, AEILTELEFONTURU B WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) TELEFONNUMARALARI, \n" +
+				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT T.TELEFONNUMARASI FROM AEILTELEFON T, AEILTELEFONTURU B WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) TELEFONNUMARALARI,\n" +
+				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT T.DAHILI FROM AEILTELEFON T, AEILTELEFONTURU B WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) DAHILITELNOLARI, \n" +
 				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT E.ELEKTRONIKPOSTA FROM AEILELEKTRONIKPOSTA E  WHERE E.IHR1PERSONEL_ID>0 AND E.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) MAILLER,\n" +
 				"(SELECT TANIM FROM LHR1GOREVTURU WHERE ID=(SELECT LHR1GOREVTURU_ID FROM ZHR1KADRO  WHERE ID=ZHR1KADRO_ID))  KADRO ,TURU,KANGRUBU, \n" +
 				"(SELECT FILENAME FROM JHR1PERSONELRESIM WHERE IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYAADI , \n" +
 				"(SELECT FILETYPE FROM JHR1PERSONELRESIM WHERE IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYATURU , \n" +
-				"(SELECT ICERIK FROM JHR1PERSONELRESIM WHERE IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) ICERIK ,\n" +
+				"(SELECT ICERIK FROM (select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = " + persid + " ORDER BY CRDATE DESC) WHERE ROWNUM <= 1) ICERIK, " +
 				"(SELECT E.ELEKTRONIKPOSTA FROM AEILELEKTRONIKPOSTA E WHERE E.IHR1PERSONEL_ID>0 AND IHR1PERSONEL_ID = ip.id) ELEKTRONIKPOSTA,\n" +
 				"(SELECT E.KURUMSALEPOSTA FROM AEILELEKTRONIKPOSTA E WHERE E.IHR1PERSONEL_ID>0 AND IHR1PERSONEL_ID = ip.id) KURUMSALEPOSTA\n" +
 				"FROM IHR1PERSONEL IP WHERE IP.ID=" + persid;
@@ -92,7 +93,8 @@ public class PersonalDAOImpl implements PersonalDAO {
             Date iseBaslamaTarihi = (Date) map.get("GIRISTARIHI");
             String meslek = (String) map.get("MESLEK");
             String telefonNumaralari = (String) map.get("TELEFONNUMARALARI");
-            String mailler = (String) map.get("MAILLER");
+			String dahiliTelNolari = (String) map.get("DAHILITELNOLARI");
+			String mailler = (String) map.get("MAILLER");
 
 			if(adsoyad != null)
 				person.setAdSoyad(adsoyad);
@@ -114,6 +116,8 @@ public class PersonalDAOImpl implements PersonalDAO {
 				person.setKadroDerecesi(kadroderecesi.longValue());
             if(telefonNumaralari != null)
                 person.setTelefonNumaralari(telefonNumaralari);
+            if(dahiliTelNolari != null)
+            	person.setDahiliTelNolari(dahiliTelNolari);
             if(mailler != null)
                 person.setMailler(mailler);
 			if(kadrosinifi != null)
