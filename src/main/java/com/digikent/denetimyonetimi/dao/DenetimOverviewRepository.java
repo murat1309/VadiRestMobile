@@ -60,11 +60,11 @@ public class DenetimOverviewRepository {
         BigDecimal dre1MahalleOlayYeri = (BigDecimal) map.get("DRE1MAHALLE_OLAYYERI");
         BigDecimal sre1SokakOlayYeri = (BigDecimal) map.get("SRE1SOKAK_OLAYYERI");
         BigDecimal ere1YapiOlayYeri = (BigDecimal) map.get("ERE1YAPI_OLAYYERI");
-        BigDecimal ire1ParselOlayYeri = (BigDecimal) map.get("PARSELNO_OLAYYERI");
+        BigDecimal ire1ParselOlayYeri = (BigDecimal) map.get("IRE1PARSEL_OLAYYERI");
         BigDecimal dre1BagBolumOlayYeri = (BigDecimal) map.get("DRE1BAGBOLUM_OLAYYERI");
         String paftaOlayYeri = (String) map.get("PAFTANO_OLAYYERI");
         String adaNoOlayYeri = (String) map.get("ADANO_OLAYYERI");
-        String parselOlayYeri = (String) map.get("IRE1PARSEL_OLAYYERI");
+        String parselOlayYeri = (String) map.get("PARSELNO_OLAYYERI");
         String siteAdiOlayYeri = (String) map.get("SITEADI_OLAYYERI");
         String blokNoOlayYeri = (String) map.get("BLOKNO_OLAYYERI");
         String kapiNoHarfOlayYeri = (String) map.get("KAPINOHARF_OLAYYERI");
@@ -127,6 +127,9 @@ public class DenetimOverviewRepository {
         }
         if (sre1SokakOlayYeriAdi != null) {
             denetimOlayYeriAdresi.setSre1SokakOlayYeriAdi(sre1SokakOlayYeriAdi);
+        }
+        if (parselOlayYeri != null) {
+            denetimOlayYeriAdresi.setParselOlayYeri(parselOlayYeri);
         }
 
 

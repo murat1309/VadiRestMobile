@@ -330,7 +330,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 
 	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate){
 		String sql = "Select A.ID, A.ADISOYADI from IHR1PERSONEL A " +
-				"Where A.TURU NOT IN (O','-','D') and A.GIRISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
+				"Where A.TURU NOT IN ('O','-','D') and A.GIRISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
 				"TO_DATE ('"+endDate+"', 'dd-MM-yyyy') ORDER BY A.GIRISTARIHI";
 
 		List<Object> list = new ArrayList<Object>();
