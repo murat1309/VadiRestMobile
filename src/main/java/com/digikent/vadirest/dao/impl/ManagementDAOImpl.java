@@ -330,7 +330,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 
 	public List<PersonelBilgileriDetay> getJobStarters(String startDate, String endDate){
 		String sql = "Select A.ID, A.ADISOYADI from IHR1PERSONEL A " +
-				"Where A.TURU NOT IN ('L','O','-','D') and A.GIRISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
+				"Where A.TURU NOT IN (O','-','D') and A.GIRISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
 				"TO_DATE ('"+endDate+"', 'dd-MM-yyyy') ORDER BY A.GIRISTARIHI";
 
 		List<Object> list = new ArrayList<Object>();
@@ -360,7 +360,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 
 	public List<PersonelBilgileriDetay> getJobQuitters(String startDate, String endDate){
 		String sql = "Select A.ID, A.ADISOYADI from IHR1PERSONEL A " +
-				"Where A.TURU NOT IN ('L','O','-','D') and A.CIKISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
+				"Where A.TURU NOT IN ('O','-','D') and A.CIKISTARIHI BETWEEN TO_DATE('"+startDate+"', 'dd-MM-yyyy') and " +
 				"TO_DATE ('"+endDate+"', 'dd-MM-yyyy') ORDER BY A.CIKISTARIHI";
 
 		List<Object> list = new ArrayList<Object>();
@@ -460,7 +460,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 		String sql ="select a.ID, a.BSM2SERVIS_KADRO,b.TANIM BIRIMADI,a.TURU,a.ADISOYADI,a.TCKIMLIKNO, "
 				+"a.CEPTELEFONU,b.TELEFONNUMARASI,a.ELEKTRONIKPOSTA,a.DOGUMYERI,b.ADRES "
 				+" from IHR1PERSONEL a,BSM2SERVIS b Where a.BSM2SERVIS_KADRO = b.ID and a.BSM2SERVIS_KADRO = "+servisKadroId
-				+" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('L','O','-','D')"
+				+" And a.CIKISTARIHI IS NULL and a.TURU NOT IN ('O','-','D')"
 				+" AND (SELECT KAYITOZELISMI FROM LHR1PERSONELDURUMU WHERE a.LHR1PERSONELDURUMU_ID = ID) not in('EMEKLI','AYR') "
 				+" order by a.ADISOYADI";
 
