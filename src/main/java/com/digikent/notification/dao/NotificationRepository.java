@@ -158,7 +158,7 @@ public class NotificationRepository {
             JSONObject msg = new JSONObject();
             JSONObject msgOnly = new JSONObject();
 
-            msg.put("_body", (remoteNotificationRequestDTO.getNotificationMessage() != null ? remoteNotificationRequestDTO.getNotificationMessage() : Constants.DEFAULT_NOTIFICATION_MESSAGE));
+            msg.put("_body", (Constants.NOTIFICATION_TYPE.get(remoteNotificationRequestDTO.getNotificationType())));
 
             msgOnly.put("data", msg);
             msgOnly.put("to", notificationToken);

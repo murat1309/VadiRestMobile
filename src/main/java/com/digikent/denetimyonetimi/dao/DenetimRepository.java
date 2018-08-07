@@ -685,7 +685,7 @@ public class DenetimRepository {
                 bdntDenetimTespit.setIsActive(true);
                 bdntDenetimTespit.setCrUser(crUser);
 
-                String aksiyon = denetimTespitRequest.getKararVerilebilirMi().equals("E") ? "BELIRSIZ" : "TUTANAK";
+                String aksiyon = denetimTespitRequest.getKararVerilebilirMi().equals("E") ? DenetimTespitKararAksiyon.BELIRSIZ.toString() : DenetimTespitKararAksiyon.TUTANAK.toString();
                 bdntDenetimTespit.setDenetimAksiyonu(aksiyon);
                 bdntDenetimTespit.setVerilenSure(null);
                 bdntDenetimTespit.setKapamaBaslangicTarihi(null);

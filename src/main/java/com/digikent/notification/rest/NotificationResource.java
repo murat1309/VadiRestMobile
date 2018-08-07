@@ -28,7 +28,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RestController
-@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/notification")
 public class NotificationResource {
 
@@ -41,7 +40,6 @@ public class NotificationResource {
     @Autowired
     HttpServletRequest request;
 
-
     @RequestMapping(value = "/push/instant", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -51,6 +49,12 @@ public class NotificationResource {
         return new ResponseEntity<RemoteNotificationResponseDTO>(remoteNotificationResponseDTO, OK);
     }
 
+    /**
+     * kullanıcı login olduktan sonra buraya device id ile kayıt atılır.
+     * @param notificationTokenRequestDTO
+     * @return
+     */
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value = "/save/token", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
