@@ -4,6 +4,7 @@ import com.digikent.vadirest.dao.DocumentManagementDAO;
 import com.digikent.vadirest.dto.*;
 import com.digikent.vadirest.service.DocumentManagementService;
 import com.digikent.web.rest.dto.DocumentRejectDTO;
+import com.digikent.web.rest.dto.EBYSRequestDTO;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
 		return documentManagementDAO.getEBYSRollList(persid);
 	}
 
-	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate){
-		return documentManagementDAO.getEBYS(type,persid, rolid, startDate, endDate);
+	public List<EBYS> getEBYS(String type, EBYSRequestDTO ebysRequestDTO){
+		return documentManagementDAO.getEBYS(type, ebysRequestDTO);
 	}
 	public List<EBYSDetail> getEBYSAddition(long documentId){
 		return documentManagementDAO.getEBYSAddition(documentId);
