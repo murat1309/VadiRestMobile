@@ -4,6 +4,7 @@ import com.digikent.config.Constants;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitNakitOdemeRequest;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitSearchRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
@@ -313,6 +314,20 @@ public class DenetimResource {
         LOG.debug("Denetim yonetimi: gecmis denetimler sorgulanacak paydasId: " + paydasId);
         List<DenetimGecmisDenetimlerDTO> denetimGecmisDenetimlerDTOList = denetimService.getGecmisDenetimlerByPaydasId(paydasId);
         return new ResponseEntity<List<DenetimGecmisDenetimlerDTO>>(denetimGecmisDenetimlerDTOList, OK);
+    }
+
+    /*
+        denetimleri kayıtlarını getirir
+    */
+    @RequestMapping(value = "/odeme/nakit", method = RequestMethod.POST)
+    @Produces(APPLICATION_JSON_VALUE)
+    @Consumes(APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<UtilDenetimSaveDTO> updateNakitOdeme(@RequestBody DenetimTespitNakitOdemeRequest denetimTespitSearchRequest) {
+        LOG.debug("REST nakit odeme denetim tespit id = " + denetimTespitSearchRequest.getDenetimTespitId());
+        LOG.debug("REST nakit odeme bilgisi = " + denetimTespitSearchRequest.getNakitOdeme());
+        UtilDenetimSaveDTO utilDenetimSaveDTO = denetimService.updateNakitOdeme(denetimTespitSearchRequest.getDenetimTespitId(),denetimTespitSearchRequest.getNakitOdeme());
+        return new ResponseEntity<UtilDenetimSaveDTO>(utilDenetimSaveDTO, OK);
     }
 
     @RequestMapping(value = "/deneme", method = RequestMethod.GET)

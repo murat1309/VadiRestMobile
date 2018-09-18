@@ -26,7 +26,7 @@ public class TLI3RuhsatRepository {
 
     public List<TLI3RuhsatDTO> getRuhsatInfo(TLI3RuhsatDTO tli3RuhsatDTO, String startDate, String endDate) {
         String additionSQL = "";
-        if(!startDate.equalsIgnoreCase("null") && !endDate.equalsIgnoreCase("null")) {
+        if(startDate != null) {
             additionSQL += "AND R.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
         }
         if(tli3RuhsatDTO.getMpi1PaydasId() != null){
@@ -38,7 +38,11 @@ public class TLI3RuhsatRepository {
         return ruhsatService.getRuhsatDTOListRunSQL(additionSQL);
     }
     public List<RuhsatDurumuDTO> getRuhsatBasvuruDurumu(TLI3RuhsatDTO tli3RuhsatDTO, String startDate, String endDate) {
-        String additionSQL = " AND TLI3RUHSAT.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        String additionSQL = "";
+        if (startDate != null) {
+            additionSQL = " AND TLI3RUHSAT.RUHSATTARIHI BETWEEN TO_DATE('" + startDate + "', 'DD-MM-YYYY' ) AND TO_DATE('" + endDate + "', 'DD-MM-YYYY')";
+        }
+
         if(tli3RuhsatDTO.getMpi1PaydasId() != null){
             additionSQL = additionSQL + " AND ELI1RUHSATDOSYA.MPI1PAYDAS_ID=" + tli3RuhsatDTO.getMpi1PaydasId();
         }

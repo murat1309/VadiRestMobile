@@ -256,4 +256,20 @@ public class UtilityRepository {
     }
 
 
+    public Long getNakitOdemeIndirimi() throws Exception {
+
+        Long indirim = null;
+
+        try {
+            String sql = "SELECT NVL(SM2.F_PARAMETRE('MOBIL','ZABITANAKITODEMEINDIRIMI'),'H') FROM DUAL";
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            String indirimOrani = (String)query.uniqueResult();
+            indirim = Long.valueOf(indirimOrani).longValue();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+
+        return indirim;
+    }
 }

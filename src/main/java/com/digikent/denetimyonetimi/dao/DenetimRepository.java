@@ -10,6 +10,7 @@ import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
 import com.digikent.denetimyonetimi.enums.DenetimTespitKararAksiyon;
+import com.digikent.denetimyonetimi.service.DenetimService;
 import com.digikent.denetimyonetimi.service.DenetimTarafService;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.apache.commons.collections.map.HashedMap;
@@ -691,6 +692,8 @@ public class DenetimRepository {
                 bdntDenetimTespit.setKapamaBaslangicTarihi(null);
                 bdntDenetimTespit.setKapamaBitisTarihi(null);
                 bdntDenetimTespit.setCezaMiktari(null);
+                bdntDenetimTespit.setNakitOdeme(false);
+                bdntDenetimTespit.setIndirimliCezaMiktari(null);
 
                 Object o = session.save(bdntDenetimTespit);
                 session.getTransaction().commit();
@@ -739,6 +742,7 @@ public class DenetimRepository {
         session.getTransaction().begin();
         Object o = session.get(BDNTDenetimTespit.class,denetimTespitId);
         BDNTDenetimTespit bdntDenetimTespitDB = (BDNTDenetimTespit)o;
+        session.close();
 
         return bdntDenetimTespitDB;
     }
@@ -1238,4 +1242,26 @@ public class DenetimRepository {
         return denetimGecmisDenetimlerDTOList;
     }
 
+    public void updateDenetimTespit(BDNTDenetimTespit bdntDenetimTespit) throws Exception {
+
+        /*Session session = sessionFactory.getCurrentSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        session.update(bdntDenetimTespit);
+        tx.commit();
+        session.close();*/
+
+
+        Session session = sessionFactory.openSession();
+        Transaction tx = null;
+        tx = session.beginTransaction();
+        session.update(bdntDenetimTespit);
+        tx.commit();
+        session.close();
+
+        /**Session session = sessionFactory.getCurrentSession();
+        session.update(bdntDenetimTespit);
+        session.getTransaction().commit();
+        session.close();*/
+    }
 }

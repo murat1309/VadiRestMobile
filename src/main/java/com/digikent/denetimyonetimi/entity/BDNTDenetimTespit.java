@@ -1,6 +1,7 @@
 package com.digikent.denetimyonetimi.entity;
 
 import com.digikent.domain.BaseEntity;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -59,7 +60,7 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
     @Column(name = "KAPAMABITISTARIHI")
     private Date kapamaBitisTarihi = new Date();
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit")
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="bdntDenetimTespit",fetch = FetchType.EAGER)
     @Where(clause = "isActive = 'E'")
     private List<BDNTDenetimTespitLine> bdntDenetimTespitLineList = new ArrayList<>();
 
@@ -74,6 +75,13 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     @Column(name = "CEZANO")
     private Long cezaNo;
+
+    @Type(type = "com.vadi.smartkent.datamodel.domains.base.EvetHayirType")
+    @Column(name = "NAKITODEME")
+    private Boolean nakitOdeme;
+
+    @Column(name = "INDIRIMLICEZAMIKTARI")
+    private Long indirimliCezaMiktari;
 
     public Long getID() {
         return ID;
@@ -201,5 +209,21 @@ public class BDNTDenetimTespit extends BaseEntity implements Serializable {
 
     public void setLdntTespitGrubu(LDNTTespitGrubu ldntTespitGrubu) {
         this.ldntTespitGrubu = ldntTespitGrubu;
+    }
+
+    public Boolean getNakitOdeme() {
+        return nakitOdeme;
+    }
+
+    public void setNakitOdeme(Boolean nakitOdeme) {
+        this.nakitOdeme = nakitOdeme;
+    }
+
+    public Long getIndirimliCezaMiktari() {
+        return indirimliCezaMiktari;
+    }
+
+    public void setIndirimliCezaMiktari(Long indirimliCezaMiktari) {
+        this.indirimliCezaMiktari = indirimliCezaMiktari;
     }
 }

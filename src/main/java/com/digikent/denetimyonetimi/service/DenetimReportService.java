@@ -143,6 +143,10 @@ public class DenetimReportService {
         if (DenetimTespitKararAksiyon.CEZA.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {
             reportKararDTO.setCeza(DenetimTespitKararAksiyon.CEZA.toString());
             reportKararDTO.setCezaMiktari((bdntDenetimTespit.getCezaMiktari() != null ? bdntDenetimTespit.getCezaMiktari().toString() + " TL" : "-"));
+            if (bdntDenetimTespit.getNakitOdeme()) {
+                reportKararDTO.setNakitOdeme("E");
+                reportKararDTO.setIndirimliCezaMiktari((bdntDenetimTespit.getIndirimliCezaMiktari() != null ? bdntDenetimTespit.getIndirimliCezaMiktari().toString() : ""));
+            }
         }
 
         if (DenetimTespitKararAksiyon.KAPAMA.toString().equalsIgnoreCase(bdntDenetimTespit.getDenetimAksiyonu())) {

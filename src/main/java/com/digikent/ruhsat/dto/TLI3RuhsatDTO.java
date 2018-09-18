@@ -37,6 +37,8 @@ public class TLI3RuhsatDTO {
     private Long binaId;
     private String eksikBelgeler;
     private String borcTutari;
+    private String baslangicTarihi;
+    private String bitisTarihi;
 
     public Long getDosyaReferansNo() {
         return dosyaReferansNo;
@@ -300,5 +302,21 @@ public class TLI3RuhsatDTO {
 
     public void setBorcTutari(String borcTutari) {
         this.borcTutari = borcTutari;
+    }
+
+    public String getBaslangicTarihi() {
+        return baslangicTarihi;
+    }
+
+    public void setBaslangicTarihi(String baslangicTarihi) {
+        this.baslangicTarihi = baslangicTarihi;
+    }
+
+    public String getBitisTarihi() {
+        return bitisTarihi;
+    }
+
+    public void setBitisTarihi(String bitisTarihi) {
+        this.bitisTarihi = bitisTarihi;
     }
 }
