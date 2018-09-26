@@ -21,8 +21,8 @@ public class DenetimTebligatAdresi implements Serializable {
     private String dre1MahalleTebligatAdi;
     private String sre1SokakTebligatAdi;
     private String pre1IlTebligatAdi;
-
-
+    private String mahalleAdi;
+    private String sokakAdi;
 
     public String getSiteAdiTebligat() {
         return siteAdiTebligat;
@@ -134,5 +134,21 @@ public class DenetimTebligatAdresi implements Serializable {
 
     public void setPre1IlTebligatAdi(String pre1IlTebligatAdi) {
         this.pre1IlTebligatAdi = pre1IlTebligatAdi;
+    }
+
+    public String getMahalleAdi() {
+        return mahalleAdi;
+    }
+
+    public void setMahalleAdi(String mahalleAdi) {
+        this.mahalleAdi = mahalleAdi;
+    }
+
+    public String getSokakAdi() {
+        return sokakAdi;
+    }
+
+    public void setSokakAdi(String sokakAdi) {
+        this.sokakAdi = sokakAdi;
     }
 }

@@ -139,6 +139,12 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
     @Column(name = "TEBLIGIZAHAT")
     private String tebligIzahat;
 
+    @Column(name = "MAHALLEADI_TEBLIGAT")
+    private String mahalleAdiTebligat;
+
+    @Column(name = "CADDEADI_TEBLIGAT")
+    private String caddeAdiTebligat;
+
 
     public Long getID() {
         return ID;
@@ -450,5 +456,21 @@ public class BDNTDenetim extends BaseEntity implements Serializable {
 
     public void setTebligIzahat(String tebligIzahat) {
         this.tebligIzahat = tebligIzahat;
+    }
+
+    public String getMahalleAdiTebligat() {
+        return mahalleAdiTebligat;
+    }
+
+    public void setMahalleAdiTebligat(String mahalleAdiTebligat) {
+        this.mahalleAdiTebligat = mahalleAdiTebligat;
+    }
+
+    public String getCaddeAdiTebligat() {
+        return caddeAdiTebligat;
+    }
+
+    public void setCaddeAdiTebligat(String caddeAdiTebligat) {
+        this.caddeAdiTebligat = caddeAdiTebligat;
     }
 }

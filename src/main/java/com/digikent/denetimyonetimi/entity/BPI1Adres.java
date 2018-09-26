@@ -83,6 +83,12 @@ public class BPI1Adres implements Serializable {
     @Column(name = "ISACTIVE", length = 1)
     private Boolean isActive;
 
+    @Column(name = "SOKAKADI")
+    private String sokakAdi;
+
+    @Column(name = "MAHALLEADI")
+    private String mahalleAdi;
+
     public Long getID() {
         return ID;
     }
@@ -249,5 +255,21 @@ public class BPI1Adres implements Serializable {
 
     public void setMektupGonderimAdresiMi(String mektupGonderimAdresiMi) {
         this.mektupGonderimAdresiMi = mektupGonderimAdresiMi;
+    }
+
+    public String getSokakAdi() {
+        return sokakAdi;
+    }
+
+    public void setSokakAdi(String sokakAdi) {
+        this.sokakAdi = sokakAdi;
+    }
+
+    public String getMahalleAdi() {
+        return mahalleAdi;
+    }
+
+    public void setMahalleAdi(String mahalleAdi) {
+        this.mahalleAdi = mahalleAdi;
     }
 }

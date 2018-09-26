@@ -121,6 +121,8 @@ public class DenetimRepository {
         bdntDenetim.setRre1ilceTebligat(denetimRequest.getDenetimTebligatAdresi().getRre1ilceTebligat());
         bdntDenetim.setSre1SokakTebligat(denetimRequest.getDenetimTebligatAdresi().getSre1SokakTebligat());
         bdntDenetim.setPre1IlTebligat(denetimRequest.getDenetimTebligatAdresi().getPre1IlTebligat());
+        bdntDenetim.setMahalleAdiTebligat(denetimRequest.getDenetimTebligatAdresi().getMahalleAdi());
+        bdntDenetim.setCaddeAdiTebligat(denetimRequest.getDenetimTebligatAdresi().getSokakAdi());
 
         //role team
         VSYNRoleTeam vsynRoleTeam = new VSYNRoleTeam();
@@ -318,7 +320,18 @@ public class DenetimRepository {
     public List<DenetimIsletmeDTO> findIsletmeDTOListByPaydasId(Long paydasId) {
         List<DenetimIsletmeDTO> denetimIsletmeDTOList = new ArrayList<>();
         String sql = "SELECT ID,MPI1PAYDAS_ID,ISLETMAADI,TABELAUNVANI,FAALIYETKONUSU, " +
-                "SORUMLUADI || ' ' || SORUMLUSOYADI AS ADSOYAD FROM BISLISLETME WHERE ISACTIVE='E' AND MPI1PAYDAS_ID="+paydasId;
+                "SORUMLUADI || ' ' || SORUMLUSOYADI AS ADSOYAD, " +
+                "(SELECT RRE1ILCE_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS RRE1ILCE_ID,\n" +
+                "(SELECT PRE1IL_ID  from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS PRE1IL_ID ,\n" +
+                "(SELECT DRE1MAHALLE_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS DRE1MAHALLE_ID,\n" +
+                "(SELECT SRE1SOKAK_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS SRE1SOKAK_ID,\n" +
+                "(SELECT DAIRENOHARF_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS DAIRENOHARF_ID,\n" +
+                "(SELECT DAIRENOSAYI_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS DAIRENOSAYI_ID,\n" +
+                "(SELECT KAPINOHARF_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS KAPINOHARF_ID,\n" +
+                "(SELECT KAPINOSAYI_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS KAPINOSAYI_ID,\n" +
+                "(SELECT BLOKNO_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS BLOKNO_ID,\n" +
+                "(SELECT SITEADI_ID from BISLISLETMEADRES where BISLISLETME_ID=BISLISLETME.ID AND rownum = 1) AS SITEADI_ID " +
+                "FROM BISLISLETME WHERE ISACTIVE='E' AND MPI1PAYDAS_ID="+paydasId;
         List list = new ArrayList<>();
 
         Session session = sessionFactory.withOptions().interceptor(null).openSession();
@@ -337,6 +350,16 @@ public class DenetimRepository {
                 String tabelaUnvani = (String) map.get("TABELAUNVANI");
                 String faaliyetKonusu = (String) map.get("FAALIYETKONUSU");
                 String sorumluAdSoyad = (String) map.get("ADSOYAD");
+                BigDecimal rre1IlceId = (BigDecimal) map.get("RRE1ILCE_ID");
+                BigDecimal pre1IlId = (BigDecimal) map.get("PRE1IL_ID");
+                BigDecimal dre1MahalleId = (BigDecimal) map.get("DRE1MAHALLE_ID");
+                BigDecimal sre1SokakId = (BigDecimal) map.get("SRE1SOKAK_ID");
+                BigDecimal daireSayiNo = (BigDecimal) map.get("DAIRENOSAYI_ID");
+                BigDecimal kapiNoSayi = (BigDecimal) map.get("KAPINOSAYI_ID");
+                String daireNoHarf = (String) map.get("DAIRENOHARF_ID");
+                String kapiNoHarf = (String) map.get("KAPINOHARF_ID");
+                String blokNo = (String) map.get("BLOKNO_ID");
+                String siteAdi = (String) map.get("SITEADI_ID");
 
                 if (id != null)
                     denetimIsletmeDTO.setId(id.longValue());
@@ -350,6 +373,26 @@ public class DenetimRepository {
                     denetimIsletmeDTO.setFaaliyetKonusu(faaliyetKonusu);
                 if (sorumluAdSoyad != null)
                     denetimIsletmeDTO.setSorumluAdSoyad(sorumluAdSoyad);
+                if (rre1IlceId != null)
+                    denetimIsletmeDTO.setRre1IlceId(rre1IlceId.longValue());
+                if (pre1IlId != null)
+                    denetimIsletmeDTO.setPre1IlId(pre1IlId.longValue());
+                if (dre1MahalleId != null)
+                    denetimIsletmeDTO.setDre1MahalleId(dre1MahalleId.longValue());
+                if (sre1SokakId != null)
+                    denetimIsletmeDTO.setSre1SokakId(sre1SokakId.longValue());
+                if (daireSayiNo != null)
+                    denetimIsletmeDTO.setDaireNoSayi(daireSayiNo.longValue());
+                if (kapiNoSayi != null)
+                    denetimIsletmeDTO.setKapiNoSayi(kapiNoSayi.longValue());
+                if (daireNoHarf != null)
+                    denetimIsletmeDTO.setDaireNoHarf(daireNoHarf);
+                if (kapiNoHarf != null)
+                    denetimIsletmeDTO.setKapiNoHarf(kapiNoHarf);
+                if (blokNo != null)
+                    denetimIsletmeDTO.setBlokNo(blokNo);
+                if (siteAdi != null)
+                    denetimIsletmeDTO.setSiteAdi(siteAdi);
 
                 denetimIsletmeDTOList.add(denetimIsletmeDTO);
             }
@@ -539,6 +582,8 @@ public class DenetimRepository {
             bpi1Adres.setSre1SokakId(denetimPaydasDTO.getSre1SokakId());
             bpi1Adres.setPre1IlId((denetimPaydasDTO.getPre1IlId() != null ? denetimPaydasDTO.getPre1IlId() : 0l));
             bpi1Adres.setDre1BagBolumId(0l);
+            bpi1Adres.setSokakAdi(denetimPaydasDTO.getSokakAdi());
+            bpi1Adres.setMahalleAdi(denetimPaydasDTO.getMahalleAdi());
             bpi1Adres.setCrDate(new Date());
             bpi1Adres.setCrUser(crUser);
             bpi1Adres.setUpdUser(0l);
