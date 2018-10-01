@@ -1,5 +1,6 @@
 package com.digikent.vadirest.dao;
 
+import com.digikent.vadirest.dto.FavoriteWebSite;
 import com.digikent.vadirest.dto.Person;
 import com.vadi.digikent.personel.per.model.HR1EgitimGenel;
 import com.vadi.digikent.personel.per.model.HR1Personel;

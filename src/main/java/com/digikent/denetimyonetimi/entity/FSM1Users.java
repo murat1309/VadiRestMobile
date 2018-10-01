@@ -27,6 +27,9 @@ public class FSM1Users extends BaseEntity implements Serializable {
     @Column(name = "IKY_PERSONEL_ID")
     private Long ikyPersonelId;
 
+    @Column(name = "NOTIFICATIONTOKEN")
+    private String notificationToken;
+
     /*@Column(name = "IHR1PERSONEL_ID")
     private Long ihr1PersonelId;*/
     @OneToOne
@@ -71,5 +74,13 @@ public class FSM1Users extends BaseEntity implements Serializable {
 
     public void setIhr1Personel(IHR1Personel ihr1Personel) {
         this.ihr1Personel = ihr1Personel;
+    }
+
+    public String getNotificationToken() {
+        return notificationToken;
+    }
+
+    public void setNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
     }
 }

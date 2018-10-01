@@ -36,6 +36,8 @@ public class DenetimIsletmeDTO implements Serializable {
     private Long rre1IlceId;
     private Long pre1IlId;
     private String vergiDairesi;
+    private String mahalleAdi;
+    private String sokakAdi;
 
 
     public Long getId() {
@@ -244,5 +246,21 @@ public class DenetimIsletmeDTO implements Serializable {
 
     public void setPre1IlId(Long pre1IlId) {
         this.pre1IlId = pre1IlId;
+    }
+
+    public String getMahalleAdi() {
+        return mahalleAdi;
+    }
+
+    public void setMahalleAdi(String mahalleAdi) {
+        this.mahalleAdi = mahalleAdi;
+    }
+
+    public String getSokakAdi() {
+        return sokakAdi;
+    }
+
+    public void setSokakAdi(String sokakAdi) {
+        this.sokakAdi = sokakAdi;
     }
 }

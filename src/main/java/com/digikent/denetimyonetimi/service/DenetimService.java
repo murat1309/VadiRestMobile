@@ -5,12 +5,16 @@ import com.digikent.denetimyonetimi.dao.DenetimTarafRepository;
 import com.digikent.denetimyonetimi.dto.denetim.*;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitDTO;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitKararRequest;
+import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitNakitOdemeRequest;
 import com.digikent.denetimyonetimi.dto.denetimtespit.DenetimTespitSearchRequest;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimIsletmeDTO;
 import com.digikent.denetimyonetimi.dto.paydas.DenetimPaydasDTO;
 import com.digikent.denetimyonetimi.dto.tespit.*;
 import com.digikent.denetimyonetimi.dto.util.UtilDenetimSaveDTO;
 import com.digikent.denetimyonetimi.entity.*;
+import com.digikent.general.service.UtilityService;
+import com.digikent.general.util.ErrorCode;
+import com.digikent.mesajlasma.dto.ErrorDTO;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +44,9 @@ public class DenetimService {
 
     @Inject
     DenetimRepository denetimRepository;
+
+    @Inject
+    UtilityService utilityService;
 
     public UtilDenetimSaveDTO saveDenetim(DenetimRequest denetimRequest, HttpServletRequest request) {
         UtilDenetimSaveDTO utilDenetimSaveDTO = null;
@@ -336,4 +343,46 @@ public class DenetimService {
         return denetimGecmisDenetimlerDTOList;
     }
 
+    public UtilDenetimSaveDTO updateNakitOdeme(Long denetimTespitId, Boolean isNakitOdeme) {
+
+        try {
+            BDNTDenetimTespit bdntDenetimTespit = denetimRepository.findDenetimTespitById(denetimTespitId);
+            LOG.info("bdntDenetimTespit indirim orani kaydedilecek. bdntDenetimTespit ID = " + bdntDenetimTespit.getID());
+            bdntDenetimTespit.setNakitOdeme((isNakitOdeme));
+
+            if (bdntDenetimTespit.getCezaMiktari() == null || bdntDenetimTespit.getCezaMiktari() == 0) {
+                LOG.error("HATA = bdntDenetimTespit ceza miktari = " + bdntDenetimTespit.getCezaMiktari());
+                UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true, ErrorCode.ERROR_CODE_508),null);
+                return utilDenetimSaveDTO;
+            }
+
+            if (isNakitOdeme) {
+                bdntDenetimTespit.setIndirimliCezaMiktari(calculateCezaMiktari(bdntDenetimTespit.getCezaMiktari()));
+            } else if (!isNakitOdeme) {
+                bdntDenetimTespit.setIndirimliCezaMiktari(null);
+            }
+
+            denetimRepository.updateDenetimTespit(bdntDenetimTespit);
+            LOG.debug("bdntDenetimTespit de ceza indirim orani uygulandi. bdntDenetimTespitID = " + bdntDenetimTespit.getID());
+        } catch (Exception ex) {
+            LOG.error("bdntDenetimTespit indirim orani kaydedilirken bir hata olustu. " + ErrorCode.ERROR_CODE_507 + "  " + ex.getMessage());
+            UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO(false,new ErrorDTO(true, ErrorCode.ERROR_CODE_507),null);
+
+            return utilDenetimSaveDTO;
+        }
+        UtilDenetimSaveDTO utilDenetimSaveDTO = new UtilDenetimSaveDTO(true, null, null);
+        return utilDenetimSaveDTO;
+    }
+
+    public Long calculateCezaMiktari(Long cezaMiktari) throws Exception {
+        Long indirimliCezaMiktari;
+        try {
+            Long indirimOrani = utilityService.getNakitOdemeIndirimi();
+            indirimliCezaMiktari = cezaMiktari - (cezaMiktari * indirimOrani.longValue() / 100);
+        } catch (Exception ex) {
+            LOG.error("ERROR - Ceza indirimi hesaplanirken bir hata olustu");
+            throw new Exception(ex.getMessage());
+        }
+        return indirimliCezaMiktari;
+    }
 }

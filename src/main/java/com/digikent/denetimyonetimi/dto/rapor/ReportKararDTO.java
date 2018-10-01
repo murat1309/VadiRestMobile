@@ -14,6 +14,8 @@ public class ReportKararDTO {
     private String ekSureZaman;
     private String belirsiz;
     private String tutanak;
+    private String nakitOdeme;
+    private String indirimliCezaMiktari;
 
     public String getCeza() {
         return ceza;
@@ -85,5 +87,21 @@ public class ReportKararDTO {
 
     public void setTutanak(String tutanak) {
         this.tutanak = tutanak;
+    }
+
+    public String getNakitOdeme() {
+        return nakitOdeme;
+    }
+
+    public void setNakitOdeme(String nakitOdeme) {
+        this.nakitOdeme = nakitOdeme;
+    }
+
+    public String getIndirimliCezaMiktari() {
+        return indirimliCezaMiktari;
+    }
+
+    public void setIndirimliCezaMiktari(String indirimliCezaMiktari) {
+        this.indirimliCezaMiktari = indirimliCezaMiktari;
     }
 }

@@ -40,6 +40,8 @@ public class DenetimPaydasDTO implements Serializable {
     private String firmaYetkiliAdi;
     private String firmaYetkiliSoyadi;
     private String firmaYetkiliTC;
+    private String mahalleAdi;
+    private String sokakAdi;
 
     public Long getPaydasNo() {
         return paydasNo;
@@ -303,5 +305,21 @@ public class DenetimPaydasDTO implements Serializable {
 
     public void setFirmaYetkiliTC(String firmaYetkiliTC) {
         this.firmaYetkiliTC = firmaYetkiliTC;
+    }
+
+    public String getMahalleAdi() {
+        return mahalleAdi;
+    }
+
+    public void setMahalleAdi(String mahalleAdi) {
+        this.mahalleAdi = mahalleAdi;
+    }
+
+    public String getSokakAdi() {
+        return sokakAdi;
+    }
+
+    public void setSokakAdi(String sokakAdi) {
+        this.sokakAdi = sokakAdi;
     }
 }

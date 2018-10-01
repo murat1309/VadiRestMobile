@@ -1,11 +1,7 @@
 package com.digikent.vadirest.dao.impl;
 
 import com.digikent.vadirest.dao.PersonalDAO;
-import com.digikent.vadirest.dto.AracTalep;
-import com.digikent.vadirest.dto.Izin;
-import com.digikent.vadirest.dto.OdulCeza;
-import com.digikent.vadirest.dto.PDKSInformation;
-import com.digikent.vadirest.dto.Person;
+import com.digikent.vadirest.dto.*;
 import com.vadi.digikent.memur.ikm.model.HR3Hesap;
 import com.vadi.digikent.ortak.model.EILElektronikPosta;
 import com.vadi.digikent.ortak.model.EILTelefon;
@@ -38,33 +34,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("personalDao")
 @Transactional
 public class PersonalDAOImpl implements PersonalDAO {
-	
+
 	@Autowired
 	protected SessionFactory sessionFactory;
 	SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-	
+
+	// getPhoneNumberById ile getMailById methodları findPersonelInformationById methodu ile birleştirildi telefon numaraları ve
+    // mailler tek bir string olarak sorguya eklendi değerler "," ile ayrıldı.
 	public Person findPersonelInformationById(long persid) {
-		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI,IP.DOGUMYERI, IP.GIRISTARIHI "
-				+ ",(SELECT TANIM FROM   LHR1GOREVTURU  WHERE ID=LHR1GOREVTURU_ID) GOREVI "
-				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_GOREV) GOREVMUDURLUGU "
-				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_KADRO) KADROMUDURLUGU "
-				+ ",(SELECT TANIM FROM   BSM2SERVIS  WHERE ID=BSM2SERVIS_SEFLIK) SEFLIK "
-                + ",(SELECT TANIM FROM   KSM2MESLEK  WHERE ID=KSM2MESLEK_ID) MESLEK "
-				+ ",(SELECT TANIM FROM AHR1KADROSINIFI WHERE ID =AHR1KADROSINIFI_ID) KADROSINIFI "
-				+ ",(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI, "
-				+ "(SELECT TELEFONNUMARASI    FROM   AEILTELEFON" +
-				"          WHERE IHR1PERSONEL_ID =IP.ID" +
-				"              AND  AEILTELEFONTURU_ID =(SELECT ID FROM AEILTELEFONTURU WHERE KAYITOZELISMI='CEP')" +
-				"              AND NVL(ISACTIVE,'E')='E'  AND LENGTH(TELEFONNUMARASI)=10" +
-				"              AND ROWNUM=1              )  CEPTELEFONU"
-				+ ",(SELECT TANIM FROM LHR1GOREVTURU WHERE ID=(SELECT LHR1GOREVTURU_ID FROM ZHR1KADRO  WHERE ID=ZHR1KADRO_ID))  KADRO "
-				+ ",TURU,KANGRUBU, "
-				+ "(select FILENAME from JHR1PERSONELRESIM where IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYAADI, "   
-				+ "(select FILETYPE from JHR1PERSONELRESIM where IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYATURU , "   
-                + "(select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) ICERIK "
-				+ "FROM IHR1PERSONEL IP WHERE IP.ID= "
-				+ persid + " ";
+		String sql = "SELECT IP.ID ID,IP.ADI||' '||IP.SOYADI ADSOYAD ,IP.TCKIMLIKNO,IP.DOGUMTARIHI,IP.DOGUMYERI, IP.GIRISTARIHI ,\n" +
+				"(SELECT TANIM FROM LHR1GOREVTURU WHERE ID=LHR1GOREVTURU_ID) GOREVI ,\n" +
+				"(SELECT TANIM FROM BSM2SERVIS WHERE ID=BSM2SERVIS_GOREV) GOREVMUDURLUGU ,\n" +
+				"(SELECT TANIM FROM BSM2SERVIS WHERE ID=BSM2SERVIS_KADRO) KADROMUDURLUGU ,\n" +
+				"(SELECT TANIM FROM BSM2SERVIS WHERE ID=BSM2SERVIS_SEFLIK) SEFLIK ,\n" +
+				"(SELECT TANIM FROM KSM2MESLEK WHERE ID=KSM2MESLEK_ID) MESLEK ,\n" +
+				"(SELECT TANIM FROM AHR1KADROSINIFI WHERE ID =AHR1KADROSINIFI_ID) KADROSINIFI ,\n" +
+				"(SELECT NVL(KADRODERECESI,0) FROM ZHR1KADRO WHERE ID=ZHR1KADRO_ID ) KADRODERECESI, \n" +
+				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT T.TELEFONNUMARASI FROM AEILTELEFON T, AEILTELEFONTURU B WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) TELEFONNUMARALARI,\n" +
+				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT T.DAHILI FROM AEILTELEFON T, AEILTELEFONTURU B WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) DAHILITELNOLARI, \n" +
+				"(SELECT F_FETCH_DATA_ONE_ROW('SELECT E.ELEKTRONIKPOSTA FROM AEILELEKTRONIKPOSTA E  WHERE E.IHR1PERSONEL_ID>0 AND E.IHR1PERSONEL_ID = :x ',ip.id,',','-')  FROM dual) MAILLER,\n" +
+				"(SELECT TANIM FROM LHR1GOREVTURU WHERE ID=(SELECT LHR1GOREVTURU_ID FROM ZHR1KADRO  WHERE ID=ZHR1KADRO_ID))  KADRO ,TURU,KANGRUBU, \n" +
+				"(SELECT FILENAME FROM JHR1PERSONELRESIM WHERE IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYAADI , \n" +
+				"(SELECT FILETYPE FROM JHR1PERSONELRESIM WHERE IHR1PERSONEL_ID = ip.id AND ROWNUM <= 1) DOSYATURU , \n" +
+				"(SELECT ICERIK FROM (select ICERIK from JHR1PERSONELRESIM where IHR1PERSONEL_ID = " + persid + " ORDER BY CRDATE DESC) WHERE ROWNUM <= 1) ICERIK, " +
+				"(SELECT E.ELEKTRONIKPOSTA FROM AEILELEKTRONIKPOSTA E WHERE E.IHR1PERSONEL_ID>0 AND IHR1PERSONEL_ID = ip.id) ELEKTRONIKPOSTA,\n" +
+				"(SELECT E.KURUMSALEPOSTA FROM AEILELEKTRONIKPOSTA E WHERE E.IHR1PERSONEL_ID>0 AND IHR1PERSONEL_ID = ip.id) KURUMSALEPOSTA\n" +
+				"FROM IHR1PERSONEL IP WHERE IP.ID=" + persid;
 
 		List list = new ArrayList<Object>();
 
@@ -83,20 +79,23 @@ public class PersonalDAOImpl implements PersonalDAO {
 			BigDecimal cepTelefonu = (BigDecimal)map.get("CEPTELEFONU");
 			String dogumYeri = (String)map.get("DOGUMYERI");
 			String gorevi = (String) map.get("GOREVI");
-			String gorevmudurlugu = (String) map.get("GOREVMUDURLUGU");
+            String gorevmudurlugu = (String) map.get("GOREVMUDURLUGU");
 			String kadromudurlugu = (String) map.get("KADROMUDURLUGU");
 			String kadrosinifi = (String) map.get("KADROSINIFI");
 			BigDecimal kadroderecesi = (BigDecimal) map.get("KADRODERECESI");
 			String kadro = (String) map.get("KADRO");
 			String turu = (String) map.get("TURU");
-			String kangrubu = (String) map.get("KANGRUBU");		
+			String kangrubu = (String) map.get("KANGRUBU");
 			String dosyaAdi = (String) map.get("DOSYAADI");
 			String dosyaTuru = (String) map.get("DOSYATURU");
 			Blob icerik = (Blob) map.get("ICERIK");
 			String seflik = (String) map.get("SEFLIK");
             Date iseBaslamaTarihi = (Date) map.get("GIRISTARIHI");
             String meslek = (String) map.get("MESLEK");
-			
+            String telefonNumaralari = (String) map.get("TELEFONNUMARALARI");
+			String dahiliTelNolari = (String) map.get("DAHILITELNOLARI");
+			String mailler = (String) map.get("MAILLER");
+
 			if(adsoyad != null)
 				person.setAdSoyad(adsoyad);
 			if(gorevi != null)
@@ -115,11 +114,17 @@ public class PersonalDAOImpl implements PersonalDAO {
 				person.setKadro(kadromudurlugu);
 			if(kadroderecesi != null)
 				person.setKadroDerecesi(kadroderecesi.longValue());
+            if(telefonNumaralari != null)
+                person.setTelefonNumaralari(telefonNumaralari);
+            if(dahiliTelNolari != null)
+            	person.setDahiliTelNolari(dahiliTelNolari);
+            if(mailler != null)
+                person.setMailler(mailler);
 			if(kadrosinifi != null)
 				person.setKadroSinif(kadrosinifi);
 			if(kangrubu != null)
 				person.setKanGrubu(kangrubu);
-			if(tcno != null)	
+			if(tcno != null)
 				person.setTcKimlikNo(tcno.longValue());
 			if(turu != null)
 				person.setTuru(turu);
@@ -133,14 +138,14 @@ public class PersonalDAOImpl implements PersonalDAO {
                 person.setIseBaslamaTarihi(dateFormat.format(iseBaslamaTarihi));
             if(meslek != null)
                 person.setMeslek(meslek);
-			
+
 			try {
 				if (icerik!=null){
 					imageLength = (int) icerik.length();
 					person.setIcerik(icerik.getBytes(1, imageLength));
 					icerik.free();
 				}
-				
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -148,7 +153,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 
 		return person;
 	}
-	
+
 	public List<EILTelefon> getPhoneNumberById(long persid){
 		String sql = "SELECT B.TANIM, T.TELEFONNUMARASI TELNO, T.DAHILI DAHILI FROM AEILTELEFON T, AEILTELEFONTURU B"
 				+ " WHERE T.IHR1PERSONEL_ID>0 AND T.AEILTELEFONTURU_ID = B.ID AND T.IHR1PERSONEL_ID = "
@@ -185,7 +190,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 
 		return telList;
 	}
-	
+
 	public List<EILElektronikPosta> getMailById(long persid){
 		String sql = "SELECT E.ELEKTRONIKPOSTA, E.KURUMSALEPOSTA FROM AEILELEKTRONIKPOSTA E  WHERE E.IHR1PERSONEL_ID>0 AND E.IHR1PERSONEL_ID = "
 				+ persid + "";
@@ -577,24 +582,24 @@ public class PersonalDAOImpl implements PersonalDAO {
                 +"     ||  (case when (mod (hakedilendakika, 60)>0) then  to_char (mod (hakedilendakika, 60)) || ' dakika' else '' end)"
                 +" else to_char(hakedilen) end as hk"
 				+ "  from UHR1IZINHAKEDIS where ihr1personel_id = " + persid +" ORDER BY baslangictarihi DESC, YHR1IZINTURU_ID";
-		
+
 		List list = new ArrayList<Object>();
 
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
 		List<Izin> izinList = new ArrayList<Izin>();
-		
+
 		for(Object o : list){
 			Map map = (Map) o;
 			Izin izin = new Izin();
-			
+
 			String izinTuru = (String) map.get("IZINTURU");
 			BigDecimal yil = (BigDecimal)map.get("YILI");
 			BigDecimal hakedilen = (BigDecimal) map.get("HAKEDILEN");
 			Date baslamaTarihi = (Date)map.get("BASLANGICTARIHI");
 			Date bitisTarihi = (Date) map.get("BITISTARIHI");
-			
+
 			if(izinTuru != null)
 				izin.setIzinTuru(izinTuru);
 			if(yil != null)
@@ -607,7 +612,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 				izin.setBitisTarihi(dateFormat.format(bitisTarihi));
 
 			izinList.add(izin);
-			
+
 		}
 		return izinList;
 
@@ -621,20 +626,20 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+" (SELECT NVL(SUM(IPTALEDILENGUN),0) FROM UHR1IZINIPTAL WHERE UHR1IZINKULLANIM_ID = UHR1IZINKULLANIM.ID )"
 				+" ,(case when(kullanilangun>0) then kullanilangun || ' gün '  else '' end) "
 				+" || (case when(kullanilansaat>0) then kullanilansaat || ' saat '  else '' end)"
-				+" || (case when(kullanilandakika>0) then kullanilandakika || ' dakika'  else '' end) as kl"				
+				+" || (case when(kullanilandakika>0) then kullanilandakika || ' dakika'  else '' end) as kl"
 				+" from UHR1IZINKULLANIM WHERE IHR1PERSONEL_ID = " + persid + "  order by ayrilistarihi desc";
-		
+
 		List list = new ArrayList<Object>();
 
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
 		List<Izin> izinList = new ArrayList<Izin>();
-		
+
 		for(Object o : list){
 			Map map = (Map) o;
 			Izin izin = new Izin();
-			
+
 			String izinTuru = (String) map.get("IZINTURU");
 			BigDecimal yil = (BigDecimal)map.get("YILI");
 			BigDecimal kullanilan = (BigDecimal) map.get("KULLANILAN");
@@ -642,7 +647,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 			String bitisSaati = (String) map.get("BITISSAATI");
 			Date ayrilmaTarihi = (Date)map.get("AYRILISTARIHI");
 			Date donusTarihi = (Date) map.get("DONUSTARIHI");
-			
+
 			if(izinTuru != null)
 				izin.setIzinTuru(izinTuru);
 			if(yil != null)
@@ -657,13 +662,13 @@ public class PersonalDAOImpl implements PersonalDAO {
 				izin.setAyrilmaTarihi(dateFormat.format(ayrilmaTarihi));
 			if(donusTarihi != null)
 				izin.setDonusTarihi(dateFormat.format(donusTarihi));
-			
+
 			izinList.add(izin);
-			
+
 		}
 		return izinList;
 	}
-	
+
 	public List<Izin> getRemainingHolidays(long persid){
 		String sql =" select  YHR1IZINTURU_ID,(SELECT TANIM FROM YHR1IZINTURU WHERE ID=YHR1IZINTURU_ID) as izinTuru,yili,baslangictarihi,bitistarihi, aciklama,tanim,HESAPLAMATURU,"
 				+ " case when(HESAPLAMATURU='GUN') then (case when(hakedilen>0) then to_char(hakedilen) || ' gün ' else '' end)"
@@ -702,25 +707,25 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+ "  	HR1V1.F_KALAN_IZIN(UHR1IZINHAKEDIS.ID) as kalan, 0 as kalan_saat, 0 as kalan_dakika"
 				+ "  from UHR1IZINHAKEDIS where ihr1personel_id =" + persid
 				+ ") order by yili desc, baslangictarihi desc, YHR1IZINTURU_ID";
-		
+
 		List list = new ArrayList<Object>();
 
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
 		List<Izin> izinList = new ArrayList<Izin>();
-		
+
 		for(Object o : list){
 			Map map = (Map) o;
 			Izin izin = new Izin();
-			
+
 			String izinTuru = (String) map.get("IZINTURU");
 			BigDecimal yil = (BigDecimal)map.get("YILI");
 			String hakedilen = (String) map.get("HAKEDILEN");
 			String kullanilan = (String) map.get("KULLANILAN");
 			String iptalEdilenGun = (String) map.get("IPTALEDILEN");
 			String kalanIzin = (String) map.get("KALANIZIN");
-			
+
 			if(izinTuru != null)
 				izin.setIzinTuru(izinTuru);
 			if(yil != null)
@@ -733,9 +738,9 @@ public class PersonalDAOImpl implements PersonalDAO {
 				izin.setIptalEdilen(iptalEdilenGun);
 			if(kalanIzin != null)
 				izin.setKalanIzin(kalanIzin);
-			
+
 			izinList.add(izin);
-			
+
 		}
 		return izinList;
 	}
@@ -746,35 +751,35 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+"  (SELECT NVL(HESAPLAMATURU,'GUN') FROM YHR1IZINTURU WHERE ID=YHR1IZINTURU_ID),"
 				+"  crdate,cruser,deleteflag,isactive,upddate,updseq,upduser,uhr1izinkullanimline_id "
 				+"  from UHR1IZINIPTAL where ihr1personel_id =" + persid + " order by yili desc, YHR1IZINTURU_ID";
-		
+
 		List list = new ArrayList<Object>();
 
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		list = query.list();
 		List<Izin> izinList = new ArrayList<Izin>();
-		
+
 		for(Object o : list){
 			Map map = (Map) o;
 			Izin izin = new Izin();
-			
+
 			String izinTuru = (String) map.get("IZINTURU");
 			BigDecimal yil = (BigDecimal)map.get("YILI");
 			BigDecimal iptalEdilenGun = (BigDecimal) map.get("IPTALEDILENGUN");
-			
+
 			if(izinTuru != null)
 				izin.setIzinTuru(izinTuru);
 			if(yil != null)
 				izin.setYil(yil.longValue());
 			if(iptalEdilenGun != null)
 				izin.setIptalEdilenGun(iptalEdilenGun.longValue());
-			
+
 			izinList.add(izin);
-			
+
 		}
 		return izinList;
 	}
-	
+
 	public List<OdulCeza> getRewardPenaltyInformation(long persid, String param){
 		String sql = "SELECT ID, TURU, SM1KURUM_ID, IHR1PERSONEL_ID, ODULCEZATURU_ID,(SELECT TANIM FROM GHR1CEZATURU WHERE ID=C.ODULCEZATURU_ID) ODULCEZATURU, TARIH, KONUSU, IZAHAT, "
 				+ " DECODE(CEZATURU,'I','Adli Ceza','D','Disiplin Cezasi',CEZATURU) CEZATURU, SAYI, VERENKURUM, ESASNUMARASI FROM FHR1CEZA C WHERE "
@@ -782,7 +787,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 				+ persid
 				+ " AND TURU='"
 				+ param + "'";
-		
+
 		List list = new ArrayList<Object>();
 		List<OdulCeza> oduCezas = new ArrayList<OdulCeza>();
 
@@ -817,12 +822,12 @@ public class PersonalDAOImpl implements PersonalDAO {
 
 		return oduCezas;
 	}
-	
+
 	public List<AracTalep> getVehicleRequestInformation(long persid){
 		String sql = "select ID,TALEPTARIHI,ARACINKALKISYAPACAGIYER,ARACINGIDECEGIYER,TALEPEDILENCIKISTARIHI,TAHMINIDONUSTARIHI,IZAHAT,"
-				+ " (select TANIM from AMT1SONUCDURUMU where id  = (select AMT1SONUCDURUMU_ID from HMT1GOREV where AMT1ARACTALEP_ID = A.id)) SONUCDURUMU"   
+				+ " (select TANIM from AMT1SONUCDURUMU where id  = (select AMT1SONUCDURUMU_ID from HMT1GOREV where AMT1ARACTALEP_ID = A.id)) SONUCDURUMU"
 				+ " FROM AMT1ARACTALEP A WHERE IHR1PERSONEL_ID =" + persid;
-		
+
 		List list = new ArrayList<Object>();
 		List<AracTalep> aracTalepList = new ArrayList<AracTalep>();
 
@@ -842,7 +847,7 @@ public class PersonalDAOImpl implements PersonalDAO {
 			Date donusTarihi = (Date) map.get("TAHMINIDONUSTARIHI");
 			String izahat = (String) map.get("IZAHAT");
 			String sonucDurumu = (String) map.get("SONUCDURUMU");
-			
+
 			if(id != null)
 				aracTalep.setId(id.longValue());
 			if(talepTarihi != null)
@@ -859,12 +864,44 @@ public class PersonalDAOImpl implements PersonalDAO {
 				aracTalep.setIzahat(izahat);
 			if(sonucDurumu != null)
 				aracTalep.setSonucDurumu(sonucDurumu);
-			
-		
+
+
 			aracTalepList.add(aracTalep);
 		}
 
-		
+
 		return aracTalepList;
+	}
+	public List<FavoriteWebSite> getFavoriteWebSites() {
+		String sql = "SELECT ID, TANIM, KOPRU, SIRA FROM OPR1LINK ORDER BY SIRA ASC";
+
+		List list;
+		List<FavoriteWebSite> favoriteWebSiteList = new ArrayList<>();
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		list = query.list();
+
+		for (Object o : list) {
+			FavoriteWebSite favoriteWebSite = new FavoriteWebSite();
+
+			Map map = (Map) o;
+
+			BigDecimal id = (BigDecimal) map.get("ID");
+			String tanim = (String) map.get("TANIM");
+			String kopru = (String) map.get("KOPRU");
+			BigDecimal sira = (BigDecimal) map.get("SIRA");
+
+			if (id != null)
+				favoriteWebSite.setId(id.longValue());
+			favoriteWebSite.setTanim(tanim != null ? tanim : "-");
+			favoriteWebSite.setKopru(kopru != null ? kopru : "-");
+			favoriteWebSite.setSira(sira != null ? sira.longValue() : -1);
+
+			favoriteWebSiteList.add(favoriteWebSite);
+		}
+
+
+		return favoriteWebSiteList;
 	}
 }

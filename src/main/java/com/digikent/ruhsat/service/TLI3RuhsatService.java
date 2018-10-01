@@ -326,6 +326,7 @@ public class TLI3RuhsatService {
     public String addConditionsToRuhsatDurum(String additionSql){
         return getRuhsatDurumuSQL() + additionSql;
     }
+
     public List<RuhsatDurumuDTO> getRuhsatBasvuruDTOList(TLI3RuhsatDTO tli3RuhsatDTO, String additionSql) {
         List<Object> list = new ArrayList<>();
         SQLQuery query =sessionFactory.getCurrentSession().createSQLQuery(addConditionsToRuhsatDurum(additionSql));
@@ -339,6 +340,7 @@ public class TLI3RuhsatService {
 
             BigDecimal dosyaNumarasi = (BigDecimal) map.get("DOSYAREFERANSNO");
             BigDecimal yili = (BigDecimal) map.get("YILI");
+            BigDecimal mpi1PaydasId = (BigDecimal) map.get("MPI1PAYDAS_ID");
             BigDecimal kullanimAlani = (BigDecimal) map.get("KULLANIMALANI");
             String adiSoyadi = (String) map.get("ADISOYADI");
             String isyeriAnaFaaliyet = (String) map.get("ISYERIANAFAALIYET");
@@ -349,8 +351,8 @@ public class TLI3RuhsatService {
             String ruhsatTuru = (String) map.get("RUHSATTURU");
             String ruhsatDurumu = (String) map.get("DOSYADURUMU");
 
-            if(tli3RuhsatDTO.getMpi1PaydasId() != null)
-                ruhsatDurumuDTO.setPaydasId(tli3RuhsatDTO.getMpi1PaydasId().longValue());
+            if(mpi1PaydasId != null)
+                ruhsatDurumuDTO.setPaydasId(mpi1PaydasId.longValue());
             if(yili != null)
                 ruhsatDurumuDTO.setYili(yili.longValue());
             if(kullanimAlani != null)

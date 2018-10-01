@@ -2,6 +2,7 @@ package com.digikent.general.service;
 
 import com.digikent.general.dao.UtilityRepository;
 import com.digikent.general.dto.*;
+import org.hibernate.SQLQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,4 +51,9 @@ public class UtilityService {
     public NotificationResponseDTO getNotifications(NotificationRequestDTO notificationRequestDTO) {
         return utilityRepository.getNotifications(notificationRequestDTO);
     }
+
+    public Long getNakitOdemeIndirimi() throws Exception {
+        return utilityRepository.getNakitOdemeIndirimi();
+    }
+
 }

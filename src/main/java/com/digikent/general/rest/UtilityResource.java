@@ -6,17 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Notification;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -49,9 +45,10 @@ public class UtilityResource {
         return new ResponseEntity<BelediyeParamResponseDTO>(belediyeParamResponseDTO, OK);
     }
 
-    /*
-        Mobil Uygulama patladığı zaman, log atacaktır.
-    */
+    /**
+     * @deprecated /mobile/log/exception
+     * @return
+     */
     @RequestMapping(value = "/mobil/exceptionhandler", method = RequestMethod.GET)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -62,6 +59,9 @@ public class UtilityResource {
         return new ResponseEntity<Boolean>(true, OK);
     }
 
+    /*
+        Mobil Uygulama patladığı zaman, log atacaktır.
+    */
     @RequestMapping(value = "/mobile/log/exception", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -71,6 +71,15 @@ public class UtilityResource {
         return new ResponseEntity<>(true, OK);
     }
 
+    /**
+     *
+     * @param notificationRequestDTO
+     * @return
+        ana menüdeki bildirim sayılarını getirir.
+        ebys de onay bekleyenler
+        mesajlaşmada, bekleyen mesajlar
+        başvuruda, onay bekleyenler
+     */
     @RequestMapping(value = "/get/notifications", method = RequestMethod.POST)
     @Produces(APPLICATION_JSON_VALUE)
     @Consumes(APPLICATION_JSON_VALUE)
@@ -78,5 +87,6 @@ public class UtilityResource {
         NotificationResponseDTO notificationResponseDTO = utilityService.getNotifications(notificationRequestDTO);
         return new ResponseEntity<NotificationResponseDTO>(notificationResponseDTO, OK);
     }
+
 
 }

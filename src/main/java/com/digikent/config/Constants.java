@@ -60,7 +60,19 @@ public final class Constants {
 
     public static final String[] BPM_IZIN_SUREC = new String[]{"BPM_SERVER_PORT", "BPM_SERVER_HOST_NAME", "BPM_SERVER_USER_NAME", "BPM_SERVER_PASSWORD"};
 
-    public static final HashMap<String, String> IHR1PERSONEL_STATU = new HashMap<String, String>(){{
+    public static final String MOBIL = "MOBIL";
+    public static final String[] MOBILE_AUTH_FIELD = new String[]{"MOBILE_AUTH_USERNAME", "MOBILE_AUTH_PASSWORD"};
+
+    public static final String FIREBASE_CLOUD_MESSAGING_URL = "https://fcm.googleapis.com/fcm/send";
+    public static final String FIREBASE_CLOUD_MESSAGING_API_KEY = "AAAA6uAS0Cs:APA91bFA0P8DW9woh_L-wJdP9yLwqZRgf-THnYQ0vLPO7B_nDoq7zClXFc1x8tyP1TzAtbLjdkAHprZQ5WoabfjMFo73kApQ5qT1M4uSsRJdxCZzNzDG-mWs4rnnaNBOJflhwSV4oJPYd7azazTL_vLUZ9ySVuUHDQ";
+
+    public static final HashMap<String, String> NOTIFICATION_TYPE = new HashMap<String, String>() {{
+        put("EBYS_ONAY_BEKLEYEN", "Onay Bekleyen evrağınız bulunmaktadır. \uD83D\uDCDD");
+        put("EBYS_GELEN_HAVALE", "Havale edilmiş evrağınız bulunmaktadır.");
+        put("SUREC_IZIN_ONAY", "Onay Bekleyen izin süreciniz bulunmaktadır.");
+    }};
+
+    public static final HashMap<String, String> IHR1PERSONEL_STATU = new HashMap<String, String>() {{
         put("S", "Sözlesmeli");
         put("M", "Memur");
         put("I", "Isci");

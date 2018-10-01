@@ -1,15 +1,11 @@
 package com.digikent.general.dao;
 
-import com.digikent.general.dto.BelediyeParamResponseDTO;
-import com.digikent.general.dto.BelediyeParamsDTO;
-import com.digikent.general.dto.NotificationRequestDTO;
-import com.digikent.general.dto.NotificationResponseDTO;
+import com.digikent.general.dto.*;
 import com.digikent.general.entity.ABPMWorkItem;
 import com.digikent.general.entity.EDM1IsAkisiAdim;
 import com.digikent.general.util.ErrorCode;
 import com.digikent.mesajlasma.dto.ErrorDTO;
 import com.digikent.mesajlasma.entity.VeilMesajLine;
-import com.vadi.smartkent.datamodel.domains.Edm1isakisiadimnot1;
 import org.hibernate.*;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -18,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -136,7 +131,7 @@ public class UtilityRepository {
         List belediyeParamList = null;
 
         belediyeParamList = getNSM2PARAMETRETableContents();
-        if(!belediyeParamList.isEmpty()) {
+        if (!belediyeParamList.isEmpty()) {
             belediyeParamsDTO = setBelediyeParams(belediyeParamList);
 
             belediyeParamResponseDTO.setBelediyeParamsDTO(belediyeParamsDTO);
@@ -157,11 +152,11 @@ public class UtilityRepository {
         Long mesajNotificationCount = getMesajNotificationCount(notificationRequestDTO.getIhr1personelId());
         Long gelenBasvuruNotificationCount = getGelenBasvuruNotificationCount(notificationRequestDTO.getIhr1personelId());
 
-        if(ebysNotificationCount != null)
+        if (ebysNotificationCount != null)
             notificationResponseDTO.setEbysNotificationCount(ebysNotificationCount);
-        if(mesajNotificationCount != null)
+        if (mesajNotificationCount != null)
             notificationResponseDTO.setMesajNotificationCount(mesajNotificationCount);
-        if(gelenBasvuruNotificationCount != null)
+        if (gelenBasvuruNotificationCount != null)
             notificationResponseDTO.setGelenBasvuruNotificationCount(gelenBasvuruNotificationCount);
 
         return notificationResponseDTO;
@@ -260,4 +255,21 @@ public class UtilityRepository {
         return gelenBasvuruNotificationCount;
     }
 
+
+    public Long getNakitOdemeIndirimi() throws Exception {
+
+        Long indirim = null;
+
+        try {
+            String sql = "SELECT NVL(SM2.F_PARAMETRE('MOBIL','ZABITANAKITODEMEINDIRIMI'),'H') FROM DUAL";
+            Session session = sessionFactory.withOptions().interceptor(null).openSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            String indirimOrani = (String)query.uniqueResult();
+            indirim = Long.valueOf(indirimOrani).longValue();
+        } catch (Exception ex) {
+            throw new Exception(ex.getMessage());
+        }
+
+        return indirim;
+    }
 }

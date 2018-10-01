@@ -41,26 +41,22 @@ public class TLI3RuhsatResource {
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
     }
 
-    @RequestMapping(method = POST, value = "/tli3Ruhsat/{startDate}/{endDate}", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = POST, value = "/tli3Ruhsat", produces = APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<List<TLI3RuhsatDTO>> getRuhsatInfo(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO,
-                                                                @PathVariable("startDate")String startDate,
-                                                                @PathVariable("endDate")String endDate) {
+    public ResponseEntity<List<TLI3RuhsatDTO>> getRuhsatInfo(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
         LOG.debug("REST request to get ruhsat genel with paydas no " + tli3RuhsatDTO.getMpi1PaydasId());
         LOG.debug("Firma Adi  " + tli3RuhsatDTO.getFirmaAdı());
         List<TLI3RuhsatDTO> results = null;
-        results = repository.getRuhsatInfo(tli3RuhsatDTO, startDate, endDate);
+        results = repository.getRuhsatInfo(tli3RuhsatDTO, tli3RuhsatDTO.getBaslangicTarihi(), tli3RuhsatDTO.getBitisTarihi());
         return new ResponseEntity<List<TLI3RuhsatDTO>>(results, OK);
     }
-    @RequestMapping(method = POST, value = "/tli3Ruhsat/basvuru/{startDate}/{endDate}", produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = POST, value = "/tli3Ruhsat/basvuru", produces = APPLICATION_JSON_VALUE)
     @Transactional
-    public ResponseEntity<List<RuhsatDurumuDTO>> getRuhsatBasvuruDurumu(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO,
-                                                                        @PathVariable("startDate")String startDate,
-                                                                        @PathVariable("endDate")String endDate) {
+    public ResponseEntity<List<RuhsatDurumuDTO>> getRuhsatBasvuruDurumu(@RequestBody TLI3RuhsatDTO tli3RuhsatDTO) {
         LOG.debug("REST request to get ruhsat basvuru with paydas no : {}", tli3RuhsatDTO.getMpi1PaydasId());
         LOG.debug("Firma adi " + tli3RuhsatDTO.getFirmaAdı());
         List<RuhsatDurumuDTO> results = null;
-        results = repository.getRuhsatBasvuruDurumu(tli3RuhsatDTO, startDate, endDate);
+        results = repository.getRuhsatBasvuruDurumu(tli3RuhsatDTO, tli3RuhsatDTO.getBaslangicTarihi(), tli3RuhsatDTO.getBitisTarihi());
         return new ResponseEntity<List<RuhsatDurumuDTO>>(results, OK);
     }
 

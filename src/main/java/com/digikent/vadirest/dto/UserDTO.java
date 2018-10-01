@@ -8,6 +8,7 @@ public class UserDTO {
     private String password;
     private String activeDirectoryUserName;
     private Long Id;
+    private String notificationToken;
 
     public Long getId() {
         return Id;
@@ -41,5 +42,11 @@ public class UserDTO {
         this.password = password;
     }
 
+    public String getNotificationToken() {
+        return notificationToken;
+    }
 
+    public void setNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
+    }
 }

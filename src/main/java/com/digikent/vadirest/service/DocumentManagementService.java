@@ -2,6 +2,7 @@ package com.digikent.vadirest.service;
 
 import com.digikent.vadirest.dto.*;
 import com.digikent.web.rest.dto.DocumentRejectDTO;
+import com.digikent.web.rest.dto.EBYSRequestDTO;
 import com.vadi.digikent.sistem.syn.model.SM1Roles;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface DocumentManagementService {
 
 	public List<SM1Roles> getEBYSRollList(long persid);
-	public List<EBYS> getEBYS(String type, long persid, long rolid, String startDate, String endDate);
+	public List<EBYS> getEBYS(String type, EBYSRequestDTO ebysRequestDTO);
 	public List<EBYS> getWaitingEBYS(long persid, long rolid, String startDate, String endDate);
 	public List<EBYSDetail> getEbysDocumentDetail(long documentId);
 	public List<EBYSDetail> getEBYSAddition(long documentId);
